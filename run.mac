@@ -1,0 +1,39 @@
+# ----------------
+# Verbose settings
+# ----------------
+/control/verbose 2
+/run/verbose 2
+#/tracking/verbose 2
+
+# HepRepFile diriver
+/vis/open HepRepFile
+
+# OpenGL driver
+#/vis/open OGLIX
+
+# Add world volume
+/vis/drawVolume
+
+# Visualise geometry
+/vis/viewer/flush
+
+# Set camera angle for OGLIX driver
+/vis/viewer/set/viewpointThetaPhi 70 120
+
+# HandsOn 3: Trajectory visualisation
+# Add trajectories to the visualization.
+/vis/scene/add/trajectories
+
+# Accumulate multiple events in one picture.
+/vis/scene/endOfEventAction accumulate
+
+# Trajectory colouring scheme
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/set -1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 0 red
+
+/run/beamOn 1
+
+
+

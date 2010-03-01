@@ -1,0 +1,26 @@
+/vis/open OGLIX
+/vis/scene/create bigcal
+/vis/drawVolume 
+
+/vis/viewer/set/viewpointThetaPhi 140 130
+/vis/viewer/set/upThetaPhi 90 180
+/vis/viewer/zoom 1 
+#/vis/viewer/set/targetPoint 0 -130 120 cm
+
+/vis/scene/add/axes
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+#/vis/scene/endOfEventAction accumulate 5 
+
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/set -1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 0 red
+
+#/tracking/storeTrajectory 1 
+
+/run/beamOn 2 
+/vis/enable 
+/vis/reviewKeptEvents
+
+/vis/viewer/flush

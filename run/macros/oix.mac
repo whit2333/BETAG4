@@ -1,0 +1,15 @@
+/vis/open OIX
+/vis/drawVolume
+/vis/viewer/flush
+
+/vis/scene/create
+/vis/open OIX
+/vis/viewer/set/viewpointThetaPhi 70 20
+/vis/viewer/zoom 2
+/vis/viewer/reset
+/vis/viewer/set/viewpointThetaPhi 40 40
+/vis/viewer/panTo -5 -1
+/vis/viewer/zoom 4.
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+/run/beamOn 1

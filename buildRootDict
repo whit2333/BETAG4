@@ -1,0 +1,9 @@
+#! /bin/bash
+
+cd include
+rm eventdict.*
+rm geodict.*
+rootcint eventdict.cxx -c rawBETAEvent.h
+rootcint geodict.cxx -c BIGCALGeometryCalculator.hh
+mv eventdict.cxx ../src/eventdict.cc
+mv geodict.cxx ../src/geodict.cc

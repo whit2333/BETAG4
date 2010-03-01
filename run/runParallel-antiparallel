@@ -1,0 +1,17 @@
+#!/bin/bash
+
+ckov batch-field180-100k.mac
+mv data alignment/batch-field180-100k-down4cm
+mkdir data
+ckov batch-field80-100k.mac
+mv data alignment/batch-field80-100k-down4cm
+mkdir data
+cd ..
+make
+cd run
+ckov batch-field180-100k.mac
+mv data alignment/batch-field180-100k-down5cm
+mkdir data
+ckov batch-field80-100k.mac
+mv data alignment/batch-field80-100k-down5cm
+mkdir data

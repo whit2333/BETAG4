@@ -1,0 +1,119 @@
+#define DQ1_cxx
+// The class definition in DQ1.h has been generated automatically
+// by the ROOT utility TTree::MakeSelector(). This class is derived
+// from the ROOT class TSelector. For more information on the TSelector
+// framework see $ROOTSYS/README/README.SELECTOR or the ROOT User Manual.
+
+// The following methods are defined in this file:
+//    Begin():        called every time a loop on the tree starts,
+//                    a convenient place to create your histograms.
+//    SlaveBegin():   called after Begin(), when on PROOF called only on the
+//                    slave servers.
+//    Process():      called for each event, in this function you decide what
+//                    to read and fill your histograms.
+//    SlaveTerminate: called at the end of the loop on the tree, when on PROOF
+//                    called only on the slave servers.
+//    Terminate():    called at the end of the loop on the tree,
+//                    a convenient place to draw/fit your histograms.
+//
+// To use this file, try the following session on your Tree T:
+//
+// Root > T->Process("DQ1.C")
+// Root > T->Process("DQ1.C","some options")
+// Root > T->Process("DQ1.C+")
+//
+
+#include "DQ1.h"
+#include <TH2.h>
+#include <TStyle.h>
+
+
+void DQ1::Begin(TTree * tree)
+{
+   // The Begin() function is called at the start of the query.
+   // When running with PROOF Begin() is only called on the client.
+   // The tree argument is deprecated (on PROOF 0 is passed).
+
+   TString option = GetOption();
+fChain = tree;
+mc_e_VS_mc_x = new TH2F("mc_e_VS_mc_x", "MC Bigcal x vs energy",100,0,5,120,-60,60);
+mc_e_VS_mc_y = new TH2F("mc_e_VS_mc_y", "MC Bigcal y vs energy",100,0,5,120,-120,120);
+mc_x_VS_mc_y = new TH2F("mc_x_VS_mc_y", "MC Bigcal y vs x",120,-60,60,120,-120,120);
+
+energyDiff = new TH1F("energyDiff", "mc e_init minus bcplane energy ", 100,0,3);
+thetaInit = new TH1F("thetaInit", "initial particle #theta", 100,0,90);
+phiInit = new TH1F("phiInit", "initial particle #phi", 100, -90, 90);
+}
+
+void DQ1::SlaveBegin(TTree * /*tree*/)
+{
+   // The SlaveBegin() function is called after the Begin() function.
+   // When running with PROOF SlaveBegin() is called on each slave server.
+   // The tree argument is deprecated (on PROOF 0 is passed).
+
+   TString option = GetOption();
+
+}
+
+Bool_t DQ1::Process(Long64_t entry)
+{
+   // The Process() function is called for each entry in the tree (or possibly
+   // keyed object in the case of PROOF) to be processed. The entry argument
+   // specifies which entry in the currently loaded tree is to be processed.
+   // It can be passed to either DQ1::GetEntry() or TBranch::GetEntry()
+   // to read either all or the required parts of the data. When processing
+   // keyed objects with PROOF, the object is already loaded and is available
+   // via the fObject pointer.
+   //
+   // This function should contain the "body" of the analysis. It can contain
+   // simple or elaborate selection criteria, run algorithms on the data
+   // of the event and typically fill histograms.
+   //
+   // The processing can be stopped by calling Abort().
+   //
+   // Use fStatus to set the return value of TTree::Process().
+   //
+   // The return value is currently not used.
+
+  fChain->GetTree()->GetEntry(entry);
+
+for(int i=0;i<mc_nhit_bcplane;i++) {
+  mc_e_VS_mc_x->Fill(mc_e_bcplane[i], mc_x_bcplane[i]);
+  mc_e_VS_mc_y->Fill(mc_e_bcplane[i], mc_y_bcplane[i]);
+  mc_x_VS_mc_y->Fill(mc_x_bcplane[i], mc_y_bcplane[i],mc_e_bcplane[i]);
+energyDiff->Fill(mc_e_init[0] - mc_e_bcplane[i]);
+thetaInit->Fill( -1.0*mc_theta_init[0]*180.0/3.14159 );
+phiInit->Fill( mc_phi_init[0]*180.0/3.14159);
+  }
+   return kTRUE;
+}
+
+void DQ1::SlaveTerminate()
+{
+   // The SlaveTerminate() function is called after all entries or objects
+   // have been processed. When running with PROOF SlaveTerminate() is called
+   // on each slave server.
+
+}
+
+void DQ1::Terminate()
+{
+   // The Terminate() function is the last function to be called during
+   // a query. It always runs on the client, it can be used to present
+   // the results graphically or save the results to file.
+
+TCanvas * t = new TCanvas();
+t->Divide(3,2);
+t->cd(1);
+mc_e_VS_mc_x->Draw("colz");
+t->cd(2);
+mc_e_VS_mc_y->Draw("colz");
+t->cd(3);
+mc_x_VS_mc_y->Draw("colz");
+t->cd(4);
+energyDiff->Draw();
+t->cd(5);
+thetaInit->Draw();
+t->cd(6);
+phiInit->Draw();
+}

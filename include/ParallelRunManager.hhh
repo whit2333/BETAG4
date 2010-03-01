@@ -1,0 +1,13 @@
+#include "globals.hh"
+#include "G4RunManager.hh"
+#include <pthread.h>
+#include "G4UImanager.hh"
+class ParallelRunManager : private G4RunManager
+{
+
+
+   protected: // with description
+      virtual void DoEventLoop(G4int n_event,const char* macroFile,G4int n_select);
+//  [ Add member functions for actions by master and workers ]
+};
+
