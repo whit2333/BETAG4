@@ -11,7 +11,11 @@ class BETAAnalysisManager;
 #include "G4UIcmdWithAnInteger.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+/**
+ * Concrete implementation of G4UImessenger which creates/connects geant4 command lines to 
+ * appropriate data members or methods. \todo{Consildate the messengers. Should we have one 
+ * messenger per class or just on messenger?}
+ */
 class BETAAnalysisMessenger: public G4UImessenger
 {
   public:

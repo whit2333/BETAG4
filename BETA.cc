@@ -144,8 +144,8 @@ int main(int argc,char** argv)
 #endif    
 //      UI->ApplyCommand("/control/execute vis.mac"); 
      UI->ApplyCommand(command+fileName);
-      session->SessionStart();
-      delete session;
+     // session->SessionStart();
+     if(session) delete session;
    }
    
   // Job termination

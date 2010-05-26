@@ -1,29 +1,3 @@
-//
-// ********************************************************************
-// * DISCLAIMER                                                       *
-// *                                                                  *
-// * The following disclaimer summarizes all the specific disclaimers *
-// * of contributors to this software. The specific disclaimers,which *
-// * govern, are listed with their locations in:                      *
-// *   http://cern.ch/geant4/license                                  *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.                                                             *
-// *                                                                  *
-// * This  code  implementation is the  intellectual property  of the *
-// * GEANT4 collaboration.                                            *
-// * By copying,  distributing  or modifying the Program (or any work *
-// * based  on  the Program)  you indicate  your  acceptance of  this *
-// * statement, and all its terms.                                    *
-// ********************************************************************
-//
-// $Id:$
-//
-// Jane Tinslay - adapted from A01 example
-//
 #ifndef BETAPMTHIT_HH
 #define BETAPMTHIT_HH
 
@@ -34,16 +8,26 @@
 #include "G4THitsCollection.hh"
 #include "G4Transform3D.hh"
 #include "G4VHit.hh"
+#include <iostream>
+#include <algorithm>
+#include <vector>
 
-
-
+/**
+ *  A PMT hit for a single photon 
+ *  NOTE: this might not be the best way for dealing with the light, that is,
+ *  counting every photon. However, it allows us to gain more information like 
+ *  positioning, time, and energy. 
+ *  This can then be used to present the data in a more realistic way. 
+ *  For example, looking at the time difference in photons hitting the tube, we can conclude that for suffuciently large times
+ *  there will be two TDC hits. 
+ */
 class BETAPMTHit : public G4VHit {
 
 public:
-  
-  // Constructors
+// Constructors
   BETAPMTHit();
   BETAPMTHit(G4int tubeNumber);
+
 
   // Destructor
   virtual ~BETAPMTHit();
@@ -77,6 +61,16 @@ public:
 //  G4int mirrorNumber;
   G4ThreeVector  localPos;
   G4double Gtime;
+
+/**
+ * over ride operator for std::sort
+ */
+// inline bool operator < ( const BETAPMTHit & a) const
+//     {
+//         return (Gtime < a.Gtime);
+//     }
+
+
 private:
   
   // Data members
@@ -89,8 +83,19 @@ private:
   
 };
 
+
+
 typedef G4THitsCollection<BETAPMTHit> BETAPMTHitsCollection;
 
+/*
+//struct aHitTimeCompare{
+	bool operator()( BETAPMTHit * a, BETAPMTHit * b) {
+		return (a->Gtime/ns)<(b->Gtime/ns);
+	}
+//} BETAPMTHitTimeComparezzz;
+//...
+//std::sort(taxpayers.begin(),taxpayers.end(),BETAPMTHitTimeCompare);
+*/
 extern G4Allocator<BETAPMTHit> BETAPMTHitAllocator;
 
 inline void* BETAPMTHit::operator new(size_t)

@@ -1,35 +1,3 @@
-//
-// ********************************************************************
-// * License and Disclaimer                                           *
-// *                                                                  *
-// * The  Geant4 software  is  copyright of the Copyright Holders  of *
-// * the Geant4 Collaboration.  It is provided  under  the terms  and *
-// * conditions of the Geant4 Software License,  included in the file *
-// * LICENSE and available at  http://cern.ch/geant4/license .  These *
-// * include a list of copyright holders.                             *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.  Please see the license in the file  LICENSE  and URL above *
-// * for the full disclaimer and the limitation of liability.         *
-// *                                                                  *
-// * This  code  implementation is the result of  the  scientific and *
-// * technical work of the GEANT4 collaboration.                      *
-// * By using,  copying,  modifying or  distributing the software (or *
-// * any work based  on the software)  you  agree  to acknowledge its *
-// * use  in  resulting  scientific  publications,  and indicate your *
-// * acceptance of all terms of the Geant4 Software license.          *
-// ********************************************************************
-//
-//
-// $Id: BETAPrimaryGeneratorAction.cc,v 1.6 2006/06/29 17:54:27 gunter Exp $
-// GEANT4 tag $Name: geant4-08-01 $
-//
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETAPrimaryGeneratorMessenger.hh"
 #include "G4Gamma.hh"
@@ -44,20 +12,30 @@
 using namespace std;
 double mottCrossSection(double p, double theta) ;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+/**
+ * \brief Define a Paritlce gun
+ * 
+ **/
 BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() : iso ( 1 ),momentum ( 2.0 ),sigmaMomentum ( 1.0),ElectronPionRatio ( 1.0 ),Pi0Ratio ( 0.5 ),theta_particle(40),phi_particle(0)
 {
-   ofstream file;
-   file.open("mott_test.out");
-   int ww = 0;
-   double p;
+   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+   G4String particleName;
+   particleGun  = new G4ParticleGun ( 1 );
+
+//   ofstream file;
+//   file.open("mott_test.out");
+//   int ww = 0;
+/*   double p;
    for (ww=0;ww<10;ww++) {
-      p =(double)ww*0.1;
-      file << p << " " << mottCrossSection(p,0.1)  << G4endl;
-   }
+      p =(double)ww*0.1;*/
+//      file << p << " " << mottCrossSection(p,0.1)  << G4endl;
+//    }
+if(1) {
 
+   pionzero = particleTable->FindParticle ( particleName="pi0" );
+   particleGun->SetParticleDefinition ( pionzero );
 
+} else {
 
 /// Pick primary events for study...
    background = false;
@@ -68,13 +46,10 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() : iso ( 1 ),momentum ( 
 
 
    G4cout << "primary Generator constructor" << G4endl;
-   particleGun  = new G4ParticleGun ( 1 );
 
    //create a messenger for this class
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
 
-   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-   G4String particleName;
    electron = particleTable->FindParticle ( particleName="e-" );
    pionminus = particleTable->FindParticle ( particleName="pi-" );
    pionplus = particleTable->FindParticle ( particleName="pi+" );
@@ -88,7 +63,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() : iso ( 1 ),momentum ( 
    particleGun->SetParticleDefinition ( electron );
 // particleGun->SetParticleEnergy ( 1000*MeV );
 
-
+}
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -102,13 +77,29 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
-   bool bigcal_background = false;
+      double E,deltatheta, theta,deltaphi,phi,sigmaOverN, N,sigma,x,y,tempmom;
+
+   bool bigcal_background = true;
    if (bigcal_background) {
-      ;
+deltatheta = 15.0*pi/180.0;//deltatheta
+deltaphi   = pi/3.0;
+
+theta   = 40.0*pi/180.0 + 2.*(G4UniformRand()-0.5)*deltatheta;//deltatheta
+phi     = pi/2.0 + 2.*(G4UniformRand()-0.5)*deltaphi;
+
+     particleGun->SetParticlePosition ( G4ThreeVector(
+       2.*(G4UniformRand()-0.5)*1.0*cm,2.*(G4UniformRand()-0.5)*1.0*cm,
+       2.*(G4UniformRand()-0.5)*1.0*cm ) );
+     particleGun->SetParticleMomentumDirection (
+         G4ThreeVector (
+            std::sin ( theta) *std::cos ( phi ) *m,
+            std::sin ( theta ) *std::sin ( phi ) *m ,
+            std::cos ( theta ) *m ) );
+      particleGun->SetParticleEnergy ( 0.4+sigmaMomentum*G4UniformRand()*1000.0*MeV );
    }
    else {
-      bool straightOnDetector = true;
-      double E, theta,phi,sigmaOverN, N,sigma,x,y;
+/*      bool straightOnDetector = true;
+      double E, theta,phi,sigmaOverN, N,sigma,x,y,tempmom;
       background=false;
 /// WARNING HARD CODING OVERTOP stupid me i know
 //theta_particle = 40;
@@ -130,7 +121,9 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       eventMomentum=tempmom;
       eventEnergy = std::sqrt(tempmom*tempmom+0.000511*0.000511*GeV*GeV);
       particleGun->GeneratePrimaryVertex ( anEvent );
-   }
+*/
+  }
+      particleGun->GeneratePrimaryVertex ( anEvent );
 
 }
 

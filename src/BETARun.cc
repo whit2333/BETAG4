@@ -1,19 +1,13 @@
-//
 #include "BETARun.hh"
 #include "G4MultiFunctionalDetector.hh"
 #include "G4SDManager.hh"
 #include "G4VPrimitiveScorer.hh"
 #include <assert.h>
 #include "BETAPMT.hh"
-#include "BETAAnalysisManager.hh"
-#include "BETAFrontTrackerHit.hh"
-#include "BETAProtvinoCalorimeterHit.hh"
-#include "BETARCSCalorimeterHit.hh"
-#include "BETAHodoscopePMTHit.hh"
-#include "BETAMirrorHit.hh"
 #include <string>  //For the string functions
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include "BETAFakePlane.hh"
 // ROOT //
 #include "Riostream.h"
@@ -35,15 +29,17 @@
 #include "TApplication.h"
 #include "TCanvas.h"
 
-//#include "rawBetaEvent.hh"
-#include "rawBETAEvent.h"
 
+//______________________________________________________________________//
 BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( false )
 {
    fShowUnrealisticData  = false;
    cer_tdc_thresh = 2;/// Time comes from 2nd photon detected
 
-   analysisManager = BETAAnalysisManager::getInstance ( runNumber,showThePlots );
+   analysisManager = BETAAnalysisManager::getInstance ( showThePlots );
+   if(analysisManager) {
+     analysisManager->SetDetectorVerbosity("GasCherenkov",1);
+   }
 // Get the event generator and detector constructoion so we can write the simulation truths to tree
    runManager = G4RunManager::GetRunManager();
    if (runManager) {
@@ -72,30 +68,56 @@ BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( 
       RootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
    }
 
-//////////////////////////////////////////////////////////////////
-//                    HISTOGRAMS (NOT IN TREE)                  //
-//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////
+//                    HISTOGRAMS              //
+////////////////////////////////////////////////
 
    /*NONE */
 
 ////////////////////////////////////////////////
 //           ROOT TREE          ////////////////
 ////////////////////////////////////////////////
+   betaEvent = new BETAEvent();
+   hmsEvent = new HMSEvent();
+   beamEvent = new HallCBeamEvent();
+   mcEvent = new BETAG4MonteCarloEvent();
+
+   eventRecorder = new BETAG4EventRecorder(betaEvent,hmsEvent,beamEvent,mcEvent);
+
    if (catLastFile) {
-      detectorTree=(TTree *) gROOT->FindObject("Detectors");
-      if (!detectorTree) detectorTree = new TTree ( "Detectors","Detector Tree" );
 
-      recordedEvent = new rawBETAEvent();
+      detectorTree=(TTree *) gROOT->FindObject("betaDetectors");
+      if (!detectorTree) detectorTree = new TTree ( "betaDetectors","Detector Tree" );
 
-      TBranch *b = detectorTree->GetBranch ( "aBetaEvent" );
-      if (!b)  detectorTree->Branch ( "aBetaEvent","rawBETAEvent",&recordedEvent );
-      if (b)  b->SetAddress(&recordedEvent );
+      TBranch *b;
+      b = detectorTree->GetBranch ("betaDetectorEvent");
+      if (!b)  detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
+      else b->SetAddress(&betaEvent );
+      
+      b = detectorTree->GetBranch("hmsDetectorEvent");
+      if (!b)  detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
+      else b->SetAddress(&hmsEvent );
 
-   } else {
-      detectorTree = new TTree ( "Detectors","Detector Tree" );
-      recordedEvent = new rawBETAEvent();
-      detectorTree->Branch ( "aBetaEvent","rawBETAEvent",&recordedEvent );
+      b = detectorTree->GetBranch("beamDetectorEvent");
+      if (!b)  detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
+      else b->SetAddress(&beamEvent );
+      
+      b = detectorTree->GetBranch("monteCarloEvent");
+      if (!b)  detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
+      else b->SetAddress(&mcEvent );
+      
+   } else { // Make new tree(s) and branch(es)
+      detectorTree = new TTree ( "betaDetectors","Detector Tree" );
+      detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
+      detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
+      detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
+      detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
+
    }
+
+
+
+
 
 // Initialize various counters and data
    fakePlaneEventNumber = 0;
@@ -105,8 +127,15 @@ BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( 
    pmtTotalCount = 0;
    mirrorTotalCount = 0;
 
+// For debugging cherenkov timing emulator
+   waveforms = new TH1F(Form("waveform%d",numberOfEvent),"waveform",200,0,20);
+  G4double averageTime[12];
+
+/// TODO Implement a print to screen for run info... 
 
 }
+
+//____________________________________________________________________//
 
 BETARun::~BETARun()
 {
@@ -117,13 +146,11 @@ BETARun::~BETARun()
 // RootFile->Close();
 }
 
+//____________________________________________________________________//
 /**
-// NOW ...
-// This might be the most busy function
-// ... probably should be cleaned up
-//
-//
-*/
+ * NOW ... This might be the most busy function
+ * ... probably should be cleaned up
+ */
 void BETARun::RecordEvent ( const G4Event* anEvent )
 {
    G4String colName;
@@ -138,13 +165,13 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    if (construction->usingFakePlaneAtBigcal) fakePlaneID = SDman->GetCollectionID ( colName="FakePlaneAtBigcal/FakePlane" );
 
    G4HCofThisEvent * HCE = anEvent->GetHCofThisEvent();
-   BETAHodoscopePMTHitsCollection * hodoscopepmtHC = 0;
-   BETAPMTHitsCollection * pmtHC = 0;
-   BETARCSCalorimeterHitsCollection * BIGCALHC = 0;
-   BETAProtvinoCalorimeterHitsCollection * BIGCALHC2 = 0;
-   BETAFrontTrackerHitsCollection * FTHC = 0;
-   BETAMirrorHitsCollection * mirrorHC = 0;
-   BETAFakePlaneHitsCollection * fakePlaneHC = 0;
+   hodoscopepmtHC = 0;
+   pmtHC = 0;
+   BIGCALHC = 0;
+   BIGCALHC2 = 0;
+   FTHC = 0;
+   mirrorHC = 0;
+   fakePlaneHC = 0;
 
    if ( HCE && HCE->GetNumberOfCollections() != 0)
    {
@@ -180,18 +207,20 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    mirror8Count =0;
    BCTE = 0.0;
    hodoscopePMTcount =0;
-   recordedEvent->mc_nhit_bcplane = 0;
-   /****************************************************/
-   recordedEvent->mc_e_init[0]= generator->eventEnergy/GeV;
-   recordedEvent->mc_theta_init[0]=generator->eventTheta;
-   recordedEvent->mc_phi_init[0]=generator->eventPhi;
+
+
+   mcEvent->mc_nhit_bcplane = 0;
+   mcEvent->mc_e_init[0]= generator->eventEnergy/GeV;
+   mcEvent->mc_theta_init[0]=generator->eventTheta;
+   mcEvent->mc_phi_init[0]=generator->eventPhi;
 
 //recordedEvent->mc_phi[i1]=generator->phi_particle;
 
 
 
    /****************************************************/
-   if (construction->usingFakePlaneAtBigcal && fakePlaneID != -1 ) {
+/// \TODO Reimplement fake plane and Montecarlo events
+/*   if (construction->usingFakePlaneAtBigcal && fakePlaneID != -1 ) {
       BETAFakePlaneHit* aHit;
 // printf(" Fake Plane Entries : %d",fakePlaneHC->entries() );
       for ( int i1=0;i1<(fakePlaneHC->entries())&&i1<10;i1++ ) {
@@ -209,50 +238,22 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
 // }
       }
    }
+*/
    /****************************************************/
 
 
+   triggered = true;
+
 ///////////////////////
-
-
    if (construction->usingGasCherenkov) if ( pmtHC && PMTHCID != -1)
       {
-         BETAPMTHit* aHit;
-//    numPMTHits = pmtHC->entries(); we have two different types of entries in one HC tubeNumber = -1 for
-//    optical face counts (to get ratio: numberPhotoElectrons/numberOfIncidentPhotons). Need to filter these out of pmtHC ....
-         for ( int i1=0;i1< ( pmtHC->entries() );i1++ )
-         {
-            aHit = ( *pmtHC ) [i1];
-            if ( aHit->tubeNumber == -1 )
-            {
-               numPMTHitsAtFace++;
-            }
-            else
-            {// normal pmt hit
-               CherenkovPMTCount[aHit->tubeNumber]++;
-/// Time comes from 2nd photon detected (need to figure out how to insert backround/out of time events)
-               if (CherenkovPMTCount[aHit->tubeNumber]==cer_tdc_thresh)
-               {
-                  tdc_count++;
-                  recordedEvent->cer_num[tdc_count]= aHit->tubeNumber;
-                  recordedEvent->cer_tdc[tdc_count] = aHit->Gtime/ns ;
-               }
+        eventRecorder->FillGasCherenkovEvent(pmtHC);
+      }
 
-            }
-
-         }
-         for (int k=0;k<8;k++) numPMTHits+=CherenkovPMTCount[k];
-      } // usingGasCherenkov
-
-// numPMTHits = pmt1Count + pmt2Count + pmt3Count + pmt4Count + pmt5Count + pmt6Count + pmt7Count + pmt8Count;
-
-
-// TRIGGERED ! always
-   bool triggered = true;
    if (triggered) //numPMTHits > 1 )   // 1 P.E.
    {
 //  Trigger=1; // Record  event
-
+/*
       recordedEvent->cer_hit = tdc_count;
       for (int k=0;k<8;k++) {
          recordedEvent->cer_adc[k] = CherenkovPMTCount[k];
@@ -261,7 +262,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
 // RUN TOTALED VALUES
       pmtTotalCount += numPMTHitsAtFace;
       mirrorTotalCount += numMirrorHits;
-
+*/
 
       /*
       /////////////////////////////
@@ -312,78 +313,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
 
 
       */
-////////////////////////////////////////////////////////////////////////
-// BIG CAL
-      if (construction->usingBigcal) {
-         BETARCSCalorimeterHit * calHit;
-         BETAProtvinoCalorimeterHit * calHit2;
 
-         G4double xAverage= 0;
-         G4double yAverage=0;
-
-         double bigcal_block_thresh = 0.001*MeV;
-         int prot_hits = 0;
-         int rcs_hits = 0;
-         int gg;
-         G4double energyTemp;
-         xAverage= 0;
-         yAverage=0;
-
-
-
-         if ( BIGCALHC2 && BIGCALID2 != -1)
-         {
-            // PROT
-            for ( gg =0;gg<1024;gg++ )
-            {
-               calHit2 = ( *BIGCALHC2 ) [gg];
-               energyTemp = calHit2->GetDepositedEnergy();
-               if ( energyTemp > bigcal_block_thresh) {
-                  //prot_hits++;
-                  recordedEvent->Bigcal_prot_ix[prot_hits] = gg%32+1;
-                  recordedEvent->Bigcal_prot_iy[prot_hits] = gg/32+1;
-                  recordedEvent->Bigcal_prot_adc_raw[prot_hits] = (Int_t)(energyTemp/keV);
-
-                  prot_hits++;
-                  //recordedEvent->Bigcal_prot_ix[prot_hits] = gg%32+1;
-               }
-               if ( energyTemp != 0. )
-               {
-                  xAverage += ( ( double ) ( gg%32 ) ) *energyTemp/MeV;
-                  yAverage += ( ( double ) ( gg/32 ) ) *energyTemp/MeV;
-                  BCTE = BCTE+ energyTemp ;
-               }
-            }
-
-         }
-
-         if ( BIGCALHC && BIGCALID != -1 )
-         {
-// RCS
-            for ( gg =0;gg<720;gg++ )
-            {
-               calHit = ( *BIGCALHC ) [gg];
-               energyTemp = calHit->GetDepositedEnergy();
-               if ( energyTemp > bigcal_block_thresh) {
-                  //rcs_hits++;
-                  recordedEvent->Bigcal_rcs_ix[rcs_hits] = gg%30+1;
-                  recordedEvent->Bigcal_rcs_iy[rcs_hits] = gg/30+1;
-                  recordedEvent->Bigcal_rcs_adc_raw[rcs_hits] = (Int_t)(energyTemp/keV);
-// printf(" \n rcs ix %d , iy %d",recordedEvent->Bigcal_rcs_ix[rcs_hits], recordedEvent->Bigcal_rcs_iy[rcs_hits]);
-                  rcs_hits++;
-               }
-
-               if ( energyTemp != 0. )
-               {
-                  xAverage += ( ( double ) ( gg%30 +1 ) ) *energyTemp/MeV;
-                  yAverage += ( ( double ) ( gg / 30 +24 ) ) *energyTemp/MeV;
-                  BCTE = BCTE+ energyTemp ;
-               }
-            }
-         }
-         recordedEvent->Bigcal_rcs_nhit=rcs_hits;
-         recordedEvent->Bigcal_prot_nhit=prot_hits;
-      }
 
 //  recordedEvent->BigCalMeanVertical = yAverage/ ( BCTE/MeV );
 //  recordedEvent->BigCalMeanHorizontal = xAverage/ ( BCTE/MeV );
@@ -531,3 +461,179 @@ void BETARun::Print ( const std::vector<G4String>& title,
       iter++;
    }
 }
+
+//________________________________________________________________________//
+int BETARun::FillGasCherenkovEvent() {
+/*  betaEvent->fGasCherenkovEvent->fHits->Clear("C");
+  TClonesArray &cherenkovHits = *(betaEvent->fGasCherenkovEvent->fHits);
+  GasCherenkovHit * aCERhit;
+  BETAPMTHit * aHit;
+  int lastHitIndex[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+  G4int totalHits = 0;
+
+  G4int indTotalHits[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
+  G4double earliestHitTime[12] =  {9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0};
+  G4double averageTime[12] = {-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,
+                              -200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0 };
+  G4double lastHitTime[12] = {-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,
+                              -200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0 };
+
+vector<BETAPMTHit*> * hitPointers = pmtHC->GetVector();
+vector<BETAPMTHit*>::iterator it;
+std::sort (hitPointers->begin(), hitPointers->end(),cmp);
+  // print out content:
+
+  for (it=hitPointers->begin(); it!=hitPointers->end(); ++it)
+    {
+       std::cout << "hitPointers " << (*it) << " contains:";
+       std::cout << " " << (*it)->Gtime << "\n";
+    }
+
+  std::cout << endl;
+// end of attempt
+
+// Loop loop through the Hit container once to find the earliest time
+    for ( int i1=0 ; i1 < pmtHC->entries();i1++ )
+      { 
+      aHit = ( *pmtHC )[i1];
+        //
+        if ( aHit->tubeNumber == -1 )
+          {
+//        numPMTHitsAtFace++;
+          }
+        else
+          {// normal pmt hit
+
+  if(analysisManager->GetDetectorVerbosity("GasCherenkov") > 0) 
+  { 
+  std::cout << "Tube " <<  aHit->tubeNumber
+            << " hit with global time " << aHit->Gtime/ns
+            <<  "ns where the earliest time was " << earliestHitTime[aHit->tubeNumber]
+            <<  "\n";
+  }
+
+          if( (aHit->Gtime/ns - lastHitTime[aHit->tubeNumber]) > 20.0 )
+            {
+            lastHitIndex[aHit->tubeNumber] = totalHits ;
+            aCERhit = new(cherenkovHits[totalHits]) GasCherenkovHit();
+            indTotalHits[aHit->tubeNumber]++;
+            aCERhit->fMirrorNumber = aHit->tubeNumber;
+            aCERhit->fADC = 0;
+            averageTime[aHit->tubeNumber] = 0.0;
+            totalHits++;
+
+  if(analysisManager->GetDetectorVerbosity("GasCherenkov") > 0) 
+    std::cout << "new hit number " << totalHits << "\n";
+
+            } // end of 
+          waveforms->Fill(aHit->Gtime/ns);
+
+          if( aHit->Gtime/ns < earliestHitTime[aHit->tubeNumber] ) earliestHitTime[aHit->tubeNumber]=aHit->Gtime/ns;
+
+          aCERhit = (GasCherenkovHit*)(cherenkovHits)[lastHitIndex[aHit->tubeNumber]];
+
+          (aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC++;
+          averageTime[aHit->tubeNumber] += aHit->Gtime/ns;
+          aCERhit[lastHitIndex[aHit->tubeNumber]].fTDC =
+            averageTime[lastHitIndex[aHit->tubeNumber]]/(aCERhit[lastHitIndex[aHit->tubeNumber]].fADC) ;
+          lastHitTime[aHit->tubeNumber] = aHit->Gtime/ns;
+
+          }
+      }
+//for(int jj =0;jj<totalHits;jj++) waveforms[jj]->Draw();
+//  for (int k=0;k<8;k++) numPMTHits+=CherenkovPMTCount[k];
+//   triggered = true;
+//   if (triggered) //numPMTHits > 1 )   // 1 P.E.
+//   {
+//  Trigger=1; // Record  event
+//      recordedEvent->cer_hit = tdc_count;
+//      for (int k=0;k<8;k++) {
+//         recordedEvent->cer_adc[k] = CherenkovPMTCount[k];
+//         recordedEvent->ceradc_num[k]=k+1;
+//      }
+// RUN TOTALED VALUES
+//      pmtTotalCount += numPMTHitsAtFace;
+//      mirrorTotalCount += numMirrorHits;
+return(totalHits);
+*/
+}
+
+
+//________________________________________________________________________//
+int BETARun::FillBigcalEvent() {
+
+  if (construction->usingBigcal) {
+    BETARCSCalorimeterHit * rcsHit;
+    BETAProtvinoCalorimeterHit * protHit;
+
+
+// locally used variables
+    G4double xAverage= 0;
+    G4double yAverage=0;
+
+    G4double bigcal_block_thresh = 0.001*MeV;
+
+    G4int prot_hits = 0;
+    G4int rcs_hits = 0;
+
+    int gg;
+    G4double energyTemp;
+
+         if ( BIGCALHC2 && BIGCALID2 != -1)
+         {
+            // PROT
+            for ( gg =0;gg<1024;gg++ )
+            {
+               protHit = ( *BIGCALHC2 ) [gg];
+               energyTemp = protHit->GetDepositedEnergy();
+               if ( energyTemp > bigcal_block_thresh) {
+                  //prot_hits++;
+//                  recordedEvent->Bigcal_prot_ix[prot_hits] = gg%32+1;
+//                  recordedEvent->Bigcal_prot_iy[prot_hits] = gg/32+1;
+//                  recordedEvent->Bigcal_prot_adc_raw[prot_hits] = (Int_t)(energyTemp/keV);
+                  prot_hits++;
+                  //recordedEvent->Bigcal_prot_ix[prot_hits] = gg%32+1;
+               }
+               if ( energyTemp != 0. )
+               {
+                  xAverage += ( ( double ) ( gg%32 ) ) *energyTemp/MeV;
+                  yAverage += ( ( double ) ( gg/32 ) ) *energyTemp/MeV;
+                  BCTE = BCTE+ energyTemp ;
+               }
+            }
+
+         }
+
+         if ( BIGCALHC && BIGCALID != -1 )
+         {
+// RCS
+            for ( gg =0;gg<720;gg++ )
+            {
+               rcsHit = ( *BIGCALHC ) [gg];
+               energyTemp = rcsHit->GetDepositedEnergy();
+               if ( energyTemp > bigcal_block_thresh) {
+                  //rcs_hits++;
+//                  recordedEvent->Bigcal_rcs_ix[rcs_hits] = gg%30+1;
+//                  recordedEvent->Bigcal_rcs_iy[rcs_hits] = gg/30+1;
+//                  recordedEvent->Bigcal_rcs_adc_raw[rcs_hits] = (Int_t)(energyTemp/keV);
+// printf(" \n rcs ix %d , iy %d",recordedEvent->Bigcal_rcs_ix[rcs_hits], recordedEvent->Bigcal_rcs_iy[rcs_hits]);
+                  rcs_hits++;
+               }
+
+               if ( energyTemp != 0. )
+               {
+                  xAverage += ( ( double ) ( gg%30 +1 ) ) *energyTemp/MeV;
+                  yAverage += ( ( double ) ( gg / 30 +24 ) ) *energyTemp/MeV;
+                  BCTE = BCTE+ energyTemp ;
+               }
+            }
+         }
+//         recordedEvent->Bigcal_rcs_nhit=rcs_hits;
+//         recordedEvent->Bigcal_prot_nhit=prot_hits;
+      }
+
+return(0);
+}
+
+
+

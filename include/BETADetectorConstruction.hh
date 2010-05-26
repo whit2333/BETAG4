@@ -2,7 +2,7 @@
 //
 //   DetectorConstruction
 //   Big Electron Telescope Array ( BETA )
-//   
+//
 //   The detector package consists of a forward tracker, Gas 
 //   Cherenkov, Lucite Hodoscope and Calorimeter (BIGCAL)
 //
@@ -31,25 +31,41 @@
 #include "G4UserLimits.hh"
 #include "TSQLServer.h"
 #include "TSQLResult.h"
-#include "BIGCALGeometryCalculator.hh"
+#include "BIGCALGeometryCalculator.h"
 #define PI 3.141592654
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 class BETADetectorMessenger;
 
 /** \brief Detector construction class
- *   
+ *
  *   Detector construction class which builds all geometries and returns the world volume 
  *   following the standard GEANT4 way...
- *   
- *   This class makes use of a MySQL database to grab all the detector geometry information.
- *   
+ *
+ *   This class makes use of a MySQL database to grab all the detector geometry information. 
+ *   Currently the database is named SANE and the geometry tables used are :
+ *   <ul>
+ *   <li> cherenkov_positioning_parameters
+ *   <li> lucite_geometry_parameters
+ *   <li> bigcal_parameters
+ *   <li> tracker_geometry_parameters (NOT IMPLEMENTED YET)
+ *   <li> target_material_runlist 
+ *   <li> target_geometry_parameters
+ *   </ul>
+ *
+ *   The idea is to use the standard geometry constructions for each detector for both simulation (here) and
+ *   for reconstruction. For this we make use of the VGM framework which allows for easy conversion from one
+ *   geometry model to another (eg ROOT->GEANT4 or XML->ROOT etc...)
+ *
+ *
  */
 class BETADetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-
     BETADetectorConstruction();
    ~BETADetectorConstruction();
+/**
+ * 
+ */
   void ConstructBETA();
   void ConstructBIGCAL();
   void ConstructCherenkov();

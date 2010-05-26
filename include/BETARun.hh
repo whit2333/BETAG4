@@ -1,7 +1,3 @@
-// BETARun is a class for accumulating scored quantities over
-// an entire run. Event data is accumulated over a run in a G4THitsMap 
-// object.
-//
 #ifndef BETARUN_HH
 #define BETARUN_HH
 
@@ -10,7 +6,8 @@
 #include "G4THitsMap.hh"
 #include <map>
 #include "BETAAnalysisManager.hh"
-#include "rawBETAEvent.h"
+#include "BETAEvent.h"
+#include "BETAMirrorHit.hh"
 
 // ROOT //
 #include "Riostream.h"
@@ -28,7 +25,6 @@
 #include "TH2.h"
 #include "TProfile.h"
 #include "TRint.h"
-//#include "rawBETAEvent.hh"
 #include "TVector3.h"
 #include "TCanvas.h"
 #include "TApplication.h"
@@ -36,18 +32,67 @@
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
 
-// class rawBETAEvent;
 
-//class G4Event;
+#include "BETAFrontTrackerHit.hh"
+#include "BETAProtvinoCalorimeterHit.hh"
+#include "BETARCSCalorimeterHit.hh"
+#include "BETAHodoscopePMTHit.hh"
+#include "BETAPMTHit.hh"
+#include "BETAFakePlaneHit.hh"
 
+#include "HallCBeamEvent.h"
+#include "HMSEvent.h"
+#include "BETAEvent.h"
+#include "BETAG4MonteCarloEvent.h"
+#include "GasCherenkovEvent.h"
+#include "BigcalEvent.h"
+#include "GasCherenkovHit.h"
+
+
+#include <iostream>
+#include <algorithm>
+#include <vector>
+
+#include "BETAAnalysisManager.hh"
+#include "BETAAnalysisManager.hh"
+#include "BETAEvent.h"
+#include "BETAMirrorHit.hh"
+
+#include "BETAG4EventRecorder.hh"
+
+
+
+/**
+ * \ingroup Runs
+ */
+
+/**
+ * \brief Concrete class implementation of G4Run 
+ */
+/**
+ * Concrete class implementation of G4Run. 
+ * Here is where we select the data we wish to record.
+ * The important method here is RecordEvent which is called at then
+ * end of each event.
+ */
 class BETARun : public G4Run {
 
 public:
 
-  // Constructor 
+/**
+ *  Constructor opens ROOT file \todo{ open new file or append to existing flag...}.)
+ */
   BETARun(const int runNumber,const int showThePlots);
-  // Destructor
+/**
+ *  Destructor
+ */
   virtual ~BETARun();
+
+/**
+ * Used to fill out event classes which are trees and branches in the output file
+ */
+BETAG4EventRecorder * eventRecorder;
+
 
 private:
   BETAAnalysisManager* analysisManager;
@@ -56,24 +101,59 @@ private:
   BETADetectorConstruction * construction;
 
 public:
+/// Contains all BETA detector's data
+  BETAEvent * betaEvent;
+/// Contains all the HMS data
+  HMSEvent* hmsEvent;
+/// Contains all the Hall C beam data
+  HallCBeamEvent * beamEvent;
+/// Contains all the Thrown and unrealistically obtained Montecarlo data
+  BETAG4MonteCarloEvent * mcEvent;
 
-  rawBETAEvent * recordedEvent;
-  // Override this method in G4Run
-  virtual void RecordEvent(const G4Event*);
-  BETAAnalysisManager* getRunAnalysisManager() const { return analysisManager ;}
+/// Override this method in G4Run
+virtual void RecordEvent(const G4Event*);
+/// Returns the Analysis manager singleton
+ BETAAnalysisManager* GetRunAnalysisManager() const { return analysisManager ;}
+
   // Dump all data
   void DumpData() const;
 
 private:
+
+ TH1F * waveforms;
+
+
+/**
+ * Fills the fGasCherenkovEvent of betaEvent.
+ * Does so in the following way:
+ * Adds the photons for each tube and multiplies by some factor to obtain a realistic ADC value.
+ * If the time difference from one hit to the next is larger than some number (TBD) then another
+ * TDC hit is added. Returns the number of hits.
+ */
+int FillGasCherenkovEvent();
+
+/**
+ * Fills the fBigcalEvent of betaEvent
+ */
+int FillBigcalEvent();
+
+   BETAHodoscopePMTHitsCollection * hodoscopepmtHC;
+   BETAPMTHitsCollection * pmtHC;
+   BETARCSCalorimeterHitsCollection * BIGCALHC;
+   BETAProtvinoCalorimeterHitsCollection * BIGCALHC2;
+   BETAFrontTrackerHitsCollection * FTHC;
+   BETAMirrorHitsCollection * mirrorHC ;
+   BETAFakePlaneHitsCollection * fakePlaneHC;
+
 bool catLastFile;
 bool fShowUnrealisticData;
 TROOT * theRoot; 
 TApplication * theApp;
 
    TFile * RootFile;
-   G4int MirrorHCID;
-   G4int PMTHCID;
-G4int pmtTotalCount, mirrorTotalCount;
+
+
+   G4int pmtTotalCount, mirrorTotalCount;
 	ofstream MCOutput ;
 
 void DumpHallCMC();
@@ -84,10 +164,12 @@ public:
 
 TCanvas * c1;
 
-
+/**
+ * Counters and IDs
+ */
 private:
 int cer_tdc_thresh;
- G4int  CherenkovPMTCount[20];
+    G4int  CherenkovPMTCount[20];
     G4int pmt1Count;
     G4int pmt2Count;
     G4int pmt3Count;
@@ -106,11 +188,9 @@ int cer_tdc_thresh;
     G4int mirror8Count;
     G4int hodoscopePMTHCID;
     G4int hodoscopePMTcount;
-
     G4double BCTE;
-
-
     G4int fakePlaneID;
+
     G4int HHC1ID;
     G4int HHC2ID;
     G4int DHC1ID;
@@ -121,58 +201,23 @@ int cer_tdc_thresh;
     G4int BIGCALID;
     G4int BIGCALID2;
     G4int FTID;
+    G4int fakePlaneEventNumber;
+    G4int MirrorHCID;
+    G4int PMTHCID;
 
-G4int fakePlaneEventNumber;
-    	TH1F* TfakePlaneElectronEnergy;
-    	TH1F* TfakePlanePositronEnergy;
-    	TH1F* Tpmt1Hits;
-    	TH1F* Tpmt2Hits;
-    	TH1F* Tpmt3Hits;
-    	TH1F* Tpmt4Hits;
-    	TH1F* Tpmt5Hits;
-    	TH1F* Tpmt6Hits;
-    	TH1F* Tpmt7Hits;
-    	TH1F* Tpmt8Hits;
-	TH1F* TpmtSumHits;
-	TH1F* TBIGCALTotalEnergy;
-    	TH1F* ThodoscopepmtSumHits;
 
-    	TH2F* TbigcalHits;
-    	TH2F* TmirrorHits;
-
-    	TH2F* Tmirror1PosVsPhotoelectrons;
-    	TH2F* Tmirror2PosVsPhotoelectrons;
-    	TH2F* Tmirror3PosVsPhotoelectrons;
-    	TH2F* Tmirror4PosVsPhotoelectrons;
-    	TH2F* Tmirror5PosVsPhotoelectrons;
-    	TH2F* Tmirror6PosVsPhotoelectrons;
-    	TH2F* Tmirror7PosVsPhotoelectrons;
-    	TH2F* Tmirror8PosVsPhotoelectrons;
-
-    	TH2F* Tpmt1PosHist;
-    	TH2F* Tpmt2PosHist;
-    	TH2F* Tpmt3PosHist;
-    	TH2F* Tpmt4PosHist;
-    	TH2F* Tpmt5PosHist;
-    	TH2F* Tpmt6PosHist;
-    	TH2F* Tpmt7PosHist;
-    	TH2F* Tpmt8PosHist;
-
-	TH2F* TpointSrcDeviation;
-	TH2F* TFTPos;
-    	TH1F* TFTcosTheta;
 
 	TTree * testTree;
 	TTree * detectorTree;
 	TTree * pseudoTree;
+    bool triggered;
+    int Trigger;
+    Double_t EDeposited;
+    Int_t FrontTrackerCellNumber;
 
-int Trigger;
-Double_t EDeposited;
-Int_t FrontTrackerCellNumber;
-
-Double_t * BigCalEDepTop;
-Double_t * BigCalEDepBottom;
-Double_t * PhotoElectrons;
+    Double_t * BigCalEDepTop;
+    Double_t * BigCalEDepBottom;
+    Double_t * PhotoElectrons;
 
    typedef struct {
        Double_t Energy,
@@ -205,14 +250,17 @@ ForwardTrackerEvent ForwardTrackerAveragePos;
       Float_t temperature;
    } EVENTN;
 
-
-
   // Helper function
   void Print(const std::vector<G4String>& title,
 	     const std::map< G4int, std::vector<G4double> >&out) const;  
 
   // Data member
-  std::map<G4int, G4THitsMap<G4double>* > fMap;
+//  std::map<G4int, G4THitsMap<G4double>* > fMap;
 };
 
+
+
 #endif
+
+
+

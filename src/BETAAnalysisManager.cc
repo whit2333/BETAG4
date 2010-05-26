@@ -11,14 +11,16 @@
 #include <sstream>
 #include "BETAAnalysisMessenger.hh"
 
-BETAAnalysisManager* BETAAnalysisManager::instance = 0;
+BETAAnalysisManager* BETAAnalysisManager::fgBETAAnalysisManager = 0;
 
-BETAAnalysisManager::BETAAnalysisManager ( const int runNumber, const int showThePlots )
-
+BETAAnalysisManager::BETAAnalysisManager (  const int showThePlots )
 {
    showPlot(showThePlots);
    messenger = new BETAAnalysisMessenger ( this );
-
+fGasCherenkovVerbosity=0;
+fBigcalVerbosity=0;
+fLuciteHodoscopeVerbosity=0;
+fForwardTrackerVerbosity=0;
 }
 
 BETAAnalysisManager::~BETAAnalysisManager()
@@ -27,25 +29,24 @@ BETAAnalysisManager::~BETAAnalysisManager()
 
 }
 
-BETAAnalysisManager* BETAAnalysisManager::getInstance ( const int runNumber, const int showThePlots )
+BETAAnalysisManager* BETAAnalysisManager::getInstance ( const int showThePlots )
 {
-
-   if ( instance == 0 )
+   if ( fgBETAAnalysisManager == 0 )
    {
-      instance = new BETAAnalysisManager ( runNumber,showThePlots ) ;
+      fgBETAAnalysisManager = new BETAAnalysisManager ( showThePlots ) ;
    }
    else  {
       G4cout << " Returning already existing analysis manager. " << G4endl;
    }
-   return instance;
+   return fgBETAAnalysisManager;
 }
 
 void BETAAnalysisManager::dispose()
 {
-   if ( instance != 0 )
+   if ( fgBETAAnalysisManager != 0 )
    {
-      delete instance;
-      instance = 0;
+      delete fgBETAAnalysisManager;
+      fgBETAAnalysisManager = 0;
    }
 }
 
@@ -59,3 +60,34 @@ void BETAAnalysisManager::write()
 {
 
 }
+
+void BETAAnalysisManager::SetDetectorVerbosity(const char * detName, int level) {
+  if( detName == "GasCherenkov" ) {
+    std::cout << "Setting Gas Cherenkov verbosity level to " << level << "\n";
+    fGasCherenkovVerbosity = level;
+  }
+  else if( detName == "Bigcal" ) {
+    std::cout << "Setting Bigcal verbosity level to " << level << "\n";
+    fBigcalVerbosity = level;
+  }
+  else {
+    std::cout << "No such detector, " << detName << "\n";
+  }
+}
+
+
+int BETAAnalysisManager::GetDetectorVerbosity(const char * detName) {
+
+  if( detName == "GasCherenkov" ) {
+ return(1);
+  //  return(fGasCherenkovVerbosity);
+  }
+  else if( detName == "Bigcal" ) {
+return(1);
+//    return(fBigcalVerbosity);
+  }  else {
+    std::cout << "No such detector, " << detName << "\n";
+  }
+    return(-1);
+}
+

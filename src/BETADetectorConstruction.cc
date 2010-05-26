@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////
 //
 //   DetectorConstruction
-//   Big Electron Telescope Array ( BETA )
+//   Big Electron Telescope Array ( BETA ) for the SANE experiment
 //
 //   The detector package consists of a forward tracker, Gas
 //   Cherenkov, Lucite Hodoscope and Calorimeter (BIGCAL)
@@ -41,7 +41,6 @@
 #include "G4IntersectionSolid.hh"
 #include "G4SubtractionSolid.hh"
 #include "G4Torus.hh"
-// HandsOn4: Scoring components
 #include "G4MultiFunctionalDetector.hh"
 #include "G4PSSphereSurfaceCurrent.hh"
 #include "G4SDManager.hh"
@@ -65,18 +64,17 @@
 #include "BETAFakePlane.hh"
 #include "BETAFakePlaneHit.hh"
 #include "G4PropagatorInField.hh"
-
 // VGM
 #include "Geant4GM/volumes/Factory.h"
 #include "RootGM/volumes/Factory.h"
 #include "TGeoManager.h"
-
 
 using namespace std;
 
 #define MAGROT PI*-0./180. //Rotate the whole target magnet by some angle
 
 class G4Material;
+
 
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
@@ -89,7 +87,10 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 
 
    messenger = new BETADetectorMessenger ( this );
+
    expHall_x = expHall_y = expHall_z = 10*m;
+
+// These should be in the cherenkov construction
    // alpha and beta for mirrors
    alpha2 =-14*pi/180; //16.35*pi/180,   // 14
    beta2 = -32.5*pi/180;//31.7*pi/180;  // 32.5
@@ -507,12 +508,8 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
 void BETADetectorConstruction::ConstructCherenkov()
 {
-
-//
-// TEDLAR THICKNESS
-//
+// THICKNESS
    G4double tedlarThickness = 2.0*0.002*2.54*cm;
-//
 // Target at is at (0,0,0)
 // Target vacuum radius
 // OVC radius = 46*cm
@@ -1329,26 +1326,24 @@ G4double farMirrorAngle = 20* pi/180;
 
 
 /**
- * This constructs a box which holds all the BETA detectors. It then places the detectors inside and is rotated
- * to its appropriate angle. The coordinate system used is that of BigCal where the y axis is vertical 
- * the x axis is horizontal (pointing towards larger scattering angles).
- * 
- * The z axis is rotated to 40 degrees (for SANE) and the front of the 
- * 
+ *  We construct the BETADetectors in a box for which y is vertical and x is horizontal. 
+ *  These are the Bigcal Coordinates
+ *
+ *
  */
 void BETADetectorConstruction::ConstructBETA()
 {
    G4double displacementBackwards = 2.0*cm;
    G4RotationMatrix detectorRot;
-   detectorRot.rotateX ( DetectorAngle ); // So 
-   detectorRot.rotateZ ( PI ); // So 
+   detectorRot.rotateX ( DetectorAngle ); //
+   detectorRot.rotateZ ( PI ); //
 
    G4Box* BETADetector_box = new G4Box ( "BETAdetectorbox", DetectorWidth/2.0, DetectorWidth/2.0, DetectorLength/2.0 );
-   BETADetector_log = new G4LogicalVolume ( BETADetector_box,Air,"BETAdetector",0,0,0 );
+   BETADetector_log = new G4LogicalVolume ( BETADetector_box, Air, "BETAdetector",0,0,0 );
 
    G4VPhysicalVolume* BETADetector_phys = new G4PVPlacement(G4Transform3D(detectorRot, 
-    G4ThreeVector (0.0*m,(rTarget+DetectorLength/2.0+displacementBackwards)*std::sin(DetectorAngle),
-     (rTarget+DetectorLength/2.0+displacementBackwards)*std::cos(DetectorAngle))), 
+   G4ThreeVector (0.0*m,(rTarget+DetectorLength/2.0+displacementBackwards)*std::sin(DetectorAngle),
+    (rTarget+DetectorLength/2.0+displacementBackwards)*std::cos(DetectorAngle))), 
     BETADetector_log, "BETADetectorphys",expHall_log,false,0 );
 
    if (usingFakePlaneAtBigcal) {

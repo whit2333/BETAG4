@@ -147,7 +147,6 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 
    TString SQLq("UPDATE BETAG4_run_info set "); // dont forget the extra space at the end
 //aSQL  "Insert into BETAG4_run_info set " ;
-
    SQLq += " end_date='";
    SQLq += date.Data();
    SQLq += "', end_time='";
