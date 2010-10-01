@@ -10,7 +10,6 @@
 //
 /////////////////////////////////////////////////////////////////////
 
-
 #ifndef BETADetectorConstruction_h
 #define BETADetectorConstruction_h 1
 #include "G4Material.hh"
@@ -33,6 +32,64 @@
 #include "TSQLResult.h"
 #include "BIGCALGeometryCalculator.h"
 #define PI 3.141592654
+#include "BETAPMT.hh"
+#include "BETAMirror.hh"
+#include "G4Element.hh"
+#include "G4ElementTable.hh"
+#include "G4LogicalBorderSurface.hh"
+#include "G4LogicalSkinSurface.hh"
+#include "G4Box.hh"
+#include "G4LogicalVolume.hh"
+#include "G4RotationMatrix.hh"
+#include "G4ThreeVector.hh"
+#include "G4Transform3D.hh"
+#include "G4PVPlacement.hh"
+#include "G4OpBoundaryProcess.hh"
+#include "G4Tubs.hh"
+#include "G4Sphere.hh"
+#include "G4RotationMatrix.hh"
+#include "G4NistManager.hh"
+#include "G4PVParameterised.hh"
+#include "G4Sphere.hh"
+#include "G4VisAttributes.hh"
+#include "G4Ellipsoid.hh"
+#include "G4ChordFinder.hh"
+#include "G4UniformMagField.hh"
+#include "G4FieldManager.hh"
+#include "G4TransportationManager.hh"
+#include "G4UnionSolid.hh"
+#include "G4IntersectionSolid.hh"
+#include "G4SubtractionSolid.hh"
+#include "G4Torus.hh"
+#include "G4MultiFunctionalDetector.hh"
+#include "G4PSSphereSurfaceCurrent.hh"
+#include "G4SDManager.hh"
+#include "G4PSFlatSurfaceCurrent.hh"
+#include "G4SDParticleWithEnergyFilter.hh"
+#include "G4Trd.hh"
+#include "math.h"
+#include "BETAField.hh"
+#include "BETARCSCellParameterisation.hh"
+#include "BETAProtvinoCellParameterisation.hh"
+#include "BETAFrontTrackerCellParameterisation.hh"
+#include "BETARCSCalorimeter.hh"
+#include "BETAProtvinoCalorimeter.hh"
+#include "BETAHodoscopeCellParameterisation.hh"
+#include "BETAFrontTracker.hh"
+#include "fstream"
+#include "BETADetectorMessenger.hh"
+#include "BETAAnalysisManager.hh"
+#include "G4RunManager.hh"
+#include "BETAFakePlane.hh"
+#include "BETAFakePlaneHit.hh"
+#include "G4PropagatorInField.hh"
+// VGM
+#include "Geant4GM/volumes/Factory.h"
+#include "RootGM/volumes/Factory.h"
+#include "TGeoManager.h"
+#define MAGROT PI*-0./180. 
+//Rotate the whole target magnet by some angle
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 class BETADetectorMessenger;
 
@@ -64,31 +121,72 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction
     BETADetectorConstruction();
    ~BETADetectorConstruction();
 /**
- * 
+ * Constructs the BETA Detector Package
  */
   void ConstructBETA();
+/**
+ * Called from ConstructBETA
+ */
   void ConstructBIGCAL();
+/**
+ * Called from ConstructBETA
+ */
   void ConstructCherenkov();
+/**
+ * Called from ConstructBETA
+ */
   void ConstructForwardTracker();
+/**
+ * Called from ConstructBETA
+ */
   void ConstructHodoscope();
+
+/**
+ * Wright's code
+ */
   void ConstructTarget();
   void ConstructTCan();
   void ConstructBeamPipe();
   void ConstructN2Shield();
   void ConstructMagnet();
   void ConstructNose();
-void SetupScoring(G4LogicalVolume * scoringVolume);
 
-  public:
+/**
+ * Called from ConstructBETA
+ */
+  void SetupScoring(G4LogicalVolume * scoringVolume);
+
+/**
+ * GEANT4 user hook
+ */
     G4VPhysicalVolume* Construct();
+
+/**
+ * For User Interface
+ */
 void switchTargetField();
+/**
+ * For User Interface
+ */
 double getTargetAngle();
+/**
+ * For User Interface
+ */
 void setTargetAngle(G4double);
+/**
+ * For User Interface
+ */
 void setMirrorAngles(int,G4double, G4double);
+/**
+ * For User Interface
+ */
 void rotateMirror(int , G4double , G4double );
 
 void lookAtField(G4String);
 
+/**
+ * For which detectors are constructed
+ */
 bool usingGasCherenkov;
 bool usingForwardTracker;  
 bool usingLuciteHodoscope;

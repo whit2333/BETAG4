@@ -9,14 +9,14 @@
 #include "BETAAnalysisManager.hh"
 #include <string>  //For the string functions
 #include <sstream>
-#include "BETAAnalysisMessenger.hh"
+#include "BETASimulationMessenger.hh"
 
 BETAAnalysisManager* BETAAnalysisManager::fgBETAAnalysisManager = 0;
 
 BETAAnalysisManager::BETAAnalysisManager (  const int showThePlots )
 {
    showPlot(showThePlots);
-   messenger = new BETAAnalysisMessenger ( this );
+   messenger = new BETASimulationMessenger ( this );
 fGasCherenkovVerbosity=0;
 fBigcalVerbosity=0;
 fLuciteHodoscopeVerbosity=0;

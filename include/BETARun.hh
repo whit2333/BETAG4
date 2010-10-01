@@ -54,12 +54,13 @@
 #include <vector>
 
 #include "BETAAnalysisManager.hh"
-#include "BETAAnalysisManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 
 #include "BETAG4EventRecorder.hh"
-
+class BETAAnalysisManager;
+class BETADetectorConstruction;
+class BETAG4EventRecorder;
 
 
 /**
@@ -95,7 +96,8 @@ BETAG4EventRecorder * eventRecorder;
 
 
 private:
-  BETAAnalysisManager* analysisManager;
+
+  BETAAnalysisManager * analysisManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
   BETADetectorConstruction * construction;

@@ -1,11 +1,11 @@
 #include "BETAAnalysisManager.hh"
-#include "BETAAnalysisMessenger.hh"
+#include "BETASimulationMessenger.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithoutParameter.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-BETAAnalysisMessenger::BETAAnalysisMessenger ( BETAAnalysisManager* mgr )
+BETASimulationMessenger::BETASimulationMessenger ( BETAAnalysisManager* mgr )
       :manager ( mgr )
 {
    analysis = new G4UIdirectory ( "/analysis/" );
@@ -29,13 +29,13 @@ BETAAnalysisMessenger::BETAAnalysisMessenger ( BETAAnalysisManager* mgr )
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-BETAAnalysisMessenger::~BETAAnalysisMessenger()
+BETASimulationMessenger::~BETASimulationMessenger()
 {
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void BETAAnalysisMessenger::SetNewValue (
+void BETASimulationMessenger::SetNewValue (
    G4UIcommand* command, G4String newValue )
 {
    if ( command == writeTree )

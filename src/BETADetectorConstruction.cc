@@ -10,70 +10,8 @@
 //
 /////////////////////////////////////////////////////////////////////
 #include "BETADetectorConstruction.hh"
-#include "BETAPMT.hh"
-#include "BETAMirror.hh"
-#include "G4Material.hh"
-#include "G4MaterialTable.hh"
-#include "G4Element.hh"
-#include "G4ElementTable.hh"
-#include "G4LogicalBorderSurface.hh"
-#include "G4LogicalSkinSurface.hh"
-#include "G4Box.hh"
-#include "G4LogicalVolume.hh"
-#include "G4RotationMatrix.hh"
-#include "G4ThreeVector.hh"
-#include "G4Transform3D.hh"
-#include "G4PVPlacement.hh"
-#include "G4OpBoundaryProcess.hh"
-#include "G4Tubs.hh"
-#include "G4Sphere.hh"
-#include "G4RotationMatrix.hh"
-#include "G4NistManager.hh"
-#include "G4PVParameterised.hh"
-#include "G4Sphere.hh"
-#include "G4VisAttributes.hh"
-#include "G4Ellipsoid.hh"
-#include "G4ChordFinder.hh"
-#include "G4UniformMagField.hh"
-#include "G4FieldManager.hh"
-#include "G4TransportationManager.hh"
-#include "G4UnionSolid.hh"
-#include "G4IntersectionSolid.hh"
-#include "G4SubtractionSolid.hh"
-#include "G4Torus.hh"
-#include "G4MultiFunctionalDetector.hh"
-#include "G4PSSphereSurfaceCurrent.hh"
-#include "G4SDManager.hh"
-#include "G4PSFlatSurfaceCurrent.hh"
-#include "G4SDParticleWithEnergyFilter.hh"
-#include "G4Trd.hh"
-#include "math.h"
-#include "BETAField.hh"
-//#include "G4PSPassageCurrent.hh"
-#include "BETARCSCellParameterisation.hh"
-#include "BETAProtvinoCellParameterisation.hh"
-#include "BETAFrontTrackerCellParameterisation.hh"
-#include "BETARCSCalorimeter.hh"
-#include "BETAProtvinoCalorimeter.hh"
-#include "BETAHodoscopeCellParameterisation.hh"
-#include "BETAFrontTracker.hh"
-#include "fstream"
-#include "BETADetectorMessenger.hh"
-#include "BETAAnalysisManager.hh"
-#include "G4RunManager.hh"
-#include "BETAFakePlane.hh"
-#include "BETAFakePlaneHit.hh"
-#include "G4PropagatorInField.hh"
-// VGM
-#include "Geant4GM/volumes/Factory.h"
-#include "RootGM/volumes/Factory.h"
-#include "TGeoManager.h"
 
 using namespace std;
-
-#define MAGROT PI*-0./180. //Rotate the whole target magnet by some angle
-
-class G4Material;
 
 
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
@@ -85,30 +23,29 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingFakePlaneAtBigcal  = true;
 
 
-
    messenger = new BETADetectorMessenger ( this );
 
    expHall_x = expHall_y = expHall_z = 10*m;
 
 // These should be in the cherenkov construction
    // alpha and beta for mirrors
-   alpha2 =-14*pi/180; //16.35*pi/180,   // 14
-   beta2 = -32.5*pi/180;//31.7*pi/180;  // 32.5
-   alpha4 = -7.50000048*pi/180;//8.75*pi/180; //7.50000048
-   beta4 = -33.0*pi/180; // 32.62*pi/180;  // 33.0
-   alpha6 = 7.50000048*pi/180; //-8.75*pi/180; //trial1: 9.1 //-.50000048
-   beta6 = -32.5*pi/180;//32.25*pi/180; // trial2: 32.25 //32.5
-   alpha8 = 14*pi/180;//-16.35*pi/180; // -14
-   beta8 = -32.5*pi/180;//31.7*pi/180; //32.5*
+   alpha2 =-14.0*pi/180.0; //16.35*pi/180,   // 14
+   beta2 = -32.5*pi/180.0;//31.7*pi/180;  // 32.5
+   alpha4 = -7.50000048*pi/180.0;//8.75*pi/180; //7.50000048
+   beta4 = -33.0*pi/180.0; // 32.62*pi/180;  // 33.0
+   alpha6 = 7.50000048*pi/180.0; //-8.75*pi/180; //trial1: 9.1 //-.50000048
+   beta6 = -32.5*pi/180.0;//32.25*pi/180; // trial2: 32.25 //32.5
+   alpha8 = 14.0*pi/180.0;//-16.35*pi/180; // -14
+   beta8 = -32.5*pi/180.0;//31.7*pi/180; //32.5*
 
-   alpha1 = -3.5*pi/180;
-   beta1= -9.0*pi/180;
-   alpha3 =  2.0*pi/180;
-   beta3 =  -9.0*pi/180;
-   alpha5 = -2*pi/180;
-   beta5 =  -9.0*pi/180;
-   alpha7 = 4.0*pi/180;
-   beta7 =  -9*pi/180;
+   alpha1 = -3.5*pi/180.0;
+   beta1= -9.0*pi/180.0;
+   alpha3 =  2.0*pi/180.0;
+   beta3 =  -9.0*pi/180.0;
+   alpha5 = -2.0*pi/180.0;
+   beta5 =  -9.0*pi/180.0;
+   alpha7 = 4.0*pi/180.0;
+   beta7 =  -9.0*pi/180.0;
 
    DetectorAngle = 40.*pi/180.;
    DetectorLength = 5.0*m;
@@ -774,6 +711,8 @@ endBottomPanelTrd = ( 24.0+9.0/16.0 ) *2.54*cm;
    G4ThreeVector PMTcanBackThickness ( 0, 0, PMTmountBackPlateThickness );
    G4ThreeVector zerotrans ( 0, 0,0 );
 
+
+
 // NEED TO FIX NUMBERING to convention
    G4ThreeVector pmt1T ( -PMTmountXsize/2, 0 , 0 );
    G4ThreeVector pmt2T ( PMTmountXsize/2,0 , 0 );
@@ -931,11 +870,9 @@ endBottomPanelTrd = ( 24.0+9.0/16.0 ) *2.54*cm;
 // z -> X-150-zTank/2 , y -> -Z , x -> -Y
 // mirrorx2 are the nearMirrors, mirrorx1 are the far mirrors
 // This is due to the Brad's drawings using a length of 150cm while in Ed K.'s the tank is 167.49 long.
-   G4double correction = 13*cm;
+   G4double correction = 13.0*cm;
    G4double correctionFAR = 17.49*cm;
-
-
-/// Second attempt at PMT and Mirror Positions
+// Second attempt at PMT and Mirror Positions
    G4double TESTCorrection = 0.0*cm;
    G4double alength = zTank/2 + zSnout+ zTankFront;
    G4double zfix21 = 5.0*cos ( beta2 ) *cm, yfix21 = -5.0*sin ( beta2 ) *cm;
@@ -1335,14 +1272,16 @@ void BETADetectorConstruction::ConstructBETA()
 {
    G4double displacementBackwards = 2.0*cm;
    G4RotationMatrix detectorRot;
-   detectorRot.rotateX ( DetectorAngle ); //
+   detectorRot.rotateY ( DetectorAngle ); //
    detectorRot.rotateZ ( PI ); //
 
+// This is the box which holds all BETA detectors the face of which is placed at 50cm (rTarget) from the target
    G4Box* BETADetector_box = new G4Box ( "BETAdetectorbox", DetectorWidth/2.0, DetectorWidth/2.0, DetectorLength/2.0 );
    BETADetector_log = new G4LogicalVolume ( BETADetector_box, Air, "BETAdetector",0,0,0 );
 
-   G4VPhysicalVolume* BETADetector_phys = new G4PVPlacement(G4Transform3D(detectorRot, 
-   G4ThreeVector (0.0*m,(rTarget+DetectorLength/2.0+displacementBackwards)*std::sin(DetectorAngle),
+   G4VPhysicalVolume* BETADetector_phys = new G4PVPlacement(
+     G4Transform3D(detectorRot, G4ThreeVector(
+     0.0*m, (rTarget+DetectorLength/2.0+displacementBackwards)*std::sin(DetectorAngle),
     (rTarget+DetectorLength/2.0+displacementBackwards)*std::cos(DetectorAngle))), 
     BETADetector_log, "BETADetectorphys",expHall_log,false,0 );
 

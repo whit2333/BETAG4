@@ -30,6 +30,8 @@
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 
+class BETAAnalysisManager;
+
 /**
  * \ingroup Simulation
  */
@@ -108,7 +110,8 @@ private :
   BETARCSCalorimeterHit * fRCSCalorimeterHC;
   BETAProtvinoCalorimeterHit * fProtvinoCalorimeterHC;
 
-BETAAnalysisManager * fAnalysisManager;
+  BETAAnalysisManager * fAnalysisManager;
+
 // counters
     G4int  CherenkovPMTCount[20];
 

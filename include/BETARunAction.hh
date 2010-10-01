@@ -5,6 +5,8 @@
 #include "G4UserRunAction.hh"
 #include "BETARun.hh"
 #include "BETAAnalysisManager.hh"
+class BETAAnalysisManager;
+
 #include "BETARunActionMessenger.hh"
 #include "TSQLServer.h"
 #include "TSQLResult.h"

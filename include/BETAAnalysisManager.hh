@@ -3,10 +3,10 @@
 
 #include "G4UserEventAction.hh"
 #include "globals.hh"
-#include "BETAAnalysisMessenger.hh"
+#include "BETASimulationMessenger.hh"
 
 class G4Track;
-class BETAAnalysisMessenger;
+class BETASimulationMessenger;
 
 /**
  * \ingroup Runs
@@ -44,7 +44,9 @@ public:
  void GetRunInfo(){ ; };
 
 
-  BETAAnalysisMessenger * messenger;
+  BETASimulationMessenger * messenger;
+
+inline G4int plotterVisible() {return plotVis; }
 
 
 private:
@@ -58,8 +60,7 @@ private:
   BETAAnalysisManager(const int );
   static BETAAnalysisManager* fgBETAAnalysisManager;
   int instanceNumber;
-public:
-inline G4int plotterVisible() {return plotVis; }
+
 
 
 };

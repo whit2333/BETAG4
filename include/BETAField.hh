@@ -1,12 +1,8 @@
 #ifndef BETAField_H
 #define BETAField_H 1
-
 #include "BETAField.hh"
 #include "globals.hh"
 #include "G4MagneticField.hh"
-
-
-// ROOT //
 #include "Riostream.h"
 #include "TROOT.h"
 #include "TFile.h"
@@ -22,7 +18,6 @@
 #include "TH2.h"
 #include "TProfile.h"
 #include "TRint.h"
-
 #include "TApplication.h"
 #include "TCanvas.h"
 #include <gsl/gsl_errno.h>
@@ -31,30 +26,54 @@
 
 #define fieldDataPoints 31161
 
-
+/**
+ *  Concrete class implements the UVA Polarized Ammonia target magnetic field
+ */
 class BETAField : public G4MagneticField
 {
   public:
     BETAField();
     ~BETAField();
 
+/**
+ * Fills the array Bfield[0-2], (xyz) components, given the spacetime point, Point
+ */
     void GetFieldValue( const  double Point[4],
                                double *Bfield ) const;
 
+/**
+ * 
+ */
     void TestInterpolation();
+
+/**
+ * 
+ */
     void LookAtField(G4String);
+
+/**
+ * 
+ */
     void ReadDataFile();
+
+/**
+ * 
+ */
     void setPolarizationAngle(G4double angle) {polAngle = angle;}
+
+/**
+ * 
+ */
     void switchPolarization();
 
     G4double polAngle;
 
   private:
 
-struct fieldDataPoint 
-{
-G4double z,r,Bz,Br;
-};
+  struct fieldDataPoint 
+  {
+   G4double z,r,Bz,Br;
+  };
 
 double RawBZ[fieldDataPoints];
 double RawBR[fieldDataPoints];
