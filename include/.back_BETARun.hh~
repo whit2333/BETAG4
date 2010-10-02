@@ -60,7 +60,7 @@
 #include "BETAG4EventRecorder.hh"
 class BETAAnalysisManager;
 class BETADetectorConstruction;
-
+class BETAG4EventRecorder;
 
 
 /**
@@ -103,14 +103,15 @@ private:
   BETADetectorConstruction * construction;
 
 public:
+
 /// Contains all BETA detector's data
-  BETAEvent * betaEvent;
+//  BETAEvent * betaEvent;
 /// Contains all the HMS data
-  HMSEvent* hmsEvent;
+//  HMSEvent* hmsEvent;
 /// Contains all the Hall C beam data
-  HallCBeamEvent * beamEvent;
+//  HallCBeamEvent * beamEvent;
 /// Contains all the Thrown and unrealistically obtained Montecarlo data
-  BETAG4MonteCarloEvent * mcEvent;
+//  BETAG4MonteCarloEvent * mcEvent;
 
 /// Override this method in G4Run
 virtual void RecordEvent(const G4Event*);
@@ -149,8 +150,8 @@ int FillBigcalEvent();
 
 bool catLastFile;
 bool fShowUnrealisticData;
-TROOT * theRoot; 
-TApplication * theApp;
+// TROOT * theRoot; 
+// TApplication * theApp;
 
    TFile * RootFile;
 

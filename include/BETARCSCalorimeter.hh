@@ -1,4 +1,3 @@
-//
 #ifndef BETARCSCalorimeter_HH
 #define BETARCSCalorimeter_HH
 

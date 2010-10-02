@@ -103,6 +103,7 @@ private:
   BETADetectorConstruction * construction;
 
 public:
+
 /// Contains all BETA detector's data
   BETAEvent * betaEvent;
 /// Contains all the HMS data
@@ -149,8 +150,8 @@ int FillBigcalEvent();
 
 bool catLastFile;
 bool fShowUnrealisticData;
-TROOT * theRoot; 
-TApplication * theApp;
+// TROOT * theRoot; 
+// TApplication * theApp;
 
    TFile * RootFile;
 

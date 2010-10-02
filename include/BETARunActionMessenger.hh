@@ -10,8 +10,8 @@ class G4UIcmdWithoutParameter;
 class BETARunAction;
 #include "G4UIcmdWithAnInteger.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
+//____________________________________________________
 class BETARunActionMessenger: public G4UImessenger
 {
   public:

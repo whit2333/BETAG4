@@ -1,9 +1,18 @@
 #! /bin/bash
 
-cd include
-rm eventdict.*
-rm geodict.*
-rootcint eventdict.cxx -c rawBETAEvent.h
-rootcint geodict.cxx -c BIGCALGeometryCalculator.hh
-mv eventdict.cxx ../src/eventdict.cc
-mv geodict.cxx ../src/geodict.cc
+#cd include
+#rm eventdict.*
+#rm geodict.*
+#rootcint eventdict.cxx -c rawBETAEvent.h
+#rootcint geodict.cxx -c BIGCALGeometryCalculator.hh
+for file in `ls ${InSANEDIR}/src/*Dict.cxx`
+do
+echo "copying ${file}"
+cp $file src/.
+done
+for file in `ls ${InSANEDIR}/include/*Dict.h`
+do
+echo "copying ${file}"
+cp $file include/.
+done
+#mv geodict.cxx ../src/geodict.cc

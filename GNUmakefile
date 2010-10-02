@@ -16,22 +16,32 @@ include $(G4INSTALL)/config/binmake.gmk
 #   CPPFLAGS += `aida-config --include `
 #   LDLIBS += `aida-config --lib `
 # ROOT
-   CPPFLAGS += -I$(ROOTSYS)/include
-   LDLIBS += $(shell root-config --glibs) -lGeomPainter -lGeom 
+   CPPFLAGS += $(shell root-config --cflags )
+   CPPFLAGS += -g -I$(shell root-config --incdir )
+   LDLIBS += $(shell root-config --glibs) 
+   LDLIBS += -lGeomPainter -lGeom -lSpectrum -lSpectrumPainter
+   LDLIBS +=  $(shell root-config --ldflags)
+   LDLIBS += $(shell gsl-config --libs) $(shell root-config --glibs --libs ) 
+#   LDLIBS += -lTreePlayer -lGed -lRGL -lEve -lEG
+   LDLIBS += $(shell mysql_config --libs)
+
 # InSANE 
    LDLIBS += -L$(InSANEDIR)/lib
    LDLIBS += -lInSANE  
    CPPFLAGS += -I$(InSANEDIR)/include
 # ROOT and  GNU Scientific Librarires and 
-   CPPFLAGS += -g -I$(shell root-config --incdir )  
    LDLIBS += -lgsl -lgslcblas -lm  $(shell root-config --nonew --glibs)
+
 # VGM
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/VGM/include
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/BaseVGM/include
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/Geant4GM/include
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/RootGM/include
-   LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
-   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM 
+
+#   LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
+#   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM 
+#CXXFLAGS  += -O2 -Wall -fPIC
+#CXXFLAGS  += $(CPPFLAGS)
 
 
 doc:

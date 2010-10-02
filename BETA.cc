@@ -32,7 +32,7 @@ Now you can proceed to the \ref advanced "advanced section".
 
 #include "Randomize.hh"
 
-#include "TApplication.h"
+#include "TROOT.h"
 #include "TRint.h"
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
@@ -106,7 +106,7 @@ int main(int argc,char** argv)
   runManager->SetUserAction(stepping_action);
   
 
-  new TRint("delayPlots", NULL, NULL, NULL, 0);
+  //new TRint("delayPlots", NULL, NULL, NULL, 0);
 
   // Initialize G4 kernel
   //

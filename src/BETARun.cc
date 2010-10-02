@@ -1,14 +1,15 @@
-#include "BETARun.hh"
 #include "G4MultiFunctionalDetector.hh"
 #include "G4SDManager.hh"
 #include "G4VPrimitiveScorer.hh"
 #include <assert.h>
 #include "BETAPMT.hh"
+#include "BETAFakePlane.hh"
 #include <string>  //For the string functions
 #include <sstream>
 #include <fstream>
 #include <algorithm>
-#include "BETAFakePlane.hh"
+
+
 // ROOT //
 #include "Riostream.h"
 #include "TROOT.h"
@@ -25,9 +26,10 @@
 #include "TH2.h"
 #include "TProfile.h"
 #include "TRint.h"
-
 #include "TApplication.h"
 #include "TCanvas.h"
+
+#include "BETARun.hh"
 
 
 //______________________________________________________________________//
@@ -77,44 +79,44 @@ BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( 
 ////////////////////////////////////////////////
 //           ROOT TREE          ////////////////
 ////////////////////////////////////////////////
-   betaEvent = new BETAEvent();
-   hmsEvent = new HMSEvent();
-   beamEvent = new HallCBeamEvent();
-   mcEvent = new BETAG4MonteCarloEvent();
-
-   eventRecorder = new BETAG4EventRecorder(betaEvent,hmsEvent,beamEvent,mcEvent);
-
-   if (catLastFile) {
-
-      detectorTree=(TTree *) gROOT->FindObject("betaDetectors");
-      if (!detectorTree) detectorTree = new TTree ( "betaDetectors","Detector Tree" );
-
-      TBranch *b;
-      b = detectorTree->GetBranch ("betaDetectorEvent");
-      if (!b)  detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
-      else b->SetAddress(&betaEvent );
-      
-      b = detectorTree->GetBranch("hmsDetectorEvent");
-      if (!b)  detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
-      else b->SetAddress(&hmsEvent );
-
-      b = detectorTree->GetBranch("beamDetectorEvent");
-      if (!b)  detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
-      else b->SetAddress(&beamEvent );
-      
-      b = detectorTree->GetBranch("monteCarloEvent");
-      if (!b)  detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
-      else b->SetAddress(&mcEvent );
-      
-   } else { // Make new tree(s) and branch(es)
-      detectorTree = new TTree ( "betaDetectors","Detector Tree" );
-      detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
-      detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
-      detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
-      detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
-
-   }
-
+//    betaEvent = new BETAEvent();
+//    hmsEvent = new HMSEvent();
+//    beamEvent = new HallCBeamEvent();
+//    mcEvent = new BETAG4MonteCarloEvent();
+// 
+//    eventRecorder = new BETAG4EventRecorder(betaEvent,hmsEvent,beamEvent,mcEvent);
+// 
+//    if (catLastFile) {
+// 
+//       detectorTree=(TTree *) gROOT->FindObject("betaDetectors");
+//       if (!detectorTree) detectorTree = new TTree ( "betaDetectors","Detector Tree" );
+// 
+//       TBranch *b;
+//       b = detectorTree->GetBranch ("betaDetectorEvent");
+//       if (!b)  detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
+//       else b->SetAddress(&betaEvent );
+//       
+//       b = detectorTree->GetBranch("hmsDetectorEvent");
+//       if (!b)  detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
+//       else b->SetAddress(&hmsEvent );
+// 
+//       b = detectorTree->GetBranch("beamDetectorEvent");
+//       if (!b)  detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
+//       else b->SetAddress(&beamEvent );
+//       
+//       b = detectorTree->GetBranch("monteCarloEvent");
+//       if (!b)  detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
+//       else b->SetAddress(&mcEvent );
+//       
+//    } else { // Make new tree(s) and branch(es)
+//       detectorTree = new TTree ( "betaDetectors","Detector Tree" );
+//       detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
+//       detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
+//       detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
+//       detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
+// 
+//    }
+// 
 
 
 
@@ -140,7 +142,7 @@ BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( 
 BETARun::~BETARun()
 {
 // Save all objects in this file
-   RootFile->Write();
+//   RootFile->Write();
 // Close the file. Note that this is automatically done when you leave
 // the application.
 // RootFile->Close();
@@ -247,7 +249,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
 ///////////////////////
    if (construction->usingGasCherenkov) if ( pmtHC && PMTHCID != -1)
       {
-        eventRecorder->FillGasCherenkovEvent(pmtHC);
+//        eventRecorder->FillGasCherenkovEvent(pmtHC);
       }
 
    if (triggered) //numPMTHits > 1 )   // 1 P.E.

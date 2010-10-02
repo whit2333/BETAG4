@@ -1,15 +1,16 @@
 #ifndef BETARunAction_h
 #define BETARunAction_h 1
 
+#include "BETARunActionMessenger.hh"
+#include "TSQLServer.h"
+#include "TSQLResult.h"
 #include "globals.hh"
 #include "G4UserRunAction.hh"
 #include "BETARun.hh"
 #include "BETAAnalysisManager.hh"
 class BETAAnalysisManager;
 
-#include "BETARunActionMessenger.hh"
-#include "TSQLServer.h"
-#include "TSQLResult.h"
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 class G4Timer;
