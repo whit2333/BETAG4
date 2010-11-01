@@ -33,8 +33,9 @@ double BilinearInterpolation(double * cornerDataPoints, double * corners, double
 
 BETAField::BETAField() :polAngle ( pi*180.0/180. )
 {
+   fUVAMagnet = new UVAOxfordMagneticField();
 
-
+/*
    BzFieldRaw = BzRpoint;
    BrFieldRaw = BrRpoint;
 
@@ -48,7 +49,7 @@ BETAField::BETAField() :polAngle ( pi*180.0/180. )
    }
 
    ReadDataFile(); /// New data file
-
+*/
 
 }
 
@@ -123,9 +124,17 @@ double BilinearInterpolation(double * cornerDataPoints, double * corners, double
    return(result);
 }
 
+
+
 void BETAField::GetFieldValue ( const double Point[4],double *Bfield ) const
 {
+const double newPoint[4]={Point[0]/cm,Point[1]/cm,Point[2]/cm,Point[3]/cm};
+fUVAMagnet->GetFieldValue(newPoint,Bfield);
+Bfield[0]=Bfield[0]*tesla;
+Bfield[1]=Bfield[1]*tesla;
+Bfield[2]=Bfield[2]*tesla;
 
+/*
 //G4cout << " X=" << Point[0]/cm << " Y=" << Point[1]/cm << " Z=" << Point[2]/cm<< G4endl;
 
    G4ThreeVector thePositionVector ( Point[0], Point[1], Point[2] );
@@ -171,10 +180,10 @@ void BETAField::GetFieldValue ( const double Point[4],double *Bfield ) const
 
       int ii = floor(fabs(thePositionVector.z()/(cm*2)));
       int jj = floor(R/(cm*2));
-
+*/
 
 //  G4cout << "ii=" << ii<< " jj =" << jj<< G4endl;
-
+/*
       double corners[4] = {ii*2, (ii+1)*2, jj*2,(jj+1)*2};
 
 
@@ -203,7 +212,7 @@ void BETAField::GetFieldValue ( const double Point[4],double *Bfield ) const
       Bfield[1] = 0.0;
       Bfield[0] = 0.0;
    }
-
+*/
 // TURN FIELD OFF - UNCOMMENT
 //   Bfield[2] = 0.0;
 //   Bfield[1] = 0.0;
@@ -225,7 +234,7 @@ void BETAField::switchPolarization() {
    }
 }
 
-
+/*
 void BETAField::TestInterpolation() {
 
    Double_t y[10];
@@ -240,14 +249,14 @@ void BETAField::TestInterpolation() {
    }
    TGraph * graph = new TGraph(10,x,y);
 
-}
+}*/
 
-void BETAField::LookAtField(G4String component)  {
+void BETAField::LookAtField(char * component)  {
    //        TRint *theApp = new TRint("To Look at Magnetic Field", NULL,NULL);
    //(gROOT->GetApplication()) =  new TRint("ROOT example", NULL, NULL);
    // Init Intrinsics, build all windows, and enter event loop
 //   gROOT->Reset();
-
+/*
    const int n = 51;
    Double_t Br[n*n], Bz[n*n], y[n*n], z[n*n];
    G4double point[4] = {0,0,0,0};
@@ -327,7 +336,7 @@ void BETAField::LookAtField(G4String component)  {
    G4cout << "is ("<< Bfield[0]*10000.0/tesla << ", " << Bfield[1]*10000.0/tesla<< ", " << Bfield[2]*10000.0/tesla << ") " << G4endl;
 
 
-   (gROOT->GetApplication())->Run(true);
+   (gROOT->GetApplication())->Run(true);*/
 
 //          return(0);
 }

@@ -34,6 +34,9 @@ if(1) {
 
    pionzero = particleTable->FindParticle ( particleName="pi0" );
    particleGun->SetParticleDefinition ( pionzero );
+   electron = particleTable->FindParticle ( particleName="e-" );
+   particleGun->SetParticleDefinition ( electron );
+
 
 } else {
 
@@ -82,10 +85,10 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
    bool bigcal_background = true;
    if (bigcal_background) {
 deltatheta = 15.0*pi/180.0;//deltatheta
-deltaphi   = pi/3.0;
+deltaphi   = 30.0*pi/180.0;
 
 theta   = 40.0*pi/180.0 + 2.*(G4UniformRand()-0.5)*deltatheta;//deltatheta
-phi     = pi/2.0 + 2.*(G4UniformRand()-0.5)*deltaphi;
+phi     =  2.*(G4UniformRand()-0.5)*deltaphi;
 
      particleGun->SetParticlePosition ( G4ThreeVector(
        2.*(G4UniformRand()-0.5)*1.0*cm,2.*(G4UniformRand()-0.5)*1.0*cm,
@@ -95,7 +98,7 @@ phi     = pi/2.0 + 2.*(G4UniformRand()-0.5)*deltaphi;
             std::sin ( theta) *std::cos ( phi ) *m,
             std::sin ( theta ) *std::sin ( phi ) *m ,
             std::cos ( theta ) *m ) );
-      particleGun->SetParticleEnergy ( 0.4+sigmaMomentum*G4UniformRand()*1000.0*MeV );
+      particleGun->SetParticleEnergy ( (3.4+sigmaMomentum*G4UniformRand())*1000.0*MeV );
    }
    else {
 /*      bool straightOnDetector = true;

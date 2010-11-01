@@ -211,10 +211,10 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    hodoscopePMTcount =0;
 
 
-   mcEvent->mc_nhit_bcplane = 0;
-   mcEvent->mc_e_init[0]= generator->eventEnergy/GeV;
-   mcEvent->mc_theta_init[0]=generator->eventTheta;
-   mcEvent->mc_phi_init[0]=generator->eventPhi;
+//    mcEvent->mc_nhit_bcplane = 0;
+//    mcEvent->mc_e_init[0]= generator->eventEnergy/GeV;
+//    mcEvent->mc_theta_init[0]=generator->eventTheta;
+//    mcEvent->mc_phi_init[0]=generator->eventPhi;
 
 //recordedEvent->mc_phi[i1]=generator->phi_particle;
 
@@ -356,7 +356,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
 ////////////////////////////////////////
 //     DONE grabbing data from detectors
 ////////////////////////////////////////
-      detectorTree->Fill();
+ //     detectorTree->Fill();
 
       if ( ( numberOfEvent%10 ) == 0 ) G4cout << " Event " << numberOfEvent << G4endl;
 

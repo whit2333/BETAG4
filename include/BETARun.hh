@@ -11,7 +11,6 @@
 
 // ROOT //
 #include "Riostream.h"
-#include "TROOT.h"
 #include "TFile.h"
 #include "TNetFile.h"
 #include "TRandom.h"
@@ -29,10 +28,9 @@
 #include "TCanvas.h"
 #include "TApplication.h"
 #include "G4RunManager.hh"
+
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-
-
 #include "BETAFrontTrackerHit.hh"
 #include "BETAProtvinoCalorimeterHit.hh"
 #include "BETARCSCalorimeterHit.hh"
@@ -48,15 +46,12 @@
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
 
-
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
 #include "BETAAnalysisManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
-
 #include "BETAG4EventRecorder.hh"
 class BETAAnalysisManager;
 class BETADetectorConstruction;

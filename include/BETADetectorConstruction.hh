@@ -9,16 +9,11 @@
 //   author Whitney Armstrong (whit@temple.edu)
 //
 /////////////////////////////////////////////////////////////////////
-
 #ifndef BETADetectorConstruction_h
 #define BETADetectorConstruction_h 1
-#include "G4Material.hh"
-#include "G4MaterialTable.hh"
+
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
-#include "BETAField.hh"
-#include "BETAAnalysisManager.hh"
-#include "BETADetectorMessenger.hh"
 #include "G4RotationMatrix.hh"
 #include "G4VPhysicalVolume.hh"
 #include "G4ThreeVector.hh"
@@ -28,12 +23,8 @@
 #include "G4Colour.hh"
 #include "G4UnitsTable.hh"
 #include "G4UserLimits.hh"
-#include "TSQLServer.h"
-#include "TSQLResult.h"
-#include "BIGCALGeometryCalculator.h"
-#define PI 3.141592654
-#include "BETAPMT.hh"
-#include "BETAMirror.hh"
+#include "G4Material.hh"
+#include "G4MaterialTable.hh"
 #include "G4Element.hh"
 #include "G4ElementTable.hh"
 #include "G4LogicalBorderSurface.hh"
@@ -67,30 +58,8 @@
 #include "G4PSFlatSurfaceCurrent.hh"
 #include "G4SDParticleWithEnergyFilter.hh"
 #include "G4Trd.hh"
-#include "math.h"
 #include "BETAField.hh"
-#include "BETARCSCellParameterisation.hh"
-#include "BETAProtvinoCellParameterisation.hh"
-#include "BETAFrontTrackerCellParameterisation.hh"
-#include "BETARCSCalorimeter.hh"
-#include "BETAProtvinoCalorimeter.hh"
-#include "BETAHodoscopeCellParameterisation.hh"
-#include "BETAFrontTracker.hh"
-#include "fstream"
-#include "BETADetectorMessenger.hh"
-#include "BETAAnalysisManager.hh"
-#include "G4RunManager.hh"
-#include "BETAFakePlane.hh"
-#include "BETAFakePlaneHit.hh"
-#include "G4PropagatorInField.hh"
-// VGM
-#include "Geant4GM/volumes/Factory.h"
-#include "RootGM/volumes/Factory.h"
-#include "TGeoManager.h"
-#define MAGROT PI*-0./180. 
-//Rotate the whole target magnet by some angle
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 class BETADetectorMessenger;
 
 /** \brief Detector construction class
@@ -118,28 +87,46 @@ class BETADetectorMessenger;
 class BETADetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
+/**
+ *  Constructor
+ */
     BETADetectorConstruction();
+
+/**
+ *  Destructor
+ */
    ~BETADetectorConstruction();
+
 /**
  * Constructs the BETA Detector Package
+ * 
+ *  We construct the BETADetectors in a box for which y is vertical and x is horizontal.
+ *  These are the Bigcal Coordinates.
+ *
+ *
  */
   void ConstructBETA();
+
 /**
  * Called from ConstructBETA
  */
   void ConstructBIGCAL();
+
 /**
  * Called from ConstructBETA
  */
   void ConstructCherenkov();
+
 /**
  * Called from ConstructBETA
  */
   void ConstructForwardTracker();
+
 /**
  * Called from ConstructBETA
  */
   void ConstructHodoscope();
+
 
 /**
  * Wright's code
@@ -429,9 +416,9 @@ G4double alpha1,
   G4LogicalVolume*   logic4KSH;
   G4VPhysicalVolume* physi4KSH; 
 
-//   G4Tubs*            solidHelium; //Pointer to the Helium inside the 4Kshield
-//   G4LogicalVolume*   logicHelium;
-//   G4VPhysicalVolume* physiHelium;
+  G4Tubs*            solidHelium; //Pointer to the Helium inside the 4Kshield
+  G4LogicalVolume*   logicHelium;
+  G4VPhysicalVolume* physiHelium;
 
   //----------The NosePiece and Target Cell--------------------------
   G4Tubs*            solidNose;   //Pointer to the whole Nose
@@ -475,8 +462,9 @@ G4double alpha1,
   G4Tubs*            solidBrace4;    
   G4LogicalVolume*   logicBrace4;
   G4VPhysicalVolume* physiBrace4;
-
-    BETAField* myField;
+public:
+    BETAField * myField;
+private:
     BETADetectorMessenger* messenger;
 };
 

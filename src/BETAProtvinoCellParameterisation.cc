@@ -18,8 +18,8 @@ BETAProtvinoCellParameterisation::BETAProtvinoCellParameterisation()
    {
       G4int column = i % 32 + 1  ; // the plus one comes from the fortran index
       G4int row = i / 32  +1   ;
-      xCell.push_back ( BCgeo->GetProtCellY(row)*cm );
-      yCell.push_back ( -BCgeo->GetProtCellX(column)*cm );
+      yCell.push_back ( BCgeo->GetProtCellY(row)*cm );
+      xCell.push_back ( BCgeo->GetProtCellX(column)*cm );
 
    }
 }

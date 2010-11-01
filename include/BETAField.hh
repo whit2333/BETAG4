@@ -20,6 +20,8 @@
 #include "TRint.h"
 #include "TApplication.h"
 #include "TCanvas.h"
+#include "UVAOxfordMagneticField.h"
+
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
 #include <vector>
@@ -29,11 +31,14 @@
 /**
  *  Concrete class implements the UVA Polarized Ammonia target magnetic field
  */
-class BETAField : public G4MagneticField
+class BETAField :  /*public UVAOxfordMagneticField , */public G4MagneticField
 {
   public:
     BETAField();
     ~BETAField();
+
+
+UVAOxfordMagneticField * fUVAMagnet;
 
 /**
  * Fills the array Bfield[0-2], (xyz) components, given the spacetime point, Point
@@ -42,14 +47,17 @@ class BETAField : public G4MagneticField
                                double *Bfield ) const;
 
 /**
- * 
+ * Creates a plot of the field component given in the argument
+ * component can be "z","Z","r", or "R"
  */
-    void TestInterpolation();
+    void LookAtField(char * component);
+
 
 /**
  * 
  */
-    void LookAtField(G4String);
+//    void TestInterpolation();
+
 
 /**
  * 

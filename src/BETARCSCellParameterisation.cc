@@ -16,8 +16,8 @@ BETARCSCellParameterisation::BETARCSCellParameterisation()
    {
       G4int column = i % BCgeo->rcsNx +1 ;
       G4int row = i / BCgeo->rcsNx +1;
-      xCell.push_back (BCgeo->GetRCSCellY(row)*cm );
-      yCell.push_back (-BCgeo->GetRCSCellX(column)*cm );
+      yCell.push_back (BCgeo->GetRCSCellY(row)*cm );
+      xCell.push_back (BCgeo->GetRCSCellX(column)*cm );
    }
 }
 

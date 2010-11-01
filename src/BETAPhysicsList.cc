@@ -153,6 +153,7 @@ void BETAPhysicsList::ConstructGeneral()
 #include "G4eMultipleScattering.hh"
 #include "G4MuMultipleScattering.hh"
 #include "G4MultipleScattering.hh"
+#include "G4hMultipleScattering.hh"
 
 #include "G4eIonisation.hh"
 #include "G4eBremsstrahlung.hh"
@@ -221,7 +222,7 @@ void BETAPhysicsList::ConstructEM()
               ( particle->GetParticleName() != "chargedgeantino" ) )
          {
             // all others charged particles except geantino
-            pmanager->AddProcess ( new G4MultipleScattering(),-1,1,1 );
+            pmanager->AddProcess ( new G4hMultipleScattering(),-1,1,1 );
             pmanager->AddProcess ( new G4hIonisation(),       -1,2,2 );
          }
       }
@@ -264,6 +265,7 @@ void BETAPhysicsList::ConstructOp()
       {
          // pmanager->AddContinuousProcess ( theCerenkovProcess );
          // per Release 9.1,
+
          pmanager->AddProcess(theCerenkovProcess);
          pmanager->SetProcessOrdering(theCerenkovProcess,idxPostStep);
       }
@@ -279,6 +281,8 @@ void BETAPhysicsList::ConstructOp()
          pmanager->AddDiscreteProcess ( theAbsorptionProcess );
          pmanager->AddDiscreteProcess ( theRayleighScatteringProcess );
          pmanager->AddDiscreteProcess ( theBoundaryProcess );
+         pmanager->AddDiscreteProcess ( theCerenkovProcess );
+
       }
    }
 }

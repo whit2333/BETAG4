@@ -72,7 +72,7 @@ G4Run*  BETARunAction::GenerateRun() {
    if (runManager) {
       BETADetectorConstruction *  construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
       if (construction) {
-         targetAngle = construction->getTargetAngle()*180.0/pi;
+         targetAngle = construction->myField->fUVAMagnet->fPolarizationAngle*180.0/pi;
          //printf("\n got run manager %f\n",targetAngle);
 
 /// FILL THE DATABASE
