@@ -55,9 +55,9 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
    usingGasCherenkov       = true;
    usingBigcal             = true;
-   usingLuciteHodoscope    = false;
-   usingForwardTracker     = false;
-   usingFakePlaneAtBigcal  = false;
+   usingLuciteHodoscope    = true;
+   usingForwardTracker     = true;
+   usingFakePlaneAtBigcal  = true;
 
    messenger = new BETADetectorMessenger ( this );
 
@@ -221,7 +221,10 @@ void BETADetectorConstruction::ConstructHodoscope()
    G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope", 123*cm,3.5*28.*cm,50*cm );
    G4LogicalVolume * hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
    G4double hodocenter = -DetectorLength/2 - 55*cm + 240*cm;
-   new G4PVPlacement ( 0,G4ThreeVector ( 0,0,hodocenter+25*cm ) , hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
+   G4RotationMatrix rotOldCoords;
+   rotOldCoords.rotateZ ( pi/2. );
+
+   new G4PVPlacement ( G4Transform3D ( rotOldCoords,G4ThreeVector ( 0,0,hodocenter+25*cm ) ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
 
 //G4Box * hodoscopePMT = new G4Box("hodoscopePMTinquotes", 6.*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.);
 //G4LogicalVolume * hodoscopePMT_log = new G4LogicalVolume(hodoscopePMT, Lucite ,"hodoscopePMTinquotes_log");
@@ -488,13 +491,15 @@ void BETADetectorConstruction::ConstructBIGCAL()
 void BETADetectorConstruction::ConstructCherenkov()
 {
 // THICKNESS
-   G4double tedlarThickness = 2.0*0.002*2.54*cm;
+   G4double frontWindowThickness = 2.0*0.002*2.54*cm;
 // Target at is at (0,0,0)
 // Target vacuum radius
 // OVC radius = 46*cm
    G4double targetSnoutGap = 5*cm;
    G4double detectorFaceDistance = 55*cm;//55*cm;
    G4double tankVolume =0;
+
+
 
 // Tank box dimensions
    G4double zTank = ( 25.6875 ) *2.54*cm;
@@ -527,6 +532,7 @@ void BETADetectorConstruction::ConstructCherenkov()
    G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
 
    tankVolume = ( xSnoutBase+xSnoutEnd ) /2 * ( ySnoutBase+ySnoutEnd ) /2 * zSnout + tankVolume;
+
 
 
 // PMT Mount
@@ -706,7 +712,7 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
 // The tank
 // ==============
 // Extra is the space for the hodoscope and big cal
-   G4double tankCenterDetector = DetectorLength/2 -zTank/2-1*tedlarThickness -Extra;
+   G4double tankCenterDetector = DetectorLength/2 -zTank/2-1*frontWindowThickness -Extra;
    G4double tankCenter = rTarget+targetSnoutGap+zSnout+zTankFront+zTank/2;
 
    G4Box * tankbox = new  G4Box ( "tank", xTank/2, yTank/2, zTank/2 );
@@ -786,23 +792,35 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
     new G4UnionSolid("TANK", TANK, PMTPanelBox, rot45degy2, PMTmountPanelTrans);
 
 
-//////////
-
-   G4double cherenkovFaceToCenter = zTank/2+zSnout+zTankFront;
-   G4double TankPositionInDetPackage = -1.0*DetectorLength/2+ 5*cm+cherenkovFaceToCenter;
-
+//////////////////////////////////////////////////////////////
 //             Physical Placements
+   G4double cherenkovFaceToCenter = zTank/2+zSnout+zTankFront;
+   G4double TankPositionInDetPackage = -1.0*DetectorLength/2.0+ 5.0*cm+cherenkovFaceToCenter;
+
+// Container Box 
+   G4double cherenkovContainerZLength = zTank+zTankFront+zSnout+2.0*cm; // 2cm buffer
+   G4double cherenkovContainerXLength = xTank+2.0*cm;// 2cm buffer
+   G4double cherenkovContainerYLength = yTank+2.0*cm;// 2cm buffer
+
+   G4double cherenkovPositionInContainer= -1.0*cherenkovContainerZLength/2.0+cherenkovFaceToCenter;
+   G4double cherenkovContainerPosition= -1.0*DetectorLength/2.0+ 5.0*cm+cherenkovFaceToCenter;
+
+   G4Box * cherenkovContainerBox = new  G4Box ( "cherenkovContainerBox", cherenkovContainerXLength/2.0, cherenkovContainerYLength/2.0, cherenkovContainerZLength/2.0 );
+   G4LogicalVolume * cherenkovContainer_log = new G4LogicalVolume ( cherenkovContainerBox, Air,"cherenkovContainter_log",0,0,0 );
+//    G4VPhysicalVolume * cherenkovContainer_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,cherenkovPositionInContainer ), tank_log , "tank_phys",  BETADetector_log, false,0 );
+
+
    tank_log = new G4LogicalVolume ( TANK, NitrogenGas,"tank_log",0,0,0 );
    G4VPhysicalVolume * tank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
-   G4Box * tedlarFront = new  G4Box ( "tedlarFrontBox", xSnoutEnd/2, ySnoutEnd/2, tedlarThickness );
-   G4Box * tedlarBack = new  G4Box ( "tedlarBackBox", xTank/2, yTank/2, tedlarThickness );
+   G4Box * tedlarFront = new  G4Box ( "tedlarFrontBox", xSnoutEnd/2, ySnoutEnd/2, frontWindowThickness );
+   G4Box * tedlarBack = new  G4Box ( "tedlarBackBox", xTank/2, yTank/2, frontWindowThickness );
 
    G4LogicalVolume * tedlarFront_log = new G4LogicalVolume ( tedlarFront, Aluminum,"4milFrontWindow",0,0,0 );
-   G4VPhysicalVolume * tedlarFront_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage-zTank/2-zTankFront-zSnout-tedlarThickness/2 ), tedlarFront_log , "4milFrontWindow_phys",  BETADetector_log, false,0 );
+   G4VPhysicalVolume * tedlarFront_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage-zTank/2-zTankFront-zSnout-frontWindowThickness/2 ), tedlarFront_log , "4milFrontWindow_phys",  BETADetector_log, false,0 );
 
    G4LogicalVolume * tedlarBack_log = new G4LogicalVolume ( tedlarBack, Aluminum,"tedlarBack",0,0,0 );
-   G4VPhysicalVolume * tedlarBack_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage+zTank/2+tedlarThickness/2 ), tedlarBack_log , "tedlarBack_phys",  BETADetector_log, false,0 );
+   G4VPhysicalVolume * tedlarBack_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage+zTank/2+frontWindowThickness/2 ), tedlarBack_log , "tedlarBack_phys",  BETADetector_log, false,0 );
 
 /////////////////////////////////////////////
 ////// ALUMINUM Pieces within TANK      /////
@@ -1679,7 +1697,7 @@ ConstructBeamPipe();
    // Export geometry in Root and save it in a file
    // Import Geant4 geometry to VGM
    //
-/*   
+
              Geant4GM::Factory g4Factory;
              g4Factory.SetDebug(1);
              g4Factory.Import(expHall_phys);
@@ -1690,7 +1708,7 @@ ConstructBeamPipe();
               g4Factory.Export(&rtFactory);
               gGeoManager->CloseGeometry();
               gGeoManager->Export("VGM_test.root");
-   */
+   
 ///////////////////////////////////////////////////////
 // END OF OPTICAL SURFACES
 ///////////////////////////////////////////////////////

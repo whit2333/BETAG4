@@ -17,6 +17,8 @@ Now you can proceed to the \ref advanced "advanced section".
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
+#include "G4UIGAG.hh"
+
 #include "G4UItcsh.hh"
 #include "G4UIXm.hh"
 #include "G4ios.hh"
@@ -120,6 +122,7 @@ int main(int argc,char** argv)
     {
       G4UIsession* session = 0;
 #ifdef G4UI_USE_TCSH
+// session = new G4UIGAG;      
       session = new G4UIterminal(new G4UItcsh);      
 //      session = new G4UIXm(argc, argv);    
 #else
@@ -137,6 +140,7 @@ int main(int argc,char** argv)
 //     UI->ApplyCommand(command+fileName);
       G4UIsession* session = 0;
 #ifdef G4UI_USE_TCSH
+//      session = new G4UIGAG();      
       session = new G4UIterminal(new G4UItcsh);      
 //      session = new G4UIXm(argc, argv);    
 #else
