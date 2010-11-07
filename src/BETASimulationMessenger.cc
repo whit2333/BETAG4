@@ -1,11 +1,11 @@
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETASimulationMessenger.hh"
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithoutParameter.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-BETASimulationMessenger::BETASimulationMessenger ( BETAAnalysisManager* mgr )
+BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
       :manager ( mgr )
 {
    analysis = new G4UIdirectory ( "/analysis/" );

@@ -5,7 +5,7 @@
 #include "assert.h"
 #include "G4Run.hh"
 #include "BETARun.hh"
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETARunActionMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4RunManager.hh"
@@ -60,7 +60,7 @@ G4Run*  BETARunAction::GenerateRun() {
    timer->Start();
 
 //   G4cout<<"Creating user define run class BETARun"<<G4endl;
-// analysisManager = BETAAnalysisManager::getInstance(runNumber);
+// analysisManager = BETASimulationManager::getInstance(runNumber);
    G4RunManager *   runManager = G4RunManager::GetRunManager();
 
 // Get the runmanager and constructors/messengers and only fill the database if
@@ -132,7 +132,7 @@ G4Run*  BETARunAction::GenerateRun() {
 void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 {
 //theRun->getRunAnalysisManager()->getTree()->commit();
-// BETAAnalysisManager::dispose();
+// BETASimulationManager::dispose();
    timer->Stop();
    TSQLServer *db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
    TSQLResult * res;

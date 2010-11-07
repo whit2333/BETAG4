@@ -14,7 +14,7 @@ return a->Gtime < b->Gtime;
 //________________________________________________________________________//
 BETAG4EventRecorder::BETAG4EventRecorder() {
 
-fAnalysisManager = BETAAnalysisManager::getInstance ( 0 );
+fAnalysisManager = BETASimulationManager::getInstance ( 0 );
 
 
   fGasCherenkovHC = 0;
@@ -35,7 +35,7 @@ fAnalysisManager = BETAAnalysisManager::getInstance ( 0 );
 //________________________________________________________________________//
 BETAG4EventRecorder::BETAG4EventRecorder(BETAEvent* ahit1 ,HMSEvent* ahit2, HallCBeamEvent* ahit3, BETAG4MonteCarloEvent* ahit4) {
 
-fAnalysisManager = BETAAnalysisManager::getInstance ( 0 );
+fAnalysisManager = BETASimulationManager::getInstance ( 0 );
 
   fGasCherenkovHC = 0;
   fRCSCalorimeterHC = 0;

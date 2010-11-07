@@ -7,7 +7,7 @@
 #include "BETAHodoscopePMTHit.hh"
 #include "G4UserEventAction.hh"
 #include "BETAFrontTrackerHit.hh"
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 
 #include "G4Event.hh"
 #include "G4EventManager.hh"
@@ -66,7 +66,7 @@ class BETAEventAction : public G4UserEventAction
     std::map<G4int, G4THitsMap<G4double>* > fMap;
 
 
-BETAAnalysisManager* analysisManager;
+BETASimulationManager* analysisManager;
 
 
 

@@ -36,7 +36,7 @@
 #include "BETAHodoscopeCellParameterisation.hh"
 #include "BETAFrontTracker.hh"
 #include "BETADetectorMessenger.hh"
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETAFakePlane.hh"
 #include "BETAFakePlaneHit.hh"
 
@@ -46,7 +46,7 @@
 #include "BIGCALGeometryCalculator.h"
 #include "UVAOxfordMagneticField.h"
 #include "BETAField.hh"
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "BETADetectorConstruction.hh"

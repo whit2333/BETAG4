@@ -3,7 +3,7 @@
 
 #include "G4UImessenger.hh"
 #include "globals.hh"
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "G4UIcmdWithAnInteger.hh"
 
 #include "BETADetectorMessenger.hh"
@@ -14,7 +14,7 @@
 
 class G4UIdirectory;
 class G4UIcmdWithoutParameter;
-class BETAAnalysisManager;
+class BETASimulationManager;
 
 /**
  * Concrete implementation of G4UImessenger which creates/connects geant4 command lines to 
@@ -24,14 +24,14 @@ class BETAAnalysisManager;
 class BETASimulationMessenger: public G4UImessenger
 {
   public:
-    BETASimulationMessenger(BETAAnalysisManager* );
+    BETASimulationMessenger(BETASimulationManager* );
    ~BETASimulationMessenger();
     
     void SetNewValue(G4UIcommand*, G4String);
     
   private:
 //    BETAAnalysisAction* BETAAction;
-    BETAAnalysisManager* manager;
+    BETASimulationManager* manager;
     G4UIdirectory*               analysis; 
     G4UIcmdWithoutParameter*   writeTree;
     G4UIcmdWithAnInteger*	showPlot;

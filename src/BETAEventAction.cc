@@ -1,5 +1,5 @@
 #include "globals.hh"
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 
 #include "BETAFrontTrackerHit.hh"
 #include "BETAProtvinoCalorimeterHit.hh"

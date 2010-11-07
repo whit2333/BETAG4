@@ -27,13 +27,13 @@
 #include "TH1F.h"
 #include <vector>
 
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
 
-class BETAAnalysisManager;
+class BETASimulationManager;
 
 /**
  * \ingroup Simulation
@@ -129,7 +129,7 @@ int FillForwardTrackerEvent();
   TH1F * waveforms;
   G4RunManager * runManager;
 
-  BETAAnalysisManager * analysisManager ;
+  BETASimulationManager * analysisManager ;
   BETAPrimaryGeneratorAction * generator;
   BETADetectorConstruction * construction;
 
@@ -151,7 +151,7 @@ private :
   BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
   BETAFrontTrackerHitsCollection * fForwardTrackerHC;
 
-  BETAAnalysisManager * fAnalysisManager;
+  BETASimulationManager * fAnalysisManager;
 
 // counters
     G4int  CherenkovPMTCount[20];

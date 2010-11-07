@@ -48,7 +48,7 @@ G4cout << " - Created new BETARun \n";
    fShowUnrealisticData  = false;
    cer_tdc_thresh = 2;/// Time comes from 2nd photon detected
 
-   analysisManager = BETAAnalysisManager::getInstance ( showThePlots );
+   analysisManager = BETASimulationManager::getInstance ( showThePlots );
    if(analysisManager) {
      analysisManager->SetDetectorVerbosity("GasCherenkov",0);
    }
@@ -449,7 +449,7 @@ void BETARun::Print ( const std::vector<G4String>& title,
 }
 
 //________________________________________________________________________//
-int BETARun::FillGasCherenkovEvent() {
+//int BETARun::FillGasCherenkovEvent() {
 /*  betaEvent->fGasCherenkovEvent->fHits->Clear("C");
   TClonesArray &cherenkovHits = *(betaEvent->fGasCherenkovEvent->fHits);
   GasCherenkovHit * aCERhit;
@@ -542,14 +542,14 @@ vector<BETAPMTHit*>::iterator it;
 //      mirrorTotalCount += numMirrorHits;
 return(totalHits);
 */
-}
+//}
 
 
 //________________________________________________________________________//
- int BETARun::FillBigcalEvent() {
+// int BETARun::FillBigcalEvent() {
 
-return(0);
-}
+// return(0);
+// }
 
 
 

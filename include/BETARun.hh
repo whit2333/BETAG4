@@ -5,7 +5,7 @@
 #include "G4Run.hh"
 #include "G4THitsMap.hh"
 #include <map>
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 #include "InSANERun.h"
@@ -49,11 +49,11 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 #include "BETAG4EventRecorder.hh"
-class BETAAnalysisManager;
+class BETASimulationManager;
 class BETADetectorConstruction;
 class BETAG4EventRecorder;
 
@@ -91,7 +91,7 @@ BETAG4EventRecorder * eventRecorder;
 
 private:
 
-  BETAAnalysisManager * analysisManager;
+  BETASimulationManager * analysisManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
   BETADetectorConstruction * construction;
@@ -113,7 +113,7 @@ public:
 /// Override this method in G4Run
  void RecordEvent(const G4Event*);
 /// Returns the Analysis manager singleton
- BETAAnalysisManager* GetRunAnalysisManager() const { return analysisManager ;}
+ BETASimulationManager* GetRunAnalysisManager() const { return analysisManager ;}
 
   // Dump all data
   void DumpData() const;
@@ -122,20 +122,6 @@ private:
 
  TH1F * waveforms;
 
-
-/**
- * Fills the fGasCherenkovEvent of betaEvent.
- * Does so in the following way:
- * Adds the photons for each tube and multiplies by some factor to obtain a realistic ADC value.
- * If the time difference from one hit to the next is larger than some number (TBD) then another
- * TDC hit is added. Returns the number of hits.
- */
-int FillGasCherenkovEvent();
-
-/**
- * Fills the fBigcalEvent of betaEvent
- */
-int FillBigcalEvent();
 
 
 /**
