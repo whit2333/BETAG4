@@ -42,6 +42,9 @@
 //______________________________________________________________________//
 BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( false )
 {
+
+G4cout << " - Created new BETARun \n";
+
    fShowUnrealisticData  = false;
    cer_tdc_thresh = 2;/// Time comes from 2nd photon detected
 
@@ -88,14 +91,18 @@ BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( 
 ////////////////////////////////////////////////
     simulationRun = new InSANERun();
 
+/// \todo Put all the memory management calls into a single class
     betaEvent = new BETAEvent();
+      betaEvent->FreeMemory();
       betaEvent->AllocateMemory();
       betaEvent->AllocateHitsMemory();
     hmsEvent = new HMSEvent();
     beamEvent = new HallCBeamEvent();
     mcEvent = new BETAG4MonteCarloEvent();
+      mcEvent->FreeMemory();
       mcEvent->AllocateMemory();
       mcEvent->AllocateHitsMemory();
+
     eventRecorder = new BETAG4EventRecorder(betaEvent,hmsEvent,beamEvent,mcEvent);
 // 
     if (catLastFile) {

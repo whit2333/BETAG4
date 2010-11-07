@@ -1916,7 +1916,7 @@ void BETADetectorConstruction::DefineMaterials()
 {
 
    G4NistManager* nistman = G4NistManager::Instance();
-   nistman->SetVerbose ( 1 );
+   //nistman->SetVerbose ( 1 );
 
    G4double a, z, density,fractionmass;
    G4int nelements,ncomponents,natoms;
@@ -2158,7 +2158,7 @@ void BETADetectorConstruction::DefineMaterials()
    myMPTQ->AddProperty ( "RINDEX", NitrogenPhotonEnergy, QuartzRefractiveIndexN, nEnergies );
    Quartz->SetMaterialPropertiesTable ( myMPTQ );
 
-  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
+//  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // END OF MATERIALS

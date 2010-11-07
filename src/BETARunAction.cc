@@ -114,7 +114,7 @@ G4Run*  BETARunAction::GenerateRun() {
 // Fill MySQL table
          res = db->Query(SQLq.Data());
 
-         cout << SQLq.Data();
+         cout << SQLq.Data() << "\n";
 
          db->Close();
 /// DONE with database
@@ -122,7 +122,7 @@ G4Run*  BETARunAction::GenerateRun() {
       }
    }
    currentRun = new BETARun ( runNumber,showThePlots );
-   return currentRun;
+   return (G4Run*)currentRun;
 }
 
 /**
@@ -173,7 +173,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
    G4cout <<"PMT/Mirror Eff  " <<currentRun->getPMT_MirrorEfficiency()  <<G4endl;
 
    assert ( 0 != currentRun );
-   currentRun->DumpData();
+//   currentRun->DumpData();
 
 }
 
