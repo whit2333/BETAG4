@@ -12,7 +12,8 @@
 #include "BETAHodoscopePMTHit.hh"
 #include "BETAPMTHit.hh"
 #include "BETAFakePlaneHit.hh"
-
+#include "BETAProtvinoCalorimeterHit.hh"
+#include "BETARCSCalorimeterHit.hh"
 #include "HallCBeamEvent.h"
 #include "HMSEvent.h"
 #include "BETAEvent.h"
@@ -21,14 +22,16 @@
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
 
-
 #include <iostream>
 #include <algorithm>
+#include "TH1F.h"
 #include <vector>
 
 #include "BETAAnalysisManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
+#include "BETAPrimaryGeneratorAction.hh"
+#include "BETADetectorConstruction.hh"
 
 class BETAAnalysisManager;
 
@@ -39,7 +42,7 @@ class BETAAnalysisManager;
  * \ingroup Event
  */
 /**
- * \brief Constructs the recorded data from the GEANT4 G4Event derived classes 
+ * \brief Constructssd the data to be recorded from the GEANT4
  */
 /**
  * Constructs the recorded data from the GEANT4 G4Event derived classes
@@ -60,13 +63,14 @@ BETAG4EventRecorder();
 BETAG4EventRecorder(BETAEvent* ,HMSEvent* , HallCBeamEvent*, BETAG4MonteCarloEvent* );
 
 /**
- * Constructor initializes counters, arrays
+ * dtor
  */
 ~BETAG4EventRecorder();
 
 
 /**
- * Sets the address of the G4THitsCollection derived class (BETAPMTHitsCollection in this case) to use for filling
+ * Sets the address of the G4THitsCollection derived class 
+ * (BETAPMTHitsCollection in this case) to use for filling
  * out the event data.
  */
 inline int SetGasCherenkovHitCollection(BETAPMTHitsCollection * aHC) { if(aHC) { fGasCherenkovHC = aHC; return(0); } else return(-1) ; };
@@ -76,7 +80,7 @@ inline int SetGasCherenkovHitCollection(BETAPMTHitsCollection * aHC) { if(aHC) {
  * to use for filling
  * out the event data.
  */
-inline int SetBigcalHitCollections(BETARCSCalorimeterHit * aHC,BETAProtvinoCalorimeterHit * aHC2) { if(aHC && aHC2) { fRCSCalorimeterHC = aHC; fProtvinoCalorimeterHC = aHC2; return(0); } else return(-1); };
+inline int SetBigcalHitCollections(BETARCSCalorimeterHitsCollection * aHC,BETAProtvinoCalorimeterHitsCollection * aHC2) { if(aHC && aHC2) { fRCSCalorimeterHC = aHC; fProtvinoCalorimeterHC = aHC2; return(0); } else return(-1); };
 
 /**
  * Clears the InSANEDetectorEvent classes
@@ -89,10 +93,45 @@ inline void ClearEvent(){;};
 inline void ClearHitsCollections() {;};
 
 /**
- * Clears the InSANEDetectorEvent classes
+ * Fills the InSANEDetectorEvent classes
  */
-void FillGasCherenkovEvent(  BETAPMTHitsCollection * aHC);
+int FillGasCherenkovEvent( );
 
+/**
+ * Fills the fBigcalEvent of betaEvent
+ */
+int FillBigcalEvent();
+
+/**
+ * Sets the address of the G4THitsCollection derived class 
+ * (BETAPMTHitsCollection in this case) to use for filling
+ * out the event data.
+ */
+inline int SetLuciteHodoscopeHitCollection(BETAHodoscopePMTHitsCollection * aHC) { if(aHC) { fLuciteHodoscopeHC = aHC; return(0); } else return(-1) ; };
+
+/**
+ * Fills the fBigcalEvent of betaEvent
+ */
+int FillLuciteHodoscopeEvent();
+
+/**
+ * Sets the address of the G4THitsCollection derived class 
+ * (BETAPMTHitsCollection in this case) to use for filling
+ * out the event data.
+ */
+inline int SetForwardTrackerHitCollection(BETAFrontTrackerHitsCollection * aHC) { if(aHC) { fForwardTrackerHC = aHC; return(0); } else return(-1) ; };
+
+/**
+ * Fills the fBigcalEvent of betaEvent
+ */
+int FillForwardTrackerEvent();
+
+  TH1F * waveforms;
+  G4RunManager * runManager;
+
+  BETAAnalysisManager * analysisManager ;
+  BETAPrimaryGeneratorAction * generator;
+  BETADetectorConstruction * construction;
 
 
 private :
@@ -101,14 +140,16 @@ private :
   HallCBeamEvent* fHallCBeamEvent;
   BETAG4MonteCarloEvent * fBETAG4MonteCarloEvent;
   BETAEvent* fBETAEvent;
-  GasCherenkovEvent* fGasCherenkovEvent;
-  BigcalEvent* fBigcalEvent;
-  LuciteHodoscopeEvent* fLuciteHodoscopeEvent;
-  ForwardTrackerEvent* fForwardTrackerEvent;
+    GasCherenkovEvent* fGasCherenkovEvent;
+    BigcalEvent* fBigcalEvent;
+    LuciteHodoscopeEvent* fLuciteHodoscopeEvent;
+    ForwardTrackerEvent* fForwardTrackerEvent;
 
   BETAPMTHitsCollection * fGasCherenkovHC;
-  BETARCSCalorimeterHit * fRCSCalorimeterHC;
-  BETAProtvinoCalorimeterHit * fProtvinoCalorimeterHC;
+  BETARCSCalorimeterHitsCollection * fRCSCalorimeterHC;
+  BETAProtvinoCalorimeterHitsCollection * fProtvinoCalorimeterHC;
+  BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
+  BETAFrontTrackerHitsCollection * fForwardTrackerHC;
 
   BETAAnalysisManager * fAnalysisManager;
 

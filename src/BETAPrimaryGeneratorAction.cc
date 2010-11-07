@@ -16,7 +16,7 @@ double mottCrossSection(double p, double theta) ;
  * \brief Define a Paritlce gun
  * 
  **/
-BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() : iso ( 1 ),momentum ( 2.0 ),sigmaMomentum ( 1.0),ElectronPionRatio ( 1.0 ),Pi0Ratio ( 0.5 ),theta_particle(40),phi_particle(0)
+BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() : iso ( 1 ),momentum ( 3.0 ),sigmaMomentum ( 1.0),ElectronPionRatio ( 1.0 ),Pi0Ratio ( 0.5 ),theta_particle(40),phi_particle(0)
 {
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
    G4String particleName;
@@ -98,7 +98,7 @@ phi     =  2.*(G4UniformRand()-0.5)*deltaphi;
             std::sin ( theta) *std::cos ( phi ) *m,
             std::sin ( theta ) *std::sin ( phi ) *m ,
             std::cos ( theta ) *m ) );
-      particleGun->SetParticleEnergy ( (3.4+sigmaMomentum*G4UniformRand())*1000.0*MeV );
+      particleGun->SetParticleEnergy ( (2.4+sigmaMomentum*G4UniformRand())*1000.0*MeV );
    }
    else {
 /*      bool straightOnDetector = true;

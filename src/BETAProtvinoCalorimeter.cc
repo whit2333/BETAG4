@@ -40,7 +40,6 @@ void BETAProtvinoCalorimeter::Initialize ( G4HCofThisEvent* hitsCollectionOfThis
 
 G4bool BETAProtvinoCalorimeter::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 {
-   // HandsOn5: Accumulating hit data
    // Get energy deposited in this step
    G4double depositedEnergy = aStep->GetTotalEnergyDeposit();
    if ( 0 == depositedEnergy ) return true;

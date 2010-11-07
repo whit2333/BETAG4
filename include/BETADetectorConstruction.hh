@@ -127,15 +127,24 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction
  */
   void ConstructHodoscope();
 
+/**
+ * Called from Construct BETA
+ */
+  void ConstructFakePlane();
 
 /**
- * Wright's code
+ * Wright's code which constructs the UVA NH3 Target
  */
   void ConstructTarget();
+///Constructs the Target Can
   void ConstructTCan();
+///Constructs the Beam pipes up sstream and down stream
   void ConstructBeamPipe();
+///Constructs the Liquid Nitrogen Shield
   void ConstructN2Shield();
+///Constructs the Oxford Magnet geometry
   void ConstructMagnet();
+///Constructs the Target Nose
   void ConstructNose();
 
 /**
@@ -144,7 +153,7 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction
   void SetupScoring(G4LogicalVolume * scoringVolume);
 
 /**
- * GEANT4 user hook
+ * GEANT4 user hook which initiates all geometry constructions
  */
     G4VPhysicalVolume* Construct();
 
@@ -183,6 +192,8 @@ bool usingTargetOVC;
 bool usingFakePlaneAtBigcal;
 bool usingFakePlaneAtForwardTracker;
 
+  private:
+
   G4float ULimits;
 
 /*     void SetFrontThickness (G4String);     
@@ -191,7 +202,6 @@ bool usingFakePlaneAtForwardTracker;
      void SetBackMaterial(G4double);
 */
      
-  private:
 
 	void DefineMaterials();
 /*	void ConstructAluminumFrame();

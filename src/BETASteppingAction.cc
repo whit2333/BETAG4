@@ -11,12 +11,16 @@
 #include "G4UnitsTable.hh"
 #include "G4ParticlePropertyTable.hh"
 #include "G4ParticlePropertyData.hh"
+#include "G4Step.hh"
+#include "globals.hh"
 
 
 
 BETASteppingAction::BETASteppingAction()
 {
-
+         fConsecutiveSteps=0;
+fLastTrackIdInTracker=-100;
+fLastStepNumberInTracker=-100;
 }
 
 BETASteppingAction::~BETASteppingAction()
@@ -33,6 +37,36 @@ void BETASteppingAction::UserSteppingAction ( const G4Step * theStep )
    if ( theTrack->GetTrackStatus() !=fAlive ) {
       return;
    }
+// Going to kill optical photon track if its step length is repeatedly a 1e+03 fm and 
+// Inside tracker
+   if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
+      (  theTrack->GetVolume()->GetName() == "trackerX1_phys" ||
+        theTrack->GetVolume()->GetName() == "trackerY1_phys" ||
+        theTrack->GetVolume()->GetName() == "trackerY2_phys" ) )
+   {
+     if(theTrack->GetTrackID() == fLastTrackIdInTracker && 
+        theTrack->GetCurrentStepNumber() == fLastStepNumberInTracker+1 )
+     { 
+       if(theTrack->GetStepLength() < 2000.0e-15*m)
+       {
+         fConsecutiveSteps++;
+         if(fConsecutiveSteps > 50)  
+         {
+           theTrack->SetTrackStatus(fStopAndKill);
+//           G4cout << " track killed \n ";
+           fConsecutiveSteps=0;
+         }
+       } else {
+         fConsecutiveSteps=0;
+       }
+     } else {
+        fConsecutiveSteps=0;
+     }
+   } else {
+      fConsecutiveSteps=0;
+   }
+         fLastTrackIdInTracker=theTrack->GetTrackID();
+         fLastStepNumberInTracker=theTrack->GetCurrentStepNumber();
 
 /// COUNT The number of reflected photons
 ///////////////////////////////////////////////////////////////////////////////

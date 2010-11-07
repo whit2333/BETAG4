@@ -61,7 +61,7 @@ void BETAAnalysisManager::write()
 
 }
 
-void BETAAnalysisManager::SetDetectorVerbosity(const char * detName, int level) {
+void BETAAnalysisManager::SetDetectorVerbosity( char * detName, int level) {
   if( detName == "GasCherenkov" ) {
     std::cout << "Setting Gas Cherenkov verbosity level to " << level << "\n";
     fGasCherenkovVerbosity = level;
@@ -76,11 +76,10 @@ void BETAAnalysisManager::SetDetectorVerbosity(const char * detName, int level) 
 }
 
 
-int BETAAnalysisManager::GetDetectorVerbosity(const char * detName) {
+int BETAAnalysisManager::GetDetectorVerbosity( char * detName) {
 
   if( detName == "GasCherenkov" ) {
- return(1);
-  //  return(fGasCherenkovVerbosity);
+    return(fGasCherenkovVerbosity);
   }
   else if( detName == "Bigcal" ) {
 return(1);

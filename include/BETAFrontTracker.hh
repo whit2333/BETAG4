@@ -20,7 +20,8 @@ public:
   
   // Methods
   virtual void Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent);
-  
+
+/// We are counting the photons at both ends of the tracker...
   virtual G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* history);
 
   virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);

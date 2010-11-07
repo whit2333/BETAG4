@@ -1,4 +1,4 @@
-// Make this appear first!
+// Make G4Timer appear first!
 #include "G4Timer.hh"
 #include <fstream>
 #include "BETARunAction.hh"
@@ -9,16 +9,14 @@
 #include "BETARunActionMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4RunManager.hh"
+
 #include "TTimeStamp.h"
 #include "TDatime.h"
 
-/**
- *
- *  Run related operations
- *    database entry
- *    run number incrementing --> run.txt file ... should just get it from a database
- *
- */
+#include "SANERunManager.h"
+
+//_________________________________________________________________//
+
 BETARunAction::BETARunAction() :runNumber ( 0 ),showThePlots ( 0 )
 {
    input_file.open ( "run.txt" );
@@ -26,43 +24,42 @@ BETARunAction::BETARunAction() :runNumber ( 0 ),showThePlots ( 0 )
    input_file.close();
    messenger = new BETARunActionMessenger ( this );
    timer = new G4Timer;
+   currentRun=0;
 }
 
-/**
- *
- *
- */
+//_________________________________________________________________//
+
 BETARunAction::~BETARunAction()
 {
    delete timer;
+   delete messenger;
 }
 
-/**
- *
- *
- */
+//_________________________________________________________________//
+
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 {
 //G4cout <<"START of RUN ACTION"<< G4endl;
-   G4cout <<"=================== RUN #" << runNumber << "===================" << G4endl;
+   G4cout <<"=================== RUN #" << runNumber << " ===================" << G4endl;
 }
 
 /**
- *
  *  Fills the database as much as possible
  *  Grabs the runmanager and
- *
  */
 G4Run*  BETARunAction::GenerateRun() {
-   G4cout << "RunAction - GenerateRun" << G4endl;
+//    if(currentRun) currentRun;
+//    currentRun=0;
    runNumber++;
    output_file.open ( "run.txt" ,ios::trunc); // this incremtents a number so that it acts like a normal DAQ
    output_file << runNumber ;
    output_file.close();
+   G4cout << "  ===  RunAction - GenerateRun   " << G4endl;
+   G4cout << " - Creating Run Number " << runNumber << "   " << G4endl;
 
    timer->Start();
 
-   G4cout<<"Creating user define run class BETARun"<<G4endl;
+//   G4cout<<"Creating user define run class BETARun"<<G4endl;
 // analysisManager = BETAAnalysisManager::getInstance(runNumber);
    G4RunManager *   runManager = G4RunManager::GetRunManager();
 
@@ -70,7 +67,7 @@ G4Run*  BETARunAction::GenerateRun() {
 // you have them!
    double targetAngle = 0.0;
    if (runManager) {
-      BETADetectorConstruction *  construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
+      BETADetectorConstruction *  construction = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
       if (construction) {
          targetAngle = construction->myField->fUVAMagnet->fPolarizationAngle*180.0/pi;
          //printf("\n got run manager %f\n",targetAngle);
@@ -78,7 +75,6 @@ G4Run*  BETARunAction::GenerateRun() {
 /// FILL THE DATABASE
          TSQLServer * db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
          TSQLResult * res;
-
 
          TString SQLq("Insert into BETAG4_run_info set "); // dont forget the extra space at the end
 //aSQL  "Insert into BETAG4_run_info set " ;
@@ -178,7 +174,6 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 
    assert ( 0 != currentRun );
    currentRun->DumpData();
-
 
 }
 

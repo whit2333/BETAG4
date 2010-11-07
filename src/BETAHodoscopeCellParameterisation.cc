@@ -9,17 +9,20 @@
 #include "G4MaterialPropertiesTable.hh"
 #include "G4SDManager.hh"
 #include "BETAHodoscopePMT.hh"
+#include "G4LogicalSkinSurface.hh"
+#include "G4LogicalBorderSurface.hh"
+#include "G4OpticalSurface.hh"
 
 BETAHodoscopeCellParameterisation::BETAHodoscopeCellParameterisation ( G4Material * aMaterial )
 {
    theMaterial = aMaterial;
-
 
    rotate1 = &hodBarRotateRemove1;
    rotate2 = &hodBarRotateRemove2;
    // Initialise
    G4int i ( 0 );
    theta = 23.*pi/ ( 180.*2.0 );
+// First 28 are the curved bars
    for ( i=0; i<28; i++ )
    {
 //for BOX mother    xCell.push_back(-240*cm);
@@ -27,17 +30,19 @@ BETAHodoscopeCellParameterisation::BETAHodoscopeCellParameterisation ( G4Materia
       yCell.push_back ( 0*cm );
       zCell.push_back ( ( i-13 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
    }
+// second 28 are the angled pmt light guides
    for ( i=28; i<28*2; i++ )
    {
       xCell.push_back ( ( 240.+3.5 ) *cm*std::cos ( theta ) );
       yCell.push_back ( ( 240.+3.5 ) *cm*std::sin ( theta ) );
       zCell.push_back ( ( i-13 - 28 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
    }
+// third 28 are the angled pmt light guides
    for ( i=28*2; i<28*3; i++ )
    {
       xCell.push_back ( ( 240.+3.5 ) *cm*std::cos ( theta ) );
       yCell.push_back ( -1.0* ( 240.+3.5 ) *cm*std::sin ( theta ) );
-      zCell.push_back ( ( i-13 -28*2 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
+      zCell.push_back ( (G4double)( i-13 -28*2 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3.0*cm+2.54*cm*0.002/2.0 ) );
    }
 
 
@@ -59,7 +64,7 @@ BETAHodoscopeCellParameterisation::BETAHodoscopeCellParameterisation ( G4Materia
                                            G4Transform3D ( hodBarRotateRemove2, G4ThreeVector ( ( 240.+3.5 ) *cm*cos ( theta ),
                                                                                                 -1.0* ( 240.+3.5 ) *cm*sin ( theta ),0*cm ) ) );
 
-   PMTinquotes = new G4Box ( "hodoscopePMTinquotes", 6.*cm/2.,std::sqrt ( 2.*3.5*3.5 ) *cm/2.,std::sqrt ( 2.*3.5*3.5 ) *cm/2. );
+   PMTinquotes = new G4Box ( "hodoscopePMTinquotes", std::sqrt ( 2.*3.5*3.5 ) *cm/2.,std::sqrt ( 2.*3.5*3.5 ) *cm/2.,6.*cm/2. );
 
 /////////////////////////////////////////////////
 // Pmt Detector
@@ -92,12 +97,12 @@ void BETAHodoscopeCellParameterisation::ComputeTransformation ( const G4int copy
    else if ( copyNo/28 == 1 )
    {
       physVol->SetRotation ( rotate2 );
-      physVol->SetName ( "hodoscope_pmt_phys" );
+      physVol->SetName ( "hodoscope_pmt1_phys" );
    }
    else
    {
       physVol->SetRotation ( rotate1 );
-      physVol->SetName ( "hodoscope_pmt_phys" );
+      physVol->SetName ( "hodoscope_pmt2_phys" );
    }
 
 //G4cout << "log name : " <<  physVol->GetLogicalVolume()->GetName()   << G4endl;
@@ -117,8 +122,16 @@ G4Material* BETAHodoscopeCellParameterisation::ComputeMaterial // material, sens
   const G4VTouchable *parentTouch )
 {
 
-   // Attach detector to scoring volume
+   G4OpticalSurface* scoringSurface = new G4OpticalSurface ( "scoringHodoscopeBarOpticalSurface" );
+     scoringSurface->SetModel ( unified );
+     scoringSurface->SetType ( dielectric_metal);
+     scoringSurface->SetFinish ( groundbackpainted);
+   if ( copyNo / 28 != 0 )
+   {
+   new G4LogicalSkinSurface( "BorderHodoscopeBar",physVol->GetLogicalVolume(), scoringSurface );
    physVol->GetLogicalVolume()->SetSensitiveDetector ( HodoscopePMTs );
+   }
+   // Attach detector to scoring volume
    G4Material* mat = theMaterial;
    /*  if(copyNo == Ã¢ÂÂ¦)
      {

@@ -49,6 +49,7 @@ public:
   */
 
   G4int cellNumber;
+  G4int layerNumber;
   G4int mirrorNumber;
   G4ThreeVector  localPos;
   G4ThreeVector  worldPos;

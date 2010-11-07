@@ -32,8 +32,8 @@ public:
 /**
  * Set detector's verbosity for debugging purposes
  */
-  void SetDetectorVerbosity(const char * detName, int level);
-  int GetDetectorVerbosity(const char * detName);
+  void SetDetectorVerbosity( char * detName, int level);
+  int GetDetectorVerbosity( char * detName);
 
   void showPlot(int );
   void write();
@@ -48,13 +48,14 @@ public:
 
 inline G4int plotterVisible() {return plotVis; }
 
-
-private:
-
   int fGasCherenkovVerbosity;
   int fBigcalVerbosity;
   int fLuciteHodoscopeVerbosity;
   int fForwardTrackerVerbosity;
+
+private:
+
+
 
   G4int plotVis;
   BETAAnalysisManager(const int );

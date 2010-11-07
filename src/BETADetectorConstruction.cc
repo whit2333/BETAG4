@@ -12,6 +12,7 @@
 // VGM
 #include "Geant4GM/volumes/Factory.h" 
 #include "RootGM/volumes/Factory.h" 
+#include "XmlVGM/GDMLExporter.h"
 
 #include "TGeoManager.h"
 #include "TROOT.h"
@@ -41,7 +42,7 @@
 
 #define MAGROT PI*-0./180. 
 //Rotate the whole target magnet by some angle
-
+#include "G4PVReplica.hh"
 #include "BIGCALGeometryCalculator.h"
 #include "UVAOxfordMagneticField.h"
 #include "BETAField.hh"
@@ -158,24 +159,161 @@ void BETADetectorConstruction::ConstructForwardTracker()
 // Front Tracker  //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
 
-   G4Box* tracker_box = new G4Box ( "tracker_box",41.*cm/2., 23.*cm/2., 10.*mm/2. );
+   G4double smallSeparation = 0.01*mm;
+   G4RotationMatrix trackerRot;
+   trackerRot.rotateZ (-1.0*PI/2.0 ); 
+//
+   G4Box* tracker_box = new G4Box ( "tracker_box",42.*cm/2., 24.*cm/2., 10.*mm/2. );
    G4LogicalVolume* tracker_log = new G4LogicalVolume ( tracker_box,Air,"tracker_log",0,0,0 );
+   tracker_log->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 10.0*ns ) );
 
+   G4Box* trackerY1_box = new G4Box ( "trackerY1_box", // Name
+                         132.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
+                         22.*cm/2.0+smallSeparation,         // y half length
+                         3.*mm/2.0 );     // z half length
+   G4Box* trackerY2_box = new G4Box ( "trackerY2_box", // Name
+                         132.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
+                         22.*cm/2.0+smallSeparation,         // y half length
+                         3.*mm/2.0 );     // z half length
+   G4Box* trackerX1_box = new G4Box ( "trackerY1_box", // Name
+                         40.*cm/2.0+smallSeparation,         // x half length
+                         72.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
+                         3.*mm/2.0 );     // z half length
+
+   G4Box* vertBar = new G4Box ( "verticalMeasurementBar", // Name
+                         3.*mm/2.0+smallSeparation/2.0,         // x half length
+                         22.*cm/2.0+smallSeparation,         // y half length
+                         3.*mm/2.0 );     // z half length
+   G4Box* vertBarScore = new G4Box ( "verticalMeasurementBarScorer", // Name
+                         3.*mm/2.0,         // x half length
+                         smallSeparation,         // y half length
+                         3.*mm/2.0 );     // z half length
+
+   G4Box* horizBar = new G4Box ( "horizontalMeasurementBar", // Name
+                          40.*cm/2.0+smallSeparation,         // x half length
+                          3.*mm/2.0+smallSeparation/2.0,         // y half length
+                          3.*mm/2.0 );     // z half length
+
+   G4Box* horizBarScore = new G4Box ( "horizontalMeasurementBarScorer", // Name
+                          smallSeparation,         // x half length
+                          3.*mm/2.0,         // y half length
+                          3.*mm/2.0 );     // z half length
+// New replicas
+   G4LogicalVolume*   horizBar_log = new G4LogicalVolume ( horizBar,Lucite,"horizBar_log",0,0,0 );
+   G4LogicalVolume*   vertBar_log = new G4LogicalVolume ( vertBar,Lucite,"vertBar_log",0,0,0 );
+   G4LogicalVolume*   horizBarScore_log = new G4LogicalVolume ( horizBarScore,Air,"horizBarScore_log",0,0,0 );
+   G4LogicalVolume*   vertBarScore_log = new G4LogicalVolume ( vertBarScore,Air,"vertBarScore_log",0,0,0 );
+
+   new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.+smallSeparation/2.0,0 ),vertBarScore_log, "verttracker+leftBox", vertBar_log,false,0 );
+   new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),vertBarScore_log, "verttracker+leftBox+rightbox", vertBar_log,false,0 );
+
+   new G4PVPlacement ( 0,G4ThreeVector (40.0*cm/2.0+smallSeparation/2.0,0,0 ),horizBarScore_log, "horztracker+leftBox", horizBar_log,false,0 );
+   new G4PVPlacement ( 0,G4ThreeVector (-(40.0*cm/2.0+smallSeparation/2.0),0,0 ),horizBarScore_log, "horztracker+leftBox+rightbox", horizBar_log,false,0 );
+
+
+   G4LogicalVolume*   trackerY1_log = new G4LogicalVolume ( trackerY1_box,Air,"trackerY1_log",0,0,0 );
+   G4LogicalVolume*   trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"trackerY2_log",0,0,0 );
+   G4LogicalVolume*   trackerX1_log = new G4LogicalVolume ( trackerX1_box,Air,"trackerX1_log",0,0,0 );
+
+trackerX1_log->SetVisAttributes(G4Colour(0.5,0.0,0.0));
+trackerY1_log->SetVisAttributes(G4Colour(0.0,0.5,0.0));
+trackerY2_log->SetVisAttributes(G4Colour(0.0,0.0,0.5));
+horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.9,0.1));
+vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.9,0.1));
+
+   G4VPhysicalVolume* trackerY1_phys = 
+     new G4PVReplica("trackerY1_phys", vertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
+   G4VPhysicalVolume* trackerY2_phys = 
+     new G4PVReplica("trackerY2_phys", vertBar_log,trackerY2_log, kXAxis, 132, 3.0*mm+smallSeparation);
+   G4VPhysicalVolume* trackerX1_phys = 
+     new G4PVReplica("trackerX1_phys", horizBar_log,trackerX1_log, kYAxis, 72, 3.0*mm+smallSeparation);
+
+   new G4PVPlacement ( 0,G4ThreeVector (0,0,0),trackerY1_log, "tracker_log+Y1", tracker_log,false,0 );
+   new G4PVPlacement ( 0,G4ThreeVector (0,0,3.0*mm+smallSeparation),trackerY2_log, "tracker_log+Y1+Y2", tracker_log,false,0 );
+   new G4PVPlacement ( 0,G4ThreeVector (0,0,-3.0*mm-smallSeparation ),trackerX1_log, "tracker_log+Y1+Y2+X1", tracker_log,false,0 );
+
+
+   G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
+
+
+// Old Parameterisation 
+/*
+   G4LogicalVolume* tracker2_log = new G4LogicalVolume ( tracker_box,Air,"tracker2_log",0,0,0 );
+
+ 
    G4Box* trackerDummyCell_box = new G4Box ( "tracker_box",41.*cm/2., 23.*cm/2., 10.*mm/2. );
    G4LogicalVolume* trackerDummyCell_log = new G4LogicalVolume ( trackerDummyCell_box,Lucite,"trackerDummy_log",0,0,0 );
 
+   G4Box* trackerLightCollectionY_box = new G4Box ( "trackerLightCollectionY_box",40.*cm/2.+72.0*smallSeparation/2.0, 3.*mm/2., 3.*mm/2. );
+   G4LogicalVolume* trackerLightCollectionY_log = new G4LogicalVolume ( trackerLightCollectionY_box,Lucite,"trackerLightCollectionY_log",0,0,0 );
+
+   G4Box* trackerLightCollectionX_box = new G4Box ( "trackerLightCollectionX_box",3.*mm/2., 22.*cm/2.+132.0*smallSeparation/2.0, 3.*mm/2. );
+   G4LogicalVolume* trackerLightCollectionX_log = new G4LogicalVolume ( trackerLightCollectionX_box,Lucite,"trackerLightCollectionX_log",0,0,0 );
+
+   G4OpticalSurface* OpTankFlatBlackSurface = new G4OpticalSurface ( "trackerFlatBlackSurface" );
+     OpTankFlatBlackSurface->SetModel ( unified );
+     OpTankFlatBlackSurface->SetType ( dielectric_metal );
+     OpTankFlatBlackSurface->SetFinish ( groundbackpainted );
+   G4LogicalSkinSurface * flatBalckSurface = new G4LogicalSkinSurface ( "TrackerFlatBlackSurface", tracker_log, OpTankFlatBlackSurface );
+
+
+   G4VPhysicalVolume* trackerLightCollectionY2left_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.0+1.5*mm-smallSeparation,3.*mm+smallSeparation ),trackerLightCollectionY_log, "trackerLightCollectionY2left_phys", tracker_log,false,0 );
+   G4VPhysicalVolume* trackerLightCollectionY2right_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+1.5*mm-smallSeparation),3.*mm+smallSeparation ),trackerLightCollectionY_log, "trackerLightCollectionY2right_phys", tracker_log,false,0 );
+   G4VPhysicalVolume* trackerLightCollectionY1left_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.0+1.5*mm-smallSeparation,0 ),trackerLightCollectionY_log, "trackerLightCollectionY1left_phys", tracker_log,false,0 );
+   G4VPhysicalVolume* trackerLightCollectionY1right_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+1.5*mm-smallSeparation),0 ),trackerLightCollectionY_log, "trackerLightCollectionY1right_phys", tracker_log,false,0 );
+
+   G4VPhysicalVolume* trackerLightCollectionXleft_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector ( 40.0*cm/2.0+1.5*mm-smallSeparation ,0,  -3.*mm-smallSeparation ),trackerLightCollectionX_log, "trackerLightCollectionXleft_phys", tracker_log,false,0 );
+   G4VPhysicalVolume* trackerLightCollectionXright_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector ( -(40.0*cm/2.0+1.5*mm-smallSeparation) ,0,  -3.*mm-smallSeparation ),trackerLightCollectionX_log, "trackerLightCollectionXright_phys", tracker_log,false,0 );
+
+   G4VPhysicalVolume* trackerLightCollectors[6]=
+   {trackerLightCollectionY2left_phys,
+    trackerLightCollectionY1left_phys,
+    trackerLightCollectionY2right_phys,
+    trackerLightCollectionY1right_phys,
+    trackerLightCollectionXleft_phys,
+    trackerLightCollectionXright_phys};
+
+   G4VisAttributes* lightCollectionFTAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.2,0.2,0.80 ) );
+lightCollectionFTAttributes->SetForceSolid(true);
+trackerLightCollectionY_log->SetVisAttributes(lightCollectionFTAttributes);
+trackerLightCollectionX_log->SetVisAttributes(lightCollectionFTAttributes);
+   G4VPhysicalVolume* tracker2_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,0),tracker2_log,"tracker2_phys",tracker_log,false,0 );
+
    G4VPVParameterisation* FrontTrackerParam = new BETAFrontTrackerCellParameterisation(Lucite);
+     ((BETAFrontTrackerCellParameterisation * )(FrontTrackerParam))->SetMotherPhysicalVolume(tracker2_phys);
+     ((BETAFrontTrackerCellParameterisation * )(FrontTrackerParam))->SetScoringPhysicalVolumes(trackerLightCollectors);
 
-   G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 ),tracker_log,"tracker_phys",BETADetector_log,false,0 );
-
+   G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
 
    new G4PVParameterised ( "tracker_physical_param",  // Name
                            trackerDummyCell_log,        // Logical volume
-                           tracker_log, // Mother volume
+                           tracker2_log, // Mother volume
                            kXAxis,             // Axis
                            339,                // Number of replicas
                            FrontTrackerParam );        // Parameterisation
+*/
 
+
+   G4OpticalSurface* forwardTrackerSurface = new G4OpticalSurface ( "TrackerBarOpticalSurface" );
+     forwardTrackerSurface->SetModel ( unified );
+     forwardTrackerSurface->SetType ( dielectric_dielectric );
+     forwardTrackerSurface->SetFinish ( polishedfrontpainted);
+
+   G4OpticalSurface* scoringSurface = new G4OpticalSurface ( "scoringTrackerBarOpticalSurface" );
+     scoringSurface->SetModel ( unified );
+     scoringSurface->SetType ( dielectric_metal);
+     scoringSurface->SetFinish ( groundbackpainted);
+
+   new G4LogicalSkinSurface ( "BorderTrackerBar",  vertBar_log, forwardTrackerSurface );
+   new G4LogicalSkinSurface ( "aBorderTrackerBar", vertBarScore_log, scoringSurface );
+   new G4LogicalSkinSurface ( "BorderTrackerBar", horizBar_log, forwardTrackerSurface );
+   new G4LogicalSkinSurface ( "aBorderTrackerBar",horizBarScore_log, scoringSurface );
    // Get pointer to detector manager
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
@@ -184,14 +322,19 @@ void BETADetectorConstruction::ConstructForwardTracker()
    // Register detector with manager
    manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
-   trackerDummyCell_log->SetSensitiveDetector ( frontTracker );
+   horizBarScore_log->SetSensitiveDetector ( frontTracker );
+   vertBarScore_log->SetSensitiveDetector ( frontTracker );
 
 ////// end tracker
    G4VisAttributes* FTAttributes = new G4VisAttributes ( G4Colour ( 0.5,0.2,0.2,0.1 ) );
-   tracker_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   trackerDummyCell_log->SetVisAttributes ( FTAttributes );
+   tracker_log->SetVisAttributes ( FTAttributes );
+//   trackerDummyCell_log->SetVisAttributes (  G4VisAttributes::Invisible  );
 
 
+  G4VisAttributes* lightCollectionFTAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.2,0.8,0.80 ) );
+lightCollectionFTAttributes->SetForceSolid(true);
+horizBar_log->SetVisAttributes(lightCollectionFTAttributes);
+vertBar_log->SetVisAttributes(lightCollectionFTAttributes);
 
 }
 
@@ -241,7 +384,7 @@ void BETADetectorConstruction::ConstructHodoscope()
    G4double theta = 23.*pi/(180.*2.0);
    */
 
-   G4VSolid* hodoscope = new G4Tubs ( "Lucitebar", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10*cm,6.*28.*cm/2. +10.*cm, -24.*pi/2.0/180.,24.*pi/180. );// made a little bigger around surfaces of reflection
+   G4VSolid* hodoscope = new G4Tubs ( "Lucite-barContainer", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10.*cm,6.*28.*cm/2. +10.*cm, -26.*pi/2.0/180.,26.*pi/180. );// made a little bigger around surfaces of reflection
 // Lets try a box
 
 
@@ -316,26 +459,56 @@ void BETADetectorConstruction::ConstructHodoscope()
 ////////////////////////////////
 // LUCITE                                   TOTAL INTERNAL REFLECTION
 ////////////////////////////////
-   G4double EphotonLucite[num] = {1.5*eV, 6.2*eV};
+
+//    G4double LRefrac[num] = {1.49,1.49};
+// 
+
+//
+// Lucite
+//
+   const int lucitedatapoints =  14;
+   G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
+      {0.5*eV,1.82*eV,2.27*eV,2.89*eV,3.48013631*eV,
+       3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
+       3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV,10.0*eV
+      };
+
+   G4double LuciteRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
+      {1.49,1.49,1.49,1.49,1.49,1.49,1.49
+       ,1.49,1.49,1.49,1.49,1.49,1.49,1.49
+      };
+
+   G4double LuciteAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
+      {0.2611*m, 0.2791*m, 0.2791*m, 0.26115*m,
+       0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
+       0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
+       0.021193*m,0.021193*m
+      };
+   G4double EphotonLucite[num] = {0.5*eV, 10.0*eV};
    G4double LReflectivity[num] = {0.99, 0.99};
-   G4double LRefrac[num] = {1.49,1.49};
+//    G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
+//    myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
+//    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
+//    Lucite->SetMaterialPropertiesTable ( myMPTL );
+
    G4OpticalSurface* LuciteSurface = new G4OpticalSurface ( "LuciteSurface" );
-   LuciteSurface->SetType ( dielectric_dielectric );
-   LuciteSurface->SetFinish ( polishedbackpainted );
-   LuciteSurface->SetModel ( unified );
-
-
 
 
    G4MaterialPropertiesTable* LuciteSurfacePTable = new G4MaterialPropertiesTable();
-   LuciteSurfacePTable->AddProperty ( "RINDEX",                EphotonLucite, LRefrac, num );
+   LuciteSurfacePTable->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
    LuciteSurfacePTable->AddProperty ( "REFLECTIVITY", EphotonLucite, LReflectivity, num );
+   LuciteSurfacePTable->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
+
 //   LuciteSurfacePTable->AddProperty("SPECULARLOBECONSTANT",  EphotonLucite, MSpecularLobe,    num);
 //   LuciteSurfacePTable->AddProperty("SPECULARSPIKECONSTANT", EphotonLucite, MSpecularSpike,   num);
 //   LuciteSurfacePTable->AddProperty("BACKSCATTERCONSTANT",   EphotonLucite, MBackscatter,     num);
 //   LuciteSurfacePTable->AddProperty("EFFICIENCY",   EphotonLucite, MEfficiency,   num);
-
+   Lucite->SetMaterialPropertiesTable ( LuciteSurfacePTable );
    LuciteSurface->SetMaterialPropertiesTable ( LuciteSurfacePTable );
+   LuciteSurface->SetModel ( unified );
+   LuciteSurface->SetType ( dielectric_dielectric );
+   LuciteSurface->SetFinish ( polishedbackpainted );
+
 
 //  G4LogicalSkinSurface * LuciteBarSurface = new G4LogicalSkinSurface ( "LuciteBarsurface", hodoscopeBar_log, LuciteSurface );
 //     myPVolume = myLVolume->GetDaughter(i);
@@ -352,6 +525,7 @@ void BETADetectorConstruction::ConstructHodoscope()
 //}
 
 
+   hodoscope_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
@@ -470,20 +644,22 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.1,0.5,0.0 ) );
    BIGCALAttributes->SetForceSolid ( true );
-   BIGCALAttributes->SetDaughtersInvisible(true);
+   BIGCALAttributes->SetDaughtersInvisible(false);
    calorimeterTop_log->SetVisAttributes(BIGCALAttributes);
    calorimeterBottom_log->SetVisAttributes(BIGCALAttributes);
 
 // Make cells invisible!
-   cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
-   cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
+//    cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
+//    cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 
-// calorimeterTop_log->SetVisAttributes ( G4VisAttributes::Invisible );
-// calorimeterBottom_log->SetVisAttributes ( G4VisAttributes::Invisible );
-// G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.1,0.5,0.0 ) );
-//  cellLogical->SetVisAttributes(G4VisAttributes::Invisible);
-//  cellLogicalBottom->SetVisAttributes(G4VisAttributes::Invisible);
-//  cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
+// Make containers invisible
+   calorimeterTop_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   calorimeterBottom_log->SetVisAttributes ( G4VisAttributes::Invisible );
+
+ G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.2,0.0,0.25 )  );
+BIGCALCellAttributes->SetForceSolid ( true );
+  cellLogical->SetVisAttributes(BIGCALCellAttributes );
+  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
 //  cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 }
 
@@ -1124,15 +1300,16 @@ G4double farMirrorAngle = 20* pi/180;
 /// Ellipsoid
 //
    G4Ellipsoid * ellipsoidMirrorOutside = new G4Ellipsoid ( "farmirror Ellipsoid outside",
-                                                            yzsemiaxis+mirrorThickness ,
                                                             xsemiaxis+mirrorThickness,
+                                                            yzsemiaxis+mirrorThickness ,
                                                             yzsemiaxis+mirrorThickness,
                                                             15*cm,
                                                             farToroidalAxisRadius+ farToroidalTubeRadius+mirrorThickness );
 
    G4Ellipsoid * ellipsoidMirrorInside = new G4Ellipsoid ( "farmirror Ellipsoid inside",
-                                                           yzsemiaxis,
                                                            xsemiaxis,
+
+                                                           yzsemiaxis,
                                                            yzsemiaxis );
 
 
@@ -1313,17 +1490,10 @@ G4double farMirrorAngle = 20* pi/180;
    G4double MEfficiency[num]   = {1.0, 1.0};
    G4double coatingReflectivity[num] = {0.85, 0.84};
 
-
-
    G4OpticalSurface* OpMirrorSurface = new G4OpticalSurface ( "SilverSurface" );
    OpMirrorSurface->SetType ( dielectric_metal );
    OpMirrorSurface->SetFinish ( polished );
    OpMirrorSurface->SetModel ( unified );
-
-   G4LogicalSkinSurface * nearMirrorSurface = new G4LogicalSkinSurface ( "silversurface", nearMirrorGlass_log, OpMirrorSurface );
-// Workaround: use border surface instead of skin for elliptical mirrors
-//  G4LogicalSkinSurface * farMirrorSurface = new G4LogicalSkinSurface("silversurface", farMirrorGlass_log, OpMirrorSurface);
-
 
    G4MaterialPropertiesTable* reflectiveCoatingSurfacePTable = new G4MaterialPropertiesTable();
 
@@ -1334,11 +1504,20 @@ G4double farMirrorAngle = 20* pi/180;
 //  reflectiveCoatingSurfacePTable->AddProperty("EFFICIENCY",   Ephoton, MEfficiency,   num);
    OpMirrorSurface->SetMaterialPropertiesTable ( reflectiveCoatingSurfacePTable );
 
+   G4LogicalSkinSurface * nearMirrorSurface = new G4LogicalSkinSurface ( "silversurface", nearMirrorGlass_log, OpMirrorSurface );
+// Workaround: use border surface instead of skin for elliptical mirrors
+//  G4LogicalSkinSurface * farMirrorSurface = new G4LogicalSkinSurface("silversurface", farMirrorGlass_log, OpMirrorSurface);
 // elliptical mirror work around for far elliptical mirrors
    G4LogicalBorderSurface * farMirrorSurfaceTEMP2 = new G4LogicalBorderSurface ( "farmirror1", tank_phys, MirrorGlass_phys2, OpMirrorSurface );
    G4LogicalBorderSurface * farMirrorSurfaceTEMP4 = new G4LogicalBorderSurface ( "farmirror3", tank_phys, MirrorGlass_phys4, OpMirrorSurface );
    G4LogicalBorderSurface * farMirrorSurfaceTEMP6 = new G4LogicalBorderSurface ( "farmirror6", tank_phys, MirrorGlass_phys6, OpMirrorSurface );
    G4LogicalBorderSurface * farMirrorSurfaceTEMP8 = new G4LogicalBorderSurface ( "farmirror7", tank_phys, MirrorGlass_phys8, OpMirrorSurface );
+
+  G4OpticalSurface* OpTankFlatBlackSurface = new G4OpticalSurface ( "FlatBlackSurface" );
+   OpTankFlatBlackSurface->SetModel ( unified );
+   OpTankFlatBlackSurface->SetType ( dielectric_metal );
+   OpTankFlatBlackSurface->SetFinish ( groundbackpainted );
+ G4LogicalSkinSurface * flatBalckSurface = new G4LogicalSkinSurface ( "TankFlatBlackSurface", tank_log, OpTankFlatBlackSurface );
 
 
 
@@ -1358,7 +1537,22 @@ G4double farMirrorAngle = 20* pi/180;
 }
 
 //___________________________________________________________________
+void BETADetectorConstruction::ConstructFakePlane()
+{
 
+      // The following is for a fake detector just after the Front tracker
+      G4Box* planeBehindTracker_box = new G4Box ( "PlaneBeforeBigcal",1.4*m/2.0,2.5*m/2.0 , 0.10*mm );
+      G4LogicalVolume * planeBehindTracker_log = 
+           new G4LogicalVolume ( planeBehindTracker_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
+      BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
+//rTarget
+      G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
+      G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
+      G4VPhysicalVolume* planeBehindTracker_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,planeBehindTracker_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
+      SetupScoring(planeBehindTracker_log);
+}
+
+//___________________________________________________________________
 void BETADetectorConstruction::ConstructBETA()
 {
    G4double displacementBackwards = 1.0*cm;
@@ -1379,19 +1573,7 @@ void BETADetectorConstruction::ConstructBETA()
     (rTarget+DetectorLength/2.0+displacementBackwards)*std::cos(DetectorAngle))), 
     BETADetector_log, "BETADetectorphys",expHall_log,false,0 );
 
-   if (usingFakePlaneAtBigcal) {
-      // The following is for a fake detector just after the Front tracker
-      G4Box* planeBehindTracker_box = new G4Box ( "PlaneBehindFrontTracker",2.5*m/2.0, 1.5*m/2.0, 0.10*mm );
-      G4LogicalVolume * planeBehindTracker_log = 
-           new G4LogicalVolume ( planeBehindTracker_box,Air,"PlaneBehindFrontTracker_log",0,0,0 );
-      BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
-//rTarget
-      G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
-      G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
-      G4VPhysicalVolume* planeBehindTracker_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,planeBehindTracker_log,"planeBehindTracker_phys",BETADetector_log,false,0 );
-      SetupScoring(planeBehindTracker_log);
-   }
-
+   if (usingFakePlaneAtBigcal) ConstructFakePlane();
    if (usingForwardTracker)  ConstructForwardTracker();
    if (usingGasCherenkov)  ConstructCherenkov();
    if (usingLuciteHodoscope)  ConstructHodoscope();
@@ -1525,16 +1707,16 @@ ConstructBeamPipe();
       = G4TransportationManager::GetTransportationManager()->GetFieldManager();
       fieldMgr->SetDetectorField ( myField );
       fieldMgr->CreateChordFinder ( myField );
-      fieldMgr->GetChordFinder()->SetDeltaChord ( 1.0e-5*cm );
+      fieldMgr->GetChordFinder()->SetDeltaChord ( 1.0e-1*cm ); // miss distance
       G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
       G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
 
       fieldMgr->SetMinimumEpsilonStep( minEps );
       fieldMgr->SetMaximumEpsilonStep( maxEps );
-      fieldMgr->SetDeltaOneStep( 0.5e-3 * mm );  // 0.5 micrometer
+      fieldMgr->SetDeltaOneStep( 0.5e-1 * mm );  // 0.5 micrometer
 
       G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
-      tmanager->GetPropagatorInField()->SetLargestAcceptableStep(1*mm);
+      tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
 
       expHall_log ->SetFieldManager ( fieldMgr, true );
 //    localFieldMgr->CreateChordFinder(myField);
@@ -1698,17 +1880,23 @@ ConstructBeamPipe();
    // Import Geant4 geometry to VGM
    //
 
-             Geant4GM::Factory g4Factory;
-             g4Factory.SetDebug(1);
-             g4Factory.Import(expHall_phys);
-     // Export VGM geometry to Root
-     //
-              RootGM::Factory rtFactory;
-              rtFactory.SetDebug(1);
-              g4Factory.Export(&rtFactory);
-              gGeoManager->CloseGeometry();
-              gGeoManager->Export("VGM_test.root");
-   
+//              Geant4GM::Factory g4Factory;
+//              g4Factory.SetDebug(1);
+//              g4Factory.Import(expHall_phys);
+//      // Export VGM geometry to Root
+// 
+//  XmlVGM::GDMLExporter xmlExporter2(&g4Factory);
+//  xmlExporter2.SetFileName("XML_test.xml");
+//  xmlExporter2.GenerateXMLGeometry();
+// 
+//      // Export VGM geometry to Root
+//      //
+//               RootGM::Factory rtFactory;
+//               rtFactory.SetDebug(1);
+//               g4Factory.Export(&rtFactory);
+//               gGeoManager->CloseGeometry();
+//               gGeoManager->Export("VGM_test.root");
+//    
 ///////////////////////////////////////////////////////
 // END OF OPTICAL SURFACES
 ///////////////////////////////////////////////////////
@@ -1833,7 +2021,7 @@ void BETADetectorConstruction::DefineMaterials()
         2.757*eV, 2.820*eV, 2.885*eV, 2.954*eV,
         3.026*eV, 3.102*eV, 3.181*eV, 3.265*eV,
         3.353*eV, 3.446*eV, 3.545*eV, 3.649*eV,
-        3.760*eV, 3.877*eV, 4.002*eV, 9.136*eV
+        3.760*eV, 3.877*eV, 4.002*eV, 20.0*eV
       };
 
 // Water
@@ -1899,6 +2087,7 @@ void BETADetectorConstruction::DefineMaterials()
 
    G4MaterialPropertiesTable* myMPT2 = new G4MaterialPropertiesTable();
    myMPT2->AddProperty ( "RINDEX", PhotonEnergy, RefractiveIndex2, nEntries );
+   myMPT2->AddProperty ( "ABSLENGTH",    PhotonEnergy, Absorption1,     nEntries );
 
    Air->SetMaterialPropertiesTable ( myMPT2 );
 
@@ -1918,33 +2107,6 @@ void BETADetectorConstruction::DefineMaterials()
 
    Vacuum->SetMaterialPropertiesTable ( myMPTV );
 
-//
-// Lucite
-//
-   const int lucitedatapoints =  13;
-   G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
-      {1.57*eV,1.82*eV,2.27*eV,2.89*eV,3.48013631*eV,
-       3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
-       3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV
-      };
-
-   G4double LuciteRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
-      {1.49,1.49,1.49,1.49,1.49,1.49,1.49
-       ,1.49,1.49,1.49,1.49,1.49,1.49
-      };
-
-   G4double LuciteAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
-      {0.2611*m, 0.2791*m, 0.2791*m, 0.26115*m,
-       0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
-       0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
-       0.021193*m
-      };
-
-
-   G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
-   myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, 13 );
-   myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     13 );
-   Lucite->SetMaterialPropertiesTable ( myMPTL );
 
 
 //
@@ -1996,6 +2158,7 @@ void BETADetectorConstruction::DefineMaterials()
    myMPTQ->AddProperty ( "RINDEX", NitrogenPhotonEnergy, QuartzRefractiveIndexN, nEnergies );
    Quartz->SetMaterialPropertiesTable ( myMPTQ );
 
+  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // END OF MATERIALS
@@ -2356,7 +2519,6 @@ void BETADetectorConstruction::ConstructTCan()
 }
 
 //___________________________________________________________________
-//Constructs the Liquid Nitrogen Shield
 void BETADetectorConstruction::ConstructN2Shield()
 {
    //Similar to the target can itself, just a little smaller.

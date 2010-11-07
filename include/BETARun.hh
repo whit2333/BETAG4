@@ -8,7 +8,7 @@
 #include "BETAAnalysisManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
-
+#include "InSANERun.h"
 // ROOT //
 #include "Riostream.h"
 #include "TFile.h"
@@ -57,7 +57,6 @@ class BETAAnalysisManager;
 class BETADetectorConstruction;
 class BETAG4EventRecorder;
 
-
 /**
  * \ingroup Runs
  */
@@ -68,7 +67,7 @@ class BETAG4EventRecorder;
 /**
  * Concrete class implementation of G4Run. 
  * Here is where we select the data we wish to record.
- * The important method here is RecordEvent which is called at then
+ * The important s here is RecordEvent which is called at then
  * end of each event.
  */
 class BETARun : public G4Run {
@@ -76,13 +75,13 @@ class BETARun : public G4Run {
 public:
 
 /**
- *  Constructor opens ROOT file \todo{ open new file or append to existing flag...}.)
+ *  Constructor opens ROOT file \todo{ add open new file or append to existing flag...}.)
  */
   BETARun(const int runNumber,const int showThePlots);
 /**
  *  Destructor
  */
-  virtual ~BETARun();
+  ~BETARun();
 
 /**
  * Used to fill out event classes which are trees and branches in the output file
@@ -107,9 +106,12 @@ public:
   HallCBeamEvent * beamEvent;
 /// Contains all the Thrown and unrealistically obtained Montecarlo data
   BETAG4MonteCarloEvent * mcEvent;
+/// Simulation Run object
+  InSANERun * simulationRun;
+
 
 /// Override this method in G4Run
-virtual void RecordEvent(const G4Event*);
+ void RecordEvent(const G4Event*);
 /// Returns the Analysis manager singleton
  BETAAnalysisManager* GetRunAnalysisManager() const { return analysisManager ;}
 
@@ -135,6 +137,10 @@ int FillGasCherenkovEvent();
  */
 int FillBigcalEvent();
 
+
+/**
+ *
+ */
    BETAHodoscopePMTHitsCollection * hodoscopepmtHC;
    BETAPMTHitsCollection * pmtHC;
    BETARCSCalorimeterHitsCollection * BIGCALHC;
@@ -142,6 +148,8 @@ int FillBigcalEvent();
    BETAFrontTrackerHitsCollection * FTHC;
    BETAMirrorHitsCollection * mirrorHC ;
    BETAFakePlaneHitsCollection * fakePlaneHC;
+
+
 
 bool catLastFile;
 bool fShowUnrealisticData;

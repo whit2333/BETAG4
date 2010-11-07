@@ -54,34 +54,34 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
    G4Track * theTrack = aStep->GetTrack();
    int pid;
    double energy = theTrack->GetTotalEnergy();
-
+G4cout << "Process Fake Plane Hit\n";
    if (energy/MeV >10) {     // 10 MeV is bigcal thrshold
 
       if ( theTrack->GetDefinition() == G4Electron::ElectronDefinition()  &&
-           ( theTrack->GetVolume()->GetName() == "planeBehindTracker_phys"  ) &&       theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
+           ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&       theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
       {
          pid = 1;
       }
       else if ( theTrack->GetDefinition() == G4Positron::PositronDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "planeBehindTracker_phys"  ) &&
+                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
       {
          pid = 2;
       }
       else if ( theTrack->GetDefinition() == G4PionPlus::PionPlusDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "planeBehindTracker_phys"  ) &&
+                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
       {
          pid = 3;
       }
       else if ( theTrack->GetDefinition() == G4PionMinus::PionMinusDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "planeBehindTracker_phys"  ) &&
+                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
       {
          pid = 4;
       }
       else if ( theTrack->GetDefinition() == G4Gamma::GammaDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "planeBehindTracker_phys"  ) &&
+                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
       {
          pid = 5;
@@ -102,11 +102,12 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
       aHit->energy     =    theTrack->GetTotalEnergy();
 
    } // end of energy threshold
+G4cout << "Done processing Fake Plane Hit\n";
 
    return true;
 }
 
 void BETAFakePlane::EndOfEvent ( G4HCofThisEvent* )
 {
-   ;
+G4cout << "End of Event from Fake Plane \n";
 }

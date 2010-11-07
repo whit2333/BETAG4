@@ -13,7 +13,9 @@ class BETASteppingAction : public G4UserSteppingAction
     virtual void UserSteppingAction(const G4Step*);
 
   private:
- 
+  G4int fLastTrackIdInTracker;
+  G4int fConsecutiveSteps;
+  G4int fLastStepNumberInTracker;
 
 };
 

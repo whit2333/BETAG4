@@ -22,8 +22,8 @@
 #include "G4OpBoundaryProcess.hh"
 
 #include "G4GammaConversionToMuons.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+#include "G4StepLimiter.hh"
+#include "G4UserSpecialCuts.hh"
 
 BETAPhysicsList::BETAPhysicsList() :  G4VUserPhysicsList()
 {
@@ -246,11 +246,11 @@ void BETAPhysicsList::ConstructOp()
 
    SetVerbose ( 0 );
 
-   theCerenkovProcess->SetMaxNumPhotonsPerStep ( 300 );
+   theCerenkovProcess->SetMaxNumPhotonsPerStep ( 150 );
    theCerenkovProcess->SetTrackSecondariesFirst ( true );
 
    theScintillationProcess->SetScintillationYieldFactor ( 1. );
-   theScintillationProcess->SetTrackSecondariesFirst ( true );
+//   theScintillationProcess->SetTrackSecondariesFirst ( true );
 
    G4OpticalSurfaceModel themodel = unified;
    theBoundaryProcess->SetModel ( themodel );
@@ -282,6 +282,8 @@ void BETAPhysicsList::ConstructOp()
          pmanager->AddDiscreteProcess ( theRayleighScatteringProcess );
          pmanager->AddDiscreteProcess ( theBoundaryProcess );
          pmanager->AddDiscreteProcess ( theCerenkovProcess );
+         pmanager->AddDiscreteProcess(new G4StepLimiter);
+         pmanager->AddDiscreteProcess(new G4UserSpecialCuts);
 
       }
    }
