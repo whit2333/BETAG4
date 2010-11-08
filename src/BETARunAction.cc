@@ -17,14 +17,14 @@
 
 //_________________________________________________________________//
 
-BETARunAction::BETARunAction() :runNumber ( 0 ),showThePlots ( 0 )
+BETARunAction::BETARunAction() :showThePlots ( 0 )
 {
-   input_file.open ( "run.txt" );
-   input_file >> runNumber ;
-   input_file.close();
+
+   fSimulationManager = BETASimulationManager::getInstance();
+   fRunNumber = fSimulationManager->RetrieveRunNumber();
    messenger = new BETARunActionMessenger ( this );
    timer = new G4Timer;
-   currentRun=0;
+   fCurrentRun=0;
 }
 
 //_________________________________________________________________//
@@ -40,28 +40,22 @@ BETARunAction::~BETARunAction()
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 {
 //G4cout <<"START of RUN ACTION"<< G4endl;
-   G4cout <<"=================== RUN #" << runNumber << " ===================" << G4endl;
+   G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
 
 /**
  *  Fills the database as much as possible
  *  Grabs the runmanager and
  */
-G4Run*  BETARunAction::GenerateRun() {
-//    if(currentRun) currentRun;
-//    currentRun=0;
-   runNumber++;
-   output_file.open ( "run.txt" ,ios::trunc); // this incremtents a number so that it acts like a normal DAQ
-   output_file << runNumber ;
-   output_file.close();
-   G4cout << "  ===  RunAction - GenerateRun   " << G4endl;
-   G4cout << " - Creating Run Number " << runNumber << "   " << G4endl;
+G4Run*  BETARunAction::GenerateRun() 
+{
+   fRunNumber = fSimulationManager->IncrementRunNumber();
+
+   G4cout << "= BETARunAction - GenerateRun   " << G4endl;
+   G4cout << " - Creating Run Number " << fRunNumber << "   " << G4endl;
+   G4RunManager *   runManager = G4RunManager::GetRunManager();
 
    timer->Start();
-
-//   G4cout<<"Creating user define run class BETARun"<<G4endl;
-// analysisManager = BETASimulationManager::getInstance(runNumber);
-   G4RunManager *   runManager = G4RunManager::GetRunManager();
 
 // Get the runmanager and constructors/messengers and only fill the database if
 // you have them!
@@ -72,15 +66,15 @@ G4Run*  BETARunAction::GenerateRun() {
          targetAngle = construction->myField->fUVAMagnet->fPolarizationAngle*180.0/pi;
          //printf("\n got run manager %f\n",targetAngle);
 
-/// FILL THE DATABASE
+// FILL THE DATABASE
          TSQLServer * db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
          TSQLResult * res;
 
          TString SQLq("Insert into BETAG4_run_info set "); // dont forget the extra space at the end
-//aSQL  "Insert into BETAG4_run_info set " ;
+//aSQL  "Insert into BETAG4_run_info set " ;s
 
          SQLq +=" run_number=" ; // Dont add space here
-         SQLq +=runNumber;
+         SQLq +=fRunNumber;
 // starting Date and time
          TDatime * dt = new TDatime();
          TString datetime( dt->AsSQLString() );
@@ -121,8 +115,8 @@ G4Run*  BETARunAction::GenerateRun() {
 
       }
    }
-   currentRun = new BETARun ( runNumber,showThePlots );
-   return (G4Run*)currentRun;
+   fCurrentRun = new BETARun ( fRunNumber,showThePlots );
+   return (G4Run*)fCurrentRun;
 }
 
 /**
@@ -150,7 +144,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
    SQLq += "', number_of_events=";
    SQLq += aRun->GetNumberOfEvent();
    SQLq += " Where run_number=";
-   SQLq += runNumber;
+   SQLq += fRunNumber;
 
 //printf"\n %s  \n",SQLq.Data())  ;
    res = db->Query(SQLq.Data());
@@ -168,11 +162,11 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
            dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->GetSecond(), runNumber) );
    */
 // Print interesting data
-   G4cout <<"=================== END RUN #" << runNumber << "===================" << G4endl;
+   G4cout <<"=================== END RUN #" << fRunNumber << "===================" << G4endl;
    G4cout <<"Number of Events Processed:" <<aRun->GetNumberOfEvent() << " events. " <<G4endl;
-   G4cout <<"PMT/Mirror Eff  " <<currentRun->getPMT_MirrorEfficiency()  <<G4endl;
+   G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
 
-   assert ( 0 != currentRun );
+   assert ( 0 != fCurrentRun );
 //   currentRun->DumpData();
 
 }
@@ -185,4 +179,4 @@ void BETARunAction::showPlot ( int show )
 {
    showThePlots = show;
 }
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//_________________________________________________________________//

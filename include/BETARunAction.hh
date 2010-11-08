@@ -9,21 +9,10 @@
 #include "BETARun.hh"
 #include "BETASimulationManager.hh"
 
-#include "HallCBeamEvent.h"
-#include "HMSEvent.h"
-#include "BETAEvent.h"
-#include "BETAG4MonteCarloEvent.h"
-#include "GasCherenkovEvent.h"
-#include "BigcalEvent.h"
-#include "GasCherenkovHit.h"
-#include "InSANERun.h"
+
 
 
 class BETASimulationManager;
-
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 class G4Timer;
 class G4Run;
 class BETARun;
@@ -73,21 +62,12 @@ class BETARunAction : public G4UserRunAction
 	ifstream input_file ;
 	ofstream output_file ;
 
-/// Contains all BETA detector's data
-  BETAEvent * betaEvent;
-/// Contains all the HMS data
-  HMSEvent* hmsEvent;
-/// Contains all the Hall C beam data
-  HallCBeamEvent * beamEvent;
-/// Contains all the Thrown and unrealistically obtained Montecarlo data
-  BETAG4MonteCarloEvent * mcEvent;
-/// Simulation Run object
-  InSANERun * simulationRun;
 
-    BETASimulationManager* analysisManager;
+
+    BETASimulationManager* fSimulationManager;
     G4Timer* timer;
-    BETARun* currentRun;
-    int runNumber;
+    BETARun* fCurrentRun;
+    int fRunNumber;
     int showThePlots;
     BETARunActionMessenger* messenger;
  

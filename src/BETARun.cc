@@ -48,7 +48,7 @@ G4cout << " - Created new BETARun \n";
    fShowUnrealisticData  = false;
    cer_tdc_thresh = 2;/// Time comes from 2nd photon detected
 
-   analysisManager = BETASimulationManager::getInstance ( showThePlots );
+   analysisManager = BETASimulationManager::getInstance ();
    if(analysisManager) {
      analysisManager->SetDetectorVerbosity("GasCherenkov",0);
    }

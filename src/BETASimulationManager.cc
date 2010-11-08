@@ -9,37 +9,41 @@
 #include "BETASimulationManager.hh"
 #include <string>  //For the string functions
 #include <sstream>
-#include "BETASimulationMessenger.hh"
+#include "BETASimulationMessenger.hh"s
+//_________________________________________________________________//
 
 BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
+//_________________________________________________________________//
 
-BETASimulationManager::BETASimulationManager (  const int showThePlots )
-{
-   showPlot(showThePlots);
-   messenger = new BETASimulationMessenger ( this );
-fGasCherenkovVerbosity=0;
-fBigcalVerbosity=0;
-fLuciteHodoscopeVerbosity=0;
-fForwardTrackerVerbosity=0;
+BETASimulationManager::BETASimulationManager ():fIsAppendMode(false),fRunNumber(0),plotVis(0){
+
+  fSimulationMessenger = new BETASimulationMessenger ( this );
+   showPlot(plotVis);
+   fGasCherenkovVerbosity=0;
+   fBigcalVerbosity=0;
+   fLuciteHodoscopeVerbosity=0;
+   fForwardTrackerVerbosity=0;
 }
+//_________________________________________________________________//
 
 BETASimulationManager::~BETASimulationManager()
 {
-   delete messenger;
-
+   delete fSimulationMessenger;
 }
+//_________________________________________________________________//
 
-BETASimulationManager* BETASimulationManager::getInstance ( const int showThePlots )
+BETASimulationManager* BETASimulationManager::getInstance (  )
 {
    if ( fgBETASimulationManager == 0 )
    {
-      fgBETASimulationManager = new BETASimulationManager ( showThePlots ) ;
+      fgBETASimulationManager = new BETASimulationManager ( ) ;
    }
    else  {
-      G4cout << " Returning already existing analysis manager. " << G4endl;
+      G4cout << " Returning already existing simulation manager. " << G4endl;
    }
    return fgBETASimulationManager;
 }
+//_________________________________________________________________//
 
 void BETASimulationManager::dispose()
 {
@@ -49,17 +53,19 @@ void BETASimulationManager::dispose()
       fgBETASimulationManager = 0;
    }
 }
-
+//_________________________________________________________________//
 
 void BETASimulationManager::showPlot ( int arg )
 {
    plotVis = arg;
 }
+//_________________________________________________________________//
 
 void BETASimulationManager::write()
 {
 
 }
+//_________________________________________________________________//
 
 void BETASimulationManager::SetDetectorVerbosity( char * detName, int level) {
   if( detName == "GasCherenkov" ) {
@@ -74,7 +80,7 @@ void BETASimulationManager::SetDetectorVerbosity( char * detName, int level) {
     std::cout << "No such detector, " << detName << "\n";
   }
 }
-
+//_________________________________________________________________//
 
 int BETASimulationManager::GetDetectorVerbosity( char * detName) {
 
@@ -89,4 +95,26 @@ return(1);
   }
     return(-1);
 }
+//_________________________________________________________________//
 
+int BETASimulationManager::RetrieveRunNumber()
+{
+   ifstream input_file;
+   input_file.open ( "run.txt" );
+   input_file >> fRunNumber ;
+   input_file.close(); 
+   return(fRunNumber);
+}
+//_________________________________________________________________//
+
+int BETASimulationManager::IncrementRunNumber()   
+{
+   fRunNumber++; 
+   ofstream output_file;
+   output_file.open ( "run.txt" ,ios::trunc); // this incremtents a number so that it acts like a normal DAQ
+   output_file << fRunNumber ;
+   output_file.close();
+
+   return fRunNumber;
+}
+//_________________________________________________________________//
