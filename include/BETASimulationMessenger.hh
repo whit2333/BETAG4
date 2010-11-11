@@ -3,14 +3,17 @@
 
 #include "G4UImessenger.hh"
 #include "globals.hh"
-#include "BETASimulationManager.hh"
 #include "G4UIcmdWithAnInteger.hh"
+#include "G4UIcmdWithADouble.hh"
+#include "G4UIcmdWithAString.hh"
 
 #include "BETADetectorMessenger.hh"
 #include "BETAPhysicsListMessenger.hh"
 #include "BETAPrimaryGeneratorMessenger.hh"
 #include "BETARunActionMessenger.hh"
 #include "BETAEventActionMessenger.hh"
+#include "BETADetectorConstruction.hh"
+#include "BETASimulationManager.hh"
 
 class G4UIdirectory;
 class G4UIcmdWithoutParameter;
@@ -26,7 +29,9 @@ class BETASimulationMessenger: public G4UImessenger
   public:
     BETASimulationMessenger(BETASimulationManager* );
    ~BETASimulationMessenger();
-    
+
+    void AddDetectorUICommands();
+
     void SetNewValue(G4UIcommand*, G4String);
     
   private:
@@ -35,6 +40,20 @@ class BETASimulationMessenger: public G4UImessenger
     G4UIdirectory*               analysis; 
     G4UIcmdWithoutParameter*   writeTree;
     G4UIcmdWithAnInteger*	showPlot;
+
+// Detector  Construction
+    BETADetectorConstruction * construction;
+    G4UIdirectory*               fieldDir; 
+    G4UIcmdWithoutParameter*   polSwitch;
+    G4UIcmdWithAString*   lookAtField;
+
+
+    G4UIcmdWithADouble*        polSet;
+    G4UIcmdWithADouble*        rotateToroidalMirrors;
+    G4UIcmdWithAString*        rotateMirror;
+
+
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -54,7 +54,7 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
    G4Track * theTrack = aStep->GetTrack();
    int pid;
    double energy = theTrack->GetTotalEnergy();
-G4cout << "Process Fake Plane Hit\n";
+//G4cout << "Process Fake Plane Hit\n";
    if (energy/MeV >10) {     // 10 MeV is bigcal thrshold
 
       if ( theTrack->GetDefinition() == G4Electron::ElectronDefinition()  &&
@@ -102,12 +102,12 @@ G4cout << "Process Fake Plane Hit\n";
       aHit->energy     =    theTrack->GetTotalEnergy();
 
    } // end of energy threshold
-G4cout << "Done processing Fake Plane Hit\n";
+//G4cout << "Done processing Fake Plane Hit\n";
 
    return true;
 }
 
 void BETAFakePlane::EndOfEvent ( G4HCofThisEvent* )
 {
-G4cout << "End of Event from Fake Plane \n";
+//G4cout << "End of Event from Fake Plane \n";
 }

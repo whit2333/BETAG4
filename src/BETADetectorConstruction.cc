@@ -49,11 +49,12 @@
 #include "BETASimulationManager.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
-#include "BETADetectorConstruction.hh"
 
 //___________________________________________________________________
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
+
+   fSimulationManager = BETASimulationManager::getInstance();
    usingGasCherenkov       = true;
    usingBigcal             = true;
    usingLuciteHodoscope    = true;
@@ -158,7 +159,6 @@ void BETADetectorConstruction::ConstructForwardTracker()
 ////////////////////////////////////////////////////////////////
 // Front Tracker  //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
-
    G4double smallSeparation = 0.01*mm;
    G4RotationMatrix trackerRot;
    trackerRot.rotateZ (-1.0*PI/2.0 ); 
@@ -199,11 +199,22 @@ void BETADetectorConstruction::ConstructForwardTracker()
                           3.*mm/2.0,         // y half length
                           3.*mm/2.0 );     // z half length
 // New replicas
-   G4LogicalVolume*   horizBar_log = new G4LogicalVolume ( horizBar,Lucite,"horizBar_log",0,0,0 );
-   G4LogicalVolume*   vertBar_log = new G4LogicalVolume ( vertBar,Lucite,"vertBar_log",0,0,0 );
-   G4LogicalVolume*   horizBarScore_log = new G4LogicalVolume ( horizBarScore,Air,"horizBarScore_log",0,0,0 );
-   G4LogicalVolume*   vertBarScore_log = new G4LogicalVolume ( vertBarScore,Air,"vertBarScore_log",0,0,0 );
+   G4LogicalVolume*   horizBar_log ;
+   G4LogicalVolume*   vertBar_log ;
+   G4LogicalVolume*   horizBarScore_log ;
+   G4LogicalVolume*   vertBarScore_log ;
 
+   if(fSimulationManager->fSimulateTrackerOptics) {
+     horizBar_log = new G4LogicalVolume ( horizBar,Lucite,"horizBar_log",0,0,0 );
+     vertBar_log = new G4LogicalVolume ( vertBar,Lucite,"vertBar_log",0,0,0 );
+     horizBarScore_log = new G4LogicalVolume ( horizBarScore,Air,"horizBarScore_log",0,0,0 );
+     vertBarScore_log = new G4LogicalVolume ( vertBarScore,Air,"vertBarScore_log",0,0,0 );
+   } else {
+     horizBar_log = new G4LogicalVolume ( horizBar,Lucite_NoOptics,"horizBar_log",0,0,0 );
+     vertBar_log = new G4LogicalVolume ( vertBar,Lucite_NoOptics,"vertBar_log",0,0,0 );
+     horizBarScore_log = new G4LogicalVolume ( horizBarScore,Air,"horizBarScore_log",0,0,0 );
+     vertBarScore_log = new G4LogicalVolume ( vertBarScore,Air,"vertBarScore_log",0,0,0 );   
+   }
    new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.+smallSeparation/2.0,0 ),vertBarScore_log, "verttracker+leftBox", vertBar_log,false,0 );
    new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),vertBarScore_log, "verttracker+leftBox+rightbox", vertBar_log,false,0 );
 
@@ -215,11 +226,11 @@ void BETADetectorConstruction::ConstructForwardTracker()
    G4LogicalVolume*   trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"trackerY2_log",0,0,0 );
    G4LogicalVolume*   trackerX1_log = new G4LogicalVolume ( trackerX1_box,Air,"trackerX1_log",0,0,0 );
 
-trackerX1_log->SetVisAttributes(G4Colour(0.5,0.0,0.0));
-trackerY1_log->SetVisAttributes(G4Colour(0.0,0.5,0.0));
-trackerY2_log->SetVisAttributes(G4Colour(0.0,0.0,0.5));
-horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.9,0.1));
-vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.9,0.1));
+trackerX1_log->SetVisAttributes(G4Colour(0.2,0.6,0.0));
+trackerY1_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
+trackerY2_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
+horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.0,0.8));
+vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
 
    G4VPhysicalVolume* trackerY1_phys = 
      new G4PVReplica("trackerY1_phys", vertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
@@ -299,7 +310,6 @@ trackerLightCollectionX_log->SetVisAttributes(lightCollectionFTAttributes);
                            FrontTrackerParam );        // Parameterisation
 */
 
-
    G4OpticalSurface* forwardTrackerSurface = new G4OpticalSurface ( "TrackerBarOpticalSurface" );
      forwardTrackerSurface->SetModel ( unified );
      forwardTrackerSurface->SetType ( dielectric_dielectric );
@@ -310,10 +320,16 @@ trackerLightCollectionX_log->SetVisAttributes(lightCollectionFTAttributes);
      scoringSurface->SetType ( dielectric_metal);
      scoringSurface->SetFinish ( groundbackpainted);
 
-   new G4LogicalSkinSurface ( "BorderTrackerBar",  vertBar_log, forwardTrackerSurface );
-   new G4LogicalSkinSurface ( "aBorderTrackerBar", vertBarScore_log, scoringSurface );
-   new G4LogicalSkinSurface ( "BorderTrackerBar", horizBar_log, forwardTrackerSurface );
-   new G4LogicalSkinSurface ( "aBorderTrackerBar",horizBarScore_log, scoringSurface );
+if(fSimulationManager->fSimulateTrackerOptics) {
+   new G4LogicalSkinSurface ( "vertTrackerBarSurf",  vertBar_log, forwardTrackerSurface );
+   new G4LogicalSkinSurface ( "horizTrackerBarSurf", horizBar_log, forwardTrackerSurface );
+} else {
+   new G4LogicalSkinSurface ( "vertTrackerBarSurf",  vertBar_log, scoringSurface );
+   new G4LogicalSkinSurface ( "horizTrackerBarSurf", horizBar_log, scoringSurface );
+}
+   new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", vertBarScore_log, scoringSurface );
+   new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",horizBarScore_log, scoringSurface );
+
    // Get pointer to detector manager
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
@@ -322,6 +338,8 @@ trackerLightCollectionX_log->SetVisAttributes(lightCollectionFTAttributes);
    // Register detector with manager
    manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
+   horizBar_log->SetSensitiveDetector ( frontTracker );
+   vertBar_log->SetSensitiveDetector ( frontTracker );
    horizBarScore_log->SetSensitiveDetector ( frontTracker );
    vertBarScore_log->SetSensitiveDetector ( frontTracker );
 
@@ -393,25 +411,27 @@ void BETADetectorConstruction::ConstructHodoscope()
    G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. );
 
 
-   G4LogicalVolume* hodoscopeBar_log =
-      new G4LogicalVolume ( hoBar,     // Solid
-                            Lucite,                    // Material
-                            "hodoscopeBAAAAAR_Logical" ); // Name
-
-
    G4LogicalVolume* hodoscope_log =
       new G4LogicalVolume ( hodoscope,     // Solid
                             Air,                    // Material
                             "hodoscope_Logical" ); // Name
-
+  G4LogicalVolume* hodoscopeBar_log;
+  if(fSimulationManager->fSimulateHodoscopeOptics) {
+    hodoscopeBar_log = new G4LogicalVolume ( hoBar, Lucite,"hodoscopeBAAAAAR_Logical" );
+  } else {
+    hodoscopeBar_log = new G4LogicalVolume ( hoBar, Lucite_NoOptics,"hodoscopeBAAAAAR_Logical" );
+  }
    G4VPhysicalVolume * hodoscope_phys = new G4PVPlacement ( G4Transform3D ( hodBarRotate,G4ThreeVector ( 0*m,0*m,-240.*cm ) ), hodoscope_log,  // Logical volume
                                                             "hodoscope_Physical",     // Name
                                                             hodoscopeContainerBox_log,             // Mother volume
                                                             false,                      // Unused boolean
                                                             0 );
-
-
-   G4VPVParameterisation* HodoscopeCellParam = new BETAHodoscopeCellParameterisation ( Lucite );
+   G4VPVParameterisation* HodoscopeCellParam;
+   if(fSimulationManager->fSimulateHodoscopeOptics) {
+     HodoscopeCellParam= new BETAHodoscopeCellParameterisation ( Lucite );
+   } else {
+     HodoscopeCellParam = new BETAHodoscopeCellParameterisation ( Lucite_NoOptics );
+   }
 // G4VNestedParameterisation* HodoscopePMTParam = new BETAHodoscopePMTParameterisation();
 
 
@@ -432,6 +452,7 @@ void BETADetectorConstruction::ConstructHodoscope()
 
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
+
    /*
       G4VSensitiveDetector* BIGCALProtvino =
        new BETAProtvinoCalorimeter("BIGCALProtvino");
@@ -441,69 +462,51 @@ void BETADetectorConstruction::ConstructHodoscope()
       cellLogicalBottom->SetSensitiveDetector(BIGCALProtvino);
    */
 
+// LUCITE                                   TOTAL INTERNAL REFLECTION
+//    G4double LRefrac[num] = {1.49,1.49};
+/// \note A 5eV photon has a wavelength of about 27nm
+/// 1/(5.0 * 1.602*10^(-19)/(6.626*10^-34))/(3*10^-17)
 
+/// \note formula From energy (eV) to wavelength (nm) is lambda=137.86/E
+/// 
+/// \note we hardly need to go up to 10 eV in photon energy. We should gust do ~680nm t0 ~100nm
+/// which correspons to about 0.2 to 1.4
+// Lucite
+//
+
+
+//    G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
+//    myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
+//    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
+//    Lucite->SetMaterialPropertiesTable ( myMPTL );
 
 // OPTICS
    const G4int num = 2;
-   G4double Ephoton[num] = {1.0*eV, 10.0*eV};
+   G4double Ephoton[num] = {0.2*eV, 1.4*eV};
 
-   G4double RefractiveIndex[num] = {1.00029, 1.00048};
+   G4double RefractiveIndex[num] = {1.49, 1.49};
    G4double SpecularLobe[num]    = {0.3, 0.3};
    G4double SpecularSpike[num]   = {0.2, 0.2};
    G4double Backscatter[num]     = {0.2, 0.2};
    G4double Reflectivity[num] = {0.3, 0.5};
    G4double Efficiency[num]   = {1.0, 1.0};
 
+   G4double EphotonLucite[2] = {0.2*eV, 1.4*eV};
+   G4double LReflectivity[2] = {0.99, 0.99};
+   G4double luciteRefractiveIndex[2] = {1.49, 1.49};
 
-
-////////////////////////////////
-// LUCITE                                   TOTAL INTERNAL REFLECTION
-////////////////////////////////
-
-//    G4double LRefrac[num] = {1.49,1.49};
-// 
-
-//
-// Lucite
-//
-   const int lucitedatapoints =  14;
-   G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
-      {0.5*eV,1.82*eV,2.27*eV,2.89*eV,3.48013631*eV,
-       3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
-       3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV,10.0*eV
-      };
-
-   G4double LuciteRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
-      {1.49,1.49,1.49,1.49,1.49,1.49,1.49
-       ,1.49,1.49,1.49,1.49,1.49,1.49,1.49
-      };
-
-   G4double LuciteAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
-      {0.2611*m, 0.2791*m, 0.2791*m, 0.26115*m,
-       0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
-       0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
-       0.021193*m,0.021193*m
-      };
-   G4double EphotonLucite[num] = {0.5*eV, 10.0*eV};
-   G4double LReflectivity[num] = {0.99, 0.99};
-//    G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
-//    myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
-//    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
-//    Lucite->SetMaterialPropertiesTable ( myMPTL );
 
    G4OpticalSurface* LuciteSurface = new G4OpticalSurface ( "LuciteSurface" );
 
-
    G4MaterialPropertiesTable* LuciteSurfacePTable = new G4MaterialPropertiesTable();
-   LuciteSurfacePTable->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
-   LuciteSurfacePTable->AddProperty ( "REFLECTIVITY", EphotonLucite, LReflectivity, num );
-   LuciteSurfacePTable->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
-
+   LuciteSurfacePTable->AddProperty ( "RINDEX", EphotonLucite, luciteRefractiveIndex, 2);
+   LuciteSurfacePTable->AddProperty ( "REFLECTIVITY", EphotonLucite, LReflectivity, 2 );
+/*   LuciteSurfacePTable->AddProperty ( "ABSLENGTH",    EphotonLucite, LuciteAbsLength,     lucitedatapoints );*/
 //   LuciteSurfacePTable->AddProperty("SPECULARLOBECONSTANT",  EphotonLucite, MSpecularLobe,    num);
 //   LuciteSurfacePTable->AddProperty("SPECULARSPIKECONSTANT", EphotonLucite, MSpecularSpike,   num);
 //   LuciteSurfacePTable->AddProperty("BACKSCATTERCONSTANT",   EphotonLucite, MBackscatter,     num);
 //   LuciteSurfacePTable->AddProperty("EFFICIENCY",   EphotonLucite, MEfficiency,   num);
-   Lucite->SetMaterialPropertiesTable ( LuciteSurfacePTable );
+
    LuciteSurface->SetMaterialPropertiesTable ( LuciteSurfacePTable );
    LuciteSurface->SetModel ( unified );
    LuciteSurface->SetType ( dielectric_dielectric );
@@ -644,7 +647,8 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.1,0.5,0.0 ) );
    BIGCALAttributes->SetForceSolid ( true );
-   BIGCALAttributes->SetDaughtersInvisible(false);
+   BIGCALAttributes->SetForceWireframe( true );
+   BIGCALAttributes->SetDaughtersInvisible(true  );
    calorimeterTop_log->SetVisAttributes(BIGCALAttributes);
    calorimeterBottom_log->SetVisAttributes(BIGCALAttributes);
 
@@ -656,7 +660,7 @@ void BETADetectorConstruction::ConstructBIGCAL()
    calorimeterTop_log->SetVisAttributes ( G4VisAttributes::Invisible );
    calorimeterBottom_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
- G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.2,0.0,0.25 )  );
+ G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.6,0.0,0.25 )  );
 BIGCALCellAttributes->SetForceSolid ( true );
   cellLogical->SetVisAttributes(BIGCALCellAttributes );
   cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
@@ -706,10 +710,7 @@ void BETADetectorConstruction::ConstructCherenkov()
    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
    G4double ySnoutBase =ySnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
    G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
-
    tankVolume = ( xSnoutBase+xSnoutEnd ) /2 * ( ySnoutBase+ySnoutEnd ) /2 * zSnout + tankVolume;
-
-
 
 // PMT Mount
    G4double PMTmountLength = ( 10.0 ) *2.54*cm, //0.5 is thickness of backplate
@@ -783,7 +784,6 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
 
    G4RotationMatrix* oldCoordRot = new G4RotationMatrix;
      oldCoordRot->rotateZ ( -pi/2.0);
-
 
    G4RotationMatrix* noRot = new G4RotationMatrix;
    G4RotationMatrix* xRotNear = new G4RotationMatrix;
@@ -985,8 +985,11 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4LogicalVolume * cherenkovContainer_log = new G4LogicalVolume ( cherenkovContainerBox, Air,"cherenkovContainter_log",0,0,0 );
 //    G4VPhysicalVolume * cherenkovContainer_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,cherenkovPositionInContainer ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
-
-   tank_log = new G4LogicalVolume ( TANK, NitrogenGas,"tank_log",0,0,0 );
+   if(fSimulationManager->fSimulateCherenkovOptics) {
+     tank_log = new G4LogicalVolume ( TANK, NitrogenGas,"tank_log",0,0,0 );
+   } else {
+     tank_log = new G4LogicalVolume ( TANK, NitrogenGas_NoOptics,"tank_log",0,0,0 );
+   }
    G4VPhysicalVolume * tank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
    G4Box * tedlarFront = new  G4Box ( "tedlarFrontBox", xSnoutEnd/2, ySnoutEnd/2, frontWindowThickness );
@@ -1285,14 +1288,13 @@ G4double farMirrorAngle = 20* pi/180;
 
    G4IntersectionSolid * nearMirrorGlass = new G4IntersectionSolid ( "3mm thick glass spherical mirror near", nearMirrorBox, nearMirrorSphere,0,G4ThreeVector ( 0,0,-nearMirrorRadius ) );
 
+
 //// Temporary Far Spherical Mirror
    G4Sphere * farMirrorSphere = new G4Sphere ( "SphericalMirrorfar", farMirrorRadius, farMirrorRadius+mirrorThickness,0,360*deg,0,90*deg );
 
    G4Box* farMirrorBox = new G4Box ( "farMirrorBox", xFarMirrorBox/2, yFarMirrorBox/2,farMirrorRadius+2*mirrorThickness );
 
    G4IntersectionSolid * farMirrorGlass = new G4IntersectionSolid ( "3mm thick glass spherical mirror far", farMirrorBox, farMirrorSphere,0,G4ThreeVector ( 0,0,-farMirrorRadius ) );
-
-
 
    G4Sphere * OUTSIDEsphere = new G4Sphere ( "SphericalMirrorfar", 0, farToroidalAxisRadius+farToroidalTubeRadius+mirrorThickness,0,360*deg,0,180*deg );
 
@@ -1366,11 +1368,12 @@ G4double farMirrorAngle = 20* pi/180;
    pmtRM7.rotateY ( pmtbeta7 );
 
 
-// Logical Volumes - MIRRORS
+/// Gas Cherenkov spherical mirror Logical Volume
    nearMirrorGlass_log = new G4LogicalVolume ( nearMirrorGlass, Glass,"nearMirrorBox_log",0,0,0 );
+/// Gas Cherenkov elliptical approximation to a toroidal mirror Logical Volume
    farMirrorGlass_log = new G4LogicalVolume ( farMirrorGlassElliptical, Glass,"farMirrorBox_log",0,0,0 );
 
-// Physical Volumes - MIRRORS
+/// Physical Volumes - MIRRORS
    MirrorGlass_phys1 = new G4PVPlacement ( G4Transform3D ( RM1,mirror12 ), nearMirrorGlass_log , "Near - Mirror",  tank_log, false,1 );
 
    MirrorGlass_phys2 = new G4PVPlacement ( G4Transform3D ( RM2,mirror11 ), farMirrorGlass_log , "Far - Mirror",  tank_log, false,2 );
@@ -1390,15 +1393,49 @@ G4double farMirrorAngle = 20* pi/180;
 
 //
 // temp counting box
+  
 //
    G4Box * somevolume = new G4Box ( "someBox", xPMTmountPanel/2, yPMTmountPanel/2, 1*cm );
    G4LogicalVolume * somevolume_log = new G4LogicalVolume ( somevolume, NitrogenGas, "somevolume_log", 0,0,0 );
 //  G4VPhysicalVolume * somevolume_phys = new G4PVPlacement(G4Transform3D(ROTATE45DEG, G4ThreeVector(0, -yTankFrontEnd/2 , -zTank/2  )), somevolume_log,  "somevolume_phys", tank_log, false,0);
 
+/// scoring       
+
+  G4double tubeDiameter=4.0*2.54*cm;
+  G4double tubeLength=15.0*2.54*cm;
+
+ G4double  MUtubeID=3.01*2.54*cm;
+ G4double  MUtubeLength=14.0*2.54*cm;
+ G4double  MUtubeThickness=4.0*mm;
+
+  G4double PMTtubeDiameter=3.0*2.54*cm;
+  G4double PMTtubeLength=3.0*2.54*cm;
+
+  G4Tubs * PMTcontainer =  new G4Tubs("PMTcontainer", 0., tubeDiameter/2.0, tubeLength/2.0, 0., 7.);
+  G4Tubs * PMT =  new G4Tubs("PMT", 0., PMTtubeDiameter/2.0, PMTtubeLength/2.0, 0., 7.);
+  G4Tubs * MU =  new G4Tubs("MU", 0., MUtubeID/2.0, tubeLength, 0., 7.);
+  G4Tubs * MU2 =  new G4Tubs("MU2", 0., (MUtubeID+MUtubeThickness)/2.0, tubeLength/2.0, 0., 7.);
+          G4RotationMatrix unitrm;
+
+ //   fit perfectly with the real can. Do it for the cavity too.
+   G4VSolid* MUPipe =
+      new G4SubtractionSolid("MUPipe", MU2, MU,G4Transform3D(unitrm,G4ThreeVector(0.,0.,0.)));
+/*,
+                             G4Transform3D(,
+                                           G4ThreeVector(0,0,-4.8433/2*m)));*/
+  G4LogicalVolume * container_log = new G4LogicalVolume(PMTcontainer, NitrogenGas, "PipeCav1");
+  G4LogicalVolume * MUPipe_log = new G4LogicalVolume(MUPipe, ((G4NistManager*)G4NistManager::Instance())->FindOrBuildMaterial ( "G4_Fe" ), "MUPipe_log");
+   new G4PVPlacement(G4Transform3D(unitrm,G4ThreeVector()),MUPipe_log, "PMT+mumetal",container_log, false, 0);
+
+  BETASimulationManager::getInstance()->InitScoring();
+
+   BETAG4PMT* aPMTModel =
+      new BETAG4PMT ( "PMTG4" );
 
 
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
-   G4LogicalVolume * pmtFace_log = new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
+   G4LogicalVolume * pmtFace_log =//container_log;
+    new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
 
    G4VPhysicalVolume * pmtFace1_phys = new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1 );
    G4VPhysicalVolume * pmtFace2_phys = new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2 );
@@ -1415,7 +1452,6 @@ G4double farMirrorAngle = 20* pi/180;
    std::cout << "\n\nPMT#4 : POSITION (" << localPosition.x()/cm << ", " << localPosition.y()/cm << ", " <<localPosition.z()/cm << ") and Field \n\n" ;
 //     G4ThreeVector localPosition = theTouchable->GetHistory()->
 //                                   GetTopTransform().TransformPoint(worldPosition);
-
 /////////////////////////////////////////////////
 // Pmt Detector Faces
 /////////////////////////////////////////////////
@@ -1423,26 +1459,27 @@ G4double farMirrorAngle = 20* pi/180;
    // Create a new sensitive detector named "MyDetector"
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-
    G4VSensitiveDetector* CherenkovTank =
       new BETAPMT ( "PMT" );
 
    // Register detector with manager
-   manager->AddNewDetector ( CherenkovTank );
+//   manager->AddNewDetector ( CherenkovTank );
+//   manager->AddNewDetector ( aPMTModel );
+
    // Attach detector to scoring volume
-   pmtFace_log->SetSensitiveDetector ( CherenkovTank );
+   pmtFace_log->SetSensitiveDetector (BETASimulationManager::getInstance()->myScorer);
+// CherenkovTank );
+///   pmtFace_log->SetSensitiveDetector (CherenkovTank );
 
 /// Also doing mirrors as a detector, but this is only for determining the optical efficiency of the
 /// mirror/pmt combination.
    G4VSensitiveDetector* mirrorDetectorFake =
       new BETAMirror ( "Mirrors" );
-
    // Register detector with manager
    manager->AddNewDetector ( mirrorDetectorFake );
    // Attach detector to scoring volume
    nearMirrorGlass_log->SetSensitiveDetector ( mirrorDetectorFake );
    farMirrorGlass_log->SetSensitiveDetector ( mirrorDetectorFake );
-
 // OPTICS
    const G4int num = 2;
    G4double Ephoton[num] = {1.0*eV, 10.0*eV};
@@ -1910,14 +1947,177 @@ ConstructBeamPipe();
 //always return the physical World
    return expHall_phys;
 }
-
 //___________________________________________________________________
+void BETADetectorConstruction::SetMaterialPropertiesTables()
+{
+// Lucite
+   const int lucitedatapoints =  2;
+   G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
+      {0.2*eV,1.4*eV
+/*,2.27*eV,2.89*eV,3.48013631*eV,
+       3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
+       3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV,10.0*eV*/
+      };
+
+   G4double LuciteRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
+      {1.49,1.49/*,1.49,1.49,1.49,1.49,1.49
+       ,1.49,1.49,1.49,1.49,1.49,1.49,1.49*/
+      };
+
+   G4double LuciteAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
+      {0.2611*m, 0.2791*m/*, 0.2791*m, 0.26115*m,
+       0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
+       0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
+       0.021193*m,0.021193*m*/
+      };
+    G4MaterialPropertiesTable* luciteMPT = new G4MaterialPropertiesTable();
+    luciteMPT->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
+    luciteMPT->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
+    Lucite->SetMaterialPropertiesTable ( luciteMPT );
+
+
+   const G4int nEntries = 32;
+   G4double PhotonEnergy[nEntries] =
+      { 0.034*eV, 2.068*eV, 2.103*eV, 2.139*eV,
+        2.177*eV, 2.216*eV, 2.256*eV, 2.298*eV,
+        2.341*eV, 2.386*eV, 2.433*eV, 2.481*eV,
+        2.532*eV, 2.585*eV, 2.640*eV, 2.697*eV,
+        2.757*eV, 2.820*eV, 2.885*eV, 2.954*eV,
+        3.026*eV, 3.102*eV, 3.181*eV, 3.265*eV,
+        3.353*eV, 3.446*eV, 3.545*eV, 3.649*eV,
+        3.760*eV, 3.877*eV, 4.002*eV, 20.0*eV
+      };
+// Water
+   G4double waterRefractiveIndex[nEntries] =
+      { 1.3435, 1.344,  1.3445, 1.345,  1.3455,
+        1.346,  1.3465, 1.347,  1.3475, 1.348,
+        1.3485, 1.3492, 1.35,   1.3505, 1.351,
+        1.3518, 1.3522, 1.3530, 1.3535, 1.354,
+        1.3545, 1.355,  1.3555, 1.356,  1.3568,
+        1.3572, 1.358,  1.3585, 1.359,  1.3595,
+        1.36,   1.3608
+      };
+
+   G4double waterAbsorption[nEntries] =
+      {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
+       15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
+       45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
+       52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
+       30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
+       17.500*m, 14.500*m
+      };
+
+   G4double ScintilFast[nEntries] =
+      { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+        1.00, 1.00, 1.00, 1.00
+      };
+   G4double ScintilSlow[nEntries] =
+      { 0.01, 1.00, 2.00, 3.00, 4.00, 5.00, 6.00,
+        7.00, 8.00, 9.00, 8.00, 7.00, 6.00, 4.00,
+        3.00, 2.00, 1.00, 0.01, 1.00, 2.00, 3.00,
+        4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 8.00,
+        7.00, 6.00, 5.00, 4.00
+      };
+
+   G4MaterialPropertiesTable* waterMPT = new G4MaterialPropertiesTable();
+   waterMPT->AddProperty ( "RINDEX",       PhotonEnergy, waterRefractiveIndex,nEntries );
+   waterMPT->AddProperty ( "ABSLENGTH",    PhotonEnergy, waterAbsorption,     nEntries );
+   waterMPT->AddProperty ( "FASTCOMPONENT",PhotonEnergy, ScintilFast,     nEntries );
+   waterMPT->AddProperty ( "SLOWCOMPONENT",PhotonEnergy, ScintilSlow,     nEntries );
+   waterMPT->AddConstProperty ( "SCINTILLATIONYIELD",50./MeV );
+   waterMPT->AddConstProperty ( "RESOLUTIONSCALE",1.0 );
+   waterMPT->AddConstProperty ( "FASTTIMECONSTANT", 1.*ns );
+   waterMPT->AddConstProperty ( "SLOWTIMECONSTANT",10.*ns );
+   waterMPT->AddConstProperty ( "YIELDRATIO",0.8 );
+
+   Water->SetMaterialPropertiesTable ( waterMPT );
+
+// Air
+   G4double airIndexOfRefraction=1.000293;
+   G4MaterialPropertiesTable* airMPT = new G4MaterialPropertiesTable();
+   airMPT->AddConstProperty ( "RINDEX",airIndexOfRefraction );
+   airMPT->AddConstProperty ( "ABSLENGTH",1000.0*m );
+   Air->SetMaterialPropertiesTable ( airMPT );
+
+//
+// Vacuum
+//
+//    G4double vacuumRefractiveIndex[nEntries] =
+//       { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+//         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+//         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+//         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+//         1.00, 1.00, 1.00, 1.00
+//       };
+
+//   G4MaterialPropertiesTable* vacuumMPT = new G4MaterialPropertiesTable();
+//   vacuumMPT->AddProperty ( "RINDEX", PhotonEnergy, vacuumRefractiveIndex, nEntries );
+//   Vacuum->SetMaterialPropertiesTable ( myMPTV );
+
+
+
+//
+// Nitrogen Gas
+//
+
+   const G4int nEnergies = 32;
+
+   G4double NitrogenPhotonEnergy[nEnergies] =
+      {1.8*eV,2.*eV,2.2*eV,2.4000000000000004*eV,2.6*eV,2.8000000000000003*eV,3.*eV,3.2*eV,3.4000000000000004*eV,
+       3.6*eV,3.8000000000000003*eV,4.*eV,4.2*eV,4.4*eV,
+       4.6000000000000005*eV,4.800000000000001*eV,5.*eV,5.2*eV,5.4*eV,5.6000000000000005*eV,
+       5.800000000000001*eV,6.*eV,6.2*eV,6.4*eV,6.6000000000000005*eV,
+       6.800000000000001*eV,7.*eV,7.2*eV,7.4*eV,7.6000000000000005*eV,7.800000000000001*eV,8.2*eV
+      };
+
+
+   G4double NitrogenRefractiveIndexN[nEnergies] =
+      {1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.00031, \
+       1.00031, 1.00031, 1.00031, 1.00031, 1.00032, 1.00032, 1.00032, 1.00032, \
+       1.00033, 1.00033, 1.00033, 1.00033, 1.00034, 1.00034, 1.00035, 1.00035, \
+       1.00035, 1.00036, 1.00036, 1.00037, 1.00037, 1.00038, 1.00039
+      };
+   G4double AbsorptionN[nEntries] =
+      {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
+       15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
+       45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
+       52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
+       30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
+       17.500*m, 14.500*m
+      };
+
+   G4MaterialPropertiesTable* nitrogenMPT = new G4MaterialPropertiesTable();
+   nitrogenMPT->AddProperty ( "RINDEX", NitrogenPhotonEnergy, NitrogenRefractiveIndexN, nEnergies );
+   nitrogenMPT->AddConstProperty ( "ABSLENGTH",1000.0*m );
+
+   NitrogenGas->SetMaterialPropertiesTable ( nitrogenMPT );
+
+// Setting Glass==nitrogen!!!!!!!!!!!!!!! WRONGs
+   Glass->SetMaterialPropertiesTable ( nitrogenMPT );
+
+// Quartz
+   G4double QuartzRefractiveIndexN[nEnergies] =
+      { 1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
+        1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
+        1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
+        1.4585,1.4585
+      };
+   G4MaterialPropertiesTable* quartzMPT = new G4MaterialPropertiesTable();
+   quartzMPT->AddProperty ( "RINDEX", NitrogenPhotonEnergy, QuartzRefractiveIndexN, nEnergies );
+   Quartz->SetMaterialPropertiesTable ( quartzMPT );
+//  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
+
+}
+//___________________________________________________________________
+
 void BETADetectorConstruction::DefineMaterials()
 {
 
    G4NistManager* nistman = G4NistManager::Instance();
    //nistman->SetVerbose ( 1 );
-
    G4double a, z, density,fractionmass;
    G4int nelements,ncomponents,natoms;
    G4String symbol;
@@ -1979,11 +2179,15 @@ void BETADetectorConstruction::DefineMaterials()
 // QUARTZ
    Quartz = nistman->FindOrBuildMaterial ( "G4_SILICON_DIOXIDE" );
 
+// Lead 
    Lead =   nistman->FindOrBuildMaterial ( "G4_Pb" );
 
 
 // G4_PLEXIGLASS
    Lucite = nistman->FindOrBuildMaterial ( "G4_PLEXIGLASS" );
+   Lucite_NoOptics = new G4Material("Lucite_NoOptics",Lucite->GetDensity(),1 );
+   Lucite_NoOptics->AddMaterial(Lucite,1.0);
+   //nistman->FindOrBuildMaterial ( "G4_PLEXIGLASS" );
 
 // Water
 // G4Element* H = new G4Element ( "Hydrogen", "H", z=1 , a=1.01*g/mole );
@@ -1993,12 +2197,13 @@ void BETADetectorConstruction::DefineMaterials()
 
 // Nitrogen Gas
    NitrogenGas = new G4Material ( "Nitrogen", z=7,  a=14.0067*g/mole, density=1250.6*g/m3 );
+   NitrogenGas_NoOptics = new G4Material ( "Nitrogen", z=7,  a=14.0067*g/mole, density=1250.6*g/m3 );
 
 // Define Vacuum
    Vacuum = new G4Material ( "Vacuum", density= 1.e-5*g/cm3,
                              ncomponents=1, kStateGas, STP_Temperature,
                              2.e-2*bar );
-   Vacuum->AddMaterial ( Air, fractionmass=1. );
+   Vacuum->AddMaterial( Air, fractionmass=1. );
 
 // Silver
    Silver = new G4Material ( "Silver", z=47, a=107.8682*g/mole, density=10.49*g/cm3 );
@@ -2010,159 +2215,7 @@ void BETADetectorConstruction::DefineMaterials()
    CsI->AddElement ( I, .5 );
    CsI->AddElement ( Cs, .5 );
 
-// ------------ Generate & Add Material Properties Table ------------
-
-   const G4int nEntries = 32;
-   G4double PhotonEnergy[nEntries] =
-      { 0.034*eV, 2.068*eV, 2.103*eV, 2.139*eV,
-        2.177*eV, 2.216*eV, 2.256*eV, 2.298*eV,
-        2.341*eV, 2.386*eV, 2.433*eV, 2.481*eV,
-        2.532*eV, 2.585*eV, 2.640*eV, 2.697*eV,
-        2.757*eV, 2.820*eV, 2.885*eV, 2.954*eV,
-        3.026*eV, 3.102*eV, 3.181*eV, 3.265*eV,
-        3.353*eV, 3.446*eV, 3.545*eV, 3.649*eV,
-        3.760*eV, 3.877*eV, 4.002*eV, 20.0*eV
-      };
-
-// Water
-   G4double RefractiveIndex1[nEntries] =
-      { 1.3435, 1.344,  1.3445, 1.345,  1.3455,
-        1.346,  1.3465, 1.347,  1.3475, 1.348,
-        1.3485, 1.3492, 1.35,   1.3505, 1.351,
-        1.3518, 1.3522, 1.3530, 1.3535, 1.354,
-        1.3545, 1.355,  1.3555, 1.356,  1.3568,
-        1.3572, 1.358,  1.3585, 1.359,  1.3595,
-        1.36,   1.3608
-      };
-
-   G4double Absorption1[nEntries] =
-      {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
-       15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
-       45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
-       52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
-       30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
-       17.500*m, 14.500*m
-      };
-
-   G4double ScintilFast[nEntries] =
-      { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00
-      };
-   G4double ScintilSlow[nEntries] =
-      { 0.01, 1.00, 2.00, 3.00, 4.00, 5.00, 6.00,
-        7.00, 8.00, 9.00, 8.00, 7.00, 6.00, 4.00,
-        3.00, 2.00, 1.00, 0.01, 1.00, 2.00, 3.00,
-        4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 8.00,
-        7.00, 6.00, 5.00, 4.00
-      };
-
-   G4MaterialPropertiesTable* myMPT1 = new G4MaterialPropertiesTable();
-   myMPT1->AddProperty ( "RINDEX",       PhotonEnergy, RefractiveIndex1,nEntries );
-   myMPT1->AddProperty ( "ABSLENGTH",    PhotonEnergy, Absorption1,     nEntries );
-   myMPT1->AddProperty ( "FASTCOMPONENT",PhotonEnergy, ScintilFast,     nEntries );
-   myMPT1->AddProperty ( "SLOWCOMPONENT",PhotonEnergy, ScintilSlow,     nEntries );
-
-   myMPT1->AddConstProperty ( "SCINTILLATIONYIELD",50./MeV );
-   myMPT1->AddConstProperty ( "RESOLUTIONSCALE",1.0 );
-   myMPT1->AddConstProperty ( "FASTTIMECONSTANT", 1.*ns );
-   myMPT1->AddConstProperty ( "SLOWTIMECONSTANT",10.*ns );
-   myMPT1->AddConstProperty ( "YIELDRATIO",0.8 );
-
-   Water->SetMaterialPropertiesTable ( myMPT1 );
-
-
-//
-// Air
-//
-   G4double RefractiveIndex2[nEntries] =
-      { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00
-      };
-
-   G4MaterialPropertiesTable* myMPT2 = new G4MaterialPropertiesTable();
-   myMPT2->AddProperty ( "RINDEX", PhotonEnergy, RefractiveIndex2, nEntries );
-   myMPT2->AddProperty ( "ABSLENGTH",    PhotonEnergy, Absorption1,     nEntries );
-
-   Air->SetMaterialPropertiesTable ( myMPT2 );
-
-//
-// Vacuum
-//
-   G4double RefractiveIndexV[nEntries] =
-      { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00
-      };
-
-   G4MaterialPropertiesTable* myMPTV = new G4MaterialPropertiesTable();
-   myMPTV->AddProperty ( "RINDEX", PhotonEnergy, RefractiveIndexV, nEntries );
-
-   Vacuum->SetMaterialPropertiesTable ( myMPTV );
-
-
-
-//
-// Nitrogen Gas
-//
-
-   const G4int nEnergies = 32;
-
-   G4double NitrogenPhotonEnergy[nEnergies] =
-      {1.8*eV,2.*eV,2.2*eV,2.4000000000000004*eV,2.6*eV,2.8000000000000003*eV,3.*eV,3.2*eV,3.4000000000000004*eV,
-       3.6*eV,3.8000000000000003*eV,4.*eV,4.2*eV,4.4*eV,
-       4.6000000000000005*eV,4.800000000000001*eV,5.*eV,5.2*eV,5.4*eV,5.6000000000000005*eV,
-       5.800000000000001*eV,6.*eV,6.2*eV,6.4*eV,6.6000000000000005*eV,
-       6.800000000000001*eV,7.*eV,7.2*eV,7.4*eV,7.6000000000000005*eV,7.800000000000001*eV,8.2*eV
-      };
-
-
-   G4double NitrogenRefractiveIndexN[nEnergies] =
-      {1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.00031, \
-       1.00031, 1.00031, 1.00031, 1.00031, 1.00032, 1.00032, 1.00032, 1.00032, \
-       1.00033, 1.00033, 1.00033, 1.00033, 1.00034, 1.00034, 1.00035, 1.00035, \
-       1.00035, 1.00036, 1.00036, 1.00037, 1.00037, 1.00038, 1.00039
-      };
-   G4double AbsorptionN[nEntries] =
-      {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
-       15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
-       45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
-       52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
-       30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
-       17.500*m, 14.500*m
-      };
-
-   G4MaterialPropertiesTable* myMPTN = new G4MaterialPropertiesTable();
-   myMPTN->AddProperty ( "RINDEX", NitrogenPhotonEnergy, NitrogenRefractiveIndexN, nEnergies );
-
-   NitrogenGas->SetMaterialPropertiesTable ( myMPTN );
-   Glass->SetMaterialPropertiesTable ( myMPTN );
-
-//
-// Quartz
-//
-   G4double QuartzRefractiveIndexN[nEnergies] =
-      { 1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
-        1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
-        1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
-        1.4585,1.4585
-      };
-   G4MaterialPropertiesTable* myMPTQ = new G4MaterialPropertiesTable();
-   myMPTQ->AddProperty ( "RINDEX", NitrogenPhotonEnergy, QuartzRefractiveIndexN, nEnergies );
-   Quartz->SetMaterialPropertiesTable ( myMPTQ );
-
-//  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// END OF MATERIALS
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+SetMaterialPropertiesTables();
 
 }
 

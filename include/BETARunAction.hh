@@ -9,6 +9,8 @@
 #include "BETARun.hh"
 #include "BETASimulationManager.hh"
 
+#include "TFile.h"
+#include "TTree.h"
 
 
 
@@ -61,8 +63,6 @@ class BETARunAction : public G4UserRunAction
   private:
 	ifstream input_file ;
 	ofstream output_file ;
-
-
 
     BETASimulationManager* fSimulationManager;
     G4Timer* timer;

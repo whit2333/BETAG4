@@ -2,7 +2,7 @@
 
 #include "ForwardTrackerHit.h"
 #include "LuciteHodoscopeHit.h"
-
+#include "BETAFakePlaneHit.hh"
 /**
  * Function to compare memeber GTime for function sort
  */
@@ -10,13 +10,11 @@ bool cmp(const BETAPMTHit *a, const BETAPMTHit *b)
 {
 return a->Gtime < b->Gtime;
 }
-
 //________________________________________________________________________//
+
 BETAG4EventRecorder::BETAG4EventRecorder() {
 
-fAnalysisManager = BETASimulationManager::getInstance ( );
-
-
+  fAnalysisManager = BETASimulationManager::getInstance ( );
   fGasCherenkovHC = 0;
   fRCSCalorimeterHC = 0;
   fProtvinoCalorimeterHC = 0;
@@ -58,21 +56,21 @@ fAnalysisManager = BETASimulationManager::getInstance (  );
   }
 
 }
-
 //________________________________________________________________________//
+
 BETAG4EventRecorder::~BETAG4EventRecorder() {
 
 
 
 }
-
 //________________________________________________________________________//
+
 int BETAG4EventRecorder::FillGasCherenkovEvent( ) {
 
 // For debugging cherenkov timing emulator
 //   waveforms = new TH1F(Form("waveform%d",333),"waveform",200,0,20);
 
-  fBETAEvent->fGasCherenkovEvent->fHits->Clear();
+  fBETAEvent->fGasCherenkovEvent->ClearEvent("C");
   TClonesArray &cherenkovHits = *(fBETAEvent->fGasCherenkovEvent->fHits);
   GasCherenkovHit * aCERhit;
   BETAPMTHit * aHit;
@@ -150,6 +148,7 @@ std::sort (hitPointers->begin(),hitPointers->begin()+fGasCherenkovHC->entries(),
 
           }
       }
+fBETAEvent->fGasCherenkovEvent->fNumberOfHits=totalHits;
 //for(int jj =0;jj<totalHits;jj++)
 // waveforms->Draw();
 //  for (int k=0;k<8;k++) numPMTHits+=CherenkovPMTCount[k];
@@ -179,7 +178,7 @@ int BETAG4EventRecorder::FillBigcalEvent() {
 
   G4double bigcal_block_thresh = 0.01*MeV; // To record a TDC hit energy Deposited must be greater than this energy
 
-  fBETAEvent->fBigcalEvent->fHits->Clear();
+  fBETAEvent->fBigcalEvent->ClearEvent("C");
   TClonesArray &bigcalHits = *(fBETAEvent->fBigcalEvent->fHits);
   BigcalHit * aBigcalHit;
   BETARCSCalorimeterHit * rcsHit;
@@ -249,12 +248,12 @@ int BETAG4EventRecorder::FillBigcalEvent() {
 
 return(0);
 }
-
 //________________________________________________________________________//
+
 int BETAG4EventRecorder::FillForwardTrackerEvent() {
   /////////////////////////////
   // Front Tracker
-  fBETAEvent->fForwardTrackerEvent->fHits->Clear();
+  fBETAEvent->fForwardTrackerEvent->ClearEvent("C");
   TClonesArray &trackerHits = *(fBETAEvent->fForwardTrackerEvent->fHits);
   ForwardTrackerHit * aTrackerHit;
 
@@ -311,6 +310,29 @@ int BETAG4EventRecorder::FillLuciteHodoscopeEvent(){
     //  recordedEvent->HodoscopeTotalPE =  hodoscopepmtHC->entries();
 return(0);
 }
+
+//________________________________________________________________________//
+int BETAG4EventRecorder::FillBigcalFakePlaneEvent() {
+  fBETAG4MonteCarloEvent->ClearEvent("C");
+/// \TODO Reimplement fake plane and Montecarlo event data extraction in BETAG4MonteCarloEvent
+  BETAFakePlaneHit* aHit;
+// printf(" Fake Plane Entries : %d",fakePlaneHC->entries() );
+      for ( int i1=0;i1<(fFakePlaneHC->entries())&&i1<10;i1++ ) {
+         aHit = ( *fFakePlaneHC ) [i1];
+//  if(aHit->energy >0.10) {
+// printf(" Fake Plane Entries : %d",fakePlaneHC->entries());
+         fBETAG4MonteCarloEvent->mc_e_bcplane[i1] = aHit->energy/GeV;
+         fBETAG4MonteCarloEvent->mc_x_bcplane[i1] = aHit->localPos.y()/cm;
+         fBETAG4MonteCarloEvent->mc_y_bcplane[i1] = aHit->localPos.x()/cm;
+         fBETAG4MonteCarloEvent->mc_theta_bcplane[i1] = aHit->worldPos.theta();
+         fBETAG4MonteCarloEvent->mc_phi_bcplane[i1] = aHit->worldPos.phi();
+         fBETAG4MonteCarloEvent->mc_pid_bcplane[i1] = aHit->pid;
+         fBETAG4MonteCarloEvent->mc_nhit_bcplane++;
+
+// }
+      }
+
+   }
 
 
 

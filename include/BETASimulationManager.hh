@@ -14,15 +14,17 @@
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
 #include "InSANERun.h"
-
+#include "G4ScoringManager.hh"
 class BETARunAction;
 class G4Track;
 class BETASimulationMessenger;
-
+class BETARun;
 /**
- * \ingroup Runs
+ * \ingroup Simulation
  */
-
+/**
+ * \ingroup Manager
+ */
 /**
  * \brief The simulation manager singleton class
  */
@@ -39,7 +41,12 @@ public:
 
   static BETASimulationManager* getInstance();
   static void dispose();
+  BETADetectorConstruction * fConstruction;
+  BETASimulationMessenger * fSimulationMessenger;
 
+bool fSimulateCherenkovOptics;
+bool fSimulateTrackerOptics;
+bool fSimulateHodoscopeOptics;
 
 /**
  * Set detector's verbosity for debugging purposes
@@ -86,12 +93,11 @@ public:
  */ 
  int GetRunNumber(){ return fRunNumber; };
 
-protected: 
 /**
  * Increments the run number in memory and in file/database
  * returns the run number
  * \todo Make the source of run number a database, not a text file. 
- */ 
+ */
 
  int IncrementRunNumber();
 
@@ -99,22 +105,45 @@ protected:
 /**
  * Gets the run number from a file/database
  * \todo Make the source of run number a database, not a text file. 
- */ 
+ */
  int RetrieveRunNumber();
+
+/**
+ * Allocate Event and Hit memory
+ */
+ int AllocateTreeMemory();
+
+/**
+ * Free Event and Hit memory
+ */
+ int Reset();
+
+
+
+
+G4MultiFunctionalDetector* myScorer;
+/**
+ * Sets up detector's scoring This class might not be the best location
+ * for this method
+ */
+  int InitScoring();
 
 public:
 
-  BETASimulationMessenger * fSimulationMessenger;
 
 inline G4int plotterVisible() {return plotVis; }
 
+private: 
   int fGasCherenkovVerbosity;
   int fBigcalVerbosity;
   int fLuciteHodoscopeVerbosity;
   int fForwardTrackerVerbosity;
 
-private:
+/// Sets the tree branches for append mode
+int SetTreeBranches();
 
+/// Creates the tree branches for append mode
+int CreateTreeBranches();
 
 /// Contains all BETA detector's data
   BETAEvent * betaEvent;
@@ -125,7 +154,7 @@ private:
 /// Contains all the Thrown and unrealistically obtained Montecarlo data
   BETAG4MonteCarloEvent * mcEvent;
 /// Simulation Run object
-  InSANERun * simulationRun;
+  InSANERun * fInSANERun;
 
 
 
@@ -135,7 +164,12 @@ private:
   int instanceNumber;
   int fRunNumber;
   bool fIsAppendMode;
+
+  TFile * fRootFile;
+  TTree * fDetectorTree;
+
   friend class BETARunAction;
+  friend class BETARun;
 
 };
 

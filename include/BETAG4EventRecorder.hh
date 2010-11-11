@@ -32,9 +32,10 @@
 #include "BETAMirrorHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-
+#include "BigcalFakePlaneEvent.h"
+#include "BigcalFakePlaneHit.h"
 class BETASimulationManager;
-
+class BETADetectorConstruction;
 /**
  * \ingroup Simulation
  */
@@ -112,6 +113,17 @@ inline int SetLuciteHodoscopeHitCollection(BETAHodoscopePMTHitsCollection * aHC)
 /**
  * Fills the fBigcalEvent of betaEvent
  */
+int FillBigcalFakePlaneEvent();
+
+/**
+ * Sets the address of the G4THitsCollection derived class 
+ * (BETAPMTHitsCollection in this case) to use for filling
+ * out the event data.
+ */
+inline int SetBigcalFakePlaneHitCollection(BETAFakePlaneHitsCollection * aHC) { if(aHC) { fFakePlaneHC = aHC; return(0); } else return(-1) ; };
+/**
+ * Fills the fBigcalEvent of betaEvent
+ */
 int FillLuciteHodoscopeEvent();
 
 /**
@@ -144,12 +156,14 @@ private :
     BigcalEvent* fBigcalEvent;
     LuciteHodoscopeEvent* fLuciteHodoscopeEvent;
     ForwardTrackerEvent* fForwardTrackerEvent;
+    BigcalFakePlaneEvent * fBigcalFakePlaneEvent;
 
   BETAPMTHitsCollection * fGasCherenkovHC;
   BETARCSCalorimeterHitsCollection * fRCSCalorimeterHC;
   BETAProtvinoCalorimeterHitsCollection * fProtvinoCalorimeterHC;
   BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
   BETAFrontTrackerHitsCollection * fForwardTrackerHC;
+  BETAFakePlaneHitsCollection * fFakePlaneHC;
 
   BETASimulationManager * fAnalysisManager;
 

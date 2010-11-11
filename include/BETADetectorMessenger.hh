@@ -7,19 +7,18 @@
 #include "BETADetectorMessenger.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
-
-
 //class BETAPrimaAction;
 class G4UIdirectory;
 class G4UIcmdWithoutParameter;
 class BETADetectorConstruction;
 
 /**
- * 
+ * \brief User Interface Messenger for Detector Construction
  */
 class BETADetectorMessenger: public G4UImessenger
 {
   public:
+/// Detector Messenger Constructor
     BETADetectorMessenger(BETADetectorConstruction *  );
    ~BETADetectorMessenger();
     void SetNewValue(G4UIcommand*, G4String); 

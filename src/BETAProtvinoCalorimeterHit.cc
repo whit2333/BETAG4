@@ -63,10 +63,11 @@ void BETAProtvinoCalorimeterHit::Draw()
 
 const std::map<G4String,G4AttDef>* BETAProtvinoCalorimeterHit::GetAttDefs() const
 {
+
    G4bool isNew;
    std::map<G4String,G4AttDef>* store
    = G4AttDefStore::GetInstance ( "BETAProtvinoCalorimeterHit",isNew );
-
+/*
    if ( isNew )
    {
       G4String HitType ( "HitType" );
@@ -91,14 +92,15 @@ const std::map<G4String,G4AttDef>* BETAProtvinoCalorimeterHit::GetAttDefs() cons
       G4String LVol ( "LVol" );
       ( *store ) [LVol] = G4AttDef ( LVol, "Logical Volume", "Bookkeeping", "", "G4String" );
    }
-
+*/
    return store;
 }
 
 std::vector<G4AttValue>* BETAProtvinoCalorimeterHit::CreateAttValues() const
 {
-   std::vector<G4AttValue>* values = new std::vector<G4AttValue>;
 
+  std::vector<G4AttValue>* values = new std::vector<G4AttValue>;
+/*
    values->push_back ( G4AttValue ( "HitType", "ProtvinoCalorimeterHit", "" ) );
 
    values->push_back
@@ -116,6 +118,7 @@ std::vector<G4AttValue>* BETAProtvinoCalorimeterHit::CreateAttValues() const
    else values->push_back ( G4AttValue ( "LVol", " ", "" ) );
 
    return values;
+*/
 }
 
 void BETAProtvinoCalorimeterHit::Print()

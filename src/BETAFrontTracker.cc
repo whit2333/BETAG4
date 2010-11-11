@@ -57,7 +57,6 @@ void BETAFrontTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 ///////////////////////////
 
 }
-
 //////////////////////
 
 G4bool BETAFrontTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
@@ -66,14 +65,14 @@ G4bool BETAFrontTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 ///////////////////////////////////////////////////////////////////////////////
 /*theTrack->GetDefinition() == G4Electron::ElectronDefinition() */
     G4String aName;
-    if( theTrack->GetVolume()->GetLogicalVolume()->GetName() == "horizBar_log" ||
-        theTrack->GetVolume()->GetLogicalVolume()->GetName() == "vertBar_log" ||
-        theTrack->GetVolume()->GetLogicalVolume()->GetName() == "horizBarScore_log" ||
-        theTrack->GetVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" )
+    if( (theTrack->GetVolume()->GetLogicalVolume()->GetName() == "horizBar_log" ||
+        theTrack->GetVolume()->GetLogicalVolume()->GetName() == "vertBar_log" )&&(
+        theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "horizBarScore_log" ||
+        theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" ))
 //trackerY1_phys
     {
       aName=theTrack->GetVolume()->GetMotherLogical()->GetName();
-      G4cout << " SHOULD REGISTER HIT in physical volume "<< aName << G4endl;
+//      G4cout << " SHOULD REGISTER HIT in physical volume "<< aName << G4endl;
       BETAFrontTrackerHit* aHit = new BETAFrontTrackerHit();
       fHitsCollection->insert ( aHit );
       aHit->cellNumber = theTrack->GetVolume()->GetCopyNo();

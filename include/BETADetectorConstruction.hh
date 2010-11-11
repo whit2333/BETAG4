@@ -59,8 +59,11 @@
 #include "G4SDParticleWithEnergyFilter.hh"
 #include "G4Trd.hh"
 #include "BETAField.hh"
+#include "BETAG4PMT.hh"
+#include "BETASimulationManager.hh"
 
 class BETADetectorMessenger;
+class BETASimulationManager;
 
 /** \brief Detector construction class
  *
@@ -87,6 +90,8 @@ class BETADetectorMessenger;
 class BETADetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
+friend class BETASimulationManager;
+
 /**
  *  Constructor
  */
@@ -149,9 +154,10 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction
 
 /**
  * Called from ConstructBETA
+ * Should get the simulation manager and names and corresponding pointers to scoring volumes.
  */
   void SetupScoring(G4LogicalVolume * scoringVolume);
-
+  
 /**
  * GEANT4 user hook which initiates all geometry constructions
  */
@@ -192,6 +198,9 @@ bool usingTargetOVC;
 bool usingFakePlaneAtBigcal;
 bool usingFakePlaneAtForwardTracker;
 
+BETASimulationManager * fSimulationManager;
+
+
   private:
 
   G4float ULimits;
@@ -201,21 +210,35 @@ bool usingFakePlaneAtForwardTracker;
      void SetFrontMaterial (G4double);     
      void SetBackMaterial(G4double);
 */
-     
+/**
+ *  Assigns material property tables to G4Materials
+ *  Called from DefineMaterials
+ *  Important differences are between, say, Lucite and Lucite_NoOptics.
+ *  The former has an index of refraction associated with it, which thus 
+ *  triggers the GEANT4 kernel to produce Optical Photon processes.
+ */
+void SetMaterialPropertiesTables();
 
+/**
+ *  Defines All Detector Materials
+ */
 	void DefineMaterials();
 /*	void ConstructAluminumFrame();
 	void ConstructMirrors();
 	void ConstructPMTs();
 	void Construct*/
-  private:
 
+  public:
 
-  //-----------The visualization attributes------------------------------- 
-  G4VisAttributes* AlVisAtt;        //Visualization Attributes for Aluminum
-  G4VisAttributes* Invisible;       //Visualization for invisible things
-  G4VisAttributes* LeadVis;            //Visualization for lead. 
-  G4VisAttributes* Opaque;           //Visualization for solid object.
+///\todo Create a BETAG4Look containing all visualization settings for different scenarios. 
+/// Visualization Attributes for Aluminum
+  G4VisAttributes* AlVisAtt;        //
+/// Visualization for invisible things
+  G4VisAttributes* Invisible;       //
+/// //Visualization for lead. 
+  G4VisAttributes* LeadVis;
+/// Visualization for solid object.
+  G4VisAttributes* Opaque;           
 
     G4bool             constructed;
     G4VPhysicalVolume* expHall_phys;
@@ -232,6 +255,9 @@ bool usingFakePlaneAtForwardTracker;
 	G4double rHodoscope;
 	G4double rBigcal;
 
+    G4Material*        NitrogenGas_NoOptics;
+    G4Material*        Lucite_NoOptics;
+    G4Material*        LeadGlass_NoOptics;
 
   G4Material* LHe;
   G4Material* TargetNH3;
@@ -266,7 +292,7 @@ bool usingFakePlaneAtForwardTracker;
 
 // Cherenkov Members
 // Mirror memebers
-
+private:
 G4LogicalVolume * tank_log;
 G4LogicalVolume * farMirrorGlass_log;
 G4LogicalVolume * nearMirrorGlass_log;

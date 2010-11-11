@@ -31,6 +31,7 @@ BETARunAction::BETARunAction() :showThePlots ( 0 )
 
 BETARunAction::~BETARunAction()
 {
+
    delete timer;
    delete messenger;
 }
@@ -39,6 +40,7 @@ BETARunAction::~BETARunAction()
 
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 {
+
 //G4cout <<"START of RUN ACTION"<< G4endl;
    G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
@@ -49,7 +51,9 @@ void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
  */
 G4Run*  BETARunAction::GenerateRun() 
 {
-   fRunNumber = fSimulationManager->IncrementRunNumber();
+//  fSimulationManager->Reset();
+
+  fRunNumber = fSimulationManager->IncrementRunNumber();
 
    G4cout << "= BETARunAction - GenerateRun   " << G4endl;
    G4cout << " - Creating Run Number " << fRunNumber << "   " << G4endl;
@@ -57,6 +61,30 @@ G4Run*  BETARunAction::GenerateRun()
 
    timer->Start();
 
+// Open Root File With A name Depending on the Run number
+   std::string fname;
+   std::stringstream out;
+
+   if (fSimulationManager->IsAppendMode() ) {
+      out << "data/beta.accumulate.root"  ;
+      fname = out.str();
+      const char * rootName = fname.c_str();
+      fSimulationManager->fRootFile = new TFile ( rootName,"UPDATE" );
+
+   } else {
+      out << "data/beta.run." << fRunNumber << ".root"  ;
+      fname = out.str();
+      const char * rootName = fname.c_str();
+      fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
+   }
+
+   fSimulationManager->AllocateTreeMemory();
+
+   if (fSimulationManager->IsAppendMode() ) {
+      fSimulationManager->SetTreeBranches();
+    } else { // Make new tree(s) and branch(es)
+      fSimulationManager->CreateTreeBranches();
+    }
 // Get the runmanager and constructors/messengers and only fill the database if
 // you have them!
    double targetAngle = 0.0;
@@ -115,6 +143,7 @@ G4Run*  BETARunAction::GenerateRun()
 
       }
    }
+//   if(fCurrentRun) delete fCurrentRun;
    fCurrentRun = new BETARun ( fRunNumber,showThePlots );
    return (G4Run*)fCurrentRun;
 }
@@ -166,6 +195,13 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
    G4cout <<"Number of Events Processed:" <<aRun->GetNumberOfEvent() << " events. " <<G4endl;
    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
 
+G4cout << "Writing ROOT File\n";
+// Save all objects in this file
+   fSimulationManager->fDetectorTree->Write();
+   fSimulationManager->fRootFile->Write();
+// Close the file. Note that this is automatically done when you leave
+// the application.
+   fSimulationManager->fRootFile->Close();
    assert ( 0 != fCurrentRun );
 //   currentRun->DumpData();
 

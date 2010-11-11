@@ -91,7 +91,7 @@ BETAG4EventRecorder * eventRecorder;
 
 private:
 
-  BETASimulationManager * analysisManager;
+  BETASimulationManager * fSimulationManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
   BETADetectorConstruction * construction;
@@ -113,7 +113,7 @@ public:
 /// Override this method in G4Run
  void RecordEvent(const G4Event*);
 /// Returns the Analysis manager singleton
- BETASimulationManager* GetRunAnalysisManager() const { return analysisManager ;}
+ BETASimulationManager* GetRunAnalysisManager() const { return fSimulationManager ;}
 
   // Dump all data
   void DumpData() const;
@@ -134,7 +134,7 @@ private:
    BETAFrontTrackerHitsCollection * FTHC;
    BETAMirrorHitsCollection * mirrorHC ;
    BETAFakePlaneHitsCollection * fakePlaneHC;
-
+BETAG4PMTHitsCollection * pmtG4HC;
 
 
 bool catLastFile;
@@ -182,6 +182,7 @@ int cer_tdc_thresh;
     G4int hodoscopePMTcount;
     G4double BCTE;
     G4int fakePlaneID;
+    G4int PMTG4HCID;
 
     G4int HHC1ID;
     G4int HHC2ID;

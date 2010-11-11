@@ -84,8 +84,8 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 
    bool bigcal_background = true;
    if (bigcal_background) {
-deltatheta = 15.0*pi/180.0;//deltatheta
-deltaphi   = 30.0*pi/180.0;
+deltatheta = 10.0*pi/180.0;//deltatheta
+deltaphi   = 20.0*pi/180.0;
 
 theta   = 40.0*pi/180.0 + 2.*(G4UniformRand()-0.5)*deltatheta;//deltatheta
 phi     =  2.*(G4UniformRand()-0.5)*deltaphi;
