@@ -188,7 +188,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    FTHC = 0;
    mirrorHC = 0;
    fakePlaneHC = 0;
-G4THitsMap<G4double>* pmtG4HC;
+//fG4THitsMap<G4double>* pmtG4HC;
    if ( HCE && HCE->GetNumberOfCollections() != 0)
    {
       if (construction->usingLuciteHodoscope) hodoscopepmtHC =(BETAHodoscopePMTHitsCollection* )( HCE->GetHC ( hodoscopePMTHCID ) );
@@ -198,12 +198,12 @@ G4THitsMap<G4double>* pmtG4HC;
       if (construction->usingForwardTracker) FTHC = ( BETAFrontTrackerHitsCollection* ) ( HCE->GetHC ( FTID ) );
       if (construction->usingGasCherenkov) mirrorHC = ( BETAMirrorHitsCollection* ) ( HCE->GetHC ( MirrorHCID ) );
       if (construction->usingFakePlaneAtBigcal) fakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCE->GetHC ( fakePlaneID ) );
-      if (construction->usingGasCherenkov) pmtG4HC = (G4THitsMap<double>*)( HCE->GetHC ( PMTG4HCID ) );
+      //if (construction->usingGasCherenkov) pmtG4HC = (G4THitsMap<double>*)( HCE->GetHC ( PMTG4HCID ) );
 
    }
 
 
-std::cout << "Total entries " << pmtG4HC->entries() << "\n";
+//std::cout << "Total entries " << pmtG4HC->entries() << "\n";
 
 /// Initialize counters and data holders
 //eCountsThisEvent = 0;

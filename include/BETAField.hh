@@ -31,7 +31,7 @@
 /**
  *  Concrete class implements the UVA Polarized Ammonia target magnetic field
  */
-class BETAField :  /*public UVAOxfordMagneticField , */public G4MagneticField
+class BETAField :public G4MagneticField /*, public UVAOxfordMagneticField */
 {
   public:
     BETAField();
@@ -43,7 +43,7 @@ UVAOxfordMagneticField * fUVAMagnet;
 /**
  * Fills the array Bfield[0-2], (xyz) components, given the spacetime point, Point
  */
-    void GetFieldValue( const  double Point[4],
+  void GetFieldValue( const  double Point[4],
                                double *Bfield ) const;
 
 /**

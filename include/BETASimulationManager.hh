@@ -121,7 +121,6 @@ bool fSimulateHodoscopeOptics;
 
 
 
-G4MultiFunctionalDetector* myScorer;
 /**
  * Sets up detector's scoring This class might not be the best location
  * for this method
@@ -129,6 +128,10 @@ G4MultiFunctionalDetector* myScorer;
   int InitScoring();
 
 public:
+G4MultiFunctionalDetector* trackerDetector;
+G4MultiFunctionalDetector* cherenkovDetector;
+G4MultiFunctionalDetector* cherenkovDetector;
+G4MultiFunctionalDetector* bigcalDetector;
 
 
 inline G4int plotterVisible() {return plotVis; }
@@ -138,6 +141,8 @@ private:
   int fBigcalVerbosity;
   int fLuciteHodoscopeVerbosity;
   int fForwardTrackerVerbosity;
+
+
 
 /// Sets the tree branches for append mode
 int SetTreeBranches();

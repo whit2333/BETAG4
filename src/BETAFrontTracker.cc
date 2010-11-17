@@ -31,11 +31,9 @@ BETAFrontTracker::~BETAFrontTracker() {
 //////////////////////////////
 void BETAFrontTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 {
-
    // HandsOn5: Creating hit collection
    // Create a new collection
-
-////////////////////////////
+   ////////////////////////////
    fHitsCollection =
       new BETAFrontTrackerHitsCollection ( detname, collectionName[0] );
    if ( HCID < 0 )

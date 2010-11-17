@@ -59,7 +59,7 @@
 #include "G4SDParticleWithEnergyFilter.hh"
 #include "G4Trd.hh"
 #include "BETAField.hh"
-#include "BETAG4PMT.hh"
+//#include "BETAG4PMT.hh"
 #include "BETASimulationManager.hh"
 
 class BETADetectorMessenger;

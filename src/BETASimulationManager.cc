@@ -207,26 +207,26 @@ return(0);
 //_________________________________________________________________//
 
 int BETASimulationManager::InitScoring()  {
-  G4SDManager * sensitiveDetManager = G4SDManager::GetSDMpointer();
-  G4String filterName, particleName;
 
+  G4SDManager * sensitiveDetManager = G4SDManager::GetSDMpointer();
+
+  G4String filterName, particleName;
   G4SDParticleFilter* protonFilter;
   G4SDParticleFilter* electronFilter;
   G4SDParticleFilter* opticalPhotonFilter;
 // Scoring and sensitive volumes
 
-  myScorer = 
-    new G4MultiFunctionalDetector("myCellScorer");
+  trackerDetector = 
+    new G4MultiFunctionalDetector("tracker");
 //
-  sensitiveDetManager->AddNewDetector(myScorer);
-
+  sensitiveDetManager->AddNewDetector(trackerDetector);
 
 // Sensitive volume filters
   protonFilter = new G4SDParticleFilter(filterName="protonFilter");
-protonFilter->add("proton");
+  protonFilter->add("proton");
 
   electronFilter = new G4SDParticleFilter(filterName="electronFilter");
-protonFilter->add("e-");
+  electronFilter->add("e-");
 
 // Sensor primitives
   G4PSFlatSurfaceFlux * protonSurfFlux;

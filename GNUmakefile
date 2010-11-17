@@ -35,9 +35,10 @@ include $(G4INSTALL)/config/binmake.gmk
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/VGM/include
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/BaseVGM/include
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/Geant4GM/include
+   CPPFLAGS  += -I$(VGM_INSTALL)/packages/XmlVGM/include
    CPPFLAGS  += -I$(VGM_INSTALL)/packages/RootGM/include
    LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
-   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM 
+   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM -lXmlVGM
 
    CXXFLAGS  += -O2 -Wall -fPIC
    CXXFLAGS  += $(CPPFLAGS)

@@ -5,13 +5,12 @@
 #include "G4Run.hh"
 #include "G4THitsMap.hh"
 #include <map>
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
-
+#include "InSANERun.h"
 // ROOT //
 #include "Riostream.h"
-#include "TROOT.h"
 #include "TFile.h"
 #include "TNetFile.h"
 #include "TRandom.h"
@@ -29,10 +28,9 @@
 #include "TCanvas.h"
 #include "TApplication.h"
 #include "G4RunManager.hh"
+
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-
-
 #include "BETAFrontTrackerHit.hh"
 #include "BETAProtvinoCalorimeterHit.hh"
 #include "BETARCSCalorimeterHit.hh"
@@ -48,20 +46,16 @@
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
 
-
 #include <iostream>
 #include <algorithm>
 #include <vector>
-
-#include "BETAAnalysisManager.hh"
+#include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
-
 #include "BETAG4EventRecorder.hh"
-class BETAAnalysisManager;
+class BETASimulationManager;
 class BETADetectorConstruction;
 class BETAG4EventRecorder;
-
 
 /**
  * \ingroup Runs
@@ -73,7 +67,7 @@ class BETAG4EventRecorder;
 /**
  * Concrete class implementation of G4Run. 
  * Here is where we select the data we wish to record.
- * The important method here is RecordEvent which is called at then
+ * The important s here is RecordEvent which is called at then
  * end of each event.
  */
 class BETARun : public G4Run {
@@ -81,13 +75,13 @@ class BETARun : public G4Run {
 public:
 
 /**
- *  Constructor opens ROOT file \todo{ open new file or append to existing flag...}.)
+ *  Constructor opens ROOT file \todo{ add open new file or append to existing flag...}.)
  */
   BETARun(const int runNumber,const int showThePlots);
 /**
  *  Destructor
  */
-  virtual ~BETARun();
+  ~BETARun();
 
 /**
  * Used to fill out event classes which are trees and branches in the output file
@@ -97,7 +91,7 @@ BETAG4EventRecorder * eventRecorder;
 
 private:
 
-  BETAAnalysisManager * analysisManager;
+  BETASimulationManager * fSimulationManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
   BETADetectorConstruction * construction;
@@ -105,18 +99,21 @@ private:
 public:
 
 /// Contains all BETA detector's data
-//  BETAEvent * betaEvent;
+  BETAEvent * betaEvent;
 /// Contains all the HMS data
-//  HMSEvent* hmsEvent;
+  HMSEvent* hmsEvent;
 /// Contains all the Hall C beam data
-//  HallCBeamEvent * beamEvent;
+  HallCBeamEvent * beamEvent;
 /// Contains all the Thrown and unrealistically obtained Montecarlo data
-//  BETAG4MonteCarloEvent * mcEvent;
+  BETAG4MonteCarloEvent * mcEvent;
+/// Simulation Run object
+  InSANERun * simulationRun;
+
 
 /// Override this method in G4Run
-virtual void RecordEvent(const G4Event*);
+ void RecordEvent(const G4Event*);
 /// Returns the Analysis manager singleton
- BETAAnalysisManager* GetRunAnalysisManager() const { return analysisManager ;}
+ BETASimulationManager* GetRunAnalysisManager() const { return fSimulationManager ;}
 
   // Dump all data
   void DumpData() const;
@@ -126,20 +123,10 @@ private:
  TH1F * waveforms;
 
 
-/**
- * Fills the fGasCherenkovEvent of betaEvent.
- * Does so in the following way:
- * Adds the photons for each tube and multiplies by some factor to obtain a realistic ADC value.
- * If the time difference from one hit to the next is larger than some number (TBD) then another
- * TDC hit is added. Returns the number of hits.
- */
-int FillGasCherenkovEvent();
 
 /**
- * Fills the fBigcalEvent of betaEvent
+ *
  */
-int FillBigcalEvent();
-
    BETAHodoscopePMTHitsCollection * hodoscopepmtHC;
    BETAPMTHitsCollection * pmtHC;
    BETARCSCalorimeterHitsCollection * BIGCALHC;
@@ -147,6 +134,8 @@ int FillBigcalEvent();
    BETAFrontTrackerHitsCollection * FTHC;
    BETAMirrorHitsCollection * mirrorHC ;
    BETAFakePlaneHitsCollection * fakePlaneHC;
+*BETAG4PMTHitsCollection * pmtG4HC;
+
 
 bool catLastFile;
 bool fShowUnrealisticData;
@@ -193,6 +182,7 @@ int cer_tdc_thresh;
     G4int hodoscopePMTcount;
     G4double BCTE;
     G4int fakePlaneID;
+    G4int PMTG4HCID;
 
     G4int HHC1ID;
     G4int HHC2ID;

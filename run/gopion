@@ -1,7 +1,0 @@
-#! /bin/bash
-
-BETA pionTests.mac > OUTPUT1
-cd ../.
-make 
-cd run
-BETA pionTests.mac > OUTPUT2

@@ -6,7 +6,7 @@
 //   The detector package consists of a forward tracker, Gas
 //   Cherenkov, Lucite Hodoscope and Calorimeter (BIGCAL)
 //
-//   author Whitney Armstrong (whit@temple.edu)
+//   author Whitney Armstrong (whit@temlpe.edu)
 //
 /////////////////////////////////////////////////////////////////////
 // VGM
@@ -226,12 +226,6 @@ void BETADetectorConstruction::ConstructForwardTracker()
    G4LogicalVolume*   trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"trackerY2_log",0,0,0 );
    G4LogicalVolume*   trackerX1_log = new G4LogicalVolume ( trackerX1_box,Air,"trackerX1_log",0,0,0 );
 
-trackerX1_log->SetVisAttributes(G4Colour(0.2,0.6,0.0));
-trackerY1_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
-trackerY2_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
-horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.0,0.8));
-vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
-
    G4VPhysicalVolume* trackerY1_phys = 
      new G4PVReplica("trackerY1_phys", vertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
    G4VPhysicalVolume* trackerY2_phys = 
@@ -310,6 +304,13 @@ trackerLightCollectionX_log->SetVisAttributes(lightCollectionFTAttributes);
                            FrontTrackerParam );        // Parameterisation
 */
 
+////// Visualization
+trackerX1_log->SetVisAttributes(G4Colour(0.2,0.6,0.0));
+trackerY1_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
+trackerY2_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
+horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.0,0.8));
+vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
+
    G4OpticalSurface* forwardTrackerSurface = new G4OpticalSurface ( "TrackerBarOpticalSurface" );
      forwardTrackerSurface->SetModel ( unified );
      forwardTrackerSurface->SetType ( dielectric_dielectric );
@@ -330,13 +331,14 @@ if(fSimulationManager->fSimulateTrackerOptics) {
    new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", vertBarScore_log, scoringSurface );
    new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",horizBarScore_log, scoringSurface );
 
-   // Get pointer to detector manager
-   G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-   G4VSensitiveDetector* frontTracker =
-      new BETAFrontTracker ( "FrontTracker" );
+
+// Sensitive detector
+   G4SDManager* manager = G4SDManager::GetSDMpointer();
+//   G4VSensitiveDetector* frontTracker =
+//      new BETAFrontTracker ( "FrontTracker" );
    // Register detector with manager
-   manager->AddNewDetector ( frontTracker );
+//   manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
    horizBar_log->SetSensitiveDetector ( frontTracker );
    vertBar_log->SetSensitiveDetector ( frontTracker );
@@ -376,16 +378,14 @@ vertBar_log->SetVisAttributes(lightCollectionFTAttributes);
 */
 void BETADetectorConstruction::ConstructHodoscope()
 {
-//////////////////////////////////////////
-//    Lucite hodoscope
-//////////////////////////////////////////
+
    G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope", 123*cm,3.5*28.*cm,50*cm );
    G4LogicalVolume * hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
-   G4double hodocenter = -DetectorLength/2 - 55*cm + 240*cm;
+   G4double hodocenter = -DetectorLength/2 -50.*cm+ 240.*cm;
    G4RotationMatrix rotOldCoords;
    rotOldCoords.rotateZ ( pi/2. );
 
-   new G4PVPlacement ( G4Transform3D ( rotOldCoords,G4ThreeVector ( 0,0,hodocenter+25*cm ) ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
+   new G4PVPlacement ( G4Transform3D ( rotOldCoords,G4ThreeVector ( 0,0,hodocenter+5.0*cm/*+25*cm*/ ) ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
 
 //G4Box * hodoscopePMT = new G4Box("hodoscopePMTinquotes", 6.*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.);
 //G4LogicalVolume * hodoscopePMT_log = new G4LogicalVolume(hodoscopePMT, Lucite ,"hodoscopePMTinquotes_log");
@@ -609,7 +609,8 @@ void BETADetectorConstruction::ConstructBIGCAL()
                             Air,                   // Material
                             "Protvino_BOX_Logical" ); // Name
 
-   new G4PVPlacement ( 0,G4ThreeVector ( 0,-48.0*cm,bigcalFaceRelative+45.*cm/2. ), calorimeterBottom_log,    // Logical volume
+   new G4PVPlacement ( 0,G4ThreeVector (BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm-BCgeo->protYSize*cm/2.0,
+                                         bigcalFaceRelative+45.*cm/2.0 ), calorimeterBottom_log,    // Logical volume
                        "Protvino_BOX_Physical",     // Name
                        BETADetector_log,             // Mother volume
                        false,                      // Unused boolean
@@ -645,23 +646,24 @@ void BETADetectorConstruction::ConstructBIGCAL()
    // Attach detector to scoring volume
    cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
 
-   G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.1,0.5,0.0 ) );
-   BIGCALAttributes->SetForceSolid ( true );
+
+
+   G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
+/*   BIGCALAttributes->SetForceSolid ( false );*/
    BIGCALAttributes->SetForceWireframe( true );
-   BIGCALAttributes->SetDaughtersInvisible(true  );
+   BIGCALAttributes->SetDaughtersInvisible(false  );
    calorimeterTop_log->SetVisAttributes(BIGCALAttributes);
    calorimeterBottom_log->SetVisAttributes(BIGCALAttributes);
-
 // Make cells invisible!
 //    cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
 //    cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
-
 // Make containers invisible
    calorimeterTop_log->SetVisAttributes ( G4VisAttributes::Invisible );
    calorimeterBottom_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
- G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.6,0.0,0.25 )  );
-BIGCALCellAttributes->SetForceSolid ( true );
+  G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.6,0.0,0.25 )  );
+  BIGCALCellAttributes->SetForceSolid ( true );
+  BIGCALCellAttributes->SetForceWireframe( true );
   cellLogical->SetVisAttributes(BIGCALCellAttributes );
   cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
 //  cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
@@ -698,7 +700,6 @@ void BETADetectorConstruction::ConstructCherenkov()
    G4double yTankFrontEnd = yTank;
 // approx tank snout and front  volume...
    tankVolume = ( xTankFrontBase+xTankFrontEnd ) /2 * ( yTankFrontBase+yTankFrontEnd ) /2 *zTankFront+tankVolume;
-
 // Snout
    G4double ySnoutEnd = 12.5*2.54*cm;
    G4double xSnoutEnd =9.0*2.54*cm;
@@ -707,10 +708,34 @@ void BETADetectorConstruction::ConstructCherenkov()
 // angle between snout-side and z axis
    G4double snoutPhi = 80 *pi/180;
    G4double snoutSide = 37*2.54*cm;
-   G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
-   G4double ySnoutBase =ySnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
-   G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
+//    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
+//    G4double ySnoutBase =ySnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
+//    G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
+
+// NEW snout
+   G4double snoutThetaNEW = 30.0*pi/180.0;
+   G4double snoutPhiNEW = 10.0*pi/180.0;
+   G4double zSnout  = fabs ( snoutSide*std::cos ( snoutThetaNEW )  );
+   G4double ySnoutBase =ySnoutEnd+fabs ( 2.0*snoutSide*std::sin ( snoutThetaNEW ) *std::cos ( snoutPhiNEW ) );
+   G4double xSnoutBase = xSnoutEnd +fabs ( 2.0*snoutSide*std::sin ( snoutThetaNEW ) *std::sin ( snoutPhiNEW ) );
+
    tankVolume = ( xSnoutBase+xSnoutEnd ) /2 * ( ySnoutBase+ySnoutEnd ) /2 * zSnout + tankVolume;
+
+
+// OLD SNOUT
+// Snout
+//    G4double xSnoutEnd = 12.5*2.54*cm;
+//    G4double ySnoutEnd =9*2.54*cm;
+// // angle between snout-top plane and verticle (spherical coordinate theta)
+//    G4double snoutTheta = 120 *pi/180;
+// angle between snout-side and z axis
+//    G4double snoutPhi = 80 *pi/180;
+//    G4double snoutSide = 37*2.54*cm;
+//    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
+//    G4double xSnoutBase =xSnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
+//    G4double ySnoutBase = ySnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
+
+
 
 // PMT Mount
    G4double PMTmountLength = ( 10.0 ) *2.54*cm, //0.5 is thickness of backplate
@@ -1429,8 +1454,8 @@ G4double farMirrorAngle = 20* pi/180;
 
   BETASimulationManager::getInstance()->InitScoring();
 
-   BETAG4PMT* aPMTModel =
-      new BETAG4PMT ( "PMTG4" );
+//    BETAG4PMT* aPMTModel =
+//       new BETAG4PMT ( "PMTG4" );
 
 
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
@@ -1587,6 +1612,9 @@ void BETADetectorConstruction::ConstructFakePlane()
       G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
       G4VPhysicalVolume* planeBehindTracker_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,planeBehindTracker_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
       SetupScoring(planeBehindTracker_log);
+
+
+planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
 }
 
 //___________________________________________________________________
@@ -3097,14 +3125,14 @@ void BETADetectorConstruction::ConstructBeamPipe()
    //Vis attributes for the pipes
    G4VisAttributes* PipeVisAtt = new G4VisAttributes(G4Colour(0.5,1.,0.5));
    PipeVisAtt->SetVisibility(true);
-   PipeVisAtt->SetForceSolid(false);
+   PipeVisAtt->SetForceSolid(true);
    logicUpPipe0->SetVisAttributes(PipeVisAtt);
    logicDownPipe0->SetVisAttributes(PipeVisAtt);
 
    //Vis attributes for the cavities
    G4VisAttributes* PipeCavVisAtt = new G4VisAttributes(G4Colour(0.5,.1,0.7));
    PipeCavVisAtt->SetVisibility(true);
-   PipeCavVisAtt->SetForceSolid(false);
+   PipeCavVisAtt->SetForceSolid(true);
    logicUpPipe0Cav->SetVisAttributes(PipeCavVisAtt);
    logicDownPipe0Cav->SetVisAttributes(PipeCavVisAtt);
 

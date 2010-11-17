@@ -1,6 +1,0 @@
-/targetField/switchDetectorPolarization
-/run/beamOn 100
-/run/beamOn 500
-/run/beamOn 1000
-/run/beamOn 10000
-/run/beamOn 100000

@@ -39,7 +39,8 @@ public:
   
   bool countAllPhotons;
   bool savePhotonPositions;
-G4LogicalVolume * fPMTLogicalVolume;
+
+  G4LogicalVolume * fPMTLogicalVolume;
 
 private:
   

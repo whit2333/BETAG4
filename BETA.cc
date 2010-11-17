@@ -18,6 +18,8 @@ Now you can proceed to the \ref advanced "advanced section".
 #include "G4UImanager.hh"
 #include "G4UIterminal.hh"
 #include "G4UIGAG.hh"
+#include "G4UIQt.hh"
+
 
 #include "G4UItcsh.hh"
 #include "G4UIXm.hh"
@@ -39,8 +41,11 @@ Now you can proceed to the \ref advanced "advanced section".
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
+//---------------------------
+// Parameterisation manager:
+//---------------------------
+#include "G4GlobalFastSimulationManager.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 /**
  *
@@ -62,8 +67,6 @@ int main(int argc,char** argv)
     output_file.open ( "seed.txt" ,ios::trunc); // this incremtents a number
     output_file << myseed ;
     output_file.close();
-
-
   CLHEP::HepRandom::setTheSeed(myseed);
   
   // User Verbose output class
@@ -79,6 +82,7 @@ int main(int argc,char** argv)
   //
   G4VUserDetectorConstruction* detector = new BETADetectorConstruction;
   runManager-> SetUserInitialization(detector);
+
   //
   G4VUserPhysicsList* physics = new BETAPhysicsList;
   runManager-> SetUserInitialization(physics);
@@ -124,7 +128,7 @@ int main(int argc,char** argv)
 #ifdef G4UI_USE_TCSH
 // session = new G4UIGAG;      
       session = new G4UIterminal(new G4UItcsh);      
-//      session = new G4UIXm(argc, argv);    
+//      session = new G4UIQt(argc, argv);    
 #else
       session = new G4UIterminal();
 #endif    

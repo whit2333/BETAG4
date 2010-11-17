@@ -1,9 +1,0 @@
-/control/verbose 0 
-/run/verbose 0 
-/tracking/verbose 0 
-
-# neutral Pions 
-/BETA/gun/SetElectronPionRatio 0.0
-/BETA/gun/SetPiZeroRatio 1.0
-/run/beamOn 1000000
-

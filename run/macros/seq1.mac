@@ -1,5 +1,0 @@
-/BETA/gun/setParticleTheta {theta} 
-/BETA/gun/setParticlePhi {phi} 
-/BETA/gun/momentum {momentum} 
-/control/echo {momentum} {theta} {phi} 
-/run/beamOn 1
