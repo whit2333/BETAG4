@@ -1,0 +1,17 @@
+/vis/open OGLIQt
+#/vis/open OIX
+/vis/viewer/set/viewpointThetaPhi -40 90
+/vis/drawVolume
+/vis/viewer/flush
+#/gun/energy 3
+#/vis/scene/create
+/vis/open OGLIQt
+#/vis/viewer/set/viewpointThetaPhi 70 20
+/vis/viewer/reset
+
+/vis/viewer/set/viewpointThetaPhi 145 20
+# show more than one event 
+#/vis/scene/endOfEventAction accumulate 
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+/run/beamOn 10

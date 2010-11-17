@@ -1,0 +1,79 @@
+#######################################################################
+#  MACRO FILE NAME: movie.mac                                        #
+#  
+#  Makes eps files for movie follow primary with a view about the size
+#  of BETA                                                            # 
+#######################################################################
+
+/control/verbose 2
+/vis/verbose confirmations
+
+/control/alias epsName move3
+
+
+
+### Fast
+/control/alias interval 1.0
+/control/alias halfInterval 0.5
+/control/alias timeRange 6.0
+/control/alias dx -50.0
+/control/alias ddolly -0.0001
+/control/alias dzoom 0.963
+/control/alias totaltime 15
+/control/alias dt 0.4
+### Slow
+#/control/alias interval 0.10
+#/control/alias halfInterval 0.05
+#/control/alias timeRange 6.0
+#/control/alias dx -5.0
+#/control/alias ddolly -0.001
+#/control/alias dzoom 0.996 #(((1/0.963)-1)/10+1)^(-1)=0.99617255
+#/control/alias totaltime 15
+#/control/alias dt 0.04
+### REALLY Slow
+#/control/alias interval 0.010
+#/control/alias halfInterval 0.005
+#/control/alias timeRange 6.0
+#/control/alias dx -0.50
+#/control/alias ddolly -0.0001
+#/control/alias dzoom 0.99961593 
+#/control/alias totaltime 15
+#/control/alias dt 0.004
+
+/vis/ogl/set/printMode pixmap
+/vis/ogl/set/printFilename {epsName}
+
+/vis/modeling/trajectories/drawByParticleID-0/default/setTimeSliceInterval {interval} ns
+/vis/modeling/trajectories/list
+
+# Remove gammas
+#/vis/filtering/trajectories/create/particleFilter
+#/vis/filtering/trajectories/particleFilter-0/add gamma
+#/vis/filtering/trajectories/particleFilter-0/invert trues
+
+# Create trajecgtories
+#/vis/viewer/set/globalLineWidthScale 2
+#/run/beamOn
+
+# Run time sequence
+/vis/ogl/set/fade 1
+/vis/ogl/set/displayHeadTime true
+# The trajectories can appear of jump ahead of the light front because
+# their time range overlaps the viewer's time range.  To mitigate this
+# effect of discrete time intervals, advance the light front by half the
+# trajectories interval...
+
+/vis/ogl/set/displayLightFront true 20 0 20 mm -{halfInterval} ns
+
+
+
+# Switch off auto-refresh to avoid refresh on /vis/viewer/pan in loop.
+# (Then force refresh in loop.)
+
+/vis/viewer/set/autoRefresh 0
+/vis/verbose warnings
+/control/verbose 0
+
+/control/loop macro/move1.loop endTime 0.0 {totaltime} {dt}
+/control/verbose 2
+/vis/verbose confirmations

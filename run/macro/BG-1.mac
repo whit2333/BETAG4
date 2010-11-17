@@ -1,0 +1,27 @@
+############## BACKGROUND ##########
+
+/BETA/gun/SetPiZeroRatio 0.5
+/BETA/gun/SetElectronPionRatio 0.5
+/BETA/gun/isotropic 1
+# setting momentum sampling from (0.75-0.7)=0.05 to (0.75+0.7)=1.45 GeV 
+# Currently the distribution is flat
+/BETA/gun/sigmaMomentum 0.7    ## GeV 
+/BETA/gun/momentum 0.75        ## GeV
+
+/run/beamOn 100000 #### RUN 4414
+
+/BETA/gun/SetPiZeroRatio 0.5
+/BETA/gun/SetElectronPionRatio 0.5
+/BETA/gun/isotropic 1
+/BETA/gun/sigmaMomentum 0.4    ## GeV 
+/BETA/gun/momentum 0.45        ## GeV
+
+/run/beamOn 100000 #### RUN 4415
+
+/BETA/gun/SetPiZeroRatio 0.5
+/BETA/gun/SetElectronPionRatio 0.5
+/BETA/gun/isotropic 1
+/BETA/gun/sigmaMomentum 0.25    ## GeV 
+/BETA/gun/momentum 0.3        ## GeV
+
+/run/beamOn 100000 #### RUN 4416

@@ -1,0 +1,34 @@
+#!
+#/vis/open OGLSX 900x800
+
+/control/alias theta1 130
+/control/alias phi1 8
+/control/alias panx1 -5.4
+/control/alias pany1 1.0
+/control/alias zoom1 1.0
+#/control/alias dolly1 5.0 m
+/control/alias dolly1 34
+
+/control/alias interval 0.4
+/control/alias halfInterval 0.25
+/control/alias dx -0.5 #cm
+/control/alias perspectiveangle 23
+
+/vis/viewer/reset
+
+# orthogonal or perspective (o,p)
+/vis/viewer/set/projection p {perspectiveangle} 
+
+/vis/viewer/dollyTo -1
+/vis/viewer/panTo 0 0
+#################################
+# Shot 1 : Full view
+/vis/viewer/dolly {dolly1}
+/vis/viewer/zoom {zoom1}
+/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+#/vis/viwer/set/viewpointVector 7 3.8 -0.6
+/vis/viewer/pan {panx1} {pany1} 
+
+
+
+

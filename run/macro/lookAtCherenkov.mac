@@ -1,0 +1,29 @@
+/vis/open OIX 
+/vis/scene/create bigcal
+
+#/vis/viewer/set/viewpointThetaPhi 140 130
+#/vis/viewer/set/upThetaPhi 90 180
+#/vis/viewer/zoom 1 
+#/vis/viewer/set/targetPoint 0 -130 120 cm
+
+/vis/scene/add/axes  
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+/vis/scene/endOfEventAction accumulate 2 
+/vis/sceneHandler/attach
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/set -1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 0 red
+
+/tracking/storeTrajectory 1 
+
+
+/vis/scene/add/axes  
+/vis/drawVolume 
+/vis/viewer/flush
+/vis/scene/add/axes  
+/run/beamOn 2 
+
+/vis/scene/add/axes 1 1 1 
+/vis/viewer/flush

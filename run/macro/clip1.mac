@@ -1,0 +1,42 @@
+
+/vis/open OGLSX 900x900
+
+/control/alias epsName shots1
+/vis/drawVolume
+/vis/scene/add/eventID
+/vis/scene/add/trajectories rich
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/modeling/trajectories/drawByParticleID-0/set e+ blue
+/vis/modeling/trajectories/drawByParticleID-0/set pi- cyan
+/vis/modeling/trajectories/drawByParticleID-0/set pi+ magenta
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton green
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawLine true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 5
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawAuxPts true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setAuxPtsSize 5
+
+/vis/viewer/set/globalLineWidthScale 1
+
+/vis/ogl/set/printMode pixmap
+/vis/ogl/set/printFilename {epsName}
+
+#/vis/modeling/trajectories/drawByParticleID-0/default/setTimeSliceInterval {interval} ns
+
+/control/execute macro/scene1.mac
+/vis/ogl/printEPS
+/control/execute macro/scene2.mac
+/vis/ogl/printEPS
+
+/run/beamOn
+/control/execute macro/scene1.mac
+/vis/ogl/printEPS
+/control/execute macro/scene2.mac
+/vis/ogl/printEPS
+/control/execute macro/scene3.mac
+/vis/ogl/printEPS
+/control/execute macro/scene4.mac
+/vis/ogl/printEPS
+/control/execute macro/move1.mac
+

@@ -1,0 +1,60 @@
+#!
+
+/vis/open OGLSX 800x800
+
+/control/alias zoom1 9
+/control/alias dx -0.5 #cm
+/control/alias theta1 159
+/control/alias phi1 15 
+/control/alias interval 0.5
+/control/alias halfInterval 0.25
+
+/vis/drawVolume
+/vis/scene/add/eventID
+/vis/scene/add/trajectories rich
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/modeling/trajectories/drawByParticleID-0/set e+ blue
+/vis/modeling/trajectories/drawByParticleID-0/set pi- cyan
+/vis/modeling/trajectories/drawByParticleID-0/set pi+ magenta
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton green
+
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawLine true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawStepPts true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setStepPtsSize 5
+#/vis/modeling/trajectories/drawByParticleID-0/default/setDrawAuxPts true
+#/vis/modeling/trajectories/drawByParticleID-0/default/setAuxPtsSize 5
+
+/vis/modeling/trajectories/drawByParticleID-0/default/setTimeSliceInterval {interval} ns
+
+/vis/viewer/set/globalLineWidthScale 1
+
+# orthogonal or perspective (o,p)
+/vis/viewer/set/projection p
+# 
+# Note if set on orthogonal, dolly does nothing
+# 
+
+
+# Shot 1 : Full view
+/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+/vis/viewer/pan -2.3 0.3 m
+/vis/viewer/zoom {zoom1}
+
+
+
+## modeling....
+
+
+#/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+#/vis/viewer/zoomTo {zoom1}
+
+#/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+#/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+#/vis/viewer/zoomTo {zoom1}
+
+
+
+
+
+
