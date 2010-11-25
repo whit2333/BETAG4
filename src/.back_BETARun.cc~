@@ -22,7 +22,7 @@
 #include "TH1F.h"
 #include "TObjArray.h"
 #include "TH1.h"
-#include "TH2.h"
+#include "G4THitsMap.hh"
 #include "TProfile.h"
 #include "TRint.h"
 #include "TApplication.h"
@@ -149,17 +149,55 @@ BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( 
 /*   waveforms = new TH1F(Form("waveform%d",numberOfEvent),"waveform",200,0,20);*/
    G4double averageTime[12];
 
+PMTG4HCID=-1;
+PMTHCID=-1;
+MirrorHCID=-1;
+hodoscopePMTHCID=-1;
+BIGCALID=-1;
+BIGCALID2=-1;
+FTID=-1;
+fakePlaneID=-1;
 /// TODO Implement a print to screen for run info... 
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
-   if (construction->usingGasCherenkov) PMTG4HCID = SDman->GetCollectionID ( colName="myCellScorer/eTrackLength" );
+   if (construction->usingGasCherenkov) 
+     PMTG4HCID = SDman->GetCollectionID( colName="myCellScorer/eTrackLength" );
+   if (construction->usingGasCherenkov) 
+     PMTHCID = SDman->GetCollectionID ( colName="PMT/pmt" );
+   if (construction->usingGasCherenkov) 
+     MirrorHCID = SDman->GetCollectionID ( colName="Mirrors/mirrors" );
+   if (construction->usingLuciteHodoscope) 
+     hodoscopePMTHCID = SDman->GetCollectionID ( colName="hodoscopePMT/pmt" );
+   if (construction->usingBigcal) 
+     BIGCALID  = SDman->GetCollectionID ( colName="BIGCALRCS/RCSCalorimeterCollection" );
+   if (construction->usingBigcal) 
+     BIGCALID2 = SDman->GetCollectionID ( colName="BIGCALBottom/BottomCalorimeterCollection" );
+   if (construction->usingForwardTracker)  
+     FTID = SDman->GetCollectionID ( colName="FrontTracker/FrontTracker" );
+   if (construction->usingFakePlaneAtBigcal) 
+     fakePlaneID = SDman->GetCollectionID ( colName="FakePlaneAtBigcal/FakePlane" );
 
-   if (construction->usingGasCherenkov) PMTHCID = SDman->GetCollectionID ( colName="PMT/pmt" );
-   if (construction->usingGasCherenkov) MirrorHCID = SDman->GetCollectionID ( colName="Mirrors/mirrors" );
-   if (construction->usingLuciteHodoscope) hodoscopePMTHCID = SDman->GetCollectionID ( colName="hodoscopePMT/pmt" );
-   if (construction->usingBigcal) BIGCALID  = SDman->GetCollectionID ( colName="BIGCALRCS/RCSCalorimeterCollection" );
-   if (construction->usingBigcal) BIGCALID2 = SDman->GetCollectionID ( colName="BIGCALBottom/BottomCalorimeterCollection" );
-   if (construction->usingForwardTracker)  FTID = SDman->GetCollectionID ( colName="FrontTracker/FrontTracker" );
-   if (construction->usingFakePlaneAtBigcal) fakePlaneID = SDman->GetCollectionID ( colName="FakePlaneAtBigcal/FakePlane" );
+  G4String detName[4] = {"tracker","cherenkov","hodoscope","bigcal"};
+  G4String primNameSum[4] = {"chargeHit","photonSurf","chargeHit","pSurfFlux"/*,"trackLength","nStep*/};
+  //G4String primNameMin[3] = {"minEkinGamma","minEkinElectron","minEkinPositron"};
+
+
+  G4String fullName;
+  for(size_t i=0;i<4;i++)
+  {
+    //for(size_t j=0;j<4;j++)
+    //{
+      fullName = detName[i]+"/"+primNameSum[i];
+      colIDSum[i] = SDman->GetCollectionID(fullName);
+std::cout << "HC ID " << i << " " <<  colIDSum[i] << " \n";
+    //}
+//    for(size_t k=0;k<3;k++)
+//    {
+//      fullName = detName[i]+"/"+primNameMin[k];
+//      colIDMin[i][k] = SDMan->GetCollectionID(fullName);
+//    }
+  }
+
+
 }
 
 //____________________________________________________________________//
@@ -188,23 +226,71 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    FTHC = 0;
    mirrorHC = 0;
    fakePlaneHC = 0;
-//fG4THitsMap<G4double>* pmtG4HC;
+   
+
+std::cout << "Total collection " << HCE->GetNumberOfCollections() << " \n";
+
+
    if ( HCE && HCE->GetNumberOfCollections() != 0)
    {
-      if (construction->usingLuciteHodoscope) hodoscopepmtHC =(BETAHodoscopePMTHitsCollection* )( HCE->GetHC ( hodoscopePMTHCID ) );
-      if (construction->usingGasCherenkov) pmtHC = ( BETAPMTHitsCollection* ) ( HCE->GetHC ( PMTHCID ) );
-      if (construction->usingBigcal) BIGCALHC = ( BETARCSCalorimeterHitsCollection* ) ( HCE->GetHC ( BIGCALID ) );
-      if (construction->usingBigcal) BIGCALHC2 = ( BETAProtvinoCalorimeterHitsCollection* ) ( HCE->GetHC ( BIGCALID2 ) );
-      if (construction->usingForwardTracker) FTHC = ( BETAFrontTrackerHitsCollection* ) ( HCE->GetHC ( FTID ) );
-      if (construction->usingGasCherenkov) mirrorHC = ( BETAMirrorHitsCollection* ) ( HCE->GetHC ( MirrorHCID ) );
-      if (construction->usingFakePlaneAtBigcal) fakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCE->GetHC ( fakePlaneID ) );
+      if (construction->usingLuciteHodoscope && hodoscopePMTHCID != -1 ) 
+        hodoscopepmtHC =(BETAHodoscopePMTHitsCollection* )( HCE->GetHC ( hodoscopePMTHCID ) );
+
+      if (construction->usingGasCherenkov && PMTHCID != -1 ) 
+        pmtHC = ( BETAPMTHitsCollection* ) ( HCE->GetHC ( PMTHCID ) );
+
+      if (construction->usingBigcal && BIGCALID != -1 ) 
+        BIGCALHC = ( BETARCSCalorimeterHitsCollection* ) ( HCE->GetHC ( BIGCALID ) );
+
+      if (construction->usingBigcal && BIGCALID2 != -1 ) 
+        BIGCALHC2 = ( BETAProtvinoCalorimeterHitsCollection* ) ( HCE->GetHC ( BIGCALID2 ) );
+
+      if (construction->usingForwardTracker && FTID != -1 ) 
+        FTHC = ( BETAFrontTrackerHitsCollection* ) ( HCE->GetHC ( FTID ) );
+
+      if (construction->usingGasCherenkov && MirrorHCID != -1 ) 
+        mirrorHC = ( BETAMirrorHitsCollection* ) ( HCE->GetHC ( MirrorHCID ) );
+
+      if (construction->usingFakePlaneAtBigcal && fakePlaneID != -1 )
+        fakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCE->GetHC ( fakePlaneID ) );
+
       //if (construction->usingGasCherenkov) pmtG4HC = (G4THitsMap<double>*)( HCE->GetHC ( PMTG4HCID ) );
-
+/*      for(int j=0;j<4;j++) if(colIDSum[j] !=1) { }*/
    }
+G4double atotal; 
+G4int iii;
+std::cout << " TEST \n";
 
+ for(int j=0;j<4;j++) { 
+   if( colIDSum[j] != -1 ) {
+      atotal=0.0;
+      iii=0;
+std::cout << " TEST \n";
 
-std::cout << "Total entries " << pmtG4HC->entries() << "\n";
+      G4THitsMap<G4double>* evtMap = (G4THitsMap<G4double>*)(HCE->GetHC(colIDSum[j]));
+std::cout << " TEST \n";
+if(evtMap) {
+      std::cout << "Det " << j << " entries=" << (evtMap)->entries() << " \n";
+std::cout << " TEST \n";
 
+      std::map<G4int,G4double*>::iterator itr = evtMap->GetMap()->begin();
+std::cout << " TEST \n";
+
+for(; itr != evtMap->GetMap()->end(); itr++)
+      {
+        G4int key = (itr->first);
+        G4double val = *(itr->second);
+
+/*       for(iii=0; iii < evtMap->entries() ; iii++)
+       {
+        G4double   val = *( (*evtMap)[iii]);*/
+        atotal += (val);
+      }
+}
+std::cout << "Det " << j << " value=" << atotal << " \n";
+}
+}
+// << pmtG4HC->entries() << "\n";
 /// Initialize counters and data holders
 //eCountsThisEvent = 0;
    for (int i=0;i<20;i++) CherenkovPMTCount[i] =0;

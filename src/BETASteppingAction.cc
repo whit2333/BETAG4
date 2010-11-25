@@ -37,6 +37,7 @@ void BETASteppingAction::UserSteppingAction ( const G4Step * theStep )
    if ( theTrack->GetTrackStatus() !=fAlive ) {
       return;
    }
+/*
 // Going to kill optical photon track if its step length is repeatedly a 1e+03 fm and 
 // Inside tracker
    if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
@@ -67,7 +68,7 @@ void BETASteppingAction::UserSteppingAction ( const G4Step * theStep )
    }
          fLastTrackIdInTracker=theTrack->GetTrackID();
          fLastStepNumberInTracker=theTrack->GetCurrentStepNumber();
-
+*/
 /// COUNT The number of reflected photons
 ///////////////////////////////////////////////////////////////////////////////
 //  if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&

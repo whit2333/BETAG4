@@ -47,7 +47,6 @@ void BETASimulationMessenger::SetNewValue (
    if ( command == writeTree )
    {
       G4cout << " T1 " <<  G4endl;
-
       manager->write();
    }
    if ( command == showPlot )

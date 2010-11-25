@@ -134,7 +134,7 @@ private:
    BETAFrontTrackerHitsCollection * FTHC;
    BETAMirrorHitsCollection * mirrorHC ;
    BETAFakePlaneHitsCollection * fakePlaneHC;
-*BETAG4PMTHitsCollection * pmtG4HC;
+//BETAG4PMTHitsCollection * pmtG4HC;
 
 
 bool catLastFile;

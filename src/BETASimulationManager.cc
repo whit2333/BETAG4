@@ -14,10 +14,11 @@
 #include "G4VPrimitiveScorer.hh"
 #include "G4ScoringManager.hh"
 #include "G4VSDFilter.hh"
-//#include "G4PSPassageCurrent.hh"
+#include "G4PSPassageCellCurrent.hh"
 #include "G4PSFlatSurfaceFlux.hh"
 #include "G4PSTrackLength.hh"
-
+#include "G4ParticleTable.hh"
+#include "G4ParticleDefinition.hh"
 //_________________________________________________________________//
 
 BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
@@ -25,8 +26,8 @@ BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 
 BETASimulationManager::BETASimulationManager () : 
      fIsAppendMode(false),fRunNumber(0),plotVis(0),
-     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(true),
-     fSimulateTrackerOptics(true)
+     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(false),
+     fSimulateTrackerOptics(false)
 {
 
   fSimulationMessenger = new BETASimulationMessenger ( this );
@@ -41,6 +42,7 @@ BETASimulationManager::BETASimulationManager () :
    hmsEvent=0;
    beamEvent=0;
    mcEvent=0;
+  //InitScoring();
 }
 //_________________________________________________________________//
 
@@ -209,43 +211,90 @@ return(0);
 int BETASimulationManager::InitScoring()  {
 
   G4SDManager * sensitiveDetManager = G4SDManager::GetSDMpointer();
-
   G4String filterName, particleName;
-  G4SDParticleFilter* protonFilter;
-  G4SDParticleFilter* electronFilter;
-  G4SDParticleFilter* opticalPhotonFilter;
+
+
 // Scoring and sensitive volumes
 
-  trackerDetector = 
+  fTrackerDetector = 
     new G4MultiFunctionalDetector("tracker");
+  fCherenkovDetector = 
+    new G4MultiFunctionalDetector("cherenkov");
+  fBigcalDetector = 
+    new G4MultiFunctionalDetector("bigcal");
+  fHodoscopeDetector = 
+    new G4MultiFunctionalDetector("hodoscope");
 //
-  sensitiveDetManager->AddNewDetector(trackerDetector);
+
 
 // Sensitive volume filters
-  protonFilter = new G4SDParticleFilter(filterName="protonFilter");
-  protonFilter->add("proton");
-
+  protonFilter = new G4SDParticleFilter(filterName="protonFilter");//,"proton");
+//    protonFilter->add("proton");
   electronFilter = new G4SDParticleFilter(filterName="electronFilter");
-  electronFilter->add("e-");
+//    electronFilter->add("e-");
 
-// Sensor primitives
-  G4PSFlatSurfaceFlux * protonSurfFlux;
+  chargeFilter = new G4SDChargedFilter("chargeFilter");
+  opticalPhotonFilter = new G4SDParticleFilter(filterName="opticalPhotonFilter");
+//    opticalPhotonFilter->add("opticalphoton");
+  bigcalEnergyFilter = new G4SDKineticEnergyFilter("bigcalEnergyThreshFilter");
+
+// DefineScoringFilters();
+
+// scoring primitives
     protonSurfFlux   = new G4PSFlatSurfaceFlux("pSurfFlux",1);
     protonSurfFlux->SetFilter(protonFilter);
 
-//   G4PSPassageCurrent * electronSurfFlux;
-//     electronSurfFlux   = new G4PSPassageCurrent("ePassCurrent",1);
-//     electronSurfFlux->SetFilter(electronFilter);
+    electronSurfFlux   = new G4PSPassageCellCurrent("eHit");
+    electronSurfFlux->SetFilter(electronFilter);
 
-  G4PSTrackLength* electronTracklength;
-    electronTracklength   = new G4PSTrackLength("eTrackLength",1);
+    chargeSurfFlux   = new G4PSPassageCellCurrent("chargeHit");
+    chargeSurfFlux->SetFilter(chargeFilter);
+
+    photonSurfFlux   = new G4PSPassageCellCurrent("photonSurf");
+    photonSurfFlux->SetFilter(opticalPhotonFilter);
+
+    electronTracklength   = new G4PSTrackLength("eTrackLength");
     electronTracklength->SetFilter(electronFilter);
 
+   calEnergyDeposit = new G4PSEnergyDeposit("bcEnergyDeposit");
+   calEnergyDeposit->SetFilter(bigcalEnergyFilter);
+
 // Register Scoring volume with primitive(s)
-  myScorer->RegisterPrimitive(electronTracklength);
+  fTrackerDetector->RegisterPrimitive(chargeSurfFlux);
+  fHodoscopeDetector->RegisterPrimitive(chargeSurfFlux);
+  fCherenkovDetector->RegisterPrimitive(photonSurfFlux);
+//  calEnergyDeposit->SetMultiFunctionalDetector(fBigcalDetector);
+//  fBigcalDetector->RegisterPrimitive(calEnergyDeposit);
+
+  fBigcalDetector->RegisterPrimitive(protonSurfFlux);
+
+// Below does not work!
+//  fBigcalDetector->RegisterPrimitive((G4VPrimitiveScorer*)calEnergyDeposit);
+
+
+  sensitiveDetManager->AddNewDetector(fTrackerDetector);
+  sensitiveDetManager->AddNewDetector(fCherenkovDetector);
+  sensitiveDetManager->AddNewDetector(fBigcalDetector);
+  sensitiveDetManager->AddNewDetector(fHodoscopeDetector);
 
   return(0);
 }
 //_________________________________________________________________//
+
+int BETASimulationManager::DefineScoringFilters() {
+// Sensitive volume filters
+    protonFilter->add("proton");
+
+    electronFilter->add("e-");
+
+    opticalPhotonFilter->add("opticalphoton");
+
+    bigcalEnergyFilter->SetKineticEnergy(0.010*GeV,6.0*GeV);
+
+
+return(0);
+}
+
+
 
 

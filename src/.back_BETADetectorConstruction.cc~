@@ -55,13 +55,16 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
 
    fSimulationManager = BETASimulationManager::getInstance();
+
+   messenger = new BETADetectorMessenger ( this );
+
+
    usingGasCherenkov       = true;
    usingBigcal             = true;
    usingLuciteHodoscope    = true;
    usingForwardTracker     = true;
    usingFakePlaneAtBigcal  = true;
 
-   messenger = new BETADetectorMessenger ( this );
 
    expHall_x = expHall_y = expHall_z = 30.0*m;
 
@@ -240,76 +243,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
 
    G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
 
-
-// Old Parameterisation 
-/*
-   G4LogicalVolume* tracker2_log = new G4LogicalVolume ( tracker_box,Air,"tracker2_log",0,0,0 );
-
- 
-   G4Box* trackerDummyCell_box = new G4Box ( "tracker_box",41.*cm/2., 23.*cm/2., 10.*mm/2. );
-   G4LogicalVolume* trackerDummyCell_log = new G4LogicalVolume ( trackerDummyCell_box,Lucite,"trackerDummy_log",0,0,0 );
-
-   G4Box* trackerLightCollectionY_box = new G4Box ( "trackerLightCollectionY_box",40.*cm/2.+72.0*smallSeparation/2.0, 3.*mm/2., 3.*mm/2. );
-   G4LogicalVolume* trackerLightCollectionY_log = new G4LogicalVolume ( trackerLightCollectionY_box,Lucite,"trackerLightCollectionY_log",0,0,0 );
-
-   G4Box* trackerLightCollectionX_box = new G4Box ( "trackerLightCollectionX_box",3.*mm/2., 22.*cm/2.+132.0*smallSeparation/2.0, 3.*mm/2. );
-   G4LogicalVolume* trackerLightCollectionX_log = new G4LogicalVolume ( trackerLightCollectionX_box,Lucite,"trackerLightCollectionX_log",0,0,0 );
-
-   G4OpticalSurface* OpTankFlatBlackSurface = new G4OpticalSurface ( "trackerFlatBlackSurface" );
-     OpTankFlatBlackSurface->SetModel ( unified );
-     OpTankFlatBlackSurface->SetType ( dielectric_metal );
-     OpTankFlatBlackSurface->SetFinish ( groundbackpainted );
-   G4LogicalSkinSurface * flatBalckSurface = new G4LogicalSkinSurface ( "TrackerFlatBlackSurface", tracker_log, OpTankFlatBlackSurface );
-
-
-   G4VPhysicalVolume* trackerLightCollectionY2left_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.0+1.5*mm-smallSeparation,3.*mm+smallSeparation ),trackerLightCollectionY_log, "trackerLightCollectionY2left_phys", tracker_log,false,0 );
-   G4VPhysicalVolume* trackerLightCollectionY2right_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+1.5*mm-smallSeparation),3.*mm+smallSeparation ),trackerLightCollectionY_log, "trackerLightCollectionY2right_phys", tracker_log,false,0 );
-   G4VPhysicalVolume* trackerLightCollectionY1left_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.0+1.5*mm-smallSeparation,0 ),trackerLightCollectionY_log, "trackerLightCollectionY1left_phys", tracker_log,false,0 );
-   G4VPhysicalVolume* trackerLightCollectionY1right_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+1.5*mm-smallSeparation),0 ),trackerLightCollectionY_log, "trackerLightCollectionY1right_phys", tracker_log,false,0 );
-
-   G4VPhysicalVolume* trackerLightCollectionXleft_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector ( 40.0*cm/2.0+1.5*mm-smallSeparation ,0,  -3.*mm-smallSeparation ),trackerLightCollectionX_log, "trackerLightCollectionXleft_phys", tracker_log,false,0 );
-   G4VPhysicalVolume* trackerLightCollectionXright_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector ( -(40.0*cm/2.0+1.5*mm-smallSeparation) ,0,  -3.*mm-smallSeparation ),trackerLightCollectionX_log, "trackerLightCollectionXright_phys", tracker_log,false,0 );
-
-   G4VPhysicalVolume* trackerLightCollectors[6]=
-   {trackerLightCollectionY2left_phys,
-    trackerLightCollectionY1left_phys,
-    trackerLightCollectionY2right_phys,
-    trackerLightCollectionY1right_phys,
-    trackerLightCollectionXleft_phys,
-    trackerLightCollectionXright_phys};
-
-   G4VisAttributes* lightCollectionFTAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.2,0.2,0.80 ) );
-lightCollectionFTAttributes->SetForceSolid(true);
-trackerLightCollectionY_log->SetVisAttributes(lightCollectionFTAttributes);
-trackerLightCollectionX_log->SetVisAttributes(lightCollectionFTAttributes);
-   G4VPhysicalVolume* tracker2_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,0),tracker2_log,"tracker2_phys",tracker_log,false,0 );
-
-   G4VPVParameterisation* FrontTrackerParam = new BETAFrontTrackerCellParameterisation(Lucite);
-     ((BETAFrontTrackerCellParameterisation * )(FrontTrackerParam))->SetMotherPhysicalVolume(tracker2_phys);
-     ((BETAFrontTrackerCellParameterisation * )(FrontTrackerParam))->SetScoringPhysicalVolumes(trackerLightCollectors);
-
-   G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
-
-   new G4PVParameterised ( "tracker_physical_param",  // Name
-                           trackerDummyCell_log,        // Logical volume
-                           tracker2_log, // Mother volume
-                           kXAxis,             // Axis
-                           339,                // Number of replicas
-                           FrontTrackerParam );        // Parameterisation
-*/
-
-////// Visualization
-trackerX1_log->SetVisAttributes(G4Colour(0.2,0.6,0.0));
-trackerY1_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
-trackerY2_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
-horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.0,0.8));
-vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
+// OPTICS
 
    G4OpticalSurface* forwardTrackerSurface = new G4OpticalSurface ( "TrackerBarOpticalSurface" );
      forwardTrackerSurface->SetModel ( unified );
@@ -324,33 +258,42 @@ vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
 if(fSimulationManager->fSimulateTrackerOptics) {
    new G4LogicalSkinSurface ( "vertTrackerBarSurf",  vertBar_log, forwardTrackerSurface );
    new G4LogicalSkinSurface ( "horizTrackerBarSurf", horizBar_log, forwardTrackerSurface );
+   new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", vertBarScore_log, scoringSurface );
+   new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",horizBarScore_log, scoringSurface );
 } else {
    new G4LogicalSkinSurface ( "vertTrackerBarSurf",  vertBar_log, scoringSurface );
    new G4LogicalSkinSurface ( "horizTrackerBarSurf", horizBar_log, scoringSurface );
-}
    new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", vertBarScore_log, scoringSurface );
    new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",horizBarScore_log, scoringSurface );
+}
 
 
 
-// Sensitive detector
+
+// Detection
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 //   G4VSensitiveDetector* frontTracker =
 //      new BETAFrontTracker ( "FrontTracker" );
    // Register detector with manager
-   manager->AddNewDetector ( frontTracker );
+//   manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
-   horizBar_log->SetSensitiveDetector ( frontTracker );
-   vertBar_log->SetSensitiveDetector ( frontTracker );
-   horizBarScore_log->SetSensitiveDetector ( frontTracker );
-   vertBarScore_log->SetSensitiveDetector ( frontTracker );
+   horizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
+   vertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
+//   horizBarScore_log->SetSensitiveDetector ( frontTracker );
+//   vertBarScore_log->SetSensitiveDetector ( frontTracker );
 
 ////// end tracker
+
+
+////// Visualization
+trackerX1_log->SetVisAttributes(G4Colour(0.2,0.6,0.0));
+trackerY1_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
+trackerY2_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
+horizBarScore_log->SetVisAttributes(G4Colour(0.0,0.0,0.8));
+vertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
    G4VisAttributes* FTAttributes = new G4VisAttributes ( G4Colour ( 0.5,0.2,0.2,0.1 ) );
    tracker_log->SetVisAttributes ( FTAttributes );
 //   trackerDummyCell_log->SetVisAttributes (  G4VisAttributes::Invisible  );
-
-
   G4VisAttributes* lightCollectionFTAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.2,0.8,0.80 ) );
 lightCollectionFTAttributes->SetForceSolid(true);
 horizBar_log->SetVisAttributes(lightCollectionFTAttributes);
@@ -450,17 +393,7 @@ void BETADetectorConstruction::ConstructHodoscope()
 //                         28*2,                // Number of replicas
 //                         HodoscopePMTParam);         // Parameterisation
 
-   G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-
-   /*
-      G4VSensitiveDetector* BIGCALProtvino =
-       new BETAProtvinoCalorimeter("BIGCALProtvino");
-     // Register detector with manager
-     manager->AddNewDetector(BIGCALProtvino);
-     // Attach detector to scoring volume
-      cellLogicalBottom->SetSensitiveDetector(BIGCALProtvino);
-   */
 
 // LUCITE                                   TOTAL INTERNAL REFLECTION
 //    G4double LRefrac[num] = {1.49,1.49};
@@ -473,8 +406,6 @@ void BETADetectorConstruction::ConstructHodoscope()
 /// which correspons to about 0.2 to 1.4
 // Lucite
 //
-
-
 //    G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
 //    myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
 //    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
@@ -528,6 +459,17 @@ void BETADetectorConstruction::ConstructHodoscope()
 //}
 
 
+   G4SDManager* manager = G4SDManager::GetSDMpointer();
+
+      G4VSensitiveDetector* BIGCALProtvino =
+       new BETAProtvinoCalorimeter("BIGCALProtvino");
+     // Register detector with manager
+//     manager->AddNewDetector(BIGCALProtvino);
+     // Attach detector to scoring volume
+      hodoscopeBar_log->SetSensitiveDetector(fSimulationManager->fHodoscopeDetector);
+
+
+// Visualization
    hodoscope_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
@@ -594,9 +536,11 @@ void BETADetectorConstruction::ConstructBIGCAL()
       new BETARCSCalorimeter ( "BIGCALRCS" );
 
    // Register detector with manager
-   manager->AddNewDetector ( BIGCALRCS );
+//   manager->AddNewDetector ( BIGCALRCS );
    // Attach detector to scoring volume
-   cellLogical->SetSensitiveDetector ( BIGCALRCS );
+//   cellLogical->SetSensitiveDetector ( BIGCALRCS );
+   cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+
 
 // Protvino
    G4VSolid* calorimeterSolidBottom = new G4Box ( "Protvino_BOX", // Name
@@ -642,10 +586,10 @@ void BETADetectorConstruction::ConstructBIGCAL()
    G4VSensitiveDetector* BIGCALProtvino =
       new BETAProtvinoCalorimeter ( "BIGCALBottom" );
    // Register detector with manager
-   manager->AddNewDetector ( BIGCALProtvino );
+//   manager->AddNewDetector ( BIGCALProtvino );
    // Attach detector to scoring volume
-   cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
-
+//   cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
+   cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
@@ -1492,7 +1436,7 @@ G4double farMirrorAngle = 20* pi/180;
 //   manager->AddNewDetector ( aPMTModel );
 
    // Attach detector to scoring volume
-   pmtFace_log->SetSensitiveDetector (BETASimulationManager::getInstance()->myScorer);
+   pmtFace_log->SetSensitiveDetector(fSimulationManager->fCherenkovDetector);
 // CherenkovTank );
 ///   pmtFace_log->SetSensitiveDetector (CherenkovTank );
 
@@ -1517,11 +1461,8 @@ G4double farMirrorAngle = 20* pi/180;
    G4double Efficiency[num]   = {1.0, 1.0};
 
 
-
-///////////////////////////////
-// PMT Face Surface
-///////////////////////////////
-
+// OPTICS
+// PMT Surface
    G4OpticalSurface* OpPMTSurface = new G4OpticalSurface ( "PMTSurface" );
    OpPMTSurface->SetType ( dielectric_dielectric );
    OpPMTSurface->SetFinish ( polished );
@@ -1543,9 +1484,7 @@ G4double farMirrorAngle = 20* pi/180;
 
    OpPMTSurface->SetMaterialPropertiesTable ( PMTFaceTable );
 
-////////////////////////////////
 // Mirror Surface - MIRROR
-////////////////////////////////
    G4double MSpecularLobe[num]    = {0.0, 0.0};
    G4double MSpecularSpike[num]   = {0.0, 0.0};
    G4double MBackscatter[num]     = {0.0, 0.0};
@@ -1563,7 +1502,6 @@ G4double farMirrorAngle = 20* pi/180;
    reflectiveCoatingSurfacePTable->AddProperty ( "SPECULARLOBECONSTANT",  Ephoton, MSpecularLobe,    num );
    reflectiveCoatingSurfacePTable->AddProperty ( "SPECULARSPIKECONSTANT", Ephoton, MSpecularSpike,   num );
    reflectiveCoatingSurfacePTable->AddProperty ( "BACKSCATTERCONSTANT",   Ephoton, MBackscatter,     num );
-//  reflectiveCoatingSurfacePTable->AddProperty("EFFICIENCY",   Ephoton, MEfficiency,   num);
    OpMirrorSurface->SetMaterialPropertiesTable ( reflectiveCoatingSurfacePTable );
 
    G4LogicalSkinSurface * nearMirrorSurface = new G4LogicalSkinSurface ( "silversurface", nearMirrorGlass_log, OpMirrorSurface );
@@ -1575,14 +1513,13 @@ G4double farMirrorAngle = 20* pi/180;
    G4LogicalBorderSurface * farMirrorSurfaceTEMP6 = new G4LogicalBorderSurface ( "farmirror6", tank_phys, MirrorGlass_phys6, OpMirrorSurface );
    G4LogicalBorderSurface * farMirrorSurfaceTEMP8 = new G4LogicalBorderSurface ( "farmirror7", tank_phys, MirrorGlass_phys8, OpMirrorSurface );
 
-  G4OpticalSurface* OpTankFlatBlackSurface = new G4OpticalSurface ( "FlatBlackSurface" );
+   G4OpticalSurface* OpTankFlatBlackSurface = new G4OpticalSurface ( "FlatBlackSurface" );
    OpTankFlatBlackSurface->SetModel ( unified );
    OpTankFlatBlackSurface->SetType ( dielectric_metal );
    OpTankFlatBlackSurface->SetFinish ( groundbackpainted );
  G4LogicalSkinSurface * flatBalckSurface = new G4LogicalSkinSurface ( "TankFlatBlackSurface", tank_log, OpTankFlatBlackSurface );
 
-
-
+//  Visualizations
    G4VisAttributes* tankAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5,0.25 ) );
 // tankAttributes->SetForceWireframe ( true );
 //   tankAttributes->SetDaughtersInvisible ( true );
@@ -1638,14 +1575,23 @@ void BETADetectorConstruction::ConstructBETA()
     (rTarget+DetectorLength/2.0+displacementBackwards)*std::cos(DetectorAngle))), 
     BETADetector_log, "BETADetectorphys",expHall_log,false,0 );
 
+
+// This must come before associating logical volumes with scorers
+   fSimulationManager->InitScoring();
+//   fSimulationManager->DefineScoringFilters();
+
+
    if (usingFakePlaneAtBigcal) ConstructFakePlane();
    if (usingForwardTracker)  ConstructForwardTracker();
    if (usingGasCherenkov)  ConstructCherenkov();
    if (usingLuciteHodoscope)  ConstructHodoscope();
    if (usingBigcal)   ConstructBIGCAL();
 
+
+
    expHall_log->SetVisAttributes ( G4VisAttributes::Invisible );
    BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
+
 
 }
 

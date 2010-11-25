@@ -136,6 +136,7 @@ private:
    BETAFakePlaneHitsCollection * fakePlaneHC;
 //BETAG4PMTHitsCollection * pmtG4HC;
 
+G4int colIDSum[4];
 
 bool catLastFile;
 bool fShowUnrealisticData;

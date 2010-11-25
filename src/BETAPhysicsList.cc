@@ -102,7 +102,7 @@ void BETAPhysicsList::ConstructMesons()
 
 void BETAPhysicsList::ConstructBaryons()
 {
-//  barions
+//  baryons
    G4Proton::ProtonDefinition();
    G4AntiProton::AntiProtonDefinition();
    G4Neutron::NeutronDefinition();

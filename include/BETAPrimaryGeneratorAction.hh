@@ -3,6 +3,8 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
+#include "InSANEPhaseSpaceSampler.h"
+#include "G4GeneralParticleSource.hh"
 
 class G4ParticleGun;
 class G4Event;
@@ -19,19 +21,19 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
   public:
     void GeneratePrimaries(G4Event*);
-
     void SetOptPhotonPolar();
     void SetOptPhotonPolar(G4double);
-    void setIsotropic(G4int);
-    void setSigmaMomentum(G4double);
-    void setMomentum(G4double);
-    void setElectronPionRatio(G4double);
-    void setPiZeroRatio(G4double);
+    void SetIsotropic(G4int);
+    void SetSigmaMomentum(G4double);
+    void SetMomentum(G4double);
+    void SetElectronPionRatio(G4double);
+    void SetPiZeroRatio(G4double);
 
-    void setPartTheta ( G4double P );
-    G4double getPartTheta ();
-    void setPartPhi ( G4double P );
-    G4double getPartPhi ();
+    void SetPartTheta ( G4double P );
+    G4double GetPartTheta ();
+    void SetPartPhi ( G4double P );
+    G4double GetPartPhi ();
+
     G4double theta_particle,phi_particle;
     G4double momentum;
     G4double sigmaMomentum;
@@ -39,8 +41,17 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double eventPhi;
     G4double eventEnergy;
     G4double eventMomentum;
+  
+/**
+ *  Used to control the phase space \todo{record at end of run xsec and phase space used}
+ */
+  InSANEPhaseSpaceSampler * fEventSampler;
 
+/// 
+  G4GeneralParticleSource  * fParticlesSource;
+  G4ParticleGun  * fParticleGun;
   private:
+        Int_t fNumberOfParticles;
 
 	bool background;
 	bool goodElectron;
@@ -48,7 +59,6 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
     G4double sigmaTheta, sigmaPhi;
 
-    G4ParticleGun* particleGun;
     BETAPrimaryGeneratorMessenger* gunMessenger;
     G4ParticleDefinition* electron;
     G4ParticleDefinition* pionminus;
@@ -66,7 +76,7 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 
   public:
 
-    G4ParticleGun* Gun() {return particleGun;}
+    G4GeneralParticleSource* Gun() {return fParticlesSource;}
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

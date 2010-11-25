@@ -5,6 +5,15 @@
 #include "globals.hh"
 #include "BETASimulationMessenger.hh"
 #include <fstream>
+#include "G4PSFlatSurfaceFlux.hh"
+#include "G4PSPassageCellCurrent.hh"
+#include "G4PSTrackLength.hh"
+#include "G4PSTrackLength.hh"
+#include "G4PSPassageTrackLength.hh"
+#include "G4PSEnergyDeposit.hh"
+
+#include "G4SDKineticEnergyFilter.hh"
+#include "G4SDChargedFilter.hh"
 
 #include "HallCBeamEvent.h"
 #include "HMSEvent.h"
@@ -15,6 +24,7 @@
 #include "GasCherenkovHit.h"
 #include "InSANERun.h"
 #include "G4ScoringManager.hh"
+
 class BETARunAction;
 class G4Track;
 class BETASimulationMessenger;
@@ -122,16 +132,30 @@ bool fSimulateHodoscopeOptics;
 
 
 /**
- * Sets up detector's scoring This class might not be the best location
- * for this method
+ * Sets up detector's scoring
+ * This defines what should be detected but not which volume it is associated with
+ * this should be done within the det const class
  */
   int InitScoring();
 
+/**
+ *  Defines the scoring filters
+ *  This must come during detector construction...??
+ */ 
+  int DefineScoringFilters();
+
 public:
-G4MultiFunctionalDetector* trackerDetector;
-G4MultiFunctionalDetector* cherenkovDetector;
-G4MultiFunctionalDetector* cherenkovDetector;
-G4MultiFunctionalDetector* bigcalDetector;
+G4MultiFunctionalDetector* fTrackerDetector;
+G4MultiFunctionalDetector* fCherenkovDetector;
+G4MultiFunctionalDetector* fBigcalDetector;
+G4MultiFunctionalDetector* fHodoscopeDetector;
+
+  G4PSFlatSurfaceFlux * protonSurfFlux;
+  G4PSPassageCellCurrent * electronSurfFlux;
+  G4PSPassageCellCurrent * photonSurfFlux;
+  G4PSTrackLength* electronTracklength;
+  G4PSEnergyDeposit * calEnergyDeposit;
+  G4PSPassageCellCurrent * chargeSurfFlux;
 
 
 inline G4int plotterVisible() {return plotVis; }
@@ -142,7 +166,11 @@ private:
   int fLuciteHodoscopeVerbosity;
   int fForwardTrackerVerbosity;
 
-
+  G4SDParticleFilter* protonFilter;
+  G4SDParticleFilter* electronFilter;
+  G4SDParticleFilter* opticalPhotonFilter;
+  G4SDKineticEnergyFilter* bigcalEnergyFilter;
+  G4SDChargedFilter* chargeFilter;
 
 /// Sets the tree branches for append mode
 int SetTreeBranches();
