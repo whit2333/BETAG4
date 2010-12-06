@@ -29,7 +29,7 @@ BETAG4PMT::BETAG4PMT ( G4String  name )
    detname = name;
    collectionName.insert ( HCname="pmt" );
    HCID = -1;
-   BETADetectorConstruction * construction = BETASimulationManager::getInstance()->fConstruction;
+   BETADetectorConstruction * construction = BETASimulationManager::GetInstance()->fConstruction;
 
 //   G4double tubeDiameter=4.0*2.54*cm;
 //   G4double tubeLength=15.0*2.54*cm;
@@ -90,7 +90,7 @@ G4bool BETAG4PMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 
     }
    */
-
+//G4cout <<  "tester";
 /// check that it is an optical photon and going to make it to the quartz/photocathode interface
    if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
         theTrack->GetNextVolume()->GetName() == "tank_phys" )

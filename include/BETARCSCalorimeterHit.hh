@@ -35,21 +35,21 @@ public:
   virtual void Print();
 
   /// Deposited energy
-  inline void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
+   void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
   /// Deposited energy
-  inline G4double GetDepositedEnergy() const {return fDepositedEnergy;}
+   G4double GetDepositedEnergy() const {return fDepositedEnergy;}
 
   ///Position vector
-  inline void SetPosition(G4ThreeVector position) {fPosition = position;}
-  inline G4ThreeVector GetPosition() const {return fPosition;}
+   void SetPosition(G4ThreeVector position) {fPosition = position;}
+   G4ThreeVector GetPosition() const {return fPosition;}
 
   /// Rotation matrix
-  inline void SetRotation(G4RotationMatrix rotation) {fRotation = rotation;}
-  inline G4RotationMatrix GetRotation() const {return fRotation;}
+   void SetRotation(G4RotationMatrix rotation) {fRotation = rotation;}
+   G4RotationMatrix GetRotation() const {return fRotation;}
 
   /// Logical volume
-  inline void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
-  inline const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
+   void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
+   const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
   
 private:
   

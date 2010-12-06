@@ -1,6 +1,10 @@
 #ifndef BETAPrimaryGeneratorAction_h
 #define BETAPrimaryGeneratorAction_h 1
 
+#include "InSANEPhaseSpaceSampler.h"
+#include "InSANEInclusivePhaseSpace.h"
+#include "InSANEInclusiveDiffXSec.h"
+
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 #include "InSANEPhaseSpaceSampler.h"
@@ -34,6 +38,8 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetPartPhi ( G4double P );
     G4double GetPartPhi ();
 
+    G4double fCurrentEnergy,fCurrentTheta,fCurrentPhi;
+
     G4double theta_particle,phi_particle;
     G4double momentum;
     G4double sigmaMomentum;
@@ -41,12 +47,15 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double eventPhi;
     G4double eventEnergy;
     G4double eventMomentum;
+
+
   
 /**
  *  Used to control the phase space \todo{record at end of run xsec and phase space used}
  */
   InSANEPhaseSpaceSampler * fEventSampler;
-
+  InSANEInclusivePhaseSpace * fPhaseSpace;
+  InSANEInclusiveDiffXSec * fDiffXSec;
 /// 
   G4GeneralParticleSource  * fParticlesSource;
   G4ParticleGun  * fParticleGun;

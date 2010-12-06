@@ -24,7 +24,9 @@ BETAG4PMTHit::BETAG4PMTHit ( G4int id )
       ,fPhotons ( 0 )
 {}
 
-BETAG4PMTHit::~BETAG4PMTHit() {}
+BETAG4PMTHit::~BETAG4PMTHit() {
+
+}
 
 
 void BETAG4PMTHit::Draw()

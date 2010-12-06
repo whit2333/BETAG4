@@ -28,13 +28,13 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
    HCID = -1;
 
 
-   std::ifstream input_file ;
-   input_file.open ( "cathodeSensitivity.dat" );
-   for ( int i = 0;i < 15;i++ )
-   {
-      input_file >> lambda[i] >> sensitivity[i] ;
-   }
-   input_file.close();
+//    std::ifstream input_file ;
+//    input_file.open ( "cathodeSensitivity.dat" );
+//    for ( int i = 0;i < 15;i++ )
+//    {
+//       input_file >> lambda[i] >> sensitivity[i] ;
+//    }
+//    input_file.close();
 
 
 
@@ -91,14 +91,21 @@ G4bool BETAHodoscopePMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 
 /// check that it is an optical photon and going to make it to the quartz/photocathode interface
 
-   if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
-        theTrack->GetNextVolume()->GetName() == "hodoscope_pmt_phys" )
+   if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() 
+   && aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary/* &&
+      aStep->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()>=3*28*/ )
+   //if( aStep->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()==aStep->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo())
+//&&
+  //      aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName()== "hodoscope_curvedBar_phys" &&
+    //    aStep->IsFirstStepInVolume() )//->IS()->GetName()== "hodoscope_curvedBar_phys" )
+         //&&  theTrack->GetVolume()->GetName() == "hodoscope_curvedBar_phys"  )
    {
-      if ( G4UniformRand() < QE ( theTrack->GetTotalEnergy() /eV ) )
-      {
-//
+//G4cout << "test\n";
+//       if ( G4UniformRand() < QE ( theTrack->GetTotalEnergy() /eV ) )
+//       {
+// //
          // Get PMT #
-         pmt = theTrack->GetVolume()->GetCopyNo() -28;
+         pmt = theTrack->GetNextVolume()->GetCopyNo() ;
 //G4cout << "       TEST    "<< pmt << G4endl;
 
          BETAHodoscopePMTHit* aHit = new BETAHodoscopePMTHit ( pmt );
@@ -108,17 +115,19 @@ G4bool BETAHodoscopePMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
          G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
          G4TouchableHistory* theTouchable
          = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
-         G4ThreeVector worldPos = preStepPoint->GetPosition();
+         aHit->worldPos = preStepPoint->GetPosition();
          aHit->localPos = theTouchable->GetHistory()->GetTopTransform
-                          ().TransformPoint ( worldPos ) ;
-      }
+                          ().TransformPoint ( aHit->worldPos ) ;
+      //}
+            aHit->Gtime = theTrack->GetGlobalTime();
 
+     aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 
    }
 
-   /* // HandsOn5: Accumulating hit data
+
     // Get energy deposited in this step
-    
+    /*
     G4doubdepositedEnergy le = aStep->GetTotalEnergyDeposit();
     if (0 == depositedEnergy) return true;
 

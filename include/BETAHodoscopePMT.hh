@@ -29,8 +29,6 @@ public:
 
   virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
   
-private:
-  
   G4double QE(G4double photonEnergy);
   G4double lambda[15];
   G4double sensitivity[15];

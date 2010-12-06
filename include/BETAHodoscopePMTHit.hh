@@ -50,6 +50,9 @@ public:
   G4int tubeNumber;
   G4int mirrorNumber;
   G4ThreeVector  localPos;
+  G4ThreeVector  worldPos;
+  G4double Gtime;
+
 private:
   
   // Data members

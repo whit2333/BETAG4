@@ -1,5 +1,5 @@
 #include "BETAG4EventRecorder.hh"
-
+#include "BETAHodoscopePMTHit.hh"
 #include "ForwardTrackerHit.h"
 #include "LuciteHodoscopeHit.h"
 #include "BETAFakePlaneHit.hh"
@@ -10,11 +10,16 @@ bool cmp(const BETAPMTHit *a, const BETAPMTHit *b)
 {
 return a->Gtime < b->Gtime;
 }
+
+bool cmp2(const BETAHodoscopePMTHit *a, const BETAHodoscopePMTHit *b)
+{
+return a->Gtime < b->Gtime;
+}
 //________________________________________________________________________//
 
 BETAG4EventRecorder::BETAG4EventRecorder() {
 
-  fAnalysisManager = BETASimulationManager::getInstance ( );
+  fAnalysisManager = BETASimulationManager::GetInstance ( );
   fGasCherenkovHC = 0;
   fRCSCalorimeterHC = 0;
   fProtvinoCalorimeterHC = 0;
@@ -33,11 +38,13 @@ BETAG4EventRecorder::BETAG4EventRecorder() {
 //________________________________________________________________________//
 BETAG4EventRecorder::BETAG4EventRecorder(BETAEvent* ahit1 ,HMSEvent* ahit2, HallCBeamEvent* ahit3, BETAG4MonteCarloEvent* ahit4) {
 
-fAnalysisManager = BETASimulationManager::getInstance (  );
+fAnalysisManager = BETASimulationManager::GetInstance (  );
 
   fGasCherenkovHC = 0;
   fRCSCalorimeterHC = 0;
   fProtvinoCalorimeterHC = 0;
+  fLuciteHodoscopeHC = 0;
+fForwardTrackerHC=0;
 
   fBETAEvent = ahit1;//new BETAEvent();
   fHMSEvent = ahit2;// new HMSEvent();
@@ -65,12 +72,16 @@ BETAG4EventRecorder::~BETAG4EventRecorder() {
 }
 //________________________________________________________________________//
 
-int BETAG4EventRecorder::FillGasCherenkovEvent( ) {
+int BETAG4EventRecorder::FillGasCherenkovEvent(int run,int event) {
+
 
 // For debugging cherenkov timing emulator
 //   waveforms = new TH1F(Form("waveform%d",333),"waveform",200,0,20);
-
   fBETAEvent->fGasCherenkovEvent->ClearEvent("C");
+
+  fBETAEvent->fGasCherenkovEvent->fEventNumber=event;
+  fBETAEvent->fGasCherenkovEvent->fRunNumber=run;
+
   TClonesArray &cherenkovHits = *(fBETAEvent->fGasCherenkovEvent->fHits);
   GasCherenkovHit * aCERhit;
   BETAPMTHit * aHit;
@@ -140,10 +151,14 @@ std::sort (hitPointers->begin(),hitPointers->begin()+fGasCherenkovHC->entries(),
 
           aCERhit = (GasCherenkovHit*)(cherenkovHits)[lastHitIndex[aHit->tubeNumber]];
 
-          (aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC++;
+//          (aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC++;
+          (aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC=(aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC+15;
+
           averageTime[aHit->tubeNumber] += aHit->Gtime/ns;
+
           aCERhit[lastHitIndex[aHit->tubeNumber]].fTDC =
-            averageTime[lastHitIndex[aHit->tubeNumber]]/(aCERhit[lastHitIndex[aHit->tubeNumber]].fADC) ;
+            averageTime[lastHitIndex[aHit->tubeNumber]]/(aCERhit[lastHitIndex[aHit->tubeNumber]].fADC/15) ;
+
           lastHitTime[aHit->tubeNumber] = aHit->Gtime/ns;
 
           }
@@ -174,7 +189,7 @@ void BETAG4EventRecorder::SetEventAddresses() {
 }
 */
 //________________________________________________________________________//
-int BETAG4EventRecorder::FillBigcalEvent() {
+int BETAG4EventRecorder::FillBigcalEvent(int run,int event) {
 
   G4double bigcal_block_thresh = 0.01*MeV; // To record a TDC hit energy Deposited must be greater than this energy
 
@@ -183,6 +198,9 @@ int BETAG4EventRecorder::FillBigcalEvent() {
   BigcalHit * aBigcalHit;
   BETARCSCalorimeterHit * rcsHit;
   BETAProtvinoCalorimeterHit * protHit;
+
+  fBETAEvent->fBigcalEvent->fEventNumber=event;
+  fBETAEvent->fBigcalEvent->fRunNumber=run;
 
 // locally used variables
   G4double xAverage= 0;
@@ -207,12 +225,12 @@ int BETAG4EventRecorder::FillBigcalEvent() {
     if ( energyTemp > bigcal_block_thresh)
     {
       aBigcalHit = new(bigcalHits[prot_hits]) BigcalHit();
-      aBigcalHit->fADC  = energyTemp/MeV;
+      aBigcalHit->fADC  = 10.0*energyTemp/MeV;
       aBigcalHit->fEnergy = energyTemp/MeV;
-      aBigcalHit->fHitNumber = gg+1;
+      aBigcalHit->fHitNumber = prot_hits+1;
       aBigcalHit->fiCell = (gg)%32 +1;
       aBigcalHit->fjCell = (gg)/32 +1;
-      aBigcalHit->fjCell = (gg)/32 +1;
+      aBigcalHit->fTDCLevel=-1;
       prot_hits++;
     }
     if ( energyTemp != 0. )
@@ -232,9 +250,10 @@ int BETAG4EventRecorder::FillBigcalEvent() {
       aBigcalHit = new(bigcalHits[rcs_hits+prot_hits]) BigcalHit();
       aBigcalHit->fADC  = energyTemp/MeV;
       aBigcalHit->fEnergy = energyTemp/MeV;
-      aBigcalHit->fHitNumber = prot_hits+gg+1;
-      aBigcalHit->fiCell = (gg)%32 +1+1024;
-      aBigcalHit->fjCell = (gg)/32 +1+1024;
+      aBigcalHit->fHitNumber = prot_hits+rcs_hits+1;
+      aBigcalHit->fiCell = (gg)%30 +1+0;
+      aBigcalHit->fjCell = (gg)/30 +1+32;
+      aBigcalHit->fTDCLevel=-1;
       rcs_hits++;
     }
     if ( energyTemp != 0. )
@@ -244,19 +263,28 @@ int BETAG4EventRecorder::FillBigcalEvent() {
       fBETAEvent->fBigcalEvent->fTotalEnergyDeposited = fBETAEvent->fBigcalEvent->fTotalEnergyDeposited+ energyTemp ;
     }
   }
+
+  fBETAEvent->fBigcalEvent->fNumberOfADCHits = prot_hits+rcs_hits;
+  fBETAEvent->fBigcalEvent->fNumberOfTDCHits = 0;
+  fBETAEvent->fBigcalEvent->fNumberOfTimedTDCHits = 0;
+  fBETAEvent->fBigcalEvent->fNumberOfTimedADCHits = 0;
+
   fBETAEvent->fBigcalEvent->fNumberOfHits = prot_hits+rcs_hits;
+  fBETAEvent->fBigcalEvent->fTotalEnergyDeposited;
+
 
 return(0);
 }
 //________________________________________________________________________//
 
-int BETAG4EventRecorder::FillForwardTrackerEvent() {
+int BETAG4EventRecorder::FillForwardTrackerEvent(int run,int event) {
   /////////////////////////////
   // Front Tracker
   fBETAEvent->fForwardTrackerEvent->ClearEvent("C");
   TClonesArray &trackerHits = *(fBETAEvent->fForwardTrackerEvent->fHits);
   ForwardTrackerHit * aTrackerHit;
-
+  fBETAEvent->fForwardTrackerEvent->fEventNumber=event;
+  fBETAEvent->fForwardTrackerEvent->fRunNumber=run;
   int gg;
   BETAFrontTrackerHit * trackerHit;
   G4double cosTheta;
@@ -300,19 +328,121 @@ return(0);
 }
 
 //________________________________________________________________________//
-int BETAG4EventRecorder::FillLuciteHodoscopeEvent(){
-
-////////////////////////////////
-// Lucite Hodoscope
+int BETAG4EventRecorder::FillLuciteHodoscopeEvent(int run,int event){
   BETAHodoscopePMTHit* aHodoscopeHit;
+  LuciteHodoscopeHit * aLucHit;
 
 //    ThodoscopepmtSumHits->Fill ( hodoscopepmtHC->entries() );
     //  recordedEvent->HodoscopeTotalPE =  hodoscopepmtHC->entries();
+
+  fBETAEvent->fLuciteHodoscopeEvent->ClearEvent("C");
+
+  fBETAEvent->fLuciteHodoscopeEvent->fEventNumber=event;
+  fBETAEvent->fLuciteHodoscopeEvent->fRunNumber=run;
+
+
+// For debugging cherenkov timing emulator
+//   waveforms = new TH1F(Form("waveform%d",333),"waveform",200,0,20);
+  G4int totalHits = 0;
+
+  TClonesArray &luciteHits = *(fBETAEvent->fLuciteHodoscopeEvent->fHits);
+  int lastHitIndex[56];
+  G4int indTotalHits[56];
+  G4double earliestHitTime[56];
+  G4double averageTime[56]; 
+  G4double lastHitTime[56];
+  for(int i=0;i<56;i++){
+    lastHitIndex[i]=0;
+    indTotalHits[i]=0;
+    earliestHitTime[i]=9999.9;
+    averageTime[i]=-200000.0;
+    lastHitTime[i]=-200000.0;
+  }
+//          std::cout << " a entries " << fLuciteHodoscopeHC->entries() << "\n";
+
+//if( fGasCherenkovHC->entries() > 0 ) fGasCherenkovHC->PrintAllHits();
+vector<BETAHodoscopePMTHit*>* hitPointers = fLuciteHodoscopeHC->GetVector();
+//vector<BETAPMTHit*>::iterator it;
+std::sort (hitPointers->begin(),hitPointers->begin()+fLuciteHodoscopeHC->entries(),cmp2);
+//          std::cout << " b entries " << fLuciteHodoscopeHC->entries() << "\n";
+  
+// print out content:
+//   if( fAnalysisManager->GetDetectorVerbosity("GasCherenkov")  > 0) 
+//     {
+//     for (  i1=0 ; i1 < fGasCherenkovHC->entries();i1++ )
+//       {
+//         std::cout << "hitPointers " << i1 << " contains:";
+//         std::cout << " " << (*hitPointers)[i1]->Gtime << "\n";
+//       }
+//     std::cout << endl;
+// // end of attempt
+//     }
+
+// Loop loop through the Hit container once to find the earliest time
+    for ( int i1=0 ; i1 < fLuciteHodoscopeHC->entries();i1++ )
+      { 
+      aHodoscopeHit = ( *fLuciteHodoscopeHC )[i1];
+        //
+        if ( aHodoscopeHit->tubeNumber == -1 )
+          {
+//        numPMTHitsAtFace++;
+          }
+        else
+          {// normal pmt hit
+
+//   if( fAnalysisManager->GetDetectorVerbosity("GasCherenkov")  > 0) 
+//   {
+//   std::cout << "Tube " <<  aHit->tubeNumber
+//             << " hit with global time " << aHit->Gtime/ns
+//             <<  "ns where the earliest time was " << earliestHitTime[aHit->tubeNumber]
+//             <<  "\n";
+//  }
+//          std::cout << "new hit number " << aHodoscopeHit->Gtime/ns - lastHitTime[aHodoscopeHit->tubeNumber] << "\n";
+
+// If the time difference is bigger than 20ns then it would be a new hit
+          if( (aHodoscopeHit->Gtime/ns - lastHitTime[aHodoscopeHit->tubeNumber]) > 20.0 )
+            {
+//          std::cout << "new hit number " << totalHits << "\n";
+
+            lastHitIndex[aHodoscopeHit->tubeNumber] = totalHits ;
+            aLucHit = new(luciteHits[totalHits]) LuciteHodoscopeHit();
+            indTotalHits[aHodoscopeHit->tubeNumber]++;
+            aLucHit->fRow = (aHodoscopeHit->tubeNumber);
+            aLucHit->fPositiveADC = 0;
+            averageTime[aHodoscopeHit->tubeNumber] = 0.0;
+            totalHits++;
+
+//          if(fAnalysisManager->GetDetectorVerbosity("GasCherenkov") > 0) 
+//           std::cout << "new hit number " << totalHits << "\n";
+// 
+             } // end of 
+      //    waveforms->Filsl(aHit->Gtime/ns);
+
+          if( aHodoscopeHit->Gtime/ns < earliestHitTime[aHodoscopeHit->tubeNumber] ) earliestHitTime[aHodoscopeHit->tubeNumber]=aHodoscopeHit->Gtime/ns;
+
+          aLucHit = (LuciteHodoscopeHit*)(luciteHits)[lastHitIndex[aHodoscopeHit->tubeNumber]];
+//          std::cout << "asdf" << aHodoscopeHit->tubeNumber << "\n";
+
+//          (aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC++;
+          (aLucHit[lastHitIndex[aHodoscopeHit->tubeNumber]]).fPositiveADC += 15;
+
+          averageTime[aHodoscopeHit->tubeNumber] += aHodoscopeHit->Gtime/ns;
+
+          aLucHit[lastHitIndex[aHodoscopeHit->tubeNumber]].fPositiveTDC =
+            averageTime[lastHitIndex[aHodoscopeHit->tubeNumber]]/(aLucHit[lastHitIndex[aHodoscopeHit->tubeNumber]].fPositiveADC/15) ;
+
+          lastHitTime[aHodoscopeHit->tubeNumber] = aHodoscopeHit->Gtime/ns;
+
+          }
+      }
+fBETAEvent->fLuciteHodoscopeEvent->fNumberOfHits=totalHits;
+
+
 return(0);
 }
 
 //________________________________________________________________________//
-int BETAG4EventRecorder::FillBigcalFakePlaneEvent() {
+int BETAG4EventRecorder::FillBigcalFakePlaneEvent(int run,int event) {
   fBETAG4MonteCarloEvent->ClearEvent("C");
 /// \TODO Reimplement fake plane and Montecarlo event data extraction in BETAG4MonteCarloEvent
   BETAFakePlaneHit* aHit;
@@ -334,6 +464,14 @@ int BETAG4EventRecorder::FillBigcalFakePlaneEvent() {
 
    }
 
+int BETAG4EventRecorder::FillTriggerEvent(InSANETriggerEvent * trigEvent) {
+
+
+
+
+
+return(0);
+}
 
 
 

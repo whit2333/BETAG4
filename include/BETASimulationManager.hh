@@ -22,9 +22,9 @@
 #include "GasCherenkovEvent.h"
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
-#include "InSANERun.h"
+#include "BETAG4SimulationRun.h"
 #include "G4ScoringManager.hh"
-
+#include "SANEEvents.h"
 class BETARunAction;
 class G4Track;
 class BETASimulationMessenger;
@@ -49,8 +49,8 @@ class BETASimulationManager {
 public:
   ~BETASimulationManager();
 
-  static BETASimulationManager* getInstance();
-  static void dispose();
+  static BETASimulationManager* GetInstance();
+  static void Dispose();
   BETADetectorConstruction * fConstruction;
   BETASimulationMessenger * fSimulationMessenger;
 
@@ -144,6 +144,13 @@ bool fSimulateHodoscopeOptics;
  */ 
   int DefineScoringFilters();
 
+/**
+ *  
+ */
+  int InitializeNewRun();
+
+
+
 public:
 G4MultiFunctionalDetector* fTrackerDetector;
 G4MultiFunctionalDetector* fCherenkovDetector;
@@ -172,12 +179,13 @@ private:
   G4SDKineticEnergyFilter* bigcalEnergyFilter;
   G4SDChargedFilter* chargeFilter;
 
-/// Sets the tree branches for append mode
+/// Sets/creates the tree branches for append mode or new file mode
 int SetTreeBranches();
 
-/// Creates the tree branches for append mode
-int CreateTreeBranches();
+/// Creates the standard trees
+int CreateTrees();
 
+SANEEvents * fEvents;
 /// Contains all BETA detector's data
   BETAEvent * betaEvent;
 /// Contains all the HMS data
@@ -187,7 +195,7 @@ int CreateTreeBranches();
 /// Contains all the Thrown and unrealistically obtained Montecarlo data
   BETAG4MonteCarloEvent * mcEvent;
 /// Simulation Run object
-  InSANERun * fInSANERun;
+  BETAG4SimulationRun * fInSANERun;
 
 
 

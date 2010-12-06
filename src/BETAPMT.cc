@@ -69,6 +69,7 @@ G4bool BETAPMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 
     }
    */
+//std::cout <<  "tester\n";
 
 /// check that it is an optical photon and going to make it to the quartz/photocathode interface
    if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
@@ -102,7 +103,7 @@ G4bool BETAPMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
       } else { // we are counting all photons
          pmt = theTrack->GetVolume()->GetCopyNo();
 //G4cout << "       TEST    "<< pmt << G4endl;
-         BETAPMTHit* aHit = new BETAPMTHit ( pmt-1 );
+         BETAPMTHit* aHit = new BETAPMTHit ( pmt );
 //         fHitsCollection->insert ( aHit );
          aHit->Gtime = theTrack->GetGlobalTime();
          if (savePhotonPositions) {

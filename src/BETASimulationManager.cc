@@ -26,13 +26,13 @@ BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 
 BETASimulationManager::BETASimulationManager () : 
      fIsAppendMode(false),fRunNumber(0),plotVis(0),
-     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(false),
+     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(true),
      fSimulateTrackerOptics(false)
 {
 
   fSimulationMessenger = new BETASimulationMessenger ( this );
    showPlot(plotVis);
-   fGasCherenkovVerbosity=0;
+   fGasCherenkovVerbosity=1;
    fBigcalVerbosity=0;
    fLuciteHodoscopeVerbosity=0;
    fForwardTrackerVerbosity=0;
@@ -52,7 +52,7 @@ BETASimulationManager::~BETASimulationManager()
 }
 //_________________________________________________________________//
 
-BETASimulationManager* BETASimulationManager::getInstance (  )
+BETASimulationManager* BETASimulationManager::GetInstance (  )
 {
    if ( fgBETASimulationManager == 0 )
    {
@@ -65,7 +65,12 @@ BETASimulationManager* BETASimulationManager::getInstance (  )
 }
 //_________________________________________________________________//
 
-void BETASimulationManager::dispose()
+int BETASimulationManager::InitializeNewRun() {
+  fRunNumber= RetrieveRunNumber();
+  return(fRunNumber);
+}
+
+void BETASimulationManager::Dispose()
 {
    if ( fgBETASimulationManager != 0 )
    {
@@ -139,54 +144,44 @@ int BETASimulationManager::IncrementRunNumber()
 }
 //_________________________________________________________________//
 
+///Depreciated
 int BETASimulationManager::SetTreeBranches() 
 {
-       fDetectorTree=(TTree *) gROOT->FindObject("betaDetectors");
-       if (!fDetectorTree) fDetectorTree = new TTree ( "betaDetectors","Detector Tree" );
- 
-       TBranch *b;
-       b = fDetectorTree->GetBranch ("betaDetectorEvent");
-       if (!b)  fDetectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
-       else b->SetAddress(&betaEvent );
-       
-       b = fDetectorTree->GetBranch("hmsDetectorEvent");
-       if (!b)  fDetectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
-       else b->SetAddress(&hmsEvent );
- 
-       b = fDetectorTree->GetBranch("beamDetectorEvent");
-       if (!b)  fDetectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
-       else b->SetAddress(&beamEvent );
-       
-       b = fDetectorTree->GetBranch("monteCarloEvent");
-       if (!b)  fDetectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
-       else b->SetAddress(&mcEvent );
+
   return(0);
 }
 //_________________________________________________________________//
 
-int BETASimulationManager::CreateTreeBranches() 
-{
-       fDetectorTree = new TTree ( "betaDetectors","Detector Tree" );
-       fDetectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent,32000,2 );
-       fDetectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
-       fDetectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
-       fDetectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent);
+int BETASimulationManager::CreateTrees() {
+    fDetectorTree = new TTree ( "simulatedBetaDetectors","Simulation Detector Tree" );
+    fDetectorTree->SetAutoSave();
+//         atree = new TTree ( "hmsDetectors","HMS Tree" );
+//         atree = new TTree ( "hallcBeam","Hallc Beam Tree" );
+//         atree = new TTree ( "monteCarloEvents","HMS Tree" );
+//         atree = new TTree ( "triggerData","Trigger Tree" );
   return(0);
 }
 //_________________________________________________________________//
 
+///Depreciated
 int BETASimulationManager::AllocateTreeMemory() {
 
-    fInSANERun = new InSANERun();
+    fInSANERun = new BETAG4SimulationRun(fRunNumber);
+
+    fEvents = new SANEEvents("simulatedBetaDetectors");
+//     betaEvent=events->BETA;
+//     hmsEvent=events->HMS;
+//     beamEvent=events->BEAM;
+//     mcEvent=events->MC;
 /// \todo Put all the memory management calls into a single class
-    betaEvent = new BETAEvent();
-      betaEvent->AllocateMemory();
-      betaEvent->AllocateHitsMemory();
-    hmsEvent = new HMSEvent();
-    beamEvent = new HallCBeamEvent();
-    mcEvent = new BETAG4MonteCarloEvent();
-      mcEvent->AllocateMemory();
-      mcEvent->AllocateHitsMemory();
+//     betaEvent = new BETAEvent();
+//       betaEvent->AllocateMemory();
+//       betaEvent->AllocateHitsMemory();
+//     hmsEvent = new HMSEvent();
+//     beamEvent = new HallCBeamEvent();
+//     mcEvent = new BETAG4MonteCarloEvent();
+//       mcEvent->AllocateMemory();
+//       mcEvent->AllocateHitsMemory();
   return(0);
 }
 //_________________________________________________________________//
@@ -263,8 +258,8 @@ int BETASimulationManager::InitScoring()  {
   fTrackerDetector->RegisterPrimitive(chargeSurfFlux);
   fHodoscopeDetector->RegisterPrimitive(chargeSurfFlux);
   fCherenkovDetector->RegisterPrimitive(photonSurfFlux);
-//  calEnergyDeposit->SetMultiFunctionalDetector(fBigcalDetector);
-//  fBigcalDetector->RegisterPrimitive(calEnergyDeposit);
+  calEnergyDeposit->SetMultiFunctionalDetector(fBigcalDetector);
+  fBigcalDetector->RegisterPrimitive(calEnergyDeposit);
 
   fBigcalDetector->RegisterPrimitive(protonSurfFlux);
 

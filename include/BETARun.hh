@@ -77,7 +77,7 @@ public:
 /**
  *  Constructor opens ROOT file \todo{ add open new file or append to existing flag...}.)
  */
-  BETARun(const int runNumber,const int showThePlots);
+  BETARun(const int runNumber);
 /**
  *  Destructor
  */

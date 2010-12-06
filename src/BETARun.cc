@@ -40,123 +40,57 @@
 #include "BETAG4EventRecorder.hh"
 
 //______________________________________________________________________//
-BETARun::BETARun ( const int runNumber, const int showThePlots ) : catLastFile( false )
+BETARun::BETARun ( const int runNumber ) : catLastFile( false )
 {
    G4cout << "= Created new BETARun \n";
    G4String colName;
 
    fShowUnrealisticData  = false;
-   cer_tdc_thresh = 2;/// Time comes from 2nd photon detected
+   cer_tdc_thresh = 2;
+   // Time comes from 2nd photon detected
 
-   fSimulationManager = BETASimulationManager::getInstance ();
+   fSimulationManager = BETASimulationManager::GetInstance ();
    if(fSimulationManager) {
      fSimulationManager->SetDetectorVerbosity("GasCherenkov",0);
    }
+
 // Get the event generator and detector constructoion so we can write the simulation truths to tree
    runManager = G4RunManager::GetRunManager();
-   if (runManager) {
-      //printf("\n got run manager \n");
-      generator = (BETAPrimaryGeneratorAction *)runManager->GetUserPrimaryGeneratorAction();
+   if(runManager) {
+     //printf("\n got run manager \n");
+     generator = (BETAPrimaryGeneratorAction *)runManager->GetUserPrimaryGeneratorAction();
    }
-   if (runManager) {
-      //printf("\n got run manager \n");
-      construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
+   if(runManager) {
+     //printf("\n got run manager \n");
+     construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
    }
 
-// // Open Root File With A name Depending on the Run number
-//    std::string fname;
-//    std::stringstream out;
-// 
-//    if (fSimulationManager->IsAppendMode() ) {
-//       out << "data/beta.accumulate.root"  ;
-//       fname = out.str();
-//       const char * rootName = fname.c_str();
-//       RootFile = new TFile ( rootName,"UPDATE" );
-// 
-//    } else {
-//       out << "data/beta.run." << runNumber << ".root"  ;
-//       fname = out.str();
-//       const char * rootName = fname.c_str();
-//       RootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
-//    }
     RootFile=fSimulationManager->fRootFile;
     detectorTree=fSimulationManager->fDetectorTree;
+
 ////////////////////////////////////////////////
 //                    HISTOGRAMS              //
 ////////////////////////////////////////////////
 
    /*NONE */
 
-////////////////////////////////////////////////
-//           ROOT TREE          ////////////////
-////////////////////////////////////////////////
-//     simulationRun = new InSANERun();
-// 
-// /// \todo Put all the memory management calls into a single class
-//     betaEvent = new BETAEvent();
-//       betaEvent->FreeMemory();
-//       betaEvent->AllocateMemory();
-//       betaEvent->AllocateHitsMemory();
-//     hmsEvent = new HMSEvent();
-//     beamEvent = new HallCBeamEvent();
-//     mcEvent = new BETAG4MonteCarloEvent();
-//       mcEvent->FreeMemory();
-//       mcEvent->AllocateMemory();
-//       mcEvent->AllocateHitsMemory();
-// 
-    eventRecorder = new BETAG4EventRecorder(fSimulationManager->betaEvent,fSimulationManager->hmsEvent,fSimulationManager->beamEvent,fSimulationManager->mcEvent);
-// 
+
+// Fills events with realisitic data from Geant4 Hit collections
+    eventRecorder = 
+       new BETAG4EventRecorder( fSimulationManager->fEvents->BETA, fSimulationManager->fEvents->HMS, fSimulationManager->fEvents->BEAM, fSimulationManager->fEvents->MC);
  
-//        detectorTree=(TTree *) gROOT->FindObject("betaDetectors");
-//        if (!detectorTree) detectorTree = new TTree ( "betaDetectors","Detector Tree" );
-//  
-//        TBranch *b;
-//        b = detectorTree->GetBranch ("betaDetectorEvent");
-//        if (!b)  detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
-//        else b->SetAddress(&betaEvent );
-//        
-//        b = detectorTree->GetBranch("hmsDetectorEvent");
-//        if (!b)  detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
-//        else b->SetAddress(&hmsEvent );
-//  
-//        b = detectorTree->GetBranch("beamDetectorEvent");
-//        if (!b)  detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
-//        else b->SetAddress(&beamEvent );
-//        
-//        b = detectorTree->GetBranch("monteCarloEvent");
-//        if (!b)  detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
-//        else b->SetAddress(&mcEvent );
-       
-
-
-//        detectorTree = new TTree ( "betaDetectors","Detector Tree" );
-//        detectorTree->Branch ( "betaDetectorEvent","BETAEvent",&betaEvent );
-//        detectorTree->Branch ( "hmsDetectorEvent","HMSEvent",&hmsEvent );
-//        detectorTree->Branch ( "beamDetectorEvent","HallCBeamEvent",&beamEvent );
-//        detectorTree->Branch ( "monteCarloEvent","BETAG4MonteCarloEvent",&mcEvent );
- 
-
- 
-// Initialize various counters and data
-   fakePlaneEventNumber = 0;
-   Int_t trackerZero = 0;
-   FrontTrackerCellNumber = trackerZero ;
-   eCountsThisEvent = 0;
-   pmtTotalCount = 0;
-   mirrorTotalCount = 0;
-
 // For debugging cherenkov timing emulator
 /*   waveforms = new TH1F(Form("waveform%d",numberOfEvent),"waveform",200,0,20);*/
    G4double averageTime[12];
 
-PMTG4HCID=-1;
-PMTHCID=-1;
-MirrorHCID=-1;
-hodoscopePMTHCID=-1;
-BIGCALID=-1;
-BIGCALID2=-1;
-FTID=-1;
-fakePlaneID=-1;
+  PMTG4HCID         =-1;
+  PMTHCID           =-1;
+  MirrorHCID        =-1;
+  hodoscopePMTHCID  =-1;
+  BIGCALID          =-1;
+  BIGCALID2         =-1;
+  FTID              =-1;
+  fakePlaneID       =-1;
 /// TODO Implement a print to screen for run info... 
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    if (construction->usingGasCherenkov) 
@@ -226,10 +160,29 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    FTHC = 0;
    mirrorHC = 0;
    fakePlaneHC = 0;
-   
+   for (int i=0;i<20;i++) CherenkovPMTCount[i] =0;
+   int tdc_count=0;
+   int numPMTHits ( 0 ), numPMTHitsAtFace ( 0 ), numMirrorHits ( 0 );
+   pmt1Count =0;
+   pmt2Count =0;
+   pmt3Count =0;
+   pmt4Count =0;
+   pmt5Count =0;
+   pmt6Count =0;
+   pmt7Count =0;
+   pmt8Count =0;
+   mirror1Count =0;
+   mirror2Count =0;
+   mirror3Count =0;
+   mirror4Count =0;
+   mirror5Count =0;
+   mirror6Count =0;
+   mirror7Count =0;
+   mirror8Count =0;
+   BCTE = 0.0;
+   hodoscopePMTcount =0;
 
-std::cout << "Total collection " << HCE->GetNumberOfCollections() << " \n";
-
+//std::cout << "Total collection " << HCE->GetNumberOfCollections() << " \n";
 
    if ( HCE && HCE->GetNumberOfCollections() != 0)
    {
@@ -260,90 +213,101 @@ std::cout << "Total collection " << HCE->GetNumberOfCollections() << " \n";
 G4double atotal; 
 G4int iii;
 
- for(int j=0;j<4;j++) { 
-   if( colIDSum[j] != -1 ) {
-      atotal=0.0;
-      iii=0;
-
-      G4THitsMap<G4double>* evtMap = (G4THitsMap<G4double>*)(HCE->GetHC(colIDSum[j]));
-if(evtMap) {
-      std::cout << "Det " << j << " entries=" << (evtMap)->entries() << " \n";
-
-      std::map<G4int,G4double*>::iterator itr = evtMap->GetMap()->begin();
-
-for(; itr != evtMap->GetMap()->end(); itr++)
-      {
-        G4int key = (itr->first);
-        G4double val = *(itr->second);
-
-/*       for(iii=0; iii < evtMap->entries() ; iii++)
-       {
-        G4double   val = *( (*evtMap)[iii]);*/
-        atotal += (val);
-      }
-}
-std::cout << "Det " << j << " value=" << atotal << " \n";
-}
-}
+//  for(int j=0;j<4;j++) { 
+//    if( colIDSum[j] != -1 ) {
+//       atotal=0.0;
+//       iii=0;
+// 
+//       G4THitsMap<G4double>* evtMap = (G4THitsMap<G4double>*)(HCE->GetHC(colIDSum[j]));
+// if(evtMap) {
+// //      std::cout << "Det " << j << " entries=" << (evtMap)->entries() << " \n";
+// 
+//       std::map<G4int,G4double*>::iterator itr = evtMap->GetMap()->begin();
+// 
+// for(; itr != evtMap->GetMap()->end(); itr++)
+//       {
+//         G4int key = (itr->first);
+//         G4double val = *(itr->second);
+// 
+// /*       for(iii=0; iii < evtMap->entries() ; iii++)
+//        {
+//         G4double   val = *( (*evtMap)[iii]);*/
+//         atotal += (val);
+//       }
+// }
+// //std::cout << "Det " << j << " value=" << atotal << " \n";
+// }
+// }
 // << pmtG4HC->entries() << "\n";
 /// Initialize counters and data holders
 //eCountsThisEvent = 0;
-   for (int i=0;i<20;i++) CherenkovPMTCount[i] =0;
-   int tdc_count=0;
-   int numPMTHits ( 0 ), numPMTHitsAtFace ( 0 ), numMirrorHits ( 0 );
-   pmt1Count =0;
-   pmt2Count =0;
-   pmt3Count =0;
-   pmt4Count =0;
-   pmt5Count =0;
-   pmt6Count =0;
-   pmt7Count =0;
-   pmt8Count =0;
-   mirror1Count =0;
-   mirror2Count =0;
-   mirror3Count =0;
-   mirror4Count =0;
-   mirror5Count =0;
-   mirror6Count =0;
-   mirror7Count =0;
-   mirror8Count =0;
-   BCTE = 0.0;
-   hodoscopePMTcount =0;
 
-    fSimulationManager->mcEvent->mc_nhit_bcplane = 0;
-    fSimulationManager->mcEvent->mc_e_init[0]= generator->eventEnergy/GeV;
-    fSimulationManager->mcEvent->mc_theta_init[0]=generator->eventTheta;
-    fSimulationManager->mcEvent->mc_phi_init[0]=generator->eventPhi;
+
+    fSimulationManager->fEvents->MC->fEnergyThrown = generator->fCurrentEnergy;
+    fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
+    fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
+    fSimulationManager->fEvents->MC->fParticleThrown = 1;
 
    triggered = true;
 
-/*
+
    if (construction->usingGasCherenkov) if ( pmtHC && PMTHCID != -1)
       {
         eventRecorder->SetGasCherenkovHitCollection(pmtHC);
-        eventRecorder->FillGasCherenkovEvent();
+        eventRecorder->FillGasCherenkovEvent(fSimulationManager->fRunNumber,numberOfEvent);
       }
    if (construction->usingFakePlaneAtBigcal && fakePlaneHC && fakePlaneID != -1 ) {
         eventRecorder->SetBigcalFakePlaneHitCollection(fakePlaneHC);
-        eventRecorder->FillBigcalFakePlaneEvent();
+        eventRecorder->FillBigcalFakePlaneEvent(fSimulationManager->fRunNumber,numberOfEvent);
       }
-   if (triggered) //numPMTHits > 1 )   // 1 P.E.
-   {
-        if( BIGCALHC && BIGCALHC2   && construction->usingBigcal) {
-          eventRecorder->SetBigcalHitCollections(BIGCALHC,BIGCALHC2);
-          eventRecorder->FillBigcalEvent();
-	}
-        if ( FTHC   && FTID != -1 && construction->usingForwardTracker) {
-          eventRecorder->SetForwardTrackerHitCollection(FTHC);
-          eventRecorder->FillForwardTrackerEvent();
-        }
+   if( BIGCALHC && BIGCALHC2   && construction->usingBigcal) {
+        eventRecorder->SetBigcalHitCollections(BIGCALHC,BIGCALHC2);
+        eventRecorder->FillBigcalEvent(fSimulationManager->fRunNumber,numberOfEvent);
+      }
+   if ( FTHC   && FTID != -1 && construction->usingForwardTracker) {
+        eventRecorder->SetForwardTrackerHitCollection(FTHC);
+        eventRecorder->FillForwardTrackerEvent(fSimulationManager->fRunNumber,numberOfEvent);
+      }
 
-        if ( hodoscopepmtHC && hodoscopePMTHCID!=-1 && construction->usingLuciteHodoscope){
-          eventRecorder->SetLuciteHodoscopeHitCollection(hodoscopepmtHC);
-          eventRecorder->FillLuciteHodoscopeEvent();
-        }
-*/
-//  Trigger=1; // Record  event
+   if ( hodoscopepmtHC && hodoscopePMTHCID!=-1 && construction->usingLuciteHodoscope){
+        eventRecorder->SetLuciteHodoscopeHitCollection(hodoscopepmtHC);
+        eventRecorder->FillLuciteHodoscopeEvent(fSimulationManager->fRunNumber,numberOfEvent);
+      }
+
+/// \todo Fill trigger event thoroughly
+// fill  trigger event!!! 
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[0]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[1]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[2]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[3]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[4]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[5]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[6]=1;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[7]=0;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[8]=0;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[9]=0;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[10]=0;
+fSimulationManager->fEvents->TRIG->gen_event_trigtype[11]=0;
+
+  for(int i=0;i<12;i++) {
+  if(fSimulationManager->fEvents->TRIG->gen_event_trigtype[i] )
+    fSimulationManager->fInSANERun->fTriggers[i]++;
+  }
+
+  BETAEvent * beta = fSimulationManager->fEvents->BETA;
+
+  beta->fEventNumber=numberOfEvent;
+  beta->fRunNumber=numberOfEvent;
+
+
+
+fSimulationManager->fEvents->fRunNumber=fSimulationManager->fRunNumber;
+
+
+      fSimulationManager->fEvents->FillTrees();//fDetectorTree->Fill();
+
+
+ // Trigger=1; // Record  event
       /*
        if ( fSimulationManager->plotterVisible() != 0 && ( numberOfEvent%10 ) == 0  ) {
         c1->cd(0);
@@ -361,19 +325,17 @@ std::cout << "Det " << j << " value=" << atotal << " \n";
 ////////////////////////////////////////
 //     DONE grabbing data from detectors
 ////////////////////////////////////////
-/*
-      fSimulationManager->fDetectorTree->Fill();
+
 
       if ( ( numberOfEvent%10 ) == 0 ) G4cout << " Event " << numberOfEvent << G4endl;
 
       numberOfEvent++;
 
-   } //triggered
-
-*/
+//   } //triggered
 
 
 }
+//____________________________________________________________________//
 
 void BETARun::DumpHallCMC() {
    MCOutput.open ( "MC_BIGCAL.dat" );

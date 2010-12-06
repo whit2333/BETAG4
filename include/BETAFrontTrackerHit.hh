@@ -54,13 +54,13 @@ public:
   G4ThreeVector  localPos;
   G4ThreeVector  worldPos;
   G4ThreeVector  worldMom;
+  G4int fPhotons;
 
 
 private:
   
   // Data members
 
-  G4int fPhotons;
 //  G4ThreeVector fPosition;
 //  G4RotationMatrix fRotation;
 //  const G4LogicalVolume* pLogicalVolume;

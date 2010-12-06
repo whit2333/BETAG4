@@ -12,8 +12,6 @@
 #include "TFile.h"
 #include "TTree.h"
 
-
-
 class BETASimulationManager;
 class G4Timer;
 class G4Run;

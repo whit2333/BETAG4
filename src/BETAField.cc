@@ -34,7 +34,7 @@ double BilinearInterpolation(double * cornerDataPoints, double * corners, double
 BETAField::BETAField() :polAngle ( pi*180.0/180. )
 {
    fUVAMagnet = new UVAOxfordMagneticField();
-
+   fUVAMagnet->SetPolarizationAngle(pi*80.0/180.0);
 /*
    BzFieldRaw = BzRpoint;
    BrFieldRaw = BrRpoint;

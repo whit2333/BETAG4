@@ -20,13 +20,13 @@
 #include "BETAG4MonteCarloEvent.h"
 #include "GasCherenkovEvent.h"
 #include "BigcalEvent.h"
+#include "InSANETriggerEvent.h"
 #include "GasCherenkovHit.h"
 
 #include <iostream>
 #include <algorithm>
 #include "TH1F.h"
 #include <vector>
-
 #include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
@@ -74,34 +74,46 @@ BETAG4EventRecorder(BETAEvent* ,HMSEvent* , HallCBeamEvent*, BETAG4MonteCarloEve
  * (BETAPMTHitsCollection in this case) to use for filling
  * out the event data.
  */
-inline int SetGasCherenkovHitCollection(BETAPMTHitsCollection * aHC) { if(aHC) { fGasCherenkovHC = aHC; return(0); } else return(-1) ; };
+inline int SetGasCherenkovHitCollection(BETAPMTHitsCollection * aHC) {
+  if(aHC) 
+  {
+    fGasCherenkovHC = aHC;
+    return(0);
+  } else return(-1) ; };
 
 /**
  * Sets the addresses (requires two!) of the G4THitsCollection derived classes (BETARCSCalorimeterHit and BETAProtvinoCalorimeterHit in this case) 
  * to use for filling
  * out the event data.
  */
-inline int SetBigcalHitCollections(BETARCSCalorimeterHitsCollection * aHC,BETAProtvinoCalorimeterHitsCollection * aHC2) { if(aHC && aHC2) { fRCSCalorimeterHC = aHC; fProtvinoCalorimeterHC = aHC2; return(0); } else return(-1); };
+inline int SetBigcalHitCollections
+(BETARCSCalorimeterHitsCollection * aHC, BETAProtvinoCalorimeterHitsCollection * aHC2) {
+if(aHC && aHC2) { fRCSCalorimeterHC = aHC; fProtvinoCalorimeterHC = aHC2; return(0); } else return(-1); };
 
 /**
  * Clears the InSANEDetectorEvent classes
  */
-inline void ClearEvent(){;};
+inline void ClearEvent(){
+  ;
+}
 
 /**
  * Clears the G4THitsCollection classes
  */
-inline void ClearHitsCollections() {;};
+inline void ClearHitsCollections() 
+  {
+  }
+
 
 /**
  * Fills the InSANEDetectorEvent classes
  */
-int FillGasCherenkovEvent( );
+int FillGasCherenkovEvent(int run,int event);
 
 /**
  * Fills the fBigcalEvent of betaEvent
  */
-int FillBigcalEvent();
+int FillBigcalEvent(int run,int event);
 
 /**
  * Sets the address of the G4THitsCollection derived class 
@@ -113,7 +125,7 @@ inline int SetLuciteHodoscopeHitCollection(BETAHodoscopePMTHitsCollection * aHC)
 /**
  * Fills the fBigcalEvent of betaEvent
  */
-int FillBigcalFakePlaneEvent();
+int FillBigcalFakePlaneEvent(int run,int event);
 
 /**
  * Sets the address of the G4THitsCollection derived class 
@@ -124,7 +136,7 @@ inline int SetBigcalFakePlaneHitCollection(BETAFakePlaneHitsCollection * aHC) { 
 /**
  * Fills the fBigcalEvent of betaEvent
  */
-int FillLuciteHodoscopeEvent();
+int FillLuciteHodoscopeEvent(int run,int event);
 
 /**
  * Sets the address of the G4THitsCollection derived class 
@@ -136,7 +148,13 @@ inline int SetForwardTrackerHitCollection(BETAFrontTrackerHitsCollection * aHC) 
 /**
  * Fills the fBigcalEvent of betaEvent
  */
-int FillForwardTrackerEvent();
+int FillForwardTrackerEvent(int run,int event);
+
+/**
+ * Fills fTriggerEvent
+ */
+int FillTriggerEvent(InSANETriggerEvent * trig);
+
 
   TH1F * waveforms;
   G4RunManager * runManager;
@@ -157,6 +175,7 @@ private :
     LuciteHodoscopeEvent* fLuciteHodoscopeEvent;
     ForwardTrackerEvent* fForwardTrackerEvent;
     BigcalFakePlaneEvent * fBigcalFakePlaneEvent;
+  InSANETriggerEvent * fTriggerEvent;
 
   BETAPMTHitsCollection * fGasCherenkovHC;
   BETARCSCalorimeterHitsCollection * fRCSCalorimeterHC;
