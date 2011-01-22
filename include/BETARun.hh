@@ -56,15 +56,13 @@
 class BETASimulationManager;
 class BETADetectorConstruction;
 class BETAG4EventRecorder;
-
 /**
  * \ingroup Runs
  */
 
 /**
  * \brief Concrete class implementation of G4Run 
- */
-/**
+ * 
  * Concrete class implementation of G4Run. 
  * Here is where we select the data we wish to record.
  * The important s here is RecordEvent which is called at then
@@ -90,7 +88,6 @@ BETAG4EventRecorder * eventRecorder;
 
 
 private:
-
   BETASimulationManager * fSimulationManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
@@ -163,22 +160,7 @@ TCanvas * c1;
 private:
 int cer_tdc_thresh;
     G4int  CherenkovPMTCount[20];
-    G4int pmt1Count;
-    G4int pmt2Count;
-    G4int pmt3Count;
-    G4int pmt4Count;
-    G4int pmt5Count;
-    G4int pmt6Count;
-    G4int pmt7Count;
-    G4int pmt8Count;
-    G4int mirror1Count;
-    G4int mirror2Count;
-    G4int mirror3Count;
-    G4int mirror4Count;
-    G4int mirror5Count;
-    G4int mirror6Count;
-    G4int mirror7Count;
-    G4int mirror8Count;
+
     G4int hodoscopePMTHCID;
     G4int hodoscopePMTcount;
     G4double BCTE;

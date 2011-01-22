@@ -19,18 +19,23 @@ G4Allocator<BETAFakePlaneHit> BETAFakePlaneHitAllocator;
 BETAFakePlaneHit::BETAFakePlaneHit()
       :pid ( -1 )
 
-{}
+{;
+}
 
 BETAFakePlaneHit::BETAFakePlaneHit ( G4int id )
       :pid ( id )
 
-{}
+{;
+}
 
-BETAFakePlaneHit::~BETAFakePlaneHit() {}
+BETAFakePlaneHit::~BETAFakePlaneHit() {
+ ;
+}
 
 
 void BETAFakePlaneHit::Draw()
-{/*
+{;
+/*
 
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

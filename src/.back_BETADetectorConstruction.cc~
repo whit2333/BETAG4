@@ -49,12 +49,12 @@
 #include "BETASimulationManager.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
-
+#include "G4VPVParameterisation.hh"
 //___________________________________________________________________
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
 
-   fSimulationManager = BETASimulationManager::getInstance();
+   fSimulationManager = BETASimulationManager::GetInstance();
 
    messenger = new BETADetectorMessenger ( this );
 
@@ -171,16 +171,16 @@ void BETADetectorConstruction::ConstructForwardTracker()
    tracker_log->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 10.0*ns ) );
 
    G4Box* trackerY1_box = new G4Box ( "trackerY1_box", // Name
-                         132.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
-                         22.*cm/2.0+smallSeparation,         // y half length
+                         134.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
+                         22.*cm/2.0+4.0*smallSeparation,         // y half length
                          3.*mm/2.0 );     // z half length
    G4Box* trackerY2_box = new G4Box ( "trackerY2_box", // Name
-                         132.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
-                         22.*cm/2.0+smallSeparation,         // y half length
+                         134.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
+                         22.*cm/2.0+4.0*smallSeparation,         // y half length
                          3.*mm/2.0 );     // z half length
    G4Box* trackerX1_box = new G4Box ( "trackerY1_box", // Name
-                         40.*cm/2.0+smallSeparation,         // x half length
-                         72.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
+                         40.*cm/2.0+4.0*smallSeparation,         // x half length
+                         74.0*(3.*mm/2.0+smallSeparation/2.0),         // x half length
                          3.*mm/2.0 );     // z half length
 
    G4Box* vertBar = new G4Box ( "verticalMeasurementBar", // Name
@@ -218,30 +218,52 @@ void BETADetectorConstruction::ConstructForwardTracker()
      horizBarScore_log = new G4LogicalVolume ( horizBarScore,Air,"horizBarScore_log",0,0,0 );
      vertBarScore_log = new G4LogicalVolume ( vertBarScore,Air,"vertBarScore_log",0,0,0 );   
    }
-   new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.+smallSeparation/2.0,0 ),vertBarScore_log, "verttracker+leftBox", vertBar_log,false,0 );
-   new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),vertBarScore_log, "verttracker+leftBox+rightbox", vertBar_log,false,0 );
 
-   new G4PVPlacement ( 0,G4ThreeVector (40.0*cm/2.0+smallSeparation/2.0,0,0 ),horizBarScore_log, "horztracker+leftBox", horizBar_log,false,0 );
-   new G4PVPlacement ( 0,G4ThreeVector (-(40.0*cm/2.0+smallSeparation/2.0),0,0 ),horizBarScore_log, "horztracker+leftBox+rightbox", horizBar_log,false,0 );
+
+
+ G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
 
 
    G4LogicalVolume*   trackerY1_log = new G4LogicalVolume ( trackerY1_box,Air,"trackerY1_log",0,0,0 );
    G4LogicalVolume*   trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"trackerY2_log",0,0,0 );
    G4LogicalVolume*   trackerX1_log = new G4LogicalVolume ( trackerX1_box,Air,"trackerX1_log",0,0,0 );
 
-   G4VPhysicalVolume* trackerY1_phys = 
-     new G4PVReplica("trackerY1_phys", vertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
-   G4VPhysicalVolume* trackerY2_phys = 
-     new G4PVReplica("trackerY2_phys", vertBar_log,trackerY2_log, kXAxis, 132, 3.0*mm+smallSeparation);
-   G4VPhysicalVolume* trackerX1_phys = 
-     new G4PVReplica("trackerX1_phys", horizBar_log,trackerX1_log, kYAxis, 72, 3.0*mm+smallSeparation);
 
-   new G4PVPlacement ( 0,G4ThreeVector (0,0,0),trackerY1_log, "tracker_log+Y1", tracker_log,false,0 );
-   new G4PVPlacement ( 0,G4ThreeVector (0,0,3.0*mm+smallSeparation),trackerY2_log, "tracker_log+Y1+Y2", tracker_log,false,0 );
-   new G4PVPlacement ( 0,G4ThreeVector (0,0,-3.0*mm-smallSeparation ),trackerX1_log, "tracker_log+Y1+Y2+X1", tracker_log,false,0 );
+   G4VPhysicalVolume * trackerY1_phys = 
+      new G4PVPlacement ( 0,G4ThreeVector (0,0,0),trackerY1_log, "tracker_log+Y1", tracker_log,false,0 );
+   G4VPhysicalVolume * trackerY2_phys =    
+      new G4PVPlacement ( 0,G4ThreeVector (0,0,3.0*mm+smallSeparation),trackerY2_log, "tracker_log+Y1+Y2", tracker_log,false,0 );
+   G4VPhysicalVolume * trackerX1_phys =    
+      new G4PVPlacement ( 0,G4ThreeVector (0,0,-3.0*mm-smallSeparation ),trackerX1_log, "tracker_log+Y1+Y2+X1", tracker_log,false,0 );
 
 
-   G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
+// VGM does not like the following replicas
+//    G4VPhysicalVolume* trackerY1_phys = 
+//      new G4PVReplica("trackerY1_phys", vertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
+//    G4VPhysicalVolume* trackerY2_phys = 
+//      new G4PVReplica("trackerY2_phys", vertBar_log,trackerY2_log, kXAxis, 132, 3.0*mm+smallSeparation);
+//    G4VPhysicalVolume* trackerX1_phys = 
+//      new G4PVReplica("trackerX1_phys", horizBar_log,trackerX1_log, kYAxis, 72, 3.0*mm+smallSeparation);
+// work around
+  for(int i0=0;i0<132;i0++) {
+    new G4PVPlacement(0,G4ThreeVector ((3.0*mm)*(Double_t)(i0-132/2),0,0),vertBar_log,
+    "TrackerHorizontalY1",trackerY1_log,true,i0);
+    new G4PVPlacement(0,G4ThreeVector ((3.0*mm)*(Double_t)(i0-132/2),0,0),vertBar_log,
+    "TrackerHorizontalY2",trackerY2_log,true,i0);
+}
+  for(int i0=0;i0<72;i0++) {
+    new G4PVPlacement(0,G4ThreeVector (0,(3.0*mm)*(Double_t)(i0-72/2),0),horizBar_log,
+    "TrackerHorizontalX1",trackerX1_log,true,i0);
+
+}
+   new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.+smallSeparation/2.0,0 ),vertBarScore_log, "verttracker+leftBox", vertBar_log,true,0 );
+// //    new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),vertBarScore_log, "verttracker+leftBox+rightbox", vertBar_log,true,0 );
+// 
+   new G4PVPlacement ( 0,G4ThreeVector (40.0*cm/2.0+smallSeparation/2.0,0,0 ),horizBarScore_log, "horztracker+leftBox", horizBar_log,true,0 );
+// //    new G4PVPlacement ( 0,G4ThreeVector (-(40.0*cm/2.0+smallSeparation/2.0),0,0 ),horizBarScore_log, "horztracker+leftBox+rightbox", horizBar_log,true,0 );
+// 
+// 
+// 
 
 // OPTICS
 
@@ -272,15 +294,15 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 
 // Detection
    G4SDManager* manager = G4SDManager::GetSDMpointer();
-//   G4VSensitiveDetector* frontTracker =
-//      new BETAFrontTracker ( "FrontTracker" );
+  G4VSensitiveDetector* frontTracker =
+     new BETAFrontTracker ( "FrontTracker" );
    // Register detector with manager
-//   manager->AddNewDetector ( frontTracker );
+  manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
-   horizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
-   vertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
-//   horizBarScore_log->SetSensitiveDetector ( frontTracker );
-//   vertBarScore_log->SetSensitiveDetector ( frontTracker );
+//    horizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
+//    vertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
+  horizBarScore_log->SetSensitiveDetector ( frontTracker );
+  vertBarScore_log->SetSensitiveDetector ( frontTracker );
 
 ////// end tracker
 
@@ -322,20 +344,21 @@ vertBar_log->SetVisAttributes(lightCollectionFTAttributes);
 void BETADetectorConstruction::ConstructHodoscope()
 {
 
-   G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope", 123*cm,3.5*28.*cm,50*cm );
+   G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope",75.0*cm ,28.0*6.4*cm/2.0,30.0*cm );
    G4LogicalVolume * hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
    G4double hodocenter = -DetectorLength/2 -50.*cm+ 240.*cm;
    G4RotationMatrix rotOldCoords;
-   rotOldCoords.rotateZ ( pi/2. );
+//   rotOldCoords.rotateX ( pi/2. );
 
-   new G4PVPlacement ( G4Transform3D ( rotOldCoords,G4ThreeVector ( 0,0,hodocenter+5.0*cm/*+25*cm*/ ) ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
+   new G4PVPlacement ( 0,G4ThreeVector ( 0,0,hodocenter+5.0*cm+25*cm  ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
 
 //G4Box * hodoscopePMT = new G4Box("hodoscopePMTinquotes", 6.*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.);
 //G4LogicalVolume * hodoscopePMT_log = new G4LogicalVolume(hodoscopePMT, Lucite ,"hodoscopePMTinquotes_log");
 
 
    G4RotationMatrix hodBarRotate;
-   hodBarRotate.rotateY ( -pi/2. );
+   hodBarRotate.rotateZ ( -pi/2. );
+   hodBarRotate.rotateX ( -pi/2. );
 
    /*
    G4RotationMatrix hodBarRotateRemove1;
@@ -347,18 +370,145 @@ void BETADetectorConstruction::ConstructHodoscope()
 
    G4VSolid* hodoscope = new G4Tubs ( "Lucite-barContainer", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10.*cm,6.*28.*cm/2. +10.*cm, -26.*pi/2.0/180.,26.*pi/180. );// made a little bigger around surfaces of reflection
 // Lets try a box
-
-
-//   G4VSolid* hodoscope = new G4Box("Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm);
-
-   G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. );
-
-
-   G4LogicalVolume* hodoscope_log =
+  G4LogicalVolume* hodoscope_log =
       new G4LogicalVolume ( hodoscope,     // Solid
                             Air,                    // Material
                             "hodoscope_Logical" ); // Name
-  G4LogicalVolume* hodoscopeBar_log;
+
+
+   G4VSolid* hodoscopeSingleBarSection = new G4Tubs ( "Lucite-Singlebar", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10.*cm,6.*cm/2. , -26.*pi/2.0/180.,26.*pi/180. );// made a little bigger around surfaces of reflection
+
+
+G4VSensitiveDetector* HodoscopePMTs;
+  G4RotationMatrix hodBarRotateRemove1;
+  G4RotationMatrix hodBarRotateRemove2;
+  G4RotationMatrix * rotate1;
+  G4RotationMatrix * rotate2;
+  G4VSolid * theSolid;
+  G4VSolid * hodoscopeBar;
+  G4VSolid * PMTinquotes;
+  G4VSolid * PMTphotocathode;
+G4LogicalVolume* PMTphotocathode_log;
+G4LogicalVolume* PMTinquotes_log;
+G4LogicalVolume* hodoscopeBar_log;
+  G4double theta;
+
+  // Data members
+  std::vector<G4double> xCell;
+  std::vector<G4double> yCell;
+  std::vector<G4double> zCell;
+
+   rotate1 = &hodBarRotateRemove1;
+   rotate2 = &hodBarRotateRemove2;
+   double sideA = std::sqrt ( 2.*3.5*3.5 )  ;
+   double senseThickness = 0.1 ;
+
+   // Initialise
+   G4int i ( 0 );
+   theta = 23.*pi/ ( 180.*2.0 );
+// First 28 are the curved bars
+   for ( i=0; i<28; i++ )
+   {
+//for BOX mother    xCell.push_back(-240*cm);
+      xCell.push_back ( 0*cm );
+      yCell.push_back ( 0*cm );
+      zCell.push_back ( ( i-13 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
+   }
+// second 28 are the angled pmt light guides
+   for ( i=28; i<28*2; i++ )
+   {
+      xCell.push_back ( ( 240.+3.5/2.0 ) *cm*std::cos ( theta ) );
+      yCell.push_back ( ( 240.+3.5/2.0 ) *cm*std::sin ( theta ) );
+      zCell.push_back ( ( i-13 - 28 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
+   }
+// third 28 are the angled pmt light guides
+   for ( i=28*2; i<28*3; i++ )
+   {
+      xCell.push_back ( ( 240.+3.5/2.0 ) *cm*std::cos ( theta ) );
+      yCell.push_back ( -1.0* ( 240.+3.5/2.0 ) *cm*std::sin ( theta ) );
+      zCell.push_back ( (G4double)( i-13 -28*2 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3.0*cm+2.54*cm*0.002/2.0 ) );
+   }
+
+
+//Sensors
+   for ( i=28; i<28*2; i++ )
+   {
+      xCell.push_back ( ( 240.+3.5/2.0+(sideA+senseThickness)/2.0 ) *cm*std::cos ( theta ) );
+      yCell.push_back ( ( 240.+3.5/2.0 +(sideA+senseThickness)/2.0 ) *cm*std::sin ( theta ) );
+      zCell.push_back ( ( i-13 - 28 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
+   }
+// third 28 are the angled pmt light guides
+   for ( i=28*2; i<28*3; i++ )
+   {
+      xCell.push_back ( ( 240.+3.5/2.0+(sideA+senseThickness)/2.0 ) *cm*std::cos ( theta ) );
+      yCell.push_back ( -1.0*( 240.+3.5/2.0 +(sideA+senseThickness)/2.0 ) *cm*std::sin ( theta ) );
+      zCell.push_back ( (G4double)( i-13 -28*2 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3.0*cm+2.54*cm*0.002/2.0 ) );
+   }
+
+ hodBarRotateRemove1.rotateZ ( ( 23. ) *pi/ ( 180.*2 )-pi/4. );
+
+   hodBarRotateRemove2.rotateZ ( ( -23. ) *pi/ ( 180.*2 ) +pi/4. );
+
+   theta = 23.*pi/ ( 180.*2.0 );
+
+//   G4VSolid* hodoscope = new G4Box ( "Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm );
+   G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. );
+   G4Box * hodoscopeRemoveBox = new G4Box ( "hodoscoperemovebox", 100.*cm,std::sqrt ( 2.*3.5*3.5 ) *cm/2.  ,100.*cm );
+
+   hodoscopeBar = new G4SubtractionSolid ( "Frame top",hoBar , hodoscopeRemoveBox,G4Transform3D
+                                           ( hodBarRotateRemove1,G4ThreeVector ( ( 240.+3.5 ) *cm*std::cos ( theta ), ( 240.+3.5 ) *cm*std::sin ( theta ),0*cm ) ) );
+
+
+   hodoscopeBar = new G4SubtractionSolid ( "Frame top",hodoscopeBar, hodoscopeRemoveBox,
+                                           G4Transform3D ( hodBarRotateRemove2, G4ThreeVector ( ( 240.+3.5 ) *cm*cos ( theta ),
+                                                                                                -1.0* ( 240.+3.5 ) *cm*sin ( theta ),0*cm ) ) );
+    PMTinquotes = new G4Box ( "hodoscopePMTinquotes", std::sqrt ( 2.*3.5*3.5 ) *cm/2.,std::sqrt ( 2.*3.5*3.5 ) *cm/2.,6.*cm/2. );
+ hodoscopeBar = new G4UnionSolid ( "Frame top",hodoscopeBar, PMTinquotes,
+              G4Transform3D ( hodBarRotateRemove1, 
+              G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
+                              ( 240.+3.5/*/2.0 +(sideA)/2.0 */) *cm*std::sin ( theta ) ,0*cm ) ) );
+ hodoscopeBar = new G4UnionSolid ( "Frame top",hodoscopeBar, PMTinquotes,
+              G4Transform3D ( hodBarRotateRemove2, 
+              G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
+                              -1.0*( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ) );
+  hodoscopeBar_log =
+      new G4LogicalVolume ( hodoscopeBar,     // Solid
+                            Lucite,                    // Material
+                            "hodoscopeBar_log" ); // Name
+
+
+   PMTphotocathode = new G4Box ( "hodoscopePMTinquotes", /*std::sqrt ( 2.*3.5*3.5 ) */std::sqrt ( 2.*3.5*3.5 ) *cm/2.,0.1*cm/2.,6.0*cm/2. );
+
+   PMTphotocathode_log =
+      new G4LogicalVolume ( PMTphotocathode,     // Solid
+                            Lucite,                    // Material
+                            "PMTphotocathode_log" ); // Name
+
+      new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove1, 
+              G4ThreeVector( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
+                              ( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ), PMTphotocathode_log,     // Logical volume
+                       "hodoscope_sensitive",     // Name
+                       hodoscopeBar_log,true,0);
+      new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove2, 
+              G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/) *cm*std::cos ( theta ),
+                             -1.0* ( 240.+3.5/*/2.0 +(sideA)/2.0*/) *cm*std::sin ( theta ) ,0*cm ) ) ,PMTphotocathode_log,     // Logical volume
+                       "hodoscope_sensitive",     // Name
+                       hodoscopeBar_log,true,1);
+
+
+for(int k = 0;k<28;k++) {
+      new G4PVPlacement (  G4Transform3D(hodBarRotate, 
+   G4ThreeVector (0.0*cm, ( k-13 )*( 6.0*cm+2.54*cm*0.002 ) -( 3*cm+2.54*cm*0.002/2.0 ),-1.0*cm*( 240.+3.5/2.0 ) ) ) 
+                      ,hodoscopeBar_log,     // Logical volume
+                       "hodoscope_bar_and_pmt",     // Name
+                       hodoscopeContainerBox_log,true,k);
+}
+
+//   G4VSolid* hodoscope = new G4Box("Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm);
+/*
+   G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. ); 
+   G4LogicalVolume* hodoscopeBar_log;
+
   if(fSimulationManager->fSimulateHodoscopeOptics) {
     hodoscopeBar_log = new G4LogicalVolume ( hoBar, Lucite,"hodoscopeBAAAAAR_Logical" );
   } else {
@@ -377,7 +527,6 @@ void BETADetectorConstruction::ConstructHodoscope()
    }
 // G4VNestedParameterisation* HodoscopePMTParam = new BETAHodoscopePMTParameterisation();
 
-
 // uncomment for placement
    G4VPhysicalVolume * hodoscopeBar_phys =   new G4PVParameterised ( "Hodoscope_Cell_Physical",  // Name
          hodoscopeBar_log,        // Logical volume
@@ -385,7 +534,7 @@ void BETADetectorConstruction::ConstructHodoscope()
          kZAxis,             // Axis
          28*3,                // Number of replicas
          HodoscopeCellParam );        // Parameterisation
-
+*/
 //  G4VPhysicalVolume * hodoscopePMT_phys =   new G4PVParameterised("Hodoscope_PMT_Physical",    // Name
 //                         hodoscopePMT_log,        // Logical volume
 //                         hodoscope_phys, // Mother volume
@@ -444,14 +593,14 @@ void BETADetectorConstruction::ConstructHodoscope()
    LuciteSurface->SetFinish ( polishedbackpainted );
 
 
-//  G4LogicalSkinSurface * LuciteBarSurface = new G4LogicalSkinSurface ( "LuciteBarsurface", hodoscopeBar_log, LuciteSurface );
 //     myPVolume = myLVolume->GetDaughter(i);
 //for(int qq = 0; qq<28;qq++) {
 //if(qq != 0) new G4LogicalBorderSurface("Border Lucite", hodoscopeBar_log->GetDaughter(qq-1), hodoscopeBar_log->GetDaughter(qq), LuciteSurface);
 
 
 //uncomment FOR HODOSCOPE
-   new G4LogicalBorderSurface ( "Border Lucite1",hodoscopeBar_phys, hodoscope_phys, LuciteSurface );
+//   new G4LogicalBorderSurface ( "Border Lucite1",hodoscopeBar_phys, hodoscope_phys, LuciteSurface );
+  G4LogicalSkinSurface * LuciteBarSurface = new G4LogicalSkinSurface ( "LuciteBarsurface", hodoscopeBar_log, LuciteSurface );
 
 
 // G4cout << (hodoscopeBar_log->GetDaughter(qq))->GetName() << G4endl;
@@ -461,18 +610,19 @@ void BETADetectorConstruction::ConstructHodoscope()
 
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-      G4VSensitiveDetector* BIGCALProtvino =
-       new BETAProtvinoCalorimeter("BIGCALProtvino");
+       HodoscopePMTs =
+       new BETAHodoscopePMT("hodoscopePMT");
      // Register detector with manager
-//     manager->AddNewDetector(BIGCALProtvino);
+     manager->AddNewDetector(HodoscopePMTs);
      // Attach detector to scoring volume
-      hodoscopeBar_log->SetSensitiveDetector(fSimulationManager->fHodoscopeDetector);
+     // hodoscopeBar_log->SetSensitiveDetector(fhodoscopeDet);//fSimulationManager->fHodoscopeDetector);
+       PMTphotocathode_log->SetSensitiveDetector ( HodoscopePMTs );   
 
 
 // Visualization
-   hodoscope_log->SetVisAttributes ( G4VisAttributes::Invisible );
-
-   hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
+//    hodoscope_log->SetVisAttributes ( G4VisAttributes::Invisible );
+// 
+//    hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
 }
 
@@ -532,14 +682,15 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
+   //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+
    G4VSensitiveDetector* BIGCALRCS =
       new BETARCSCalorimeter ( "BIGCALRCS" );
 
    // Register detector with manager
-//   manager->AddNewDetector ( BIGCALRCS );
+   manager->AddNewDetector ( BIGCALRCS );
    // Attach detector to scoring volume
-//   cellLogical->SetSensitiveDetector ( BIGCALRCS );
-   cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+   cellLogical->SetSensitiveDetector ( BIGCALRCS );
 
 
 // Protvino
@@ -582,14 +733,14 @@ void BETADetectorConstruction::ConstructBIGCAL()
                            kXAxis,             // Axis
                            1024,                // Number of replicas
                            cellParamBottom );        // Parameterisation
+ //  cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 
    G4VSensitiveDetector* BIGCALProtvino =
       new BETAProtvinoCalorimeter ( "BIGCALBottom" );
    // Register detector with manager
-//   manager->AddNewDetector ( BIGCALProtvino );
+   manager->AddNewDetector ( BIGCALProtvino );
    // Attach detector to scoring volume
-//   cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
-   cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+   cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
 
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
@@ -602,15 +753,17 @@ void BETADetectorConstruction::ConstructBIGCAL()
 //    cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
 //    cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 // Make containers invisible
-   calorimeterTop_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   calorimeterBottom_log->SetVisAttributes ( G4VisAttributes::Invisible );
+  G4VisAttributes* BIGCALRcsProtAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.6,0.0,0.25 )  );
+   calorimeterTop_log->SetVisAttributes ( BIGCALRcsProtAttributes );
+   calorimeterBottom_log->SetVisAttributes ( BIGCALRcsProtAttributes);
 
   G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.6,0.0,0.25 )  );
-  BIGCALCellAttributes->SetForceSolid ( true );
-  BIGCALCellAttributes->SetForceWireframe( true );
-  cellLogical->SetVisAttributes(BIGCALCellAttributes );
-  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
-//  cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
+  //BIGCALCellAttributes->SetForceSolid ( true );
+  //BIGCALCellAttributes->SetForceWireframe( true );
+//  cellLogical->SetVisAttributes(BIGCALCellAttributes );
+  cellLogical->SetVisAttributes(G4VisAttributes::Invisible );
+//  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
+  cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 }
 
 //___________________________________________________________________
@@ -1299,14 +1452,14 @@ G4double farMirrorAngle = 20* pi/180;
    G4double yFocalpoint =  zTankFront/2+zTank/2;
    G4double zFocalpoint = yTank/2-fabs ( tankFrontSide*std::cos ( pmtPlaneAngle ) /2 );
 
-   setMirrorAngles ( 1,beta1,alpha1 );
-   setMirrorAngles ( 2,beta2,alpha2 );
-   setMirrorAngles ( 3,beta3,alpha3 );
-   setMirrorAngles ( 4,beta4,alpha4 );
-   setMirrorAngles ( 5,beta5,alpha5 );
-   setMirrorAngles ( 6,beta6,alpha6 );
-   setMirrorAngles ( 7,beta7,alpha7 );
-   setMirrorAngles ( 8,beta8,alpha8 );
+   setMirrorAngles ( 1,alpha1,beta1 );
+   setMirrorAngles ( 2,alpha2,beta2 );
+   setMirrorAngles ( 3,alpha3 ,beta3);
+   setMirrorAngles ( 4,alpha4 ,beta4);
+   setMirrorAngles ( 5,alpha5 ,beta5);
+   setMirrorAngles ( 6,alpha6 ,beta6);
+   setMirrorAngles ( 7,alpha7,beta7);
+   setMirrorAngles ( 8,alpha8,beta8 );
 
    pmtRM1.rotateX ( pmtalpha1 );
    pmtRM1.rotateY ( pmtbeta1 );
@@ -1396,10 +1549,10 @@ G4double farMirrorAngle = 20* pi/180;
   G4LogicalVolume * MUPipe_log = new G4LogicalVolume(MUPipe, ((G4NistManager*)G4NistManager::Instance())->FindOrBuildMaterial ( "G4_Fe" ), "MUPipe_log");
    new G4PVPlacement(G4Transform3D(unitrm,G4ThreeVector()),MUPipe_log, "PMT+mumetal",container_log, false, 0);
 
-  BETASimulationManager::getInstance()->InitScoring();
+  BETASimulationManager::GetInstance()->InitScoring();
 
-//    BETAG4PMT* aPMTModel =
-//       new BETAG4PMT ( "PMTG4" );
+   BETAPMT* aPMTModel =
+      new BETAPMT ( "PMT" );
 
 
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
@@ -1428,17 +1581,17 @@ G4double farMirrorAngle = 20* pi/180;
    // Create a new sensitive detector named "MyDetector"
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-   G4VSensitiveDetector* CherenkovTank =
-      new BETAPMT ( "PMT" );
+//    G4VSensitiveDetector* CherenkovTank =
+//       new BETAPMT ( "PMT" );
 
    // Register detector with manager
 //   manager->AddNewDetector ( CherenkovTank );
-//   manager->AddNewDetector ( aPMTModel );
+   manager->AddNewDetector ( aPMTModel );
 
    // Attach detector to scoring volume
-   pmtFace_log->SetSensitiveDetector(fSimulationManager->fCherenkovDetector);
+ //  pmtFace_log->SetSensitiveDetector(fSimulationManager->fCherenkovDetector);
 // CherenkovTank );
-///   pmtFace_log->SetSensitiveDetector (CherenkovTank );
+   pmtFace_log->SetSensitiveDetector (aPMTModel );
 
 /// Also doing mirrors as a detector, but this is only for determining the optical efficiency of the
 /// mirror/pmt combination.
@@ -1460,18 +1613,17 @@ G4double farMirrorAngle = 20* pi/180;
    G4double Reflectivity[num] = {0.3, 0.5};
    G4double Efficiency[num]   = {1.0, 1.0};
 
-
-// OPTICS
 // PMT Surface
    G4OpticalSurface* OpPMTSurface = new G4OpticalSurface ( "PMTSurface" );
-   OpPMTSurface->SetType ( dielectric_dielectric );
-   OpPMTSurface->SetFinish ( polished );
    OpPMTSurface->SetModel ( unified );
+
+   OpPMTSurface->SetType ( dielectric_dielectric );
+   OpPMTSurface->SetFinish ( ground );
 
    G4LogicalSkinSurface * pmtFaceSurface = new G4LogicalSkinSurface ( "PmtFace surface", pmtFace_log, OpPMTSurface );
 
    G4double RefractiveIndexPMTFace[num] = {1.48, 1.48};
-   G4double QuartzReflectivity[num] = {0.034, 0.034};
+   G4double QuartzReflectivity[num] = {0,0};//{0.034, 0.034};
 
    G4MaterialPropertiesTable* PMTFaceTable = new G4MaterialPropertiesTable();
 
@@ -1518,7 +1670,8 @@ G4double farMirrorAngle = 20* pi/180;
    OpTankFlatBlackSurface->SetType ( dielectric_metal );
    OpTankFlatBlackSurface->SetFinish ( groundbackpainted );
  G4LogicalSkinSurface * flatBalckSurface = new G4LogicalSkinSurface ( "TankFlatBlackSurface", tank_log, OpTankFlatBlackSurface );
-
+  tedlarBack_log->SetVisAttributes( G4VisAttributes::Invisible );
+  tedlarFront_log->SetVisAttributes( G4VisAttributes::Invisible );
 //  Visualizations
    G4VisAttributes* tankAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5,0.25 ) );
 // tankAttributes->SetForceWireframe ( true );
@@ -1578,7 +1731,7 @@ void BETADetectorConstruction::ConstructBETA()
 
 // This must come before associating logical volumes with scorers
    fSimulationManager->InitScoring();
-//   fSimulationManager->DefineScoringFilters();
+   fSimulationManager->DefineScoringFilters();
 
 
    if (usingFakePlaneAtBigcal) ConstructFakePlane();
@@ -1891,10 +2044,10 @@ ConstructBeamPipe();
    // Import Geant4 geometry to VGM
    //
 
-//              Geant4GM::Factory g4Factory;
-//              g4Factory.SetDebug(1);
-//              g4Factory.Import(expHall_phys);
-//      // Export VGM geometry to Root
+             Geant4GM::Factory g4Factory;
+             g4Factory.SetDebug(1);
+             g4Factory.Import(expHall_phys);
+     // Export VGM geometry to Root
 // 
 //  XmlVGM::GDMLExporter xmlExporter2(&g4Factory);
 //  xmlExporter2.SetFileName("XML_test.xml");
@@ -1902,11 +2055,11 @@ ConstructBeamPipe();
 // 
 //      // Export VGM geometry to Root
 //      //
-//               RootGM::Factory rtFactory;
-//               rtFactory.SetDebug(1);
-//               g4Factory.Export(&rtFactory);
-//               gGeoManager->CloseGeometry();
-//               gGeoManager->Export("VGM_test.root");
+              RootGM::Factory rtFactory;
+              rtFactory.SetDebug(1);
+              g4Factory.Export(&rtFactory);
+              gGeoManager->CloseGeometry();
+              gGeoManager->Export("SANEGeometry.root");
 //    
 ///////////////////////////////////////////////////////
 // END OF OPTICAL SURFACES
@@ -2231,43 +2384,43 @@ void BETADetectorConstruction::setMirrorAngles ( int mirrorNumber, G4double alph
 {
    if ( mirrorNumber ==1 )
    {
-      RM1.rotateY ( alpha );
-      RM1.rotateX ( beta );
+      RM1.rotateX ( alpha );
+      RM1.rotateY (beta );
    }
    else if ( mirrorNumber==2 )
    {
-      RM2.rotateY ( alpha );
-      RM2.rotateX ( beta );
+      RM2.rotateX ( alpha );
+      RM2.rotateY ( beta );
    }
    else if ( mirrorNumber==3 )
    {
-      RM3.rotateY ( alpha );
-      RM3.rotateX ( beta );
+      RM3.rotateX ( alpha );
+      RM3.rotateY ( beta );
    }
    else if ( mirrorNumber==4 )
    {
-      RM4.rotateY ( alpha );
-      RM4.rotateX ( beta );
+      RM4.rotateX ( alpha );
+      RM4.rotateY ( beta );
    }
    else if ( mirrorNumber==5 )
    {
-      RM5.rotateY ( alpha );
-      RM5.rotateX ( beta );
+      RM5.rotateX ( alpha );
+      RM5.rotateY ( beta );
    }
    else if ( mirrorNumber==6 )
    {
-      RM6.rotateY ( alpha );
-      RM6.rotateX ( beta );
+      RM6.rotateX ( alpha );
+      RM6.rotateY ( beta );
    }
    else if ( mirrorNumber==7 )
    {
-      RM7.rotateY ( alpha );
-      RM7.rotateX ( beta );
+      RM7.rotateX ( alpha );
+      RM7.rotateY ( beta );
    }
    else if ( mirrorNumber==8 )
    {
-      RM8.rotateY ( alpha );
-      RM8.rotateX ( beta );
+      RM8.rotateX ( alpha );
+      RM8.rotateY (beta );
    }
 
    if ( !constructed ) return ;

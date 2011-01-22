@@ -44,7 +44,7 @@ BETAEventAction::~BETAEventAction()
 {
 
 
-   delete messenger;
+//   delete messenger;
 
 
 }
@@ -65,7 +65,7 @@ void BETAEventAction::BeginOfEventAction ( const G4Event* )
 void BETAEventAction::EndOfEventAction ( const G4Event* evt )
 {
 
-
+  
 
    // Diagnostics
 

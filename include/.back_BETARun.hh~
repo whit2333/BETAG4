@@ -56,7 +56,6 @@
 class BETASimulationManager;
 class BETADetectorConstruction;
 class BETAG4EventRecorder;
-
 /**
  * \ingroup Runs
  */
@@ -77,7 +76,7 @@ public:
 /**
  *  Constructor opens ROOT file \todo{ add open new file or append to existing flag...}.)
  */
-  BETARun(const int runNumber,const int showThePlots);
+  BETARun(const int runNumber);
 /**
  *  Destructor
  */
@@ -90,7 +89,6 @@ BETAG4EventRecorder * eventRecorder;
 
 
 private:
-
   BETASimulationManager * fSimulationManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
@@ -136,6 +134,7 @@ private:
    BETAFakePlaneHitsCollection * fakePlaneHC;
 //BETAG4PMTHitsCollection * pmtG4HC;
 
+G4int colIDSum[4];
 
 bool catLastFile;
 bool fShowUnrealisticData;
@@ -162,22 +161,7 @@ TCanvas * c1;
 private:
 int cer_tdc_thresh;
     G4int  CherenkovPMTCount[20];
-    G4int pmt1Count;
-    G4int pmt2Count;
-    G4int pmt3Count;
-    G4int pmt4Count;
-    G4int pmt5Count;
-    G4int pmt6Count;
-    G4int pmt7Count;
-    G4int pmt8Count;
-    G4int mirror1Count;
-    G4int mirror2Count;
-    G4int mirror3Count;
-    G4int mirror4Count;
-    G4int mirror5Count;
-    G4int mirror6Count;
-    G4int mirror7Count;
-    G4int mirror8Count;
+
     G4int hodoscopePMTHCID;
     G4int hodoscopePMTcount;
     G4double BCTE;

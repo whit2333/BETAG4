@@ -20,7 +20,7 @@ public:
   BETAFrontTrackerHit(G4int id);
 
   // Destructor
-  virtual ~BETAFrontTrackerHit();
+  ~BETAFrontTrackerHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
@@ -32,8 +32,8 @@ public:
 
 //  void SetLocalPosition(G4ThreeVector*pos) {localPos
   // Add a Photon
-  inline void AddPhoton() {fPhotons++;}
-  inline G4int GetPhotons() const {return fPhotons;}
+   void AddPhoton() {fPhotons++;}
+   G4int GetPhotons() const {return fPhotons;}
 /* Eventually add wavelength.....
   // Position vector
   inline void SetPosition(G4ThreeVector position) {fPosition = position;}

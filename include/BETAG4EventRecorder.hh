@@ -28,7 +28,7 @@
 #include "TH1F.h"
 #include <vector>
 #include "BETASimulationManager.hh"
-#include "BETAEvent.h"
+#include "SANEEvents.h"
 #include "BETAMirrorHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
@@ -57,11 +57,12 @@ public :
  * Default Constructor initializes counters, arrays, pointers, etc....
  */
 BETAG4EventRecorder();
+
 /**
  * Constructor initializes counters, arrays, pointers, etc....
  * Also sets the address of the detector events
  */
-BETAG4EventRecorder(BETAEvent* ,HMSEvent* , HallCBeamEvent*, BETAG4MonteCarloEvent* );
+BETAG4EventRecorder(SANEEvents *);
 
 /**
  * dtor
@@ -74,7 +75,7 @@ BETAG4EventRecorder(BETAEvent* ,HMSEvent* , HallCBeamEvent*, BETAG4MonteCarloEve
  * (BETAPMTHitsCollection in this case) to use for filling
  * out the event data.
  */
-inline int SetGasCherenkovHitCollection(BETAPMTHitsCollection * aHC) {
+inline int SetGasCherenkovHitCollection( BETAPMTHitsCollection * aHC) {
   if(aHC) 
   {
     fGasCherenkovHC = aHC;
@@ -184,7 +185,7 @@ private :
   BETAFrontTrackerHitsCollection * fForwardTrackerHC;
   BETAFakePlaneHitsCollection * fFakePlaneHC;
 
-  BETASimulationManager * fAnalysisManager;
+  BETASimulationManager * fSimulationManager;
 
 // counters
     G4int  CherenkovPMTCount[20];

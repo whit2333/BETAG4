@@ -20,7 +20,8 @@ BETAProtvinoCalorimeterHit::BETAProtvinoCalorimeterHit()
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )
-{}
+{;
+}
 
 BETAProtvinoCalorimeterHit::BETAProtvinoCalorimeterHit ( G4int id )
       :fCellID ( id )
@@ -28,12 +29,16 @@ BETAProtvinoCalorimeterHit::BETAProtvinoCalorimeterHit ( G4int id )
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )
-{}
+{;
+}
 
-BETAProtvinoCalorimeterHit::~BETAProtvinoCalorimeterHit() {}
+BETAProtvinoCalorimeterHit::~BETAProtvinoCalorimeterHit() {
+;
+}
 
 void BETAProtvinoCalorimeterHit::Draw()
-{/*
+{;
+/*
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 
   if(pVVisManager && (fDepositedEnergy>0.)) {
@@ -63,7 +68,7 @@ void BETAProtvinoCalorimeterHit::Draw()
 
 const std::map<G4String,G4AttDef>* BETAProtvinoCalorimeterHit::GetAttDefs() const
 {
-
+;
    G4bool isNew;
    std::map<G4String,G4AttDef>* store
    = G4AttDefStore::GetInstance ( "BETAProtvinoCalorimeterHit",isNew );

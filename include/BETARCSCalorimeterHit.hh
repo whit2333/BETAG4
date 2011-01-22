@@ -21,18 +21,18 @@ public:
   BETARCSCalorimeterHit(G4int id);
 
   // Destructor
-  virtual ~BETARCSCalorimeterHit();
+   ~BETARCSCalorimeterHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
 
   // Methods
-  virtual void Draw();
+   void Draw();
 
-  virtual const std::map<G4String,G4AttDef>* GetAttDefs() const;
-  virtual std::vector<G4AttValue>* CreateAttValues() const;
+   const std::map<G4String,G4AttDef>* GetAttDefs() const;
+   std::vector<G4AttValue>* CreateAttValues() const;
 
-  virtual void Print();
+   void Print();
 
   /// Deposited energy
    void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
@@ -50,15 +50,15 @@ public:
   /// Logical volume
    void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
    const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
-  
-private:
-  
-  // Data members
+    // Data members
   G4int fCellID;
   G4double fDepositedEnergy;
   G4ThreeVector fPosition;
   G4RotationMatrix fRotation;
   const G4LogicalVolume* pLogicalVolume;
+private:
+  
+
   
 };
 

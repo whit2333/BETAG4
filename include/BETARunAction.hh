@@ -35,8 +35,8 @@ class BETARunAction : public G4UserRunAction
    ~BETARunAction();
 
 /**
- *This method is invoked at the beginning of BeamOn. Because the user can inherit the class G4Run and create his/her own concrete class to store some information about the run, the GenerateRun() method is the place to instantiate such an object. 
- * It is also the ideal place to set variables which affect the physics table (such as production thresholds) for a particular run, because GenerateRun() is invoked before the calculation of the physics table. 
+ *  Invoked at beamOn
+ *  Creates output ROOT file, allocates event and hit output trees
  */
   G4Run* GenerateRun();
 

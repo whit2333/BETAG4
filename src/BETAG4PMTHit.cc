@@ -17,20 +17,23 @@ G4Allocator<BETAG4PMTHit> BETAG4PMTHitAllocator;
 BETAG4PMTHit::BETAG4PMTHit()
       :tubeNumber ( -1 )
       ,fPhotons ( 0 )
-{}
+{;
+}
 
 BETAG4PMTHit::BETAG4PMTHit ( G4int id )
       :tubeNumber ( id )
       ,fPhotons ( 0 )
-{}
+{;
+}
 
 BETAG4PMTHit::~BETAG4PMTHit() {
-
+ ;
 }
 
 
 void BETAG4PMTHit::Draw()
-{/*
+{;
+/*
 
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

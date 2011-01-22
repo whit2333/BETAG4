@@ -18,18 +18,23 @@ G4Allocator<BETAHodoscopePMTHit> BETAHodoscopePMTHitAllocator;
 BETAHodoscopePMTHit::BETAHodoscopePMTHit()
       :tubeNumber ( -1 )
       ,fPhotons ( 0 )
-{}
+{;
+}
 
 BETAHodoscopePMTHit::BETAHodoscopePMTHit ( G4int id )
       :tubeNumber ( id )
       ,fPhotons ( 0 )
-{}
+{;
+}
 
-BETAHodoscopePMTHit::~BETAHodoscopePMTHit() {}
+BETAHodoscopePMTHit::~BETAHodoscopePMTHit() {
+ ;
+}
 
 
 void BETAHodoscopePMTHit::Draw()
-{/*
+{;
+/*
 
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

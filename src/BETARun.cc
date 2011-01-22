@@ -8,8 +8,6 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
-
-// ROOT //
 #include "Riostream.h"
 #include "TROOT.h"
 #include "TFile.h"
@@ -27,32 +25,30 @@
 #include "TRint.h"
 #include "TApplication.h"
 #include "TCanvas.h"
-
 #include "BETARun.hh"
-
 // InSANE 
 #include "BETAEvent.h"
 #include "HMSEvent.h"
 #include "HallCBeamEvent.h"
 #include "BETAG4MonteCarloEvent.h"
 #include "InSANERun.h"
-
 #include "BETAG4EventRecorder.hh"
-
 //______________________________________________________________________//
-BETARun::BETARun ( const int runNumber ) : catLastFile( false )
-{
-   G4cout << "= Created new BETARun \n";
-   G4String colName;
 
-   fShowUnrealisticData  = false;
-   cer_tdc_thresh = 2;
+BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
+  if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
+    G4cout << "= Created new BETARun \n";
+  }
+  G4String colName;
+
+  fShowUnrealisticData  = false;
+  cer_tdc_thresh = 2;
    // Time comes from 2nd photon detected
 
-   fSimulationManager = BETASimulationManager::GetInstance ();
-   if(fSimulationManager) {
-     fSimulationManager->SetDetectorVerbosity("GasCherenkov",0);
-   }
+  fSimulationManager = BETASimulationManager::GetInstance ();
+  if(fSimulationManager) {
+    fSimulationManager->SetDetectorVerbosity("GasCherenkov",0);
+  }
 
 // Get the event generator and detector constructoion so we can write the simulation truths to tree
    runManager = G4RunManager::GetRunManager();
@@ -65,19 +61,17 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false )
      construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
    }
 
-    RootFile=fSimulationManager->fRootFile;
-    detectorTree=fSimulationManager->fDetectorTree;
+   RootFile=fSimulationManager->fRootFile;
+   detectorTree=fSimulationManager->fDetectorTree;
 
 ////////////////////////////////////////////////
 //                    HISTOGRAMS              //
 ////////////////////////////////////////////////
-
    /*NONE */
-
 
 // Fills events with realisitic data from Geant4 Hit collections
     eventRecorder = 
-       new BETAG4EventRecorder( fSimulationManager->fEvents->BETA, fSimulationManager->fEvents->HMS, fSimulationManager->fEvents->BEAM, fSimulationManager->fEvents->MC);
+       new BETAG4EventRecorder( );
  
 // For debugging cherenkov timing emulator
 /*   waveforms = new TH1F(Form("waveform%d",numberOfEvent),"waveform",200,0,20);*/
@@ -116,43 +110,41 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false )
 
 
   G4String fullName;
-  for(size_t i=0;i<4;i++)
-  {
-    //for(size_t j=0;j<4;j++)
-    //{
-      fullName = detName[i]+"/"+primNameSum[i];
-      colIDSum[i] = SDman->GetCollectionID(fullName);
-std::cout << "HC ID " << i << " " <<  colIDSum[i] << " \n";
-    //}
-//    for(size_t k=0;k<3;k++)
-//    {
-//      fullName = detName[i]+"/"+primNameMin[k];
-//      colIDMin[i][k] = SDMan->GetCollectionID(fullName);
-//    }
-  }
-
-
+//   for(size_t i=0;i<4;i++)
+//   {
+//     //for(size_t j=0;j<4;j++)
+//     //{
+//       fullName = detName[i]+"/"+primNameSum[i];
+//       colIDSum[i] = SDman->GetCollectionID(fullName);
+// std::cout << "HC ID " << i << " " <<  colIDSum[i] << " \n";
+//     //}
+// //    for(size_t k=0;k<3;k++)
+// //    {
+// //      fullName = detName[i]+"/"+primNameMin[k];
+// //      colIDMin[i][k] = SDMan->GetCollectionID(fullName);
+// //    }
+//   }
 }
-
 //____________________________________________________________________//
 
 BETARun::~BETARun()
 {
-
+if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
    G4cout << "= Deleted BETARun \n";
-
 }
-
+}
 //____________________________________________________________________//
-/**
- * NOW ... This might be the most busy function
- * ... probably should be cleaned up
- */
-void BETARun::RecordEvent ( const G4Event* anEvent )
-{
+
+void BETARun::RecordEvent ( const G4Event* anEvent ) {
+  if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
+    std::cout << "start of BETARun::RecordEvent() \n";
+  }
+
    G4String colName;
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4HCofThisEvent * HCE = anEvent->GetHCofThisEvent();
+
+// Initialize Hit Collection pointers
    hodoscopepmtHC = 0;
    pmtHC = 0;
    BIGCALHC = 0;
@@ -160,30 +152,16 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
    FTHC = 0;
    mirrorHC = 0;
    fakePlaneHC = 0;
+
+// zero PMT counts
    for (int i=0;i<20;i++) CherenkovPMTCount[i] =0;
+
    int tdc_count=0;
    int numPMTHits ( 0 ), numPMTHitsAtFace ( 0 ), numMirrorHits ( 0 );
-   pmt1Count =0;
-   pmt2Count =0;
-   pmt3Count =0;
-   pmt4Count =0;
-   pmt5Count =0;
-   pmt6Count =0;
-   pmt7Count =0;
-   pmt8Count =0;
-   mirror1Count =0;
-   mirror2Count =0;
-   mirror3Count =0;
-   mirror4Count =0;
-   mirror5Count =0;
-   mirror6Count =0;
-   mirror7Count =0;
-   mirror8Count =0;
    BCTE = 0.0;
    hodoscopePMTcount =0;
 
 //std::cout << "Total collection " << HCE->GetNumberOfCollections() << " \n";
-
    if ( HCE && HCE->GetNumberOfCollections() != 0)
    {
       if (construction->usingLuciteHodoscope && hodoscopePMTHCID != -1 ) 
@@ -210,9 +188,9 @@ void BETARun::RecordEvent ( const G4Event* anEvent )
       //if (construction->usingGasCherenkov) pmtG4HC = (G4THitsMap<double>*)( HCE->GetHC ( PMTG4HCID ) );
 /*      for(int j=0;j<4;j++) if(colIDSum[j] !=1) { }*/
    }
+
 G4double atotal; 
 G4int iii;
-
 //  for(int j=0;j<4;j++) { 
 //    if( colIDSum[j] != -1 ) {
 //       atotal=0.0;
@@ -239,17 +217,18 @@ G4int iii;
 // }
 // }
 // << pmtG4HC->entries() << "\n";
-/// Initialize counters and data holders
+// Initialize counters and data holders
 //eCountsThisEvent = 0;
-
 
     fSimulationManager->fEvents->MC->fEnergyThrown = generator->fCurrentEnergy;
     fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
     fSimulationManager->fEvents->MC->fParticleThrown = 1;
 
-   triggered = true;
+    fSimulationManager->fEvents->TRIG->fCodaType = 5;
+    fSimulationManager->fEvents->TRIG->fTriggerBits[3] = true;
 
+   triggered = true;
 
    if (construction->usingGasCherenkov) if ( pmtHC && PMTHCID != -1)
       {
@@ -299,13 +278,9 @@ fSimulationManager->fEvents->TRIG->gen_event_trigtype[11]=0;
   beta->fEventNumber=numberOfEvent;
   beta->fRunNumber=numberOfEvent;
 
+  fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
 
-
-fSimulationManager->fEvents->fRunNumber=fSimulationManager->fRunNumber;
-
-
-      fSimulationManager->fEvents->FillTrees();//fDetectorTree->Fill();
-
+  fSimulationManager->fEvents->FillTrees();//fDetectorTree->Fill();
 
  // Trigger=1; // Record  event
       /*
@@ -326,13 +301,15 @@ fSimulationManager->fEvents->fRunNumber=fSimulationManager->fRunNumber;
 //     DONE grabbing data from detectors
 ////////////////////////////////////////
 
-
       if ( ( numberOfEvent%10 ) == 0 ) G4cout << " Event " << numberOfEvent << G4endl;
 
       numberOfEvent++;
 
 //   } //triggered
 
+  if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
+    std::cout << "end of BETARun::RecordEvent() \n";
+  }
 
 }
 //____________________________________________________________________//
@@ -347,6 +324,7 @@ void BETARun::DumpHallCMC() {
    }
    MCOutput.close();
 }
+//____________________________________________________________________//
 
 void BETARun::DumpData() const
 {
@@ -390,6 +368,7 @@ void BETARun::DumpData() const
    }
 
 }
+//____________________________________________________________________//
 
 void BETARun::Print ( const std::vector<G4String>& title,
                       const std::map< G4int, std::vector<G4double> >&myMap ) const
@@ -431,6 +410,7 @@ void BETARun::Print ( const std::vector<G4String>& title,
       iter++;
    }
 }
+//____________________________________________________________________//
 
 //________________________________________________________________________//
 //int BETARun::FillGasCherenkovEvent() {

@@ -2,7 +2,13 @@
  * \mainpage 
  *  BETAG4 is a simulation designed for the Spin Asymmetries of the Nucleon Experiment (SANE).
  * 
+ * \section intro Introduction
+ * In addition to the GEANT4 libraries, BETAG4 relies on having the
+ * <a href="http://quarks.temple.edu/~whit/code/InSANE++/html/">InSANE libraries</a>
+ * 
  *   author Whitney Armstrong (whit@temple.edu)
+ * 
+ * 
  * 
  */
 //

@@ -20,14 +20,14 @@ public:
   BETAMirrorHit(G4int id);
 
   // Destructor
-  virtual ~BETAMirrorHit();
+   ~BETAMirrorHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
 
   // Methods
-  virtual void Draw();
-  virtual void Print();
+   void Draw();
+   void Print();
 
 //  void SetLocalPosition(G4ThreeVector*pos) {localPos
   // Add a Photon
@@ -36,11 +36,12 @@ public:
   G4int tubeNumber;
   G4int mirrorNumber;
   G4ThreeVector  localPos;
+  G4int fPhotons;
+
 private:
   
   // Data members
 
-  G4int fPhotons;
 //  G4ThreeVector fPosition;
 //  G4RotationMatrix fRotation;
 //  const G4LogicalVolume* pLogicalVolume;

@@ -30,7 +30,7 @@ public:
 
 
   // Destructor
-  virtual ~BETAPMTHit();
+   ~BETAPMTHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
@@ -65,17 +65,17 @@ public:
 /**
  * over ride operator for std::sort
  */
-inline bool operator < ( const BETAPMTHit & a) const
-    {
-        return (Gtime < a.Gtime);
-    }
+// inline bool operator < ( const BETAPMTHit & a) const
+//     {
+//         return (Gtime < a.Gtime);
+//     }
 
+  G4int fPhotons;
 
 private:
   
   // Data members
 
-  G4int fPhotons;
 //  G4ThreeVector fPosition;
 //  G4RotationMatrix fRotation;
 //  const G4LogicalVolume* pLogicalVolume;

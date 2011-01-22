@@ -1,5 +1,6 @@
 #include "BETAPMTHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
+
 #include "G4AttDef.hh"
 #include "G4AttDefStore.hh"
 #include "G4AttValue.hh"
@@ -17,18 +18,26 @@ G4Allocator<BETAPMTHit> BETAPMTHitAllocator;
 BETAPMTHit::BETAPMTHit()
       :tubeNumber ( -1 )
       ,fPhotons ( 0 )
-{}
+{
+ ;
+}
 
 BETAPMTHit::BETAPMTHit ( G4int id )
       :tubeNumber ( id )
       ,fPhotons ( 0 )
-{}
+{
+ ;
+}
 
-BETAPMTHit::~BETAPMTHit() {}
+BETAPMTHit::~BETAPMTHit() {
+ ;
+}
 
 
 void BETAPMTHit::Draw()
-{/*
+{
+ ; 
+/*
 
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

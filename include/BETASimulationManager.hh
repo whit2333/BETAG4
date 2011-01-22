@@ -49,14 +49,16 @@ class BETASimulationManager {
 public:
   ~BETASimulationManager();
 
+/**
+ *  Get the simulation manager singleton
+ */
   static BETASimulationManager* GetInstance();
-  static void Dispose();
-  BETADetectorConstruction * fConstruction;
-  BETASimulationMessenger * fSimulationMessenger;
 
-bool fSimulateCherenkovOptics;
-bool fSimulateTrackerOptics;
-bool fSimulateHodoscopeOptics;
+/**
+ *  dispose (delete?)
+ */
+  static void Dispose();
+
 
 /**
  * Set detector's verbosity for debugging purposes
@@ -149,13 +151,24 @@ bool fSimulateHodoscopeOptics;
  */
   int InitializeNewRun();
 
+  public:
 
+/// Pointer to the BETADetectorConstruction 
+  BETADetectorConstruction * fConstruction;
 
-public:
-G4MultiFunctionalDetector* fTrackerDetector;
-G4MultiFunctionalDetector* fCherenkovDetector;
-G4MultiFunctionalDetector* fBigcalDetector;
-G4MultiFunctionalDetector* fHodoscopeDetector;
+/// Pointer to the BETASimulationMessenger 
+  BETASimulationMessenger * fSimulationMessenger;
+
+  bool fSimulateCherenkovOptics;
+  bool fSimulateTrackerOptics;
+  bool fSimulateHodoscopeOptics;
+
+  int  fDebugLevel;
+
+  G4MultiFunctionalDetector* fTrackerDetector;
+  G4MultiFunctionalDetector* fCherenkovDetector;
+  G4MultiFunctionalDetector* fBigcalDetector;
+  G4MultiFunctionalDetector* fHodoscopeDetector;
 
   G4PSFlatSurfaceFlux * protonSurfFlux;
   G4PSPassageCellCurrent * electronSurfFlux;
@@ -165,7 +178,7 @@ G4MultiFunctionalDetector* fHodoscopeDetector;
   G4PSPassageCellCurrent * chargeSurfFlux;
 
 
-inline G4int plotterVisible() {return plotVis; }
+  G4int plotterVisible() {return plotVis; }
 
 private: 
   int fGasCherenkovVerbosity;
@@ -179,25 +192,13 @@ private:
   G4SDKineticEnergyFilter* bigcalEnergyFilter;
   G4SDChargedFilter* chargeFilter;
 
-/// Sets/creates the tree branches for append mode or new file mode
-int SetTreeBranches();
+public:
 
-/// Creates the standard trees
-int CreateTrees();
+/// pointer for all output stuff
+  SANEEvents * fEvents;
+private: 
 
-SANEEvents * fEvents;
-/// Contains all BETA detector's data
-  BETAEvent * betaEvent;
-/// Contains all the HMS data
-  HMSEvent* hmsEvent;
-/// Contains all the Hall C beam data
-  HallCBeamEvent * beamEvent;
-/// Contains all the Thrown and unrealistically obtained Montecarlo data
-  BETAG4MonteCarloEvent * mcEvent;
-/// Simulation Run object
   BETAG4SimulationRun * fInSANERun;
-
-
 
   G4int plotVis;
   BETASimulationManager( );

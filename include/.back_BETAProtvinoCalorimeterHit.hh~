@@ -1,29 +1,3 @@
-//
-// ********************************************************************
-// * DISCLAIMER                                                       *
-// *                                                                  *
-// * The following disclaimer summarizes all the specific disclaimers *
-// * of contributors to this software. The specific disclaimers,which *
-// * govern, are listed with their locations in:                      *
-// *   http://cern.ch/geant4/license                                  *
-// *                                                                  *
-// * Neither the authors of this software system, nor their employing *
-// * institutes,nor the agencies providing financial support for this *
-// * work  make  any representation or  warranty, express or implied, *
-// * regarding  this  software system or assume any liability for its *
-// * use.                                                             *
-// *                                                                  *
-// * This  code  implementation is the  intellectual property  of the *
-// * GEANT4 collaboration.                                            *
-// * By copying,  distributing  or modifying the Program (or any work *
-// * based  on  the Program)  you indicate  your  acceptance of  this *
-// * statement, and all its terms.                                    *
-// ********************************************************************
-//
-// $Id:$
-//
-// Jane Tinslay - adapted from A01 example
-//
 #ifndef BETAProtvinoCalorimeterHIT_HH
 #define BETAProtvinoCalorimeterHIT_HH
 
@@ -47,18 +21,18 @@ public:
   BETAProtvinoCalorimeterHit(G4int id);
 
   // Destructor
-  virtual ~BETAProtvinoCalorimeterHit();
+   ~BETAProtvinoCalorimeterHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
 
   // Methods
-  virtual void Draw();
+   void Draw();
 
-  virtual const std::map<G4String,G4AttDef>* GetAttDefs() const;
-  virtual std::vector<G4AttValue>* CreateAttValues() const;
+   const std::map<G4String,G4AttDef>* GetAttDefs() const;
+   std::vector<G4AttValue>* CreateAttValues() const;
 
-  virtual void Print();
+   void Print();
 
   // Deposited energy
   inline void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
@@ -75,16 +49,14 @@ public:
   // Logical volume
   inline void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
   inline const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
-  
-private:
-  
-  // Data members
+    // Data members
   G4int fCellID;
   G4double fDepositedEnergy;
   G4ThreeVector fPosition;
   G4RotationMatrix fRotation;
   const G4LogicalVolume* pLogicalVolume;
-  
+private:
+
 };
 
 typedef G4THitsCollection<BETAProtvinoCalorimeterHit> BETAProtvinoCalorimeterHitsCollection;

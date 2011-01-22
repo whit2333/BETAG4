@@ -20,7 +20,8 @@ BETAG4BigcalHit::BETAG4BigcalHit()
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )
-{}
+{;
+}
 
 BETAG4BigcalHit::BETAG4BigcalHit ( G4int id )
       :fCellID ( id )
@@ -28,12 +29,16 @@ BETAG4BigcalHit::BETAG4BigcalHit ( G4int id )
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )
-{}
+{;
+}
 
-BETAG4BigcalHit::~BETAG4BigcalHit() {}
+BETAG4BigcalHit::~BETAG4BigcalHit() {
+;
+}
 
 void BETAG4BigcalHit::Draw()
-{/*
+{;
+/*
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 
   if(pVVisManager && (fDepositedEnergy>0.)) {

@@ -18,18 +18,23 @@ G4Allocator<BETAFrontTrackerHit> BETAFrontTrackerHitAllocator;
 BETAFrontTrackerHit::BETAFrontTrackerHit()
       :cellNumber ( -1 )
       ,fPhotons ( 0 )
-{}
+{;
+}
 
 BETAFrontTrackerHit::BETAFrontTrackerHit ( G4int id )
       :cellNumber ( id )
       ,fPhotons ( 0 )
-{}
+{;
+}
 
-BETAFrontTrackerHit::~BETAFrontTrackerHit() {}
+BETAFrontTrackerHit::~BETAFrontTrackerHit() {
+ ;
+}
 
 
 void BETAFrontTrackerHit::Draw()
-{/*
+{;
+/*
 
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

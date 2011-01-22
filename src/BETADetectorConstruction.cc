@@ -2045,7 +2045,7 @@ ConstructBeamPipe();
    //
 
              Geant4GM::Factory g4Factory;
-             g4Factory.SetDebug(1);
+    //         g4Factory.SetDebug(1);
              g4Factory.Import(expHall_phys);
      // Export VGM geometry to Root
 // 
@@ -2056,7 +2056,7 @@ ConstructBeamPipe();
 //      // Export VGM geometry to Root
 //      //
               RootGM::Factory rtFactory;
-              rtFactory.SetDebug(1);
+   //           rtFactory.SetDebug(1);
               g4Factory.Export(&rtFactory);
               gGeoManager->CloseGeometry();
               gGeoManager->Export("SANEGeometry.root");

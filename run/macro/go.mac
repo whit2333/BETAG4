@@ -14,4 +14,6 @@
 #/vis/scene/endOfEventAction accumulate 
 /vis/scene/add/trajectories
 /vis/scene/add/hits
+/vis/viewer/pan -2 0 
+/vis/viewer/zoom 3
 /run/beamOn 10

@@ -20,7 +20,7 @@ public:
   BETAFakePlaneHit(G4int id);
 
   // Destructor
-  virtual ~BETAFakePlaneHit();
+   ~BETAFakePlaneHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);

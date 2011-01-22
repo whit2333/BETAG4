@@ -20,7 +20,8 @@ BETARCSCalorimeterHit::BETARCSCalorimeterHit()
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )
-{}
+{;
+}
 
 BETARCSCalorimeterHit::BETARCSCalorimeterHit ( G4int id )
       :fCellID ( id )
@@ -28,12 +29,16 @@ BETARCSCalorimeterHit::BETARCSCalorimeterHit ( G4int id )
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )
-{}
+{;
+}
 
-BETARCSCalorimeterHit::~BETARCSCalorimeterHit() {}
+BETARCSCalorimeterHit::~BETARCSCalorimeterHit() {
+ ;
+}
 
 void BETARCSCalorimeterHit::Draw()
 {
+;
    /*
      G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

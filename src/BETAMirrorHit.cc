@@ -18,18 +18,25 @@ G4Allocator<BETAMirrorHit> BETAMirrorHitAllocator;
 BETAMirrorHit::BETAMirrorHit()
       :mirrorNumber ( -1 )
       ,fPhotons ( 0 )
-{}
+{
+ ;
+}
 
 BETAMirrorHit::BETAMirrorHit ( G4int id )
       :mirrorNumber ( id )
       ,fPhotons ( 0 )
-{}
+{
+ ;
+}
 
-BETAMirrorHit::~BETAMirrorHit() {}
+BETAMirrorHit::~BETAMirrorHit() {
+ ;
+}
 
 
 void BETAMirrorHit::Draw()
-{/*
+{;
+/*
 
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

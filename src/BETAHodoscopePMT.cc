@@ -42,17 +42,14 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
 
 // DESTRUCTOR
 BETAHodoscopePMT::~BETAHodoscopePMT() {}
+//_______________________________________________________//
 
-//////////////////////////////
 void BETAHodoscopePMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 {
 
-   // HandsOn5: Creating hit collection
-   // Create a new collection
-
-////////////////////////////
-   fHitsCollection =
+  fHitsCollection =
       new BETAHodoscopePMTHitsCollection ( detname, collectionName[0] );
+
    if ( HCID < 0 )
    {
       HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
@@ -72,33 +69,16 @@ void BETAHodoscopePMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 ///////////////////////////
 
 }
-
-//////////////////////
+//_______________________________________________________//
 
 G4bool BETAHodoscopePMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 {
    G4Track * theTrack = aStep->GetTrack();
 
-
-/// COUNT The number of reflected photons
-///////////////////////////////////////////////////////////////////////////////
-   /* if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
-        ( theTrack->GetVolume()->GetName() == "Far - Mirror" ||  theTrack->GetVolume()->GetName() == "Near - Mirror" ) &&
-        theTrack->GetNextVolume()->GetName() == "tank_phys")
-     {
-     }
-   */
-
 /// check that it is an optical photon and going to make it to the quartz/photocathode interface
 
    if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() 
-   && aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary/* &&
-      aStep->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()>=3*28*/ )
-   //if( aStep->GetPostStepPoint()->GetPhysicalVolume()->GetCopyNo()==aStep->GetPreStepPoint()->GetPhysicalVolume()->GetCopyNo())
-//&&
-  //      aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName()== "hodoscope_curvedBar_phys" &&
-    //    aStep->IsFirstStepInVolume() )//->IS()->GetName()== "hodoscope_curvedBar_phys" )
-         //&&  theTrack->GetVolume()->GetName() == "hodoscope_curvedBar_phys"  )
+   && aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary )
    {
 //G4cout << "test\n";
 //       if ( G4UniformRand() < QE ( theTrack->GetTotalEnergy() /eV ) )
@@ -121,7 +101,7 @@ G4bool BETAHodoscopePMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
       //}
             aHit->Gtime = theTrack->GetGlobalTime();
 
-     aStep->GetTrack()->SetTrackStatus(fStopAndKill);
+//     aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 
    }
 

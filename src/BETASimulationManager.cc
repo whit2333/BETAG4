@@ -27,21 +27,19 @@ BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 BETASimulationManager::BETASimulationManager () : 
      fIsAppendMode(false),fRunNumber(0),plotVis(0),
      fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(true),
-     fSimulateTrackerOptics(false)
+     fSimulateTrackerOptics(false),fDebugLevel(3)
 {
 
   fSimulationMessenger = new BETASimulationMessenger ( this );
    showPlot(plotVis);
+
    fGasCherenkovVerbosity=1;
    fBigcalVerbosity=0;
    fLuciteHodoscopeVerbosity=0;
    fForwardTrackerVerbosity=0;
    fRootFile=0;
    fDetectorTree=0;
-   betaEvent=0;
-   hmsEvent=0;
-   beamEvent=0;
-   mcEvent=0;
+
   //InitScoring();
 }
 //_________________________________________________________________//
@@ -58,9 +56,9 @@ BETASimulationManager* BETASimulationManager::GetInstance (  )
    {
       fgBETASimulationManager = new BETASimulationManager ( ) ;
    }
-   else  {
+/*   else  {
       G4cout << " Returning already existing simulation manager. " << G4endl;
-   }
+   }*/
    return fgBETASimulationManager;
 }
 //_________________________________________________________________//
@@ -144,48 +142,6 @@ int BETASimulationManager::IncrementRunNumber()
 }
 //_________________________________________________________________//
 
-///Depreciated
-int BETASimulationManager::SetTreeBranches() 
-{
-
-  return(0);
-}
-//_________________________________________________________________//
-
-int BETASimulationManager::CreateTrees() {
-    fDetectorTree = new TTree ( "simulatedBetaDetectors","Simulation Detector Tree" );
-    fDetectorTree->SetAutoSave();
-//         atree = new TTree ( "hmsDetectors","HMS Tree" );
-//         atree = new TTree ( "hallcBeam","Hallc Beam Tree" );
-//         atree = new TTree ( "monteCarloEvents","HMS Tree" );
-//         atree = new TTree ( "triggerData","Trigger Tree" );
-  return(0);
-}
-//_________________________________________________________________//
-
-///Depreciated
-int BETASimulationManager::AllocateTreeMemory() {
-
-    fInSANERun = new BETAG4SimulationRun(fRunNumber);
-
-    fEvents = new SANEEvents("simulatedBetaDetectors");
-//     betaEvent=events->BETA;
-//     hmsEvent=events->HMS;
-//     beamEvent=events->BEAM;
-//     mcEvent=events->MC;
-/// \todo Put all the memory management calls into a single class
-//     betaEvent = new BETAEvent();
-//       betaEvent->AllocateMemory();
-//       betaEvent->AllocateHitsMemory();
-//     hmsEvent = new HMSEvent();
-//     beamEvent = new HallCBeamEvent();
-//     mcEvent = new BETAG4MonteCarloEvent();
-//       mcEvent->AllocateMemory();
-//       mcEvent->AllocateHitsMemory();
-  return(0);
-}
-//_________________________________________________________________//
-
 int BETASimulationManager::Reset()  {
 
 // if(fDetectorTree) delete fDetectorTree;
@@ -266,11 +222,11 @@ int BETASimulationManager::InitScoring()  {
 // Below does not work!
 //  fBigcalDetector->RegisterPrimitive((G4VPrimitiveScorer*)calEnergyDeposit);
 
-
+/*
   sensitiveDetManager->AddNewDetector(fTrackerDetector);
   sensitiveDetManager->AddNewDetector(fCherenkovDetector);
   sensitiveDetManager->AddNewDetector(fBigcalDetector);
-  sensitiveDetManager->AddNewDetector(fHodoscopeDetector);
+  sensitiveDetManager->AddNewDetector(fHodoscopeDetector);*/
 
   return(0);
 }

@@ -9,10 +9,8 @@
 #include "BETARunActionMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4RunManager.hh"
-
 #include "TTimeStamp.h"
 #include "TDatime.h"
-
 #include "SANERunManager.h"
 
 //_________________________________________________________________//
@@ -37,7 +35,6 @@ BETARunAction::~BETARunAction()
    delete timer;
    delete messenger;
 }
-
 //_________________________________________________________________//
 
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
@@ -45,6 +42,7 @@ void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 //G4cout <<"START of RUN ACTION"<< G4endl;
    G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
+//_________________________________________________________________//
 
 /**
  *  Fills the database as much as possible
@@ -67,26 +65,24 @@ G4Run*  BETARunAction::GenerateRun()
       fname = out.str();
       const char * rootName = fname.c_str();
       fSimulationManager->fRootFile = new TFile ( rootName,"UPDATE" );
+      fSimulationManager->fEvents = new SANEEvents("betaDetectors");
 
    } else {
       out << "data/rootfiles/InSANE" << fRunNumber << ".0.root"  ;
       fname = out.str();
       const char * rootName = fname.c_str();
       fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
+      fSimulationManager->fDetectorTree = new TTree("betaDetectors","Simulated BETA Detectors");
+      fSimulationManager->fEvents = new SANEEvents("betaDetectors");
+
    }
 
-   if (! fSimulationManager->IsAppendMode() ) {
-      fSimulationManager->CreateTrees();
-    }
+//    if (! fSimulationManager->IsAppendMode() ) {
+//       //fSimulationManager->CreateTrees();
+//     }
 
 // New concrete InSANE Run class
     fSimulationManager->fInSANERun = new BETAG4SimulationRun(fRunNumber);
-/// \todo flaw in code: name should be passed to both SANEEvents and CreatTrees
-// Assuming there is a tree yet named simulated detectors in run file
-    fSimulationManager->fEvents = new SANEEvents("simulatedBetaDetectors");
-
-// Clear  the BETA Event 
-  fSimulationManager->fEvents->BETA->ClearEvent("C");
 
 // Get the runmanager and constructors/messengers and only fill the database if
 // you have them!
@@ -150,6 +146,7 @@ G4Run*  BETARunAction::GenerateRun()
    fCurrentRun = new BETARun ( fRunNumber );
    return (G4Run*)fCurrentRun;
 }
+//_________________________________________________________________//
 
 /**
  *
@@ -195,13 +192,16 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
    */
 // Print interesting data
    G4cout <<"=================== END RUN #" << fRunNumber << "===================" << G4endl;
-   G4cout <<"Number of Events Processed:" <<aRun->GetNumberOfEvent() << " events. " <<G4endl;
+   G4cout <<"Number of Events Processed:" << aRun->GetNumberOfEvent() << " events. " <<G4endl;
    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
 
 G4cout << "Writing ROOT File\n";
-  fSimulationManager->fDetectorTree->Write();
-  fSimulationManager->fDetectorTree->FlushBaskets();
-   fSimulationManager->fDetectorTree->BuildIndex("fRunNumber","fEventNumber");
+
+  fSimulationManager->fEvents->fTree->Write();
+
+  fSimulationManager->fEvents->fTree->FlushBaskets();
+
+  fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
 
 // Save all objects in this file
 //   fSimulationManager->fDetectorTree->Write();

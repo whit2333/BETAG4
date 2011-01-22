@@ -23,17 +23,17 @@ BETAStackingAction::~BETAStackingAction()
 G4ClassificationOfNewTrack
 BETAStackingAction::ClassifyNewTrack ( const G4Track * aTrack )
 {
-   if ( aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() )
+   if ( aTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() 
+   && aTrack->GetParentID() == 0 )
    {
       // particle is optical photon
 
-      if ( aTrack->GetParentID() >0 )
-      {
          // particle is secondary
          gammaCounter++;
-      }
+
    }
-   return fUrgent;
+   return fWaiting;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
