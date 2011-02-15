@@ -46,7 +46,7 @@ BETAPMT::~BETAPMT() {
 
 void BETAPMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 {
-
+/// \todo initialize fineite number of hits (one for each tube) and then accumulate the data
    fHitsCollection =
       new BETAPMTHitsCollection ( detname, collectionName[0] );
    if ( HCID < 0 )
@@ -58,7 +58,7 @@ void BETAPMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 }
 
 //________________________________________________________________//
-G4bool BETAPMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
+G4bool BETAPMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) 
 {
    G4Track * theTrack = aStep->GetTrack();
 /// COUNT The number of reflected photons from the mirrors
@@ -78,7 +78,7 @@ G4bool BETAPMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
       BETAPMTHit * faceCountHit = new BETAPMTHit();
       fHitsCollection->insert ( faceCountHit );
 
-      if (!countAllPhotons) {
+      if (!countAllPhotons) { // calculate QE
          if ( G4UniformRand() < QE ( theTrack->GetTotalEnergy() /eV ) )   // Need to make 0.2 a function of wavelength
          {
             //G4cout <<  "qe " << QE(theTrack->GetTotalEnergy()/eV ) << G4endl;

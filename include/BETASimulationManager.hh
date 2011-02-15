@@ -11,7 +11,10 @@
 #include "G4PSTrackLength.hh"
 #include "G4PSPassageTrackLength.hh"
 #include "G4PSEnergyDeposit.hh"
-
+#include "BigcalDetector.h"
+#include "GasCherenkovDetector.h"
+#include "LuciteHodoscopeDetector.h"
+#include "ForwardTrackerDetector.h"
 #include "G4SDKineticEnergyFilter.hh"
 #include "G4SDChargedFilter.hh"
 
@@ -130,7 +133,10 @@ public:
  */
  int Reset();
 
-
+/** Creates the InSANEDetector Base classes and sets event addresses
+ *  used in pedestal and noise simulation
+ */
+  int AddDetectors(int runNumber = 0) ;
 
 
 /**
@@ -165,10 +171,15 @@ public:
 
   int  fDebugLevel;
 
-  G4MultiFunctionalDetector* fTrackerDetector;
-  G4MultiFunctionalDetector* fCherenkovDetector;
-  G4MultiFunctionalDetector* fBigcalDetector;
-  G4MultiFunctionalDetector* fHodoscopeDetector;
+  G4MultiFunctionalDetector* fTrackerScoring;
+  G4MultiFunctionalDetector* fCherenkovScoring;
+  G4MultiFunctionalDetector* fBigcalScoring;
+  G4MultiFunctionalDetector* fHodoscopeScoring;
+
+  ForwardTrackerDetector * fTrackerDetector;
+  GasCherenkovDetector * fCherenkovDetector;
+  BigcalDetector* fBigcalDetector;
+  LuciteHodoscopeDetector* fHodoscopeDetector;
 
   G4PSFlatSurfaceFlux * protonSurfFlux;
   G4PSPassageCellCurrent * electronSurfFlux;
@@ -196,16 +207,19 @@ public:
 
 /// pointer for all output stuff
   SANEEvents * fEvents;
-private: 
 
-  BETAG4SimulationRun * fInSANERun;
+  int GetEventNumber() { return(fEventNumber); };
+
+private: 
 
   G4int plotVis;
   BETASimulationManager( );
   static BETASimulationManager* fgBETASimulationManager;
   int instanceNumber;
-  int fRunNumber;
   bool fIsAppendMode;
+  BETAG4SimulationRun * fInSANERun;
+  int fRunNumber;
+  int fEventNumber;
 
   TFile * fRootFile;
   TTree * fDetectorTree;

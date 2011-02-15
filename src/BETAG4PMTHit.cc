@@ -14,16 +14,13 @@
 
 G4Allocator<BETAG4PMTHit> BETAG4PMTHitAllocator;
 
-BETAG4PMTHit::BETAG4PMTHit()
-      :tubeNumber ( -1 )
-      ,fPhotons ( 0 )
-{;
-}
-
 BETAG4PMTHit::BETAG4PMTHit ( G4int id )
-      :tubeNumber ( id )
+      :fTubeNumber ( id )
       ,fPhotons ( 0 )
-{;
+{
+  fQuantumEfficiency = 0.15;
+  fTimingHit=false;
+  fTiming=0.0;
 }
 
 BETAG4PMTHit::~BETAG4PMTHit() {
@@ -65,7 +62,7 @@ void BETAG4PMTHit::Draw()
 
 void BETAG4PMTHit::Print()
 {
-   G4cout << "  PMT[" << tubeNumber << "] " << fPhotons  << G4endl;
+   G4cout << "  PMT[" << fTubeNumber << "] " << fPhotons  << G4endl;
 }
 
 

@@ -13,37 +13,39 @@
 #include <vector>
 
 /**
- *  A PMT hit for a single photon 
- *  NOTE: this might not be the best way for dealing with the light, that is,
- *  counting every photon. However, it allows us to gain more information like 
- *  positioning, time, and energy. 
- *  This can then be used to present the data in a more realistic way. 
- *  For example, looking at the time difference in photons hitting the tube, we can conclude that for suffuciently large times
- *  there will be two TDC hits. 
+ *  A PMT hit contains all accumulated photons for a single PMT
+ *  
+ *  
  */
 class BETAG4PMTHit : public G4VHit {
 
 public:
-// Constructors
-  BETAG4PMTHit();
-  BETAG4PMTHit(G4int tubeNumber);
-
-
-  // Destructor
-   ~BETAG4PMTHit();
+  BETAG4PMTHit(G4int id = -1);
+  ~BETAG4PMTHit();
   
   inline void *operator new(size_t);
+
   inline void operator delete(void *aHit);
 
-  // Methods
-   void Draw();
+  void Draw();
 
-   void Print();
+  void Print();
+
+  void AddPhoton() {fPhotons++;}
+
+  G4int GetNumberOfPhotons() const {return fPhotons;}
+
+  G4double GetNumberOfPhotoElectrons() { return (((G4double)fPhotons)*fQuantumEfficiency);}
+
+
+  G4int fTubeNumber;
+  G4double fTiming;
+
+  G4ThreeVector  localPos;
+  bool fTimingHit;
 
 //  void SetLocalPosition(G4ThreeVector*pos) {localPos
   // Add a Photon
-   void AddPhoton() {fPhotons++;}
-   G4int GetPhotons() const {return fPhotons;}
 /* Eventually add wavelength.....
   // Position vector
   inline void SetPosition(G4ThreeVector position) {fPosition = position;}
@@ -57,10 +59,6 @@ public:
   inline void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
   inline const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
   */
-  G4int tubeNumber;
-//  G4int mirrorNumber;
-  G4ThreeVector  localPos;
-  G4double Gtime;
 
 /**
  * over ride operator for std::sort
@@ -73,7 +71,8 @@ public:
   G4int fPhotons;
 
 private:
-  
+  G4double     fQuantumEfficiency;
+
   // Data members
 
 //  G4ThreeVector fPosition;

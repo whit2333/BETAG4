@@ -386,7 +386,7 @@ std::sort (hitPointers->begin(),hitPointers->begin()+fLuciteHodoscopeHC->entries
       { 
       aHodoscopeHit = ( *fLuciteHodoscopeHC )[i1];
         //
-        if ( aHodoscopeHit->tubeNumber == -1 )
+        if ( aHodoscopeHit->fTubeNumber == -1 )
           {
 //        numPMTHitsAtFace++;
           }

@@ -13,31 +13,26 @@
 #include "G4VVisManager.hh"
 
 G4Allocator<BETAG4BigcalHit> BETAG4BigcalHitAllocator;
-
-BETAG4BigcalHit::BETAG4BigcalHit()
-      :fCellID ( -1 )
-      ,fDepositedEnergy ( 0 )
-      ,fPosition()
-      ,fRotation()
-      ,pLogicalVolume ( 0 )
-{;
-}
+//_______________________________________________________//
 
 BETAG4BigcalHit::BETAG4BigcalHit ( G4int id )
       :fCellID ( id )
       ,fDepositedEnergy ( 0 )
       ,fPosition()
       ,fRotation()
-      ,pLogicalVolume ( 0 )
-{;
+      ,pLogicalVolume ( 0 )  {
+   fNHits=0;
+   fTimingHit=false;
 }
+//_______________________________________________________//
 
 BETAG4BigcalHit::~BETAG4BigcalHit() {
 ;
 }
+//_______________________________________________________//
 
 void BETAG4BigcalHit::Draw()
-{;
+{
 /*
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 

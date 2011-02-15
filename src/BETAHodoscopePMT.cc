@@ -26,7 +26,7 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
    detname = name;
    collectionName.insert ( HCname="pmt" );
    HCID = -1;
-
+   fDiscriminatorThreshold = 2;
 
 //    std::ifstream input_file ;
 //    input_file.open ( "cathodeSensitivity.dat" );
@@ -35,9 +35,6 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
 //       input_file >> lambda[i] >> sensitivity[i] ;
 //    }
 //    input_file.close();
-
-
-
 }
 
 // DESTRUCTOR
@@ -49,7 +46,6 @@ void BETAHodoscopePMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 
   fHitsCollection =
       new BETAHodoscopePMTHitsCollection ( detname, collectionName[0] );
-
    if ( HCID < 0 )
    {
       HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
@@ -59,13 +55,11 @@ void BETAHodoscopePMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
 
    // Initialise hits
-   G4int i ( 0 );
 
-// 8 PMTs
-   /*  for (i=0; i<8; i++) {
-       BETAHodoscopePMTHit* aHit = new BETAHodoscopePMTHit(i);
+  for (int i=0; i<56; i++) {
+       BETAHodoscopePMTHit* aHit = new BETAHodoscopePMTHit(i+1);
        fHitsCollection->insert(aHit);
-     }*/
+     }
 ///////////////////////////
 
 }
@@ -80,26 +74,27 @@ G4bool BETAHodoscopePMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
    if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() 
    && aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary )
    {
-//G4cout << "test\n";
-//       if ( G4UniformRand() < QE ( theTrack->GetTotalEnergy() /eV ) )
-//       {
-// //
-         // Get PMT #
-         pmt = theTrack->GetNextVolume()->GetCopyNo() ;
-//G4cout << "       TEST    "<< pmt << G4endl;
 
-         BETAHodoscopePMTHit* aHit = new BETAHodoscopePMTHit ( pmt );
-         fHitsCollection->insert ( aHit );
+      barNumber  = theTrack->GetNextVolume()->GetCopyNo() ;
+      pmtNumber = theTrack->GetVolume()->GetCopyNo() ;
+// G4cout << "       test    "<< pmt << G4endl;
+      BETAHodoscopePMTHit* aHit = ( *fHitsCollection ) [barNumber*2+pmtNumber-1];
+
+      aHit->AddPhoton();
+      if( aHit->GetNumberOfPhotons() > fDiscriminatorThreshold  && aHit->fTimingHit == false) {
+        aHit->fTiming = theTrack->GetGlobalTime()/ns;
+        aHit->fTimingHit = true;
+      }
 
          // Get position
-         G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
-         G4TouchableHistory* theTouchable
-         = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
-         aHit->worldPos = preStepPoint->GetPosition();
-         aHit->localPos = theTouchable->GetHistory()->GetTopTransform
-                          ().TransformPoint ( aHit->worldPos ) ;
+//          G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+//          G4TouchableHistory* theTouchable
+//          = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
+//          aHit->worldPos = preStepPoint->GetPosition();
+//          aHit->localPos = theTouchable->GetHistory()->GetTopTransform
+//                           ().TransformPoint ( aHit->worldPos ) ;
       //}
-            aHit->Gtime = theTrack->GetGlobalTime();
+/*            aHit->Gtime = theTrack->GetGlobalTime();*/
 
 //     aStep->GetTrack()->SetTrackStatus(fStopAndKill);
 

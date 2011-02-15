@@ -13,7 +13,7 @@
 #include "Geant4GM/volumes/Factory.h" 
 #include "RootGM/volumes/Factory.h" 
 #include "XmlVGM/GDMLExporter.h"
-
+#include "BETAG4BigcalSD.hh"
 #include "TGeoManager.h"
 #include "TROOT.h"
 #include "TSQLServer.h"
@@ -46,6 +46,7 @@
 #include "BIGCALGeometryCalculator.h"
 #include "UVAOxfordMagneticField.h"
 #include "BETAField.hh"
+#include "BETAG4PMTArray.hh"
 #include "BETASimulationManager.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
@@ -295,7 +296,7 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 // Detection
    G4SDManager* manager = G4SDManager::GetSDMpointer();
   G4VSensitiveDetector* frontTracker =
-     new BETAFrontTracker ( "FrontTracker" );
+     new BETAFrontTracker ( "ForwardTracker" );
    // Register detector with manager
   manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
@@ -488,12 +489,12 @@ G4LogicalVolume* hodoscopeBar_log;
               G4ThreeVector( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
                               ( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ), PMTphotocathode_log,     // Logical volume
                        "hodoscope_sensitive",     // Name
-                       hodoscopeBar_log,true,0);
+                       hodoscopeBar_log,true,1);
       new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove2, 
               G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/) *cm*std::cos ( theta ),
                              -1.0* ( 240.+3.5/*/2.0 +(sideA)/2.0*/) *cm*std::sin ( theta ) ,0*cm ) ) ,PMTphotocathode_log,     // Logical volume
                        "hodoscope_sensitive",     // Name
-                       hodoscopeBar_log,true,1);
+                       hodoscopeBar_log,true,2);
 
 
 for(int k = 0;k<28;k++) {
@@ -611,7 +612,7 @@ for(int k = 0;k<28;k++) {
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
        HodoscopePMTs =
-       new BETAHodoscopePMT("hodoscopePMT");
+       new BETAHodoscopePMT("LuciteHodoscope");
      // Register detector with manager
      manager->AddNewDetector(HodoscopePMTs);
      // Attach detector to scoring volume
@@ -684,13 +685,14 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 
-   G4VSensitiveDetector* BIGCALRCS =
-      new BETARCSCalorimeter ( "BIGCALRCS" );
-
+//    G4VSensitiveDetector* BIGCALRCS =
+//       new BETARCSCalorimeter ( "BIGCALRCS" );
+    G4VSensitiveDetector* fBigcalSD =
+       new BETAG4BigcalSD ( "BIGCAL" );
    // Register detector with manager
-   manager->AddNewDetector ( BIGCALRCS );
+   manager->AddNewDetector ( fBigcalSD );
    // Attach detector to scoring volume
-   cellLogical->SetSensitiveDetector ( BIGCALRCS );
+   cellLogical->SetSensitiveDetector ( fBigcalSD );
 
 
 // Protvino
@@ -735,12 +737,18 @@ void BETADetectorConstruction::ConstructBIGCAL()
                            cellParamBottom );        // Parameterisation
  //  cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 
-   G4VSensitiveDetector* BIGCALProtvino =
-      new BETAProtvinoCalorimeter ( "BIGCALBottom" );
-   // Register detector with manager
-   manager->AddNewDetector ( BIGCALProtvino );
+//    G4VSensitiveDetector* BIGCALProtvino =
+//       new BETAProtvinoCalorimeter ( "BIGCALBottom" );
+//    // Register detector with manager
+//    manager->AddNewDetector ( BIGCALProtvino );
+//    // Attach detector to scoring volume
+//    cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
+//     G4VSensitiveDetector* fBigcalSDprot =
+//        new BETAG4BigcalSD ( "PROT" );
+//    // Register detector with manager
+//    manager->AddNewDetector ( fBigcalSDprot );
    // Attach detector to scoring volume
-   cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
+   cellLogicalBottom->SetSensitiveDetector ( fBigcalSD );
 
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
@@ -1551,11 +1559,11 @@ G4double farMirrorAngle = 20* pi/180;
 
   BETASimulationManager::GetInstance()->InitScoring();
 
-   BETAPMT* aPMTModel =
-      new BETAPMT ( "PMT" );
-
-
+   BETAG4PMTArray* aPMTModel =
+      new BETAG4PMTArray ( "GasCherenkov" );
+   
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
+
    G4LogicalVolume * pmtFace_log =//container_log;
     new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
 

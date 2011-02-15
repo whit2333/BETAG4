@@ -12,21 +12,18 @@
 class G4AttDef;
 class G4AttValue;
 
+
+/** New Bigcal hit class for GEANT4 Sensitive detector
+ *
+ */
 class BETAG4BigcalHit : public G4VHit {
-
-public:
-  
-  // Constructors
-  BETAG4BigcalHit();
-  BETAG4BigcalHit(G4int id);
-
-  // Destructor
+  public:
+  BETAG4BigcalHit(G4int id = -1);
    ~BETAG4BigcalHit();
   
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
 
-  // Methods
    void Draw();
 
    const std::map<G4String,G4AttDef>* GetAttDefs() const;
@@ -34,19 +31,32 @@ public:
 
    void Print();
 
-  // Deposited energy
+/** Add Deposited energy
+ */
    void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
-   G4double GetDepositedEnergy() const {return fDepositedEnergy;}
 
-  // Position vector
+/** Get Deposited energy
+ */
+  G4double GetDepositedEnergy() const {return fDepositedEnergy;}
+
+/**  Set Position vector
+ */
    void SetPosition(G4ThreeVector position) {fPosition = position;}
+
+/**  Get Position vector
+ */
    G4ThreeVector GetPosition() const {return fPosition;}
 
-  // Rotation matrix
+/**  Set Rotation matrix
+ */
    void SetRotation(G4RotationMatrix rotation) {fRotation = rotation;}
+
+/**  Get Rotation matrix
+ */
    G4RotationMatrix GetRotation() const {return fRotation;}
 
-  // Logical volume
+/**  Set Logical Volume
+ */
    void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
    const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
   
@@ -58,8 +68,8 @@ public:
   G4ThreeVector fPosition;
   G4RotationMatrix fRotation;
   const G4LogicalVolume* pLogicalVolume;
-
-  
+  G4int fNHits;
+  bool fTimingHit;
 };
 
 typedef G4THitsCollection<BETAG4BigcalHit> BETAG4BigcalHitsCollection;

@@ -19,6 +19,8 @@
 #include "G4PSTrackLength.hh"
 #include "G4ParticleTable.hh"
 #include "G4ParticleDefinition.hh"
+
+
 //_________________________________________________________________//
 
 BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
@@ -39,6 +41,11 @@ BETASimulationManager::BETASimulationManager () :
    fForwardTrackerVerbosity=0;
    fRootFile=0;
    fDetectorTree=0;
+
+  fCherenkovDetector   =0;
+  fBigcalDetector      =0;
+  fHodoscopeDetector   =0;
+  fTrackerDetector     =0;
 
   //InitScoring();
 }
@@ -167,13 +174,13 @@ int BETASimulationManager::InitScoring()  {
 
 // Scoring and sensitive volumes
 
-  fTrackerDetector = 
+  fTrackerScoring = 
     new G4MultiFunctionalDetector("tracker");
-  fCherenkovDetector = 
+  fCherenkovScoring = 
     new G4MultiFunctionalDetector("cherenkov");
-  fBigcalDetector = 
+  fBigcalScoring = 
     new G4MultiFunctionalDetector("bigcal");
-  fHodoscopeDetector = 
+  fHodoscopeScoring = 
     new G4MultiFunctionalDetector("hodoscope");
 //
 
@@ -211,13 +218,13 @@ int BETASimulationManager::InitScoring()  {
    calEnergyDeposit->SetFilter(bigcalEnergyFilter);
 
 // Register Scoring volume with primitive(s)
-  fTrackerDetector->RegisterPrimitive(chargeSurfFlux);
-  fHodoscopeDetector->RegisterPrimitive(chargeSurfFlux);
-  fCherenkovDetector->RegisterPrimitive(photonSurfFlux);
-  calEnergyDeposit->SetMultiFunctionalDetector(fBigcalDetector);
-  fBigcalDetector->RegisterPrimitive(calEnergyDeposit);
+  fTrackerScoring->RegisterPrimitive(chargeSurfFlux);
+  fHodoscopeScoring->RegisterPrimitive(chargeSurfFlux);
+  fCherenkovScoring->RegisterPrimitive(photonSurfFlux);
+  calEnergyDeposit->SetMultiFunctionalDetector(fBigcalScoring);
+  fBigcalScoring->RegisterPrimitive(calEnergyDeposit);
 
-  fBigcalDetector->RegisterPrimitive(protonSurfFlux);
+  fBigcalScoring->RegisterPrimitive(protonSurfFlux);
 
 // Below does not work!
 //  fBigcalDetector->RegisterPrimitive((G4VPrimitiveScorer*)calEnergyDeposit);
@@ -246,6 +253,20 @@ int BETASimulationManager::DefineScoringFilters() {
 return(0);
 }
 
+int BETASimulationManager::AddDetectors(int runNumber) {
 
+  fCherenkovDetector = new GasCherenkovDetector(/*fRunNumber*/);
+  fCherenkovDetector->SetEventAddress(fEvents->BETA->fGasCherenkovEvent);
 
+  fBigcalDetector = new BigcalDetector(/*fRunNumber*/);
+  fBigcalDetector->SetEventAddress(fEvents->BETA->fBigcalEvent);
+
+  fHodoscopeDetector = new LuciteHodoscopeDetector(/*fRunNumber*/);
+  fHodoscopeDetector->SetEventAddress(fEvents->BETA->fLuciteHodoscopeEvent);
+
+  fTrackerDetector = new ForwardTrackerDetector(/*fRunNumber*/);
+  fTrackerDetector->SetEventAddress(fEvents->BETA->fForwardTrackerEvent);
+
+return(0);
+}
 

@@ -28,7 +28,10 @@ public:
   virtual G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* history);
 
   virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
+
   
+  G4int fDiscriminatorThreshold;
+
   G4double QE(G4double photonEnergy);
   G4double lambda[15];
   G4double sensitivity[15];
@@ -36,7 +39,8 @@ public:
   G4int HCID;
   BETAHodoscopePMTHitsCollection* fHitsCollection;
   G4String  detname;
-  G4int pmt;
+  G4int pmtNumber;
+  G4int barNumber;
 gsl_interp * alloc;
 
 };

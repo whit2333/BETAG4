@@ -20,9 +20,20 @@
 #include "G4UImanager.hh"
 #include "G4ios.hh"
 #include "G4THitsMap.hh"
+
+#include "BETAPrimaryGeneratorAction.hh"
+#include "BETADetectorConstruction.hh"
+#include "BETAFrontTrackerHit.hh"
+#include "BETAG4BigcalSD.hh"
+#include "BETAG4BigcalHit.hh"
+#include "BETAHodoscopePMTHit.hh"
+#include "BETAPMTHit.hh"
+#include "BETAFakePlaneHit.hh"
+
+
 class G4Event;
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//_______________________________________________________//
 
 class BETAEventAction : public G4UserEventAction
 {
@@ -36,6 +47,18 @@ class BETAEventAction : public G4UserEventAction
 
 
   private:
+
+   BETAHodoscopePMTHitsCollection * fHodoscopepmtHC;
+   BETAPMTHitsCollection * fCherenkovHC;
+
+   BETAG4BigcalHitsCollection * fBigcalHC;
+   G4int fBigcalHCID;
+
+   BETAProtvinoCalorimeterHitsCollection * BIGCALHC2;
+   BETAFrontTrackerHitsCollection * FTHC;
+   BETAMirrorHitsCollection * mirrorHC ;
+   BETAFakePlaneHitsCollection * fakePlaneHC;
+
     G4int PMTHCID;
     G4int pmt1Count;
     G4int pmt2Count;
@@ -70,6 +93,11 @@ BETASimulationManager* analysisManager;
 
 
 
+private:
+  BETASimulationManager * fSimulationManager;
+  G4RunManager * runManager;
+  BETAPrimaryGeneratorAction * generator;
+  BETADetectorConstruction * construction;
 
 
   public:

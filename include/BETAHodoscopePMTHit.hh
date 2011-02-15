@@ -16,8 +16,7 @@ class BETAHodoscopePMTHit : public G4VHit {
 public:
   
   // Constructors
-  BETAHodoscopePMTHit();
-  BETAHodoscopePMTHit(G4int id);
+  BETAHodoscopePMTHit(G4int id = -1);
 
   // Destructor
   ~BETAHodoscopePMTHit();
@@ -33,7 +32,19 @@ public:
 //  void SetLocalPosition(G4ThreeVector*pos) {localPos
   // Add a Photon
   void AddPhoton() {fPhotons++;}
-  G4int GetPhotons() const {return fPhotons;}
+  G4int GetNumberOfPhotons() const {return fPhotons;}
+
+  G4int fTubeNumber;
+  G4double fTiming;
+  bool fTimingHit;
+
+  G4ThreeVector  localPos;
+  G4ThreeVector  worldPos;
+  G4double Gtime;
+  G4int fPhotons;
+
+
+
 /* Eventually add wavelength.....
   // Position vector
   inline void SetPosition(G4ThreeVector position) {fPosition = position;}
@@ -47,12 +58,7 @@ public:
   inline void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
   inline const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
   */
-  G4int tubeNumber;
-  G4int mirrorNumber;
-  G4ThreeVector  localPos;
-  G4ThreeVector  worldPos;
-  G4double Gtime;
-  G4int fPhotons;
+
 
 private:
   

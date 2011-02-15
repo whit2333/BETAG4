@@ -17,7 +17,7 @@ BETAFrontTracker::BETAFrontTracker ( G4String  name )
 {
    G4String HCname;
    detname = name;
-   collectionName.insert ( HCname="FrontTracker" );
+   collectionName.insert ( HCname="tracking" );
    HCID = -1;
 
 }

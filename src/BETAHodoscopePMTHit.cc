@@ -15,16 +15,13 @@
 
 G4Allocator<BETAHodoscopePMTHit> BETAHodoscopePMTHitAllocator;
 
-BETAHodoscopePMTHit::BETAHodoscopePMTHit()
-      :tubeNumber ( -1 )
-      ,fPhotons ( 0 )
-{;
-}
 
 BETAHodoscopePMTHit::BETAHodoscopePMTHit ( G4int id )
-      :tubeNumber ( id )
+      :fTubeNumber ( id )
       ,fPhotons ( 0 )
-{;
+{
+  fTiming=0.0;
+  fTimingHit=false;
 }
 
 BETAHodoscopePMTHit::~BETAHodoscopePMTHit() {
@@ -66,7 +63,7 @@ void BETAHodoscopePMTHit::Draw()
 
 void BETAHodoscopePMTHit::Print()
 {
-   G4cout << "  PMT[" << tubeNumber << "] " << fPhotons  << G4endl;
+   G4cout << "  PMT[" << fTubeNumber << "] " << fPhotons  << G4endl;
 }
 
 
