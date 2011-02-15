@@ -13,7 +13,7 @@
 #include "Geant4GM/volumes/Factory.h" 
 #include "RootGM/volumes/Factory.h" 
 #include "XmlVGM/GDMLExporter.h"
-
+#include "BETAG4BigcalSD.hh"
 #include "TGeoManager.h"
 #include "TROOT.h"
 #include "TSQLServer.h"
@@ -46,6 +46,7 @@
 #include "BIGCALGeometryCalculator.h"
 #include "UVAOxfordMagneticField.h"
 #include "BETAField.hh"
+#include "BETAG4PMTArray.hh"
 #include "BETASimulationManager.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
@@ -295,7 +296,7 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 // Detection
    G4SDManager* manager = G4SDManager::GetSDMpointer();
   G4VSensitiveDetector* frontTracker =
-     new BETAFrontTracker ( "FrontTracker" );
+     new BETAFrontTracker ( "ForwardTracker" );
    // Register detector with manager
   manager->AddNewDetector ( frontTracker );
    // Attach detector to scoring volume
@@ -611,7 +612,7 @@ for(int k = 0;k<28;k++) {
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
        HodoscopePMTs =
-       new BETAHodoscopePMT("hodoscopePMT");
+       new BETAHodoscopePMT("LuciteHodoscope");
      // Register detector with manager
      manager->AddNewDetector(HodoscopePMTs);
      // Attach detector to scoring volume
@@ -684,13 +685,14 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 
-   G4VSensitiveDetector* BIGCALRCS =
-      new BETARCSCalorimeter ( "BIGCALRCS" );
-
+//    G4VSensitiveDetector* BIGCALRCS =
+//       new BETARCSCalorimeter ( "BIGCALRCS" );
+    G4VSensitiveDetector* fBigcalSD =
+       new BETAG4BigcalSD ( "BIGCAL" );
    // Register detector with manager
-   manager->AddNewDetector ( BIGCALRCS );
+   manager->AddNewDetector ( fBigcalSD );
    // Attach detector to scoring volume
-   cellLogical->SetSensitiveDetector ( BIGCALRCS );
+   cellLogical->SetSensitiveDetector ( fBigcalSD );
 
 
 // Protvino
@@ -735,12 +737,18 @@ void BETADetectorConstruction::ConstructBIGCAL()
                            cellParamBottom );        // Parameterisation
  //  cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 
-   G4VSensitiveDetector* BIGCALProtvino =
-      new BETAProtvinoCalorimeter ( "BIGCALBottom" );
-   // Register detector with manager
-   manager->AddNewDetector ( BIGCALProtvino );
+//    G4VSensitiveDetector* BIGCALProtvino =
+//       new BETAProtvinoCalorimeter ( "BIGCALBottom" );
+//    // Register detector with manager
+//    manager->AddNewDetector ( BIGCALProtvino );
+//    // Attach detector to scoring volume
+//    cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
+//     G4VSensitiveDetector* fBigcalSDprot =
+//        new BETAG4BigcalSD ( "PROT" );
+//    // Register detector with manager
+//    manager->AddNewDetector ( fBigcalSDprot );
    // Attach detector to scoring volume
-   cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
+   cellLogicalBottom->SetSensitiveDetector ( fBigcalSD );
 
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
@@ -1551,22 +1559,22 @@ G4double farMirrorAngle = 20* pi/180;
 
   BETASimulationManager::GetInstance()->InitScoring();
 
-   BETAPMT* aPMTModel =
-      new BETAPMT ( "PMT" );
-
-
+   BETAG4PMTArray* aPMTModel =
+      new BETAG4PMTArray ( "GasCherenkov" );
+   
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
+
    G4LogicalVolume * pmtFace_log =//container_log;
     new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
 
-   G4VPhysicalVolume * pmtFace1_phys = new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1 );
-   G4VPhysicalVolume * pmtFace2_phys = new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2 );
-   G4VPhysicalVolume * pmtFace3_phys = new G4PVPlacement ( G4Transform3D ( pmtRM3,pmt22 ), pmtFace_log,  "pmtFace_phys", tank_log, false,3 );
-   G4VPhysicalVolume * pmtFace4_phys = new G4PVPlacement ( G4Transform3D ( pmtRM4,pmt21 ), pmtFace_log,  "pmtFace_phys", tank_log, false,4 );
-   G4VPhysicalVolume * pmtFace5_phys = new G4PVPlacement ( G4Transform3D ( pmtRM5,pmt32 ), pmtFace_log,  "pmtFace_phys", tank_log, false,5 );
-   G4VPhysicalVolume * pmtFace6_phys = new G4PVPlacement ( G4Transform3D ( pmtRM6,pmt31 ), pmtFace_log,  "pmtFace_phys", tank_log, false,6 );
-   G4VPhysicalVolume * pmtFace7_phys = new G4PVPlacement ( G4Transform3D ( pmtRM7,pmt42 ), pmtFace_log,  "pmtFace_phys", tank_log, false,7 );
-   G4VPhysicalVolume * pmtFace8_phys = new G4PVPlacement ( G4Transform3D ( pmtRM8,pmt41 ), pmtFace_log,  "pmtFace_phys", tank_log, false,8 );
+   G4VPhysicalVolume * pmtFace1_phys = new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,7 );
+   G4VPhysicalVolume * pmtFace2_phys = new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,8 );
+   G4VPhysicalVolume * pmtFace3_phys = new G4PVPlacement ( G4Transform3D ( pmtRM3,pmt22 ), pmtFace_log,  "pmtFace_phys", tank_log, false,5 );
+   G4VPhysicalVolume * pmtFace4_phys = new G4PVPlacement ( G4Transform3D ( pmtRM4,pmt21 ), pmtFace_log,  "pmtFace_phys", tank_log, false,6 );
+   G4VPhysicalVolume * pmtFace5_phys = new G4PVPlacement ( G4Transform3D ( pmtRM5,pmt32 ), pmtFace_log,  "pmtFace_phys", tank_log, false,3 );
+   G4VPhysicalVolume * pmtFace6_phys = new G4PVPlacement ( G4Transform3D ( pmtRM6,pmt31 ), pmtFace_log,  "pmtFace_phys", tank_log, false,4 );
+   G4VPhysicalVolume * pmtFace7_phys = new G4PVPlacement ( G4Transform3D ( pmtRM7,pmt42 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1 );
+   G4VPhysicalVolume * pmtFace8_phys = new G4PVPlacement ( G4Transform3D ( pmtRM8,pmt41 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2 );
 
 ////////////////////////// Print out Magnetic field at pmt face ////////////////
    G4ThreeVector localPosition = pmtFace4_phys->GetTranslation();
@@ -2045,7 +2053,7 @@ ConstructBeamPipe();
    //
 
              Geant4GM::Factory g4Factory;
-             g4Factory.SetDebug(1);
+    //         g4Factory.SetDebug(1);
              g4Factory.Import(expHall_phys);
      // Export VGM geometry to Root
 // 
@@ -2056,7 +2064,7 @@ ConstructBeamPipe();
 //      // Export VGM geometry to Root
 //      //
               RootGM::Factory rtFactory;
-              rtFactory.SetDebug(1);
+   //           rtFactory.SetDebug(1);
               g4Factory.Export(&rtFactory);
               gGeoManager->CloseGeometry();
               gGeoManager->Export("SANEGeometry.root");

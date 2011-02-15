@@ -441,7 +441,7 @@ std::sort (hitPointers->begin(),hitPointers->begin()+fLuciteHodoscopeHC->entries
 fBETAEvent->fLuciteHodoscopeEvent->fNumberOfHits=totalHits;
 
 if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
-std::cout << "end of BETAG4EventRecorder::FillLuciteHodoscopeEvent() \n";
+/*std::cout << "end of BETAG4EventRecorder::FillLuciteHodoscopeEvent() \n";*/
 }
 return(0);
 }
