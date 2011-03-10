@@ -18,14 +18,11 @@
 #include "TROOT.h"
 #include "TSQLServer.h"
 #include "TSQLResult.h"
-
 #include "G4PropagatorInField.hh"
 #include "G4RunManager.hh"
-
 #include "fstream"
 #include "math.h"
 #define PI 3.141592654
-
 #include "BETAPMT.hh"
 #include "BETAMirror.hh"
 #include "BETARCSCellParameterisation.hh"
@@ -39,7 +36,7 @@
 #include "BETASimulationManager.hh"
 #include "BETAFakePlane.hh"
 #include "BETAFakePlaneHit.hh"
-
+#include "TRint.h"
 #define MAGROT PI*-0./180. 
 //Rotate the whole target magnet by some angle
 #include "G4PVReplica.hh"
@@ -52,6 +49,7 @@
 #include "BETADetectorConstruction.hh"
 #include "G4VPVParameterisation.hh"
 //___________________________________________________________________
+
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
 
@@ -59,6 +57,8 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 
    messenger = new BETADetectorMessenger ( this );
 
+   fMagneticField = 0;
+ 
 
    usingGasCherenkov       = true;
    usingBigcal             = true;
@@ -148,6 +148,9 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    Opaque = new G4VisAttributes ( G4Colour ( .3,.5,.7 ) );
    Opaque->SetForceSolid ( true );
 
+   fTargetState = 1;
+      physiTCan=0;
+      physiLN2Can=0;
 
 }
 
@@ -1700,19 +1703,24 @@ G4double farMirrorAngle = 20* pi/180;
 void BETADetectorConstruction::ConstructFakePlane()
 {
 
-      // The following is for a fake detector just after the Front tracker
-      G4Box* planeBehindTracker_box = new G4Box ( "PlaneBeforeBigcal",1.4*m/2.0,2.5*m/2.0 , 0.10*mm );
-      G4LogicalVolume * planeBehindTracker_log = 
-           new G4LogicalVolume ( planeBehindTracker_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
+      // The following is for a fake detector just before bigcal
+      G4Box* fakePlane_box = new G4Box ( "PlaneBeforeBigcal",1.4*m/2.0,2.5*m/2.0 , 0.10*mm );
+      G4LogicalVolume * fakePlane_log = 
+           new G4LogicalVolume ( fakePlane_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
       BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
 //rTarget
       G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
       G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
-      G4VPhysicalVolume* planeBehindTracker_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,planeBehindTracker_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
-      SetupScoring(planeBehindTracker_log);
-
-
-planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
+      G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,fakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
+//      SetupScoring(fakePlane_log);
+   G4SDManager* manager = G4SDManager::GetSDMpointer();
+   G4VSensitiveDetector* fakePlane =
+      new BETAFakePlane("FakePlaneAtBigcal");
+   // Register detector with manager
+   manager->AddNewDetector(fakePlane);
+   // Attach detector to scoring volume
+   fakePlane_log->SetSensitiveDetector(fakePlane);
+//      planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
 }
 
 //___________________________________________________________________
@@ -1761,17 +1769,6 @@ void BETADetectorConstruction::SetupScoring(G4LogicalVolume * scoringVolume) {
 
 
 
-   G4SDManager* manager = G4SDManager::GetSDMpointer();
-
-
-   G4VSensitiveDetector* fakePlane =
-      new BETAFakePlane("FakePlaneAtBigcal");
-   // Register detector with manager
-   manager->AddNewDetector(fakePlane);
-   // Attach detector to scoring volume
-   scoringVolume->SetSensitiveDetector(fakePlane);
-
-
 
 }
 
@@ -1797,7 +1794,7 @@ G4VPhysicalVolume *
 BETADetectorConstruction::Construct()
 {
    constructed = 1;
-
+   
    DefineMaterials();
 
 // The experimental Hall
@@ -1871,28 +1868,30 @@ ConstructBeamPipe();
 ///////////////////////////////////////////////////
 //   MAGNETIC FIELD
 ///////////////////////////////////////////////////
-   static G4bool fieldIsInitialized = false;
+/*   static G4bool fieldIsInitialized = false;
    if ( !fieldIsInitialized )
-   {
-      BETAField * myField = new BETAField();
-      G4FieldManager* fieldMgr
-      = G4TransportationManager::GetTransportationManager()->GetFieldManager();
-      fieldMgr->SetDetectorField ( myField );
-      fieldMgr->CreateChordFinder ( myField );
-      fieldMgr->GetChordFinder()->SetDeltaChord ( 1.0e-1*cm ); // miss distance
-      G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
-      G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
-
-      fieldMgr->SetMinimumEpsilonStep( minEps );
-      fieldMgr->SetMaximumEpsilonStep( maxEps );
-      fieldMgr->SetDeltaOneStep( 0.5e-1 * mm );  // 0.5 micrometer
-
-      G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
-      tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
-
-      expHall_log ->SetFieldManager ( fieldMgr, true );
-//    localFieldMgr->CreateChordFinder(myField);
-      fieldIsInitialized = true;
+   {*/
+      ConstructMagneticField();
+//       BETAField * myField = new BETAField();
+//       myField->fUVAMagnet->SetPolarizationAngle (messenger->fTargetAngle ); 
+//       G4FieldManager* fieldMgr
+//       = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+//       fieldMgr->SetDetectorField ( myField );
+//       fieldMgr->CreateChordFinder ( myField );
+//       fieldMgr->GetChordFinder()->SetDeltaChord ( 1.0e-1*cm ); // miss distance
+//       G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
+//       G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
+// 
+//       fieldMgr->SetMinimumEpsilonStep( minEps );
+//       fieldMgr->SetMaximumEpsilonStep( maxEps );
+//       fieldMgr->SetDeltaOneStep( 0.5e-1 * mm );  // 0.5 micrometer
+// 
+//       G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
+//       tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
+// 
+//       expHall_log ->SetFieldManager ( fieldMgr, true );
+// //    localFieldMgr->CreateChordFinder(myField);
+//       fieldIsInitialized = true;
 
       /*
       double pos[4] = {9.0*cm,-113.0*cm,113.0*cm,0};
@@ -1914,7 +1913,7 @@ ConstructBeamPipe();
       }
       G4cout << " \n " ;
       */
-   }
+//   }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Visualizations
@@ -2083,6 +2082,31 @@ ConstructBeamPipe();
    return expHall_phys;
 }
 //___________________________________________________________________
+
+void BETADetectorConstruction::ConstructMagneticField() {
+
+      if(!fMagneticField) fMagneticField = new BETAField();
+      fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->fTargetAngle ); 
+      G4FieldManager* fieldMgr
+      = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+      fieldMgr->SetDetectorField ( fMagneticField );
+      fieldMgr->CreateChordFinder ( fMagneticField );
+      fieldMgr->GetChordFinder()->SetDeltaChord ( 1.0e-1*cm ); // miss distance
+      G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
+      G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
+
+      fieldMgr->SetMinimumEpsilonStep( minEps );
+      fieldMgr->SetMaximumEpsilonStep( maxEps );
+      fieldMgr->SetDeltaOneStep( 0.5e-1 * mm );  // 0.5 micrometer
+
+      G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
+      tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
+
+      expHall_log ->SetFieldManager ( fieldMgr, true );
+//    localFieldMgr->CreateChordFinder(fMagneticField);
+/*      fieldIsInitialized = true;*/
+}
+
 void BETADetectorConstruction::SetMaterialPropertiesTables()
 {
 // Lucite
@@ -2356,35 +2380,65 @@ SetMaterialPropertiesTables();
 
 //___________________________________________________________________
 double BETADetectorConstruction::getTargetAngle() {
-   return( myField->fUVAMagnet->fPolarizationAngle );
+  if(!fMagneticField) fMagneticField = new BETAField();
+  return( fMagneticField->fUVAMagnet->fPolarizationAngle );
 }
 
 //___________________________________________________________________
 void BETADetectorConstruction::lookAtField(G4String comp) {
-   myField->fUVAMagnet->LookAtFieldRadialComponent(50,1.0);
-   myField->fUVAMagnet->LookAtFieldZComponent(50,1.0);
+  if(!fMagneticField) fMagneticField = new BETAField();
+  if( fMagneticField )  {
+   G4cout << "Looking at the radial and z components\n";
+/*    TRint *theApp = new TRint("To Look at Magnetic Field", NULL,NULL);*/
+//    (gROOT->GetApplication()) =  new TRint("ROOT example", NULL, NULL);
 
+   fMagneticField->fUVAMagnet->LookAtFieldRadialComponent(50,2.0);
+   fMagneticField->fUVAMagnet->LookAtFieldZComponent(50,2.0);
+   fMagneticField->fUVAMagnet->LookAtFieldAbsoluteValue(50,2.0);
+   // Init Intrinsics, build all windows, and enter event loop
+//   gROOT->Reset();
+   (gROOT->GetApplication())->Run(true);
+  } else {
+        G4cout << " Magnetic Field NOT Constructed Yet!" << G4endl;
+  } 
 }
 
 //___________________________________________________________________
 void BETADetectorConstruction::switchTargetField()
 {
-   if ( myField->fUVAMagnet->fPolarizationAngle == pi )
+   if ( messenger->fTargetAngle == TMath::Pi() )
    {
       G4cout << "Target switching to TRANSVERSE field orientation." << G4endl;
-      myField->fUVAMagnet->SetPolarizationAngle ( 80.*pi/180. );
+      messenger->fTargetAngle = 80.0*TMath::Pi()/180.0;
    }
    else
    {
-      G4cout << "Target switching to PARALLEL field orientation." << G4endl;
-      myField->fUVAMagnet->SetPolarizationAngle ( pi );
+      G4cout << "Target switching to ANTIPARALLEL field orientation." << G4endl;
+      messenger->fTargetAngle = TMath::Pi();
    }
+  if(!fMagneticField) fMagneticField = new BETAField();
+
+  if(fMagneticField) setTargetAngle (messenger->fTargetAngle );
+   G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
 }
 
 //___________________________________________________________________
 void BETADetectorConstruction::setTargetAngle ( G4double angle )
 {
-   myField->fUVAMagnet->SetPolarizationAngle ( angle );
+  messenger->fTargetAngle = angle;
+  if(!fMagneticField) fMagneticField = new BETAField();
+  fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle);
+  if(fMagneticField) {
+    fMagneticField->fUVAMagnet->SetPolarizationAngle (angle );
+    nearMirrorGlass_log->RemoveDaughter ( MirrorGlass_phys1 );
+    delete physiMagnet;
+    physiMagnet = new G4PVPlacement (G4Transform3D(fMagnetRotationMatirx, G4ThreeVector ( 0.,0.,-LN2dis )),
+                                     logicMagnet, "Magnet", logicLN2Shield,
+                                     false, 0 );
+  }
+   G4RunManager::GetRunManager()->GeometryHasBeenModified();
+
 }
 
 //___________________________________________________________________
@@ -2526,6 +2580,47 @@ void BETADetectorConstruction::rotateMirror ( int mirrorNumber, G4double alpha, 
 
 }
 
+void BETADetectorConstruction::ToggleTargetMaterial( int state) {
+   fTargetState = state;
+
+  if(state == 1) {
+      if(physiTCan)   delete physiTCan;
+      physiTCan=0;
+      if(physiLN2Can)   delete physiLN2Can;
+      physiLN2Can=0;
+      G4RotationMatrix targRot;
+      targRot.rotateX ( -pi/2. );
+      targRot.rotateY ( -pi/2. );
+      physiTCan = new G4PVPlacement ( G4Transform3D ( targRot, G4ThreeVector ( 0.,0.,OVCdis ) ),
+                                      logicTCan, "TrgtCanPhys", expHall_log, false, 0 );
+      physiLN2Can = new G4PVPlacement ( G4Transform3D ( targRot, G4ThreeVector ( 0,0,0 ) ), logicLN2Can,
+                                     "LN2SHCAN_phys", expHall_log, false, 0 );
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  } else if(state == 0) {
+      if(physiTCan)   delete physiTCan;
+      physiTCan=0;
+      if(physiLN2Can)   delete physiLN2Can;
+      physiLN2Can=0;
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
+  }
+}
+
+void BETADetectorConstruction::ToggleTargetField( int state) {
+  if(state == 1) {
+    if(!fMagneticField) fMagneticField = new BETAField();
+    if(fMagneticField) {
+       fMagneticField->SetScaleFactor(1.0);
+       G4RunManager::GetRunManager()->GeometryHasBeenModified();
+    }
+  } else if(state == 0) {
+    if(!fMagneticField) fMagneticField = new BETAField();
+    if(fMagneticField) {
+       fMagneticField->SetScaleFactor(0.0);
+       G4RunManager::GetRunManager()->GeometryHasBeenModified();
+    }
+  }
+}
+
 
 // From Justin Wright:
 //___________________________________________________________________
@@ -2574,9 +2669,9 @@ void BETADetectorConstruction::ConstructTCan()
 
    G4VSolid* solidTCan = new G4SubtractionSolid ( "TrgtCan", StartingTCan, LN2dummy,
                                                   0, G4ThreeVector ( 0,0, LN2dis ) );
-   logicTCan = new G4LogicalVolume ( solidTCan, Vacuum, "TrgtCan" );
-   physiTCan = new G4PVPlacement ( G4Transform3D ( targRot, G4ThreeVector ( 0.,0.,OVCdis ) ),
-                                   logicTCan, "TrgtCan", expHall_log, false, 0 );
+   logicTCan = new G4LogicalVolume ( solidTCan, Vacuum, "TrgtCanLog" );
+   if(fTargetState) physiTCan = new G4PVPlacement ( G4Transform3D ( targRot, G4ThreeVector ( 0.,0.,OVCdis ) ),
+                                   logicTCan, "TrgtCanPhys", expHall_log, false, 0 );
 
    //A space needs to be carved out of the 0.935 inch thick wall for the window
    //Fill it with vacuum and displace it -1.8542cm as per Shige's drawing.
@@ -2725,8 +2820,8 @@ void BETADetectorConstruction::ConstructN2Shield()
    targRot.rotateX ( -pi/2. );
    targRot.rotateY ( -pi/2. );
 
-   physiLN2Can = new G4PVPlacement ( G4Transform3D ( targRot, G4ThreeVector ( 0,0,0 ) ), logicLN2Can,
-                                     "LN2SHCAN", expHall_log, false, 0 );
+   if(fTargetState) physiLN2Can = new G4PVPlacement ( G4Transform3D ( targRot, G4ThreeVector ( 0,0,0 ) ), logicLN2Can,
+                                     "LN2SHCAN_phys", expHall_log, false, 0 );
 
    //The solid Aluminum part of the shield, in which the windows will be placed.
    //Make the can by subtracting a cylinder from a slightly larger cylinder.
@@ -2972,6 +3067,9 @@ logicCell->SetVisAttributes ( CellVisAtt );//CellVisAtt);
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructMagnet()
 {
+//messenger->fTargetAngle
+   fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle);
+
    //The Magnet as a whole (made of vacuum)
    G4VSolid* StarterMagnet =
       new G4Tubs ( "Magnet", ( 4.+.001905 ) *cm, 33.*cm, 25.*cm, 0., 7. );
@@ -2983,7 +3081,8 @@ void BETADetectorConstruction::ConstructMagnet()
       new G4SubtractionSolid ( "Magnet", StarterMagnet, Dummy4KSH, 0,
                                G4ThreeVector() );
    logicMagnet = new G4LogicalVolume ( solidMagnet, Vacuum, "Magnet" );
-   physiMagnet = new G4PVPlacement ( 0, G4ThreeVector ( 0.,0.,-LN2dis ),
+//This is the physical placement for the magnet volume, ie this has all the piece contained in it
+   physiMagnet = new G4PVPlacement (G4Transform3D(fMagnetRotationMatirx, G4ThreeVector ( 0.,0.,-LN2dis )),
                                      logicMagnet, "Magnet", logicLN2Shield,
                                      false, 0 );
 
@@ -3044,7 +3143,7 @@ void BETADetectorConstruction::ConstructMagnet()
 
    G4VisAttributes* CoilVisAtt= new G4VisAttributes ( G4Colour ( 0.5,0.5,0.5 ) );
    CoilVisAtt->SetVisibility ( true );
-   CoilVisAtt->SetForceSolid ( false );
+   CoilVisAtt->SetForceSolid ( true );
    logicCoil->SetVisAttributes ( CoilVisAtt );
 
    logicBrace1->SetVisAttributes ( CoilVisAtt );

@@ -93,7 +93,7 @@ G4Run*  BETARunAction::GenerateRun()
      BETADetectorConstruction *  construction 
        = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
      if (construction) {
-        targetAngle = construction->myField->fUVAMagnet->fPolarizationAngle*180.0/pi;
+        targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
          //printf("\n got run manager %f\n",targetAngle);
 
 /// \todo Better database filling!!
@@ -133,6 +133,12 @@ G4Run*  BETARunAction::GenerateRun()
 
          SQLq += ", betag4_bigcal_plane_on=" ;
          SQLq += (int)construction->usingFakePlaneAtBigcal;
+
+         SQLq += ", target_angle=" ;
+         SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
+
+//          SQLq += ", target_angle=" ;
+//          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
 
 // Fill MySQL table
          res = db->Query(SQLq.Data());

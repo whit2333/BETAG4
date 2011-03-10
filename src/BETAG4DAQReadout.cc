@@ -32,7 +32,6 @@ BETAG4DAQReadout::~BETAG4DAQReadout() {
 void BETAG4DAQReadout::Digitize() {
 
 // Reset all event level values
-  Clear();
 
 // Get pointers
   G4String colName;
@@ -41,8 +40,7 @@ void BETAG4DAQReadout::Digitize() {
   const G4Event* currentEvent = fRM->GetCurrentEvent();
   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
 
-  BETAG4BigcalHitsCollection * fBigcalHC;
-  BETAG4PMTHitsCollection * fGasCherenkovHC;
+
 
   if(fSimulationManager->fConstruction->usingBigcal) {
     fBigcalHC = ( BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
@@ -55,24 +53,30 @@ void BETAG4DAQReadout::Digitize() {
 // Loop over bigcal and add up the energy for each trigger group
   BETAG4BigcalHit * bcHit;
   G4double energyTemp;
+  fNBigcalHits=0;
   for ( int gg =0;gg<1744;gg++ )
   {
     bcHit = ( *fBigcalHC)[gg];
     energyTemp = bcHit->GetDepositedEnergy();
 
-    if(energyTemp>0.01){
+    if(energyTemp > 0.01){ ///10 MeV Block Threshold?
+      fNBigcalHits++;
       fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
     }
 
   }
 
+  fNCherenkovHits=0;
 // Loop over gas cherenkov
   BETAG4PMTHit * cerHit;
   for ( int i1=0 ; i1 < fGasCherenkovHC->entries();i1++ ) {
     cerHit = ( *fGasCherenkovHC )[i1];
     fCherenkovTotal += (G4int)(cerHit->GetNumberOfPhotoElectrons());
+      if(cerHit->GetNumberOfPhotoElectrons()>2) fNCherenkovHits++;
   }
-  if(fCherenkovTotal>fCherenkovTriggerThreshold) fCherenkovFired=true;
+  if(fCherenkovTotal>fCherenkovTriggerThreshold) {
+    fCherenkovFired=true;
+  }
 //    std::cout << "Cherenkov Total " << fCherenkovTotal << " \n";
 
   for(int i=0;i<4;i++) { 
@@ -105,7 +109,10 @@ void BETAG4DAQReadout::Digitize() {
 }
 //__________________________________________________________________
 
+void BETAG4DAQReadout::ReadOut() {
+   
 
+}
 //     if ( energyTemp > bigcal_block_thresh)
 //     {
 //       aBigcalHit = new(bigcalHits[prot_hits]) BigcalHit();

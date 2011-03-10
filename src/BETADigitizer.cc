@@ -263,7 +263,6 @@ void BETADigitizer::ReadOut() {
    Int_t lucpedval = fSimulationManager->fHodoscopeDetector->fTypicalPedestal;
    Int_t luctdcval = fSimulationManager->fHodoscopeDetector->fTypicalTDCPeak ;
   lhEvent->ClearEvent("C");
-//lhEvent->fHits->Delete("C");
   TClonesArray &lucHits = *(lhEvent->fHits);
   LuciteHodoscopeHit * aLUChit;
 
@@ -304,7 +303,6 @@ void BETADigitizer::ReadOut() {
    Int_t certdcval = fSimulationManager->fCherenkovDetector->fTypicalTDCPeak ;
 
   gcEvent->ClearEvent("C");
-//gcEvent->fHits->Delete("C");
   gcEvent->fNumberOfHits = 0;
   TClonesArray &cherenkovHits = *(gcEvent->fHits);
   GasCherenkovHit * aCERhit;

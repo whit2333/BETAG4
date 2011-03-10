@@ -9,7 +9,7 @@
 #include "BETADetectorConstruction.hh"
 #include "BETADetectorMessenger.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//___________________________________________________________________//
 
 BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
       :manager ( mgr )
@@ -32,14 +32,12 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    showPlot->AvailableForStates ( G4State_Idle );
 
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//___________________________________________________________________//
 
 BETASimulationMessenger::~BETASimulationMessenger()
 {
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+//___________________________________________________________________//
 
 void BETASimulationMessenger::SetNewValue (
    G4UIcommand* command, G4String newValue )
@@ -54,26 +52,27 @@ void BETASimulationMessenger::SetNewValue (
       manager->showPlot ( showPlot->GetNewIntValue ( newValue ) );
    }
 }
+//___________________________________________________________________//
 
 void BETASimulationMessenger::AddDetectorUICommands() {
-   fieldDir = new G4UIdirectory ( "/targetField" );
+   fieldDir = new G4UIdirectory ( "/BETAG4/targetField" );
    fieldDir->SetGuidance ( "Magnetic Detector control" );
 
-   polSwitch = new G4UIcmdWithoutParameter ( "/targetField/switchDetectorPolarization",this );
+   polSwitch = new G4UIcmdWithoutParameter ( "/BETAG4/targetField/switchDetectorPolarization",this );
    polSwitch->SetGuidance ( "Switch between parallel and transverse" );
    polSwitch->SetGuidance ( "Target magnetic field polarizations" );
    polSwitch->AvailableForStates ( G4State_Idle );
 
-   polSet = new G4UIcmdWithADouble ( "/targetField/setPolarizationAngle",this );
+   polSet = new G4UIcmdWithADouble ( "/BETAG4/targetField/setPolarizationAngle",this );
    polSet->SetGuidance ( "Set the target field polariztion" );
    polSet->SetGuidance ( "angle in units of degrees. For SANE, " );
    polSet->SetGuidance ( "transverse = 80 and antiparallel = 180" );
 
-   rotateMirror = new G4UIcmdWithAString ( "/BETA/gasCherenkov/mirrors/rotateToroidalMirrors",this );
+   rotateMirror = new G4UIcmdWithAString ( "/BETAG4/gasCherenkov/mirrors/rotateToroidalMirrors",this );
    rotateMirror->SetGuidance ( "Arguments: [mirror number] [rotate horz] [rotate  vert]" );
    rotateMirror->AvailableForStates ( G4State_Idle );
 
-   lookAtField = new G4UIcmdWithAString ( "/targetField/lookAtField",this );
+   lookAtField = new G4UIcmdWithAString ( "/BETAG4/targetField/lookAtField",this );
    lookAtField->SetGuidance ( "Arguments: [component]" );
    lookAtField->SetGuidance ( "where component can be Z, z, R, or r" );
    lookAtField->SetGuidance ( "Runs root interpreter, so use .q to quit when finished looking at plot" );
@@ -83,4 +82,5 @@ void BETASimulationMessenger::AddDetectorUICommands() {
 //   rotateToroidalMirrors->AvailableForStates(G4State_Idle);
 
 }
+//___________________________________________________________________//
 

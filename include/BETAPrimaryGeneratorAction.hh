@@ -4,11 +4,11 @@
 #include "InSANEPhaseSpaceSampler.h"
 #include "InSANEInclusivePhaseSpace.h"
 #include "InSANEInclusiveDiffXSec.h"
-
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 #include "InSANEPhaseSpaceSampler.h"
 #include "G4GeneralParticleSource.hh"
+#include "SANEEventGenerators.hh"
 
 class G4ParticleGun;
 class G4Event;
@@ -19,11 +19,18 @@ class G4ParticleDefinition;
 
 class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
 {
+public:
+
+ 
+
+ BigcalCenterEventGenerator * fBigcalEventGen;
+
   public:
     BETAPrimaryGeneratorAction();
    ~BETAPrimaryGeneratorAction();
 
   public:
+    void RefreshSampler();
     void GeneratePrimaries(G4Event*);
     void SetOptPhotonPolar();
     void SetOptPhotonPolar(G4double);
@@ -32,7 +39,6 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     void SetMomentum(G4double);
     void SetElectronPionRatio(G4double);
     void SetPiZeroRatio(G4double);
-
     void SetPartTheta ( G4double P );
     G4double GetPartTheta ();
     void SetPartPhi ( G4double P );
@@ -48,14 +54,14 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
     G4double eventEnergy;
     G4double eventMomentum;
 
+    G4double fThetaMax;
+    G4double fEnergyMax;
+    G4double fPhiMax;
+    G4double fEnergyMin;
+    G4double fThetaMin;
+    G4double fPhiMin;
 
-  
-/**
- *  Used to control the phase space \todo{record at end of run xsec and phase space used}
- */
-  InSANEPhaseSpaceSampler * fEventSampler;
-  InSANEInclusivePhaseSpace * fPhaseSpace;
-  InSANEInclusiveDiffXSec * fDiffXSec;
+
 /// 
   G4GeneralParticleSource  * fParticlesSource;
   G4ParticleGun  * fParticleGun;

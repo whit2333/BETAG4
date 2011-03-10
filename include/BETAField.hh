@@ -1,6 +1,5 @@
 #ifndef BETAField_H
 #define BETAField_H 1
-#include "BETAField.hh"
 #include "globals.hh"
 #include "G4MagneticField.hh"
 #include "Riostream.h"
@@ -21,15 +20,16 @@
 #include "TApplication.h"
 #include "TCanvas.h"
 #include "UVAOxfordMagneticField.h"
-
+#include "TMath.h"
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
 #include <vector>
-
+#include "G4RotationMatrix.hh"
+#include "G4ThreeVector.hh"
 #define fieldDataPoints 31161
 
 /**
- *  Concrete class implements the UVA Polarized Ammonia target magnetic field
+ *  A wrapper class for G4MagneticField implementation. Implements the UVA Polarized Ammonia target magnetic field
  */
 class BETAField :public G4MagneticField /*, public UVAOxfordMagneticField */
 {
@@ -37,12 +37,12 @@ class BETAField :public G4MagneticField /*, public UVAOxfordMagneticField */
     BETAField();
     ~BETAField();
 
+    UVAOxfordMagneticField * fUVAMagnet;
 
-UVAOxfordMagneticField * fUVAMagnet;
+   void SetScaleFactor(double scale) { fUVAMagnet->SetScaleFactor(scale); };
+   double GetScaleFactor() {return( (double)fUVAMagnet->GetScaleFactor() ); };
 
-/**
- * Fills the array Bfield[0-2], (xyz) components, given the spacetime point, Point
- */
+/// Calls GetFieldValue 
   void GetFieldValue( const  double Point[4],
                                double *Bfield ) const;
 
@@ -52,54 +52,29 @@ UVAOxfordMagneticField * fUVAMagnet;
  */
     void LookAtField(char * component);
 
-
-/**
- * 
- */
 //    void TestInterpolation();
-
-
-/**
- * 
- */
-    void ReadDataFile();
-
-/**
- * 
- */
-    void setPolarizationAngle(G4double angle) {polAngle = angle;}
-
-/**
- * 
- */
-    void switchPolarization();
-
-    G4double polAngle;
-
+//    void ReadDataFile();
+//    void setPolarizationAngle(G4double angle) {polAngle = angle;}
+//    void switchPolarization();
+/*    G4ThreeVector fBVector;*/
   private:
-
   struct fieldDataPoint 
   {
    G4double z,r,Bz,Br;
   };
 
-double RawBZ[fieldDataPoints];
-double RawBR[fieldDataPoints];
-double * BzRpoint[221];
-double * BrRpoint[221];
+   double RawBZ[fieldDataPoints];
+   double RawBR[fieldDataPoints];
+   double * BzRpoint[221];
+   double * BrRpoint[221];
 
-	vector<fieldDataPoint> fieldData;
-
+   vector<fieldDataPoint> fieldData;
     G4double ** BzFieldRaw;
     G4double ** BrFieldRaw;
-
     G4double *** BF;
 //     G4double * locations[fieldDataPoints*fieldDataPoints];
 //     G4double zandrValue[2*fieldDataPoints*fieldDataPoints];
 //     G4double * * R[fieldDataPoints];
-
-
-
     G4int numPoints;
     G4double* * Field;
 };

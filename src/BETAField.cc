@@ -1,12 +1,11 @@
 #include "BETAField.hh"
-#include <iostream>  // I/O
-#include <fstream>   // file I/O
-#include <iomanip>   // format manipulation
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 #include "globals.hh"
 #include "G4ThreeVector.hh"
 #include "TGraph2D.h"
 #include "TGraph.h"
-// ROOT //
 #include "Riostream.h"
 #include "TROOT.h"
 #include "TFile.h"
@@ -25,39 +24,33 @@
 #include "TApplication.h"
 #include "TCanvas.h"
 #include "TStyle.h"
+
 //#define CKOVFIELD_OFF 1
 //#define fieldDataPoints 30800
+//double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y)  ;
 
-double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y)  ;
-
-
-BETAField::BETAField() :polAngle ( pi*180.0/180. )
+BETAField::BETAField() 
 {
    fUVAMagnet = new UVAOxfordMagneticField();
-   fUVAMagnet->SetPolarizationAngle(pi*80.0/180.0);
-/*
+   /*
    BzFieldRaw = BzRpoint;
    BrFieldRaw = BrRpoint;
-
 // Unfortunately, the data reads in the z's first,
 // so it is BzFieldRaw[R index][Z index]
    for ( int g=0;g<221;g++ )
    {
       BzRpoint[g]=&RawBZ[141*g];
       BrRpoint[g]=&RawBR[141*g];
-
    }
-
    ReadDataFile(); /// New data file
 */
-
 }
 
 BETAField::~BETAField()
 {
-   ;
+  if(fUVAMagnet) delete fUVAMagnet ;
 }
-
+/*
 void BETAField::ReadDataFile() {
 // this function is designed to read in the csv extended field map data for the UVA target
    fieldDataPoint temp;
@@ -65,45 +58,26 @@ void BETAField::ReadDataFile() {
    int i=0;
    int j = 0;
    double tempz, tempr, tempBz , tempBr;
-   input_file.open ( "UVA-ExtendedFieldMap.csv" );
-
+   input_file.open ("UVA-ExtendedFieldMap.csv");
    if (!input_file) { "\n \n BREAK";
    }
-
    for (j=0;j<141;j++) {
-
       for (i=0;i<221;i++)
       {
-
-
          input_file >> tempz >> tempr >> tempBz >> tempBr ;
 // fieldData.push_back(temp);
-
 // G4cout << tempz <<" "<<tempr<<" "<< tempBz <<" "<< tempBr << G4endl;
-
          BzFieldRaw[i][j] = tempBz*tesla;
          BrFieldRaw[i][j] = tempBr*tesla;
 // G4cout << i <<" "<< j <<  G4endl;
-
-
-
-
       }
 
    }
-
-
-
    input_file.close();
-
-
-
-}
-//
-
-
+}*/
 /// Z -> i, R -> j
-double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y) {
+/*
+   double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y) {
 
    double Q11 = cornerDataPoints[0];
    double Q21 = cornerDataPoints[1];
@@ -120,35 +94,35 @@ double BilinearInterpolation(double * cornerDataPoints, double * corners, double
                     Q21*(x-x1)*(y2-y)/dxdy +
                     Q12*(x2-x)*(y-y1)/dxdy +
                     Q22*(x-x1)*(y-y1)/dxdy  ;
-
    return(result);
 }
-
-
+*/
 
 void BETAField::GetFieldValue ( const double Point[4],double *Bfield ) const
 {
-const double newPoint[4]={Point[0]/cm,Point[1]/cm,Point[2]/cm,Point[3]/cm};
-fUVAMagnet->GetFieldValue(newPoint,Bfield);
-Bfield[0]=Bfield[0]*tesla;
-Bfield[1]=Bfield[1]*tesla;
-Bfield[2]=Bfield[2]*tesla;
+  const double newPoint[4]={Point[0]/cm,Point[1]/cm,Point[2]/cm,Point[3]/cm};
 
+  fUVAMagnet->GetFieldValue(newPoint,Bfield);
+  Bfield[0]=Bfield[0]*tesla;
+  Bfield[1]=Bfield[1]*tesla;
+  Bfield[2]=Bfield[2]*tesla;
 }
-
+/*
 void BETAField::switchPolarization() {
    if ( polAngle==pi )
    {
       G4cout << "Target switching to TRANSVERSE field orientation." << G4endl;
-      polAngle= ( 80.*pi/180. );
+      polAngle= ( 80.*TMath::Pi()/180. );
+
    }
    else
    {
       G4cout << "Target switching to PARALLEL field orientation." << G4endl;
-      polAngle= pi;
+      polAngle = TMath::Pi();
    }
-}
 
+}
+*/
 /*
 void BETAField::TestInterpolation() {
 
@@ -166,7 +140,7 @@ void BETAField::TestInterpolation() {
 
 }*/
 
-void BETAField::LookAtField(char * component)  {
+//void BETAField::LookAtField(char * component)  {
    //        TRint *theApp = new TRint("To Look at Magnetic Field", NULL,NULL);
    //(gROOT->GetApplication()) =  new TRint("ROOT example", NULL, NULL);
    // Init Intrinsics, build all windows, and enter event loop
@@ -254,4 +228,4 @@ void BETAField::LookAtField(char * component)  {
    (gROOT->GetApplication())->Run(true);*/
 
 //          return(0);
-}
+//}

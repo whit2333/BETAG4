@@ -10,6 +10,8 @@
 #include "InSANETriggerEvent.h"
 #include "BETASimulationManager.hh"
 #include "BETAG4PMTArray.hh"
+#include "BETAG4BigcalHit.hh"
+#include "BETAG4PMTHit.hh"
 
 class BETASimulationManager;
 
@@ -39,10 +41,12 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
  * \todo figure out which event types trump the others?
  */
   void Digitize();
+  
+  void ReadOut();
 
   virtual void Print() {
-    std::cout << " Bigcal    Entries : " << fBigcalADCSumDC->entries() << " adc \n";
-    std::cout << " Cherenkov Entries : " << fCherenkovADCSumDC->entries() << " adcs.\n";
+    std::cout << " Bigcal     : " << fNBigcalHits << " hits \n";
+    std::cout << " Cherenkov  : " << fNCherenkovHits << " hits.\n";
   };
 
   void Clear(){
@@ -62,6 +66,11 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
   Bool_t IsGoodEvent() {
     return(fIsTriggered);
   };
+
+  BETAG4BigcalHitsCollection * fBigcalHC;
+  BETAG4PMTHitsCollection * fGasCherenkovHC;
+  G4int fNBigcalHits;
+  G4int fNCherenkovHits;
 
   private: 
 

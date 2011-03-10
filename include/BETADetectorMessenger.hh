@@ -21,13 +21,21 @@ class BETADetectorMessenger: public G4UImessenger
 /// Detector Messenger Constructor
     BETADetectorMessenger(BETADetectorConstruction *  );
    ~BETADetectorMessenger();
+
+
     void SetNewValue(G4UIcommand*, G4String); 
+
+    G4double fTargetAngle;
+
   private:
 //    BETAAnalysisAction* BETAAction;
     BETADetectorConstruction * construction;
     G4UIdirectory*               fieldDir; 
     G4UIcmdWithoutParameter*   polSwitch;
-    G4UIcmdWithAString*   lookAtField;
+    G4UIcmdWithAString*      lookAtField;
+
+    G4UIcmdWithAString*      toggleTargetField;
+    G4UIcmdWithAString*      toggleTargetMaterial;
 
 
     G4UIcmdWithADouble*        polSet;

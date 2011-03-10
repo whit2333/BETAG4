@@ -150,15 +150,13 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
   fSimulationManager->fEventNumber = numberOfEvent;
 
-
-
 // Simulates the trigger supervisor
   fDAQReadout->Digitize();
-
+/*  fDAQReadout->Print();*/
 //  fBETAScalers->Digitize();
   if( fDAQReadout->IsGoodEvent() ){
 
-    std::cout << "Triggered DAQ! \n";
+/*    std::cout << " Above Readout Triggered DAQ! \n";*/
     fBETADigitizer->Digitize();
 
     fSimulationManager->fEvents->BETA->fEventNumber = numberOfEvent;
@@ -169,9 +167,10 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
     fSimulationManager->fEvents->MC->fParticleThrown = 1;
     fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
 
-//     fBETADigitizer->Print();
+//      fBETADigitizer->Print();
 
     fBETADigitizer->ReadOut();
+    fDAQReadout->ReadOut();
 
     fSimulationManager->fDetectorTree->Fill();
 

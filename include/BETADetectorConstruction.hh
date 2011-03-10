@@ -92,6 +92,10 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction
   public:
 friend class BETASimulationManager;
 
+public :
+
+   G4RotationMatrix fMagnetRotationMatirx;
+
 /**
  *  Constructor
  */
@@ -138,6 +142,11 @@ friend class BETASimulationManager;
   void ConstructFakePlane();
 
 /**
+ * Called from Construct()
+ */
+  void ConstructMagneticField();
+
+/**
  * Wright's code which constructs the UVA NH3 Target
  */
   void ConstructTarget();
@@ -179,12 +188,21 @@ void setTargetAngle(G4double);
  * For User Interface
  */
 void setMirrorAngles(int,G4double, G4double);
+
+/** turn on and off the target geometry and material */
+void ToggleTargetMaterial(int);
+
+/** turn on and off the target magnetic field*/
+void ToggleTargetField(int);
+
 /**
  * For User Interface
  */
 void rotateMirror(int , G4double , G4double );
 
 void lookAtField(G4String);
+
+int fTargetState;
 
 /**
  * For which detectors are constructed
@@ -499,7 +517,7 @@ G4double alpha1,
   G4LogicalVolume*   logicBrace4;
   G4VPhysicalVolume* physiBrace4;
 public:
-    BETAField * myField;
+    BETAField * fMagneticField;
 private:
     BETADetectorMessenger* messenger;
 };

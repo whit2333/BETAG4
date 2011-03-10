@@ -12,8 +12,6 @@ class G4UIdirectory;
 #include "G4UIcmdWithADouble.hh"
 
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
 class BETAPrimaryGeneratorMessenger: public G4UImessenger
 {
   public:
@@ -31,11 +29,15 @@ class BETAPrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADouble*   sigmaMomentum;
     G4UIcmdWithADouble*   sete_piRatio;
     G4UIcmdWithADouble*   setpi0Ratio;
-    G4UIcmdWithADouble*   setParticleTheta;
-    G4UIcmdWithADouble*   setParticlePhi;
-};
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+    G4UIcmdWithADouble*   setPhiMax;
+    G4UIcmdWithADouble*   setPhiMin;
+    G4UIcmdWithADouble*   setThetaMin;
+    G4UIcmdWithADouble*   setThetaMax;
+    G4UIcmdWithADouble*   setEnergyMax;
+    G4UIcmdWithADouble*   setEnergyMin;
+};
 
 #endif
 

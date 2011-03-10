@@ -55,39 +55,37 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
    int pid;
    double energy = theTrack->GetTotalEnergy();
 //G4cout << "Process Fake Plane Hit\n";
-   if (energy/MeV >10) {     // 10 MeV is bigcal thrshold
+   if (energy/MeV >500) {     // 10 MeV is bigcal thrshold
 
-      if ( theTrack->GetDefinition() == G4Electron::ElectronDefinition()  &&
-           ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&       theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
+       if( ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&       theTrack->GetNextVolume()->GetName() == "BETADetectorphys"  )
       {
-         pid = 1;
-      }
-      else if ( theTrack->GetDefinition() == G4Positron::PositronDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-                theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-      {
-         pid = 2;
-      }
-      else if ( theTrack->GetDefinition() == G4PionPlus::PionPlusDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-                theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-      {
-         pid = 3;
-      }
-      else if ( theTrack->GetDefinition() == G4PionMinus::PionMinusDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-                theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-      {
-         pid = 4;
-      }
-      else if ( theTrack->GetDefinition() == G4Gamma::GammaDefinition()  &&
-                ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-                theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-      {
-         pid = 5;
-      } else {
-         pid = 99;
-      }
+         pid = theTrack->GetDefinition()->GetPDGEncoding();
+//       else if ( theTrack->GetDefinition() == G4Positron::PositronDefinition()  &&
+//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
+//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
+//       {
+//          pid = theTrack->GetDefinition()->GetPDGEncoding;
+//       }
+//       else if ( theTrack->GetDefinition() == G4PionPlus::PionPlusDefinition()  &&
+//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
+//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
+//       {
+//          pid = 3;
+//       }
+//       else if ( theTrack->GetDefinition() == G4PionMinus::PionMinusDefinition()  &&
+//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
+//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
+//       {
+//          pid = 4;
+//       }
+//       else if ( theTrack->GetDefinition() == G4Gamma::GammaDefinition()  &&
+//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
+//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
+//       {
+//          pid = 5;
+//       } else {
+//          pid = 99;
+//       }
 
       BETAFakePlaneHit* aHit = new BETAFakePlaneHit ( pid );
       fHitsCollection->insert ( aHit );
@@ -100,6 +98,7 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
       aHit->localPos = theTouchable->GetHistory()->GetTopTransform().TransformPoint ( aHit->worldPos ) ;
       aHit->momentum =  theTrack->GetMomentum();
       aHit->energy     =    theTrack->GetTotalEnergy();
+    }
 
    } // end of energy threshold
 //G4cout << "Done processing Fake Plane Hit\n";
