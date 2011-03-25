@@ -1,6 +1,5 @@
 #ifndef BETAG4EventRecorder_HH
 #define BETAG4EventRecorder_HH
-
 // ROOT //
 #include "Riostream.h"
 #include "TROOT.h"
@@ -32,7 +31,7 @@
 #include "BETAMirrorHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-#include "BigcalFakePlaneEvent.h"
+#include "InSANEFakePlaneHit.h"
 #include "BigcalFakePlaneHit.h"
 class BETASimulationManager;
 class BETADetectorConstruction;

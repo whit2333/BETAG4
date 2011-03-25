@@ -1,0 +1,51 @@
+/beta/target/setPolarizationAngle 180
+/beta/gun/setEnergyMin 3.0
+/beta/gun/setEnergyMax  3.1
+
+# Straight down the middle
+/beta/gun/setThetaMin 39.50
+/beta/gun/setThetaMax 40.50
+/beta/gun/setPhiMin   -0.5
+/beta/gun/setPhiMax   0.5
+/beta/gun/refresh
+/run/beamOn 100
+/control/shell replaySimulation 
+
+#left and up
+/beta/gun/setThetaMin 35.0
+/beta/gun/setThetaMax 36.0
+/beta/gun/setPhiMin   10.0
+/beta/gun/setPhiMax   11.0
+/beta/gun/refresh 
+/run/beamOn 100
+/control/shell replaySimulation 
+
+
+
+
+#left and down
+/beta/gun/setThetaMin 35.0
+/beta/gun/setThetaMax 36.0
+/beta/gun/setPhiMin   -11.0
+/beta/gun/setPhiMax   -10.0
+/beta/gun/refresh
+/run/beamOn 100
+/control/shell replaySimulation 
+
+#right and up
+/beta/gun/setThetaMin 45.0
+/beta/gun/setThetaMax 46.0
+/beta/gun/setPhiMin   10.0
+/beta/gun/setPhiMax   11.0
+/beta/gun/refresh 
+/run/beamOn 100
+/control/shell replaySimulation 
+
+#right and down
+/beta/gun/setThetaMin 45.0
+/beta/gun/setThetaMax 46.0
+/beta/gun/setPhiMin   -11.0
+/beta/gun/setPhiMax   -10.0
+/beta/gun/refresh 
+/run/beamOn 100
+/control/shell replaySimulation 

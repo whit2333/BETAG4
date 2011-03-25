@@ -47,7 +47,6 @@ class BETARun;
  * 
  * The Manager holds all configuration information such as run number, verbosity levels, primary vertex type, target configuration, geometries to construct. 
  */
-
 class BETASimulationManager {
 public:
   ~BETASimulationManager();

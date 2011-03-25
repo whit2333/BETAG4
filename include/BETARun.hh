@@ -46,7 +46,6 @@
 #include <vector>
 
 #include "BETASimulationManager.hh"
-#include "BETAG4EventRecorder.hh"
 #include "BETAG4DAQReadout.hh"
 #include "BETADigitizer.hh"
 
@@ -63,7 +62,6 @@ class BETASimulationManager;
 class BETAG4DAQReadout;
 class BETADigitizer;
 class BETADetectorConstruction;
-class BETAG4EventRecorder;
 /**
  * \ingroup Runs
  */
@@ -88,11 +86,6 @@ public:
  *  Destructor
  */
   ~BETARun();
-
-/**
- * Used to fill out event classes which are trees and branches in the output file
- */
-BETAG4EventRecorder * eventRecorder;
 
 BETADigitizer * fBETADigitizer;
 
@@ -132,22 +125,6 @@ private:
 
  TH1F * waveforms;
 
-   BETAG4BigcalHitsCollection * fBigcalHC;
-   G4int fBigcalHCID;
-
-
-
-/**
- *
- */
-   BETAHodoscopePMTHitsCollection * hodoscopepmtHC;
-   BETAPMTHitsCollection * pmtHC;
-   BETARCSCalorimeterHitsCollection * BIGCALHC;
-   BETAProtvinoCalorimeterHitsCollection * BIGCALHC2;
-   BETAFrontTrackerHitsCollection * FTHC;
-   BETAMirrorHitsCollection * mirrorHC ;
-   BETAFakePlaneHitsCollection * fakePlaneHC;
-//BETAG4PMTHitsCollection * pmtG4HC;
 
 G4int colIDSum[4];
 

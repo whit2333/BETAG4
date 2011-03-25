@@ -12,6 +12,7 @@
 #include "BETAG4PMTArray.hh"
 #include "BETAG4BigcalHit.hh"
 #include "BETAG4PMTHit.hh"
+#include "BETAFakePlaneHit.hh"
 
 class BETASimulationManager;
 
@@ -42,6 +43,9 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
  */
   void Digitize();
   
+/** ReadOut() records the MC event thrown and scoring planes
+ *  
+ */
   void ReadOut();
 
   virtual void Print() {
@@ -69,9 +73,12 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
 
   BETAG4BigcalHitsCollection * fBigcalHC;
   BETAG4PMTHitsCollection * fGasCherenkovHC;
+  BETAFakePlaneHitsCollection * fTrackerFakePlaneHC;
+  BETAFakePlaneHitsCollection * fBigcalFakePlaneHC;
+
   G4int fNBigcalHits;
   G4int fNCherenkovHits;
-
+  
   private: 
 
   bool fCherenkovFired;
@@ -98,6 +105,8 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
 
   G4int fCherenkovHCID;
   G4int fBigcalHCID;
+  G4int fBigcalFakePlaneHCID;
+  G4int fTrackerFakePlaneHCID;
 
   G4double fBigcalTriggerThreshold;
   G4double fTriggerGroupEnergy[4];

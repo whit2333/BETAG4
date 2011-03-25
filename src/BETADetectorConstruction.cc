@@ -65,7 +65,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingLuciteHodoscope    = true;
    usingForwardTracker     = true;
    usingFakePlaneAtBigcal  = true;
-
+   usingFakePlaneAtForwardTracker = true;
 
    expHall_x = expHall_y = expHall_z = 30.0*m;
 
@@ -635,7 +635,6 @@ void BETADetectorConstruction::ConstructBIGCAL()
 {
 ///////////////////////////////////////////////////////
 //   BIG CAL
-///////////////////////////////////////////////////////
    BIGCALGeometryCalculator * BCgeo = BIGCALGeometryCalculator::GetCalculator();
 // Target
    G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
@@ -1702,6 +1701,7 @@ G4double farMirrorAngle = 20* pi/180;
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructFakePlane()
 {
+   if(usingFakePlaneAtBigcal) {
 
       // The following is for a fake detector just before bigcal
       G4Box* fakePlane_box = new G4Box ( "PlaneBeforeBigcal",1.4*m/2.0,2.5*m/2.0 , 0.10*mm );
@@ -1714,13 +1714,35 @@ void BETADetectorConstruction::ConstructFakePlane()
       G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,fakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
 //      SetupScoring(fakePlane_log);
    G4SDManager* manager = G4SDManager::GetSDMpointer();
-   G4VSensitiveDetector* fakePlane =
-      new BETAFakePlane("FakePlaneAtBigcal");
+   BETAFakePlane* fakePlane =
+      new BETAFakePlane("BIGCALPlane");
+   fakePlane->SetSensitiveVolume(fakePlane_phys);
+
    // Register detector with manager
-   manager->AddNewDetector(fakePlane);
+   manager->AddNewDetector((G4VSensitiveDetector*)fakePlane);
    // Attach detector to scoring volume
-   fakePlane_log->SetSensitiveDetector(fakePlane);
+   fakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)fakePlane);
 //      planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
+   }
+
+// Fake Plane at tracker
+   if(usingFakePlaneAtForwardTracker) {
+      G4Box* trakerFakePlane_box = new G4Box ( "trackerFakePlane",0.5*m/2.0,0.35*m/2.0 , 0.10*mm );
+      G4LogicalVolume * trackerFakePlane_log = 
+           new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
+   
+      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,trackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+     SetupScoring(trackerFakePlane_log);
+   G4SDManager* manager = G4SDManager::GetSDMpointer();
+   BETAFakePlane* trackerFakePlaneDetector =
+      new BETAFakePlane("ForwardTrackerPlane");
+   // Register detector with manager
+   trackerFakePlaneDetector->SetSensitiveVolume(trackerFakePlane_phys);
+   manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
+   // Attach detector to scoring volume
+   trackerFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
+   }
+
 }
 
 //___________________________________________________________________
@@ -1750,7 +1772,7 @@ void BETADetectorConstruction::ConstructBETA()
    fSimulationManager->DefineScoringFilters();
 
 
-   if (usingFakePlaneAtBigcal) ConstructFakePlane();
+   if (usingFakePlaneAtBigcal || usingFakePlaneAtForwardTracker) ConstructFakePlane();
    if (usingForwardTracker)  ConstructForwardTracker();
    if (usingGasCherenkov)  ConstructCherenkov();
    if (usingLuciteHodoscope)  ConstructHodoscope();
@@ -1763,8 +1785,8 @@ void BETADetectorConstruction::ConstructBETA()
 
 
 }
-
 //___________________________________________________________________
+
 void BETADetectorConstruction::SetupScoring(G4LogicalVolume * scoringVolume) {
 
 

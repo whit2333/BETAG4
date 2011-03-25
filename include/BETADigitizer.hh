@@ -15,6 +15,12 @@
 #include "BETAEvent.h"
 #include "BETASimulationManager.hh"
 #include "TRandom.h"
+#include "BETAFakePlaneHit.hh"
+#include "BETAFrontTrackerHit.hh"
+#include "BETAProtvinoCalorimeterHit.hh"
+#include "BETARCSCalorimeterHit.hh"
+#include "BETAHodoscopePMTHit.hh"
+#include "BETAG4PMTHit.hh"
 
 /** Digitizer module for BETA
  *

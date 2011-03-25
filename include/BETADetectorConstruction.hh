@@ -11,7 +11,6 @@
 /////////////////////////////////////////////////////////////////////
 #ifndef BETADetectorConstruction_h
 #define BETADetectorConstruction_h 1
-
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4RotationMatrix.hh"

@@ -7,35 +7,39 @@
 
 #include "G4VSensitiveDetector.hh"
 #include "BETAFakePlaneHit.hh"
+#include "G4VPhysicalVolume.hh"
 
 class G4HCofThisEvent;
 class G4TouchableHistory;
 class G4Step;
 
+/**  Fake plane Sensitive Detector
+ *  
+ *  Used
+ */
 class BETAFakePlane : public G4VSensitiveDetector {
-
 public:
+   BETAFakePlane( G4String name);
+   virtual ~BETAFakePlane();
 
-  // Constructor
-  BETAFakePlane( G4String name);
+   virtual void Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent);
 
-  // Destructor
-  virtual ~BETAFakePlane();
-  
-  // Methods
-  virtual void Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent);
-  
-  virtual G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* history);
+   virtual G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* history);
 
-  virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
-  
+   virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
+
+   G4VPhysicalVolume * GetSensitiveVolume(){ return fSensitiveVolume; }
+   void                SetSensitiveVolume(G4VPhysicalVolume * vol){ fSensitiveVolume = vol; }
+
+protected:
+   G4VPhysicalVolume * fSensitiveVolume;
+
 private:
-  
-  // Data members
+  G4int fPID; 
   G4int HCID;
   BETAFakePlaneHitsCollection* fHitsCollection;
   G4String  detname;
-  G4int pid; // 1 electron, 2 positron
+  G4int pid; 
   G4int energy;
 
 };

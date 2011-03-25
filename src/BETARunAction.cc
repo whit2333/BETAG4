@@ -12,7 +12,7 @@
 #include "TTimeStamp.h"
 #include "TDatime.h"
 #include "SANERunManager.h"
-
+#include "BETAPrimaryGeneratorAction.hh"
 //_________________________________________________________________//
 
 BETARunAction::BETARunAction() :showThePlots ( 0 )
@@ -100,7 +100,7 @@ G4Run*  BETARunAction::GenerateRun()
 // FILL THE DATABASE
         TSQLServer * db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
         TSQLResult * res;
-        TString SQLq("Insert into BETAG4_run_info set "); // dont forget the extra space at the end
+        TString SQLq("REPLACE into BETAG4_run_info set "); // dont forget the extra space at the end
 //aSQL  "Insert into BETAG4_run_info set " ;s
 
         SQLq +=" run_number=" ; // Dont add space here
@@ -136,6 +136,8 @@ G4Run*  BETARunAction::GenerateRun()
 
          SQLq += ", target_angle=" ;
          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
+         SQLq += ", target_field=" ;
+         SQLq += construction->fMagneticField->fUVAMagnet->GetScaleFactor();
 
 //          SQLq += ", target_angle=" ;
 //          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
@@ -150,6 +152,10 @@ G4Run*  BETARunAction::GenerateRun()
 
       }
    }
+
+   BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
+   genAction->SetMCEventAddress((BETAG4MonteCarloEvent *)fSimulationManager->fEvents->MC);
+//    fRunNumber = fSimulationManager;
 //   if(fCurrentRun) delete fCurrentRun;
    fCurrentRun = new BETARun ( fRunNumber );
 // Simulate Pedestals before entering actual simulation

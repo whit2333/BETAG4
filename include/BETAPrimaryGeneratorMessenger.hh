@@ -10,7 +10,7 @@
 class BETAPrimaryGeneratorAction;
 class G4UIdirectory;
 #include "G4UIcmdWithADouble.hh"
-
+#include "G4UIcmdWithoutParameter.hh"
 
 class BETAPrimaryGeneratorMessenger: public G4UImessenger
 {
@@ -30,6 +30,7 @@ class BETAPrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADouble*   sete_piRatio;
     G4UIcmdWithADouble*   setpi0Ratio;
 
+    G4UIcmdWithoutParameter * initGenerator;
 
     G4UIcmdWithADouble*   setPhiMax;
     G4UIcmdWithADouble*   setPhiMin;

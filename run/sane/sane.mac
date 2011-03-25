@@ -1,0 +1,24 @@
+/beta/target/setPolarizationAngle 280
+/beta/gun/setEnergyMin 3.0
+/beta/gun/setEnergyMax  3.1
+# Straight down the middle
+/beta/gun/setThetaMin 39.50
+/beta/gun/setThetaMax 40.50
+/beta/gun/setPhiMin   -0.5
+/beta/gun/setPhiMax   0.5
+/beta/gun/refresh
+/run/beamOn 200
+/control/shell replaySimulation 
+
+/beta/target/setPolarizationAngle 0
+/run/beamOn 200
+/control/shell replaySimulation 
+
+/beta/target/setPolarizationAngle 80
+/run/beamOn 200
+/control/shell replaySimulation 
+
+
+/beta/target/setPolarizationAngle 180
+/run/beamOn 200
+/control/shell replaySimulation 

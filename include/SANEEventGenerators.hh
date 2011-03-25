@@ -5,8 +5,18 @@
 #include "InSANEInclusivePhaseSpace.h"
 #include "InSANEInclusiveDiffXSec.h"
 
-class BigcalCenterEventGenerator   {
+/**
+ */ 
+class BETAG4EventGenerator   {
 public:
+
+   int fNumberOfGeneratedParticles;
+
+   InSANEPhaseSpaceVariable * varTheta;
+   InSANEPhaseSpaceVariable * varPhi;
+   InSANEPhaseSpaceVariable * varEnergy;
+   InSANEPhaseSpaceVariable * var;
+
    double fThetaMax;
    double fEnergyMax;
    double fPhiMax;
@@ -16,61 +26,80 @@ public:
    InSANEInclusivePhaseSpace * fPhaseSpace;
    InSANEPhaseSpaceSampler * fEventSampler;
    InSANEInclusiveDiffXSec * fDiffXSec;
+public:
+
+   void Print() {
+      std::cout << " ==== BETAG4EventGenerator ==== \n";
+      fPhaseSpace->Print();
+      fDiffXSec->Print();
+      fEventSampler->Print();
+      std::cout << " BETAG4EventGenerator member variables: ";
+      std::cout << "   Energy: " << fEnergyMin << " - " << fEnergyMax << "\n";
+      std::cout << "    Theta: " << fThetaMin << " - " << fThetaMax<< "\n";
+      std::cout << "      Phi: " << fPhiMin << " - " << fPhiMax<< "\n";
+   }
+
+   void SetThetaMax(double val) { 
+     fThetaMax = val;
+     varTheta->SetVariableMaxima(val);
+   }
+   void SetThetaMin(double val) { 
+     fThetaMin = val;
+     varTheta->SetVariableMinima(val);
+   }
+   void SetPhiMax(double val) { 
+     fPhiMax = val;
+     varPhi->SetVariableMaxima(val);
+   }
+   void SetPhiMin(double val) { 
+     fPhiMin = val;
+     varPhi->SetVariableMinima(val);
+   }
+   void SetEnergyMax(double val) { 
+     fEnergyMax = val;
+     varEnergy->SetVariableMaxima(val);
+   }
+   void SetEnergyMin(double val) { 
+     fEnergyMin = val;
+     varEnergy->SetVariableMinima(val);
+   }
+   BETAG4EventGenerator();
+
+   virtual ~BETAG4EventGenerator() {
+      if(fPhaseSpace) delete fPhaseSpace;
+   }
+
+   virtual double * GenerateEvent() {
+      return(fEventSampler->GenerateEvent());
+   }
+
+   virtual void * Refresh() {
+      Print();
+      if(fDiffXSec) fDiffXSec->Refresh();
+      if(fEventSampler)fEventSampler->Refresh(fDiffXSec);
+      Print();
+   } 
+
+
+};
+
+
+class BigcalCenterEventGenerator : public BETAG4EventGenerator   {
 
 public:
-/** c'tor */
-   BigcalCenterEventGenerator() {
-      fEnergyMin = 0.80;
-      fEnergyMax = 5.7;
-      fThetaMin  = 39.0;
-      fThetaMax  = 41.0;
-      fPhiMin    =-5.0;
-      fPhiMax    = 5.0;
-      fPhaseSpace = new InSANEInclusivePhaseSpace();
-
-      // Add random variables ( 3 needed) to phase space
-      InSANEPhaseSpaceVariable * var;
-      var = new InSANEPhaseSpaceVariable();
-      var->fVariableName="Energy"; 
-      var->fVariable="E#prime"; // ROOT string latex
-      var->fVariableMinima = fEnergyMin; //GeV
-      var->fVariableMaxima = fEnergyMax; //GeV
-      fPhaseSpace->AddVariable(var);
-
-      var = new InSANEPhaseSpaceVariable();
-      var->fVariableName="theta"; 
-      var->fVariable="#theta"; // ROOT string latex
-      var->fVariableMinima = fThetaMin*TMath::Pi()/180.0; //
-      var->fVariableMaxima = fThetaMax*TMath::Pi()/180.0; //
-      fPhaseSpace->AddVariable(var);
-
-      var = new InSANEPhaseSpaceVariable();
-      var->fVariableName="phi"; 
-      var->fVariable="#phi"; // ROOT string latex
-      var->fVariableMinima= fPhiMin*TMath::Pi()/180.0; //
-      var->fVariableMaxima= fPhiMax*TMath::Pi()/180.0; //
-      fPhaseSpace->AddVariable(var);
-
-      // Create the differential cross section to be used
-      fDiffXSec = new InSANEFlatInclusiveDiffXSec();
-      // Set the cross section's phase space
-      fDiffXSec->SetPhaseSpace(fPhaseSpace);
-      // Create event sampler
-      fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      // Set the seed 
-      fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
+   BigcalCenterEventGenerator(){ };
+   virtual ~BigcalCenterEventGenerator() {
    }
+};
 
 
-   ~BigcalCenterEventGenerator() {
-      if(fPhaseSpace) delete fPhaseSpace;
 
+class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
+public:
+   SANEInclusiveDISEventGenerator() ;
+
+   virtual ~SANEInclusiveDISEventGenerator() {
    }
-
-
-   double * GenerateEvent() { return(fEventSampler->GenerateEvent());} 
-
-
 
 };
 

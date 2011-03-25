@@ -11,29 +11,40 @@
 
 
 
+/**  Concrete hit class for a very thin (unrealistic) detector plane
+ *
+ *  The PID is from the numbering scheme of the PDG.
+ *  For example:
+ *  <ul>
+ *  <li>11 : electron</li>
+ *  <li>-11 : positron</li>
+ *  <li>13 : muon (negative charge) </li>
+ *  <li>14 : anti-muon (positive charge) </li>
+ *  <li>22 : photon (gamma)</li>
+ *  <li>111 : neutral pion</li>
+ *  <li>211 : pion+ (positive charge) </li>
+ *  <li>-211 : pion- (negative charge) </li>
+ *  </ul>
+ *  
+ */
 class BETAFakePlaneHit : public G4VHit {
+public:
+   G4int         fPID;
+/// World Position
+   G4ThreeVector fPosition; 
+   G4ThreeVector fLocalPosition; 
+   G4ThreeVector fMomentum;
+   G4double      fEnergy;
 
 public:
-  
-  // Constructors
-  BETAFakePlaneHit();
-  BETAFakePlaneHit(G4int id);
+  BETAFakePlaneHit(G4int id = 0);
+  ~BETAFakePlaneHit();
 
-  // Destructor
-   ~BETAFakePlaneHit();
-  
   inline void *operator new(size_t);
   inline void operator delete(void *aHit);
-
-  // Methods
   virtual void Draw();
   virtual void Print();
 
-  G4int pid;
-  G4double energy;
-  G4ThreeVector  localPos;
-  G4ThreeVector worldPos;
-  G4ThreeVector  momentum;
 private:
   
   // Data members

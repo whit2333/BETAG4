@@ -14,90 +14,61 @@
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 #include "fstream"
-#include <gsl/gsl_interp.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
+// #include <gsl/gsl_interp.h>
+// #include <gsl/gsl_errno.h>
+// #include <gsl/gsl_spline.h>
 // CONSTRUCTOR
 BETAFakePlane::BETAFakePlane ( G4String  name )
       :G4VSensitiveDetector ( name )
 {
    G4String HCname;
    detname = name;
-   collectionName.insert ( HCname="FakePlane" );
+   collectionName.insert ( HCname="fakePlane" );
    HCID = -1;
+   fSensitiveVolume=0;
 
 }
 
 // DESTRUCTOR
-BETAFakePlane::~BETAFakePlane() {}
+BETAFakePlane::~BETAFakePlane() {
 
-//////////////////////////////
-void BETAFakePlane::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
-{
+}
+//_________________________________________________________
 
+void BETAFakePlane::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent ) {
    fHitsCollection =
       new BETAFakePlaneHitsCollection ( detname, collectionName[0] );
    if ( HCID < 0 )
    {
       HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
    }
-
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
-
 }
+//_________________________________________________________
 
-//////////////////////
-
-G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
-{
-
+G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )  {
    G4Track * theTrack = aStep->GetTrack();
-   int pid;
+   G4StepPoint* point2 = aStep->GetPostStepPoint();
    double energy = theTrack->GetTotalEnergy();
 //G4cout << "Process Fake Plane Hit\n";
-   if (energy/MeV >500) {     // 10 MeV is bigcal thrshold
+   if(energy/MeV > 21.0) {     // 21 MeV is cherenkov threshold
 
-       if( ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&       theTrack->GetNextVolume()->GetName() == "BETADetectorphys"  )
-      {
-         pid = theTrack->GetDefinition()->GetPDGEncoding();
-//       else if ( theTrack->GetDefinition() == G4Positron::PositronDefinition()  &&
-//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-//       {
-//          pid = theTrack->GetDefinition()->GetPDGEncoding;
-//       }
-//       else if ( theTrack->GetDefinition() == G4PionPlus::PionPlusDefinition()  &&
-//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-//       {
-//          pid = 3;
-//       }
-//       else if ( theTrack->GetDefinition() == G4PionMinus::PionMinusDefinition()  &&
-//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-//       {
-//          pid = 4;
-//       }
-//       else if ( theTrack->GetDefinition() == G4Gamma::GammaDefinition()  &&
-//                 ( theTrack->GetVolume()->GetName() == "PlaneBeforeBigcal_phys"  ) &&
-//                 theTrack->GetNextVolume()->GetName() == "BETADetectorphys" )
-//       {
-//          pid = 5;
-//       } else {
-//          pid = 99;
-//       }
+// check that it is in the sensitive volme and is leaving the volume
+      if( ( theTrack->GetVolume() == this->GetSensitiveVolume() ) && 
+           ( point2->GetStepStatus() == fGeomBoundary   ) )  { 
 
-      BETAFakePlaneHit* aHit = new BETAFakePlaneHit ( pid );
+/*    std::cout << " track at boundary " << this->GetSensitiveVolume()->GetName() << " with energy " << energy << "\n";*/
+/*         pid = theTrack->GetDefinition()->GetPDGEncoding();*/
+      BETAFakePlaneHit* aHit = new BETAFakePlaneHit ( theTrack->GetDefinition()->GetPDGEncoding() );
       fHitsCollection->insert ( aHit );
-
       G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
       G4TouchableHistory* theTouchable
-      = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
+         = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
 
-      aHit->worldPos = preStepPoint->GetPosition();
-      aHit->localPos = theTouchable->GetHistory()->GetTopTransform().TransformPoint ( aHit->worldPos ) ;
-      aHit->momentum =  theTrack->GetMomentum();
-      aHit->energy     =    theTrack->GetTotalEnergy();
+      aHit->fPosition      = preStepPoint->GetPosition(); // World position
+      aHit->fLocalPosition = theTouchable->GetHistory()->GetTopTransform().TransformPoint ( aHit->fPosition ) ;
+      aHit->fMomentum      =  theTrack->GetMomentum();
+      aHit->fEnergy        =  energy/MeV;
     }
 
    } // end of energy threshold

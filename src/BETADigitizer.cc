@@ -262,9 +262,9 @@ void BETADigitizer::ReadOut() {
    LuciteHodoscopeEvent * lhEvent = fSimulationManager->fEvents->BETA->fLuciteHodoscopeEvent;
    Int_t lucpedval = fSimulationManager->fHodoscopeDetector->fTypicalPedestal;
    Int_t luctdcval = fSimulationManager->fHodoscopeDetector->fTypicalTDCPeak ;
-  lhEvent->ClearEvent("C");
-  TClonesArray &lucHits = *(lhEvent->fHits);
-  LuciteHodoscopeHit * aLUChit;
+   lhEvent->ClearEvent("C");
+   TClonesArray &lucHits = *(lhEvent->fHits);
+   LuciteHodoscopeHit * aLUChit;
 
   lhEvent->fNumberOfHits = 0;
   lhEvent->fRunNumber    =  fSimulationManager->GetRunNumber();

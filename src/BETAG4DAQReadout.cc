@@ -9,11 +9,24 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
 
   fSimulationManager = BETASimulationManager::GetInstance();
 
+   fBigcalHCID=-1;
+   fCherenkovHCID=-1;
+   fTrackerFakePlaneHCID=-1;
+   fBigcalFakePlaneHCID=-1;
+
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
+
   if(fSimulationManager->fConstruction->usingBigcal)
     fBigcalHCID  = SDman->GetCollectionID ( "BIGCAL/bigcal" );
+
   if(fSimulationManager->fConstruction->usingGasCherenkov)
     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+
+  if(fSimulationManager->fConstruction->usingFakePlaneAtBigcal)
+    fBigcalFakePlaneHCID  = SDman->GetCollectionID ( "ForwardTrackerPlane/fakePlane" );
+
+  if(fSimulationManager->fConstruction->usingFakePlaneAtForwardTracker)
+    fTrackerFakePlaneHCID  = SDman->GetCollectionID ( "BIGCALPlane/fakePlane" );
 
   fBigcalTriggerThreshold    = 500.0; //MeV
   fCherenkovTriggerThreshold = 5;//photons???
@@ -40,13 +53,11 @@ void BETAG4DAQReadout::Digitize() {
   const G4Event* currentEvent = fRM->GetCurrentEvent();
   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
 
-
-
-  if(fSimulationManager->fConstruction->usingBigcal) {
+  if( fBigcalHCID != -1 ) {
     fBigcalHC = ( BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
   }
 
-  if(fSimulationManager->fConstruction->usingGasCherenkov) {
+  if( fCherenkovHCID != -1 ) {
     fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
   }
 
@@ -56,7 +67,7 @@ void BETAG4DAQReadout::Digitize() {
   fNBigcalHits=0;
   for ( int gg =0;gg<1744;gg++ )
   {
-    bcHit = ( *fBigcalHC)[gg];
+    bcHit      = ( *fBigcalHC)[gg];
     energyTemp = bcHit->GetDepositedEnergy();
 
     if(energyTemp > 0.01){ ///10 MeV Block Threshold?
@@ -110,9 +121,77 @@ void BETAG4DAQReadout::Digitize() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::ReadOut() {
-   
+// Get pointers
+  G4String colName;
+  G4SDManager* SDman = G4SDManager::GetSDMpointer();
+  G4RunManager* fRM = G4RunManager::GetRunManager();
+  const G4Event* currentEvent = fRM->GetCurrentEvent();
+  G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
+
+  BETAG4MonteCarloEvent * mcEvent = fSimulationManager->fEvents->MC;
+  BETAFakePlaneHit* aHit;
+  TClonesArray * planeHits;
+  InSANEFakePlaneHit * bHit;
+///////////////////////////////////////////////////////
+// // Monte Carlo Thrown Event
+//     fSimulationManager->fEvents->MC->fEnergyThrown = fSimulationManager->generator->fCurrentEnergy;
+//     fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
+//     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
+//     fSimulationManager->fEvents->MC->fParticleThrown = 1;
+//     fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
+
+
+///////////////////////////////////////////////////////
+// Forward Tracker Hit readout
+   planeHits = mcEvent->fTrackerPlaneHits;
+   if( fTrackerFakePlaneHCID!= -1 ) {
+     fTrackerFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlaneHCID ) );
+/*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+      for ( int i=0;i<(fTrackerFakePlaneHC->entries());i++ ) {
+         aHit = ( *fTrackerFakePlaneHC ) [i];
+
+         bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+
+         bHit->fPID = aHit->fPID;
+         bHit->fEnergy = aHit->fEnergy;
+         bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+         bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV/(299792458.0*m/s)),aHit->fMomentum.y()/(MeV/(299792458.0*m/s)),aHit->fMomentum.z()/(MeV/(299792458.0*m/s)));
+         bHit->fTheta = aHit->fPosition.theta();
+         bHit->fPhi = aHit->fPosition.phi();
+
+// }
+      }
+   }
+
+///////////////////////////////////////////////////////
+// Forward Tracker Hit readout
+   planeHits = mcEvent->fBigcalPlaneHits;
+   if( fBigcalFakePlaneHCID != -1 ) {
+      fBigcalFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fBigcalFakePlaneHCID ) );
+/*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+      for ( int i=0;i<(fBigcalFakePlaneHC->entries());i++ ) {
+         aHit = ( *fBigcalFakePlaneHC ) [i];
+
+         bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+
+         bHit->fPID = aHit->fPID;
+         bHit->fEnergy = aHit->fEnergy;
+         bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+         bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV/(299792458.0*m/s)),aHit->fMomentum.y()/(MeV/(299792458.0*m/s)),aHit->fMomentum.z()/(MeV/(299792458.0*m/s)));
+         bHit->fTheta = aHit->fPosition.theta();
+         bHit->fPhi = aHit->fPosition.phi();
+      }
+  }
+
+
+
+
 
 }
+
+
 //     if ( energyTemp > bigcal_block_thresh)
 //     {
 //       aBigcalHit = new(bigcalHits[prot_hits]) BigcalHit();

@@ -32,7 +32,6 @@
 #include "HallCBeamEvent.h"
 #include "BETAG4MonteCarloEvent.h"
 #include "InSANERun.h"
-#include "BETAG4EventRecorder.hh"
 
 
 //______________________________________________________________________//
@@ -151,184 +150,35 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
   fSimulationManager->fEventNumber = numberOfEvent;
 
 // Simulates the trigger supervisor
-  fDAQReadout->Digitize();
+   fDAQReadout->Digitize();
 /*  fDAQReadout->Print();*/
 //  fBETAScalers->Digitize();
-  if( fDAQReadout->IsGoodEvent() ){
+   if( fDAQReadout->IsGoodEvent() ){
 
 /*    std::cout << " Above Readout Triggered DAQ! \n";*/
-    fBETADigitizer->Digitize();
+      fBETADigitizer->Digitize();
 
-    fSimulationManager->fEvents->BETA->fEventNumber = numberOfEvent;
-    fSimulationManager->fEvents->BETA->fRunNumber = numberOfEvent;
-    fSimulationManager->fEvents->MC->fEnergyThrown = generator->fCurrentEnergy;
-    fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
-    fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
-    fSimulationManager->fEvents->MC->fParticleThrown = 1;
-    fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
+      fSimulationManager->fEvents->BETA->fEventNumber = numberOfEvent;
+      fSimulationManager->fEvents->BETA->fRunNumber = numberOfEvent;
+      fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
+
+//     fSimulationManager->fEvents->MC->fEnergyThrown = generator->fCurrentEnergy;
+//     fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
+//     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
+//     fSimulationManager->fEvents->MC->fParticleThrown = 1;
 
 //      fBETADigitizer->Print();
 
-    fBETADigitizer->ReadOut();
-    fDAQReadout->ReadOut();
+      fBETADigitizer->ReadOut();
+      fDAQReadout->ReadOut();
 
-    fSimulationManager->fDetectorTree->Fill();
+      fSimulationManager->fDetectorTree->Fill();
 
-    fBETADigitizer->Clear();
+      fBETADigitizer->Clear();
 
-  }
+    }
 
     fDAQReadout->Clear();
-
-// // Initialize Hit Collection pointers
-//    hodoscopepmtHC = 0;
-//    pmtHC = 0;
-//    BIGCALHC = 0;
-//    BIGCALHC2 = 0;
-//    FTHC = 0;
-//    mirrorHC = 0;
-//    fakePlaneHC = 0;
-
-// zero PMT counts
-//    for (int i=0;i<20;i++) CherenkovPMTCount[i] =0;
-// 
-//    int tdc_count=0;
-//    int numPMTHits ( 0 ), numPMTHitsAtFace ( 0 ), numMirrorHits ( 0 );
-//    BCTE = 0.0;
-//    hodoscopePMTcount =0;
-
-//std::cout << "Total collection " << HCE->GetNumberOfCollections() << " \n";
-//    if ( HCE && HCE->GetNumberOfCollections() != 0)
-//    {
-
-//       if (construction->usingGasCherenkov && PMTHCID != -1 ) 
-//         pmtHC = ( BETAPMTHitsCollection* ) ( HCE->GetHC ( PMTHCID ) );
-// 
-//       if (construction->usingBigcal && BIGCALID != -1 ) 
-//         BIGCALHC = ( BETARCSCalorimeterHitsCollection* ) ( HCE->GetHC ( BIGCALID ) );
-// 
-//       if (construction->usingBigcal && BIGCALID2 != -1 ) 
-//         BIGCALHC2 = ( BETAProtvinoCalorimeterHitsCollection* ) ( HCE->GetHC ( BIGCALID2 ) );
-// 
-//       if (construction->usingForwardTracker && FTID != -1 ) 
-//         FTHC = ( BETAFrontTrackerHitsCollection* ) ( HCE->GetHC ( FTID ) );
-// 
-//       if (construction->usingGasCherenkov && MirrorHCID != -1 ) 
-//         mirrorHC = ( BETAMirrorHitsCollection* ) ( HCE->GetHC ( MirrorHCID ) );
-// 
-//       if (construction->usingFakePlaneAtBigcal && fakePlaneID != -1 )
-//         fakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCE->GetHC ( fakePlaneID ) );
-// 
-//       if (construction->usingBigcal && fBigcalHCID != -1 ) 
-//         fBigcalHC = ( BETAG4BigcalHitsCollection* ) ( HCE->GetHC ( fBigcalHCID ) );
-// 
-//       //if (construction->usingGasCherenkov) pmtG4HC = (G4THitsMap<double>*)( HCE->GetHC ( PMTG4HCID ) );
-// /*      for(int j=0;j<4;j++) if(colIDSum[j] !=1) { }*/
-//    }
-// 
-// G4double atotal; 
-// G4int iii;
-//  for(int j=0;j<4;j++) { 
-//    if( colIDSum[j] != -1 ) {
-//       atotal=0.0;
-//       iii=0;
-// 
-//       G4THitsMap<G4double>* evtMap = (G4THitsMap<G4double>*)(HCE->GetHC(colIDSum[j]));
-// if(evtMap) {
-// //      std::cout << "Det " << j << " entries=" << (evtMap)->entries() << " \n";
-// 
-//       std::map<G4int,G4double*>::iterator itr = evtMap->GetMap()->begin();
-// 
-// for(; itr != evtMap->GetMap()->end(); itr++)
-//       {
-//         G4int key = (itr->first);
-//         G4double val = *(itr->second);
-// 
-// /*       for(iii=0; iii < evtMap->entries() ; iii++)
-//        {
-//         G4double   val = *( (*evtMap)[iii]);*/
-//         atotal += (val);
-//       }
-// }
-// //std::cout << "Det " << j << " value=" << atotal << " \n";
-// }
-// }
-// << pmtG4HC->entries() << "\n";
-// Initialize counters and data holders
-//eCountsThisEvent = 0;
-
-
-// 
-//    triggered = true;
-// 
-//    if (construction->usingGasCherenkov) if ( pmtHC && PMTHCID != -1)
-//       {
-//         eventRecorder->SetGasCherenkovHitCollection(pmtHC);
-//         eventRecorder->FillGasCherenkovEvent(fSimulationManager->fRunNumber,numberOfEvent);
-//       }
-//    if (construction->usingFakePlaneAtBigcal && fakePlaneHC && fakePlaneID != -1 ) {
-//         eventRecorder->SetBigcalFakePlaneHitCollection(fakePlaneHC);
-//         eventRecorder->FillBigcalFakePlaneEvent(fSimulationManager->fRunNumber,numberOfEvent);
-//       }
-//    if( BIGCALHC && BIGCALHC2   && construction->usingBigcal) {
-//         eventRecorder->SetBigcalHitCollections(BIGCALHC,BIGCALHC2);
-//         eventRecorder->FillBigcalEvent(fSimulationManager->fRunNumber,numberOfEvent);
-//       }
-//    if ( FTHC   && FTID != -1 && construction->usingForwardTracker) {
-//         eventRecorder->SetForwardTrackerHitCollection(FTHC);
-//         eventRecorder->FillForwardTrackerEvent(fSimulationManager->fRunNumber,numberOfEvent);
-//       }
-// 
-//    if ( hodoscopepmtHC && hodoscopePMTHCID!=-1 && construction->usingLuciteHodoscope){
-//         eventRecorder->SetLuciteHodoscopeHitCollection(hodoscopepmtHC);
-//         eventRecorder->FillLuciteHodoscopeEvent(fSimulationManager->fRunNumber,numberOfEvent);
-//       }
-// 
-//   if (construction->usingBigcal && fBigcalHCID != -1 ) 
-//     fBigcalHC = ( BETAG4BigcalHitsCollection* ) ( HCE->GetHC ( fBigcalHCID ) );
-// 
-// /// \todo Fill trigger event thoroughly
-// // fill  trigger event!!! 
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[0]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[1]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[2]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[3]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[4]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[5]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[6]=1;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[7]=0;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[8]=0;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[9]=0;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[10]=0;
-// fSimulationManager->fEvents->TRIG->gen_event_trigtype[11]=0;
-// 
-//   for(int i=0;i<12;i++) {
-//   if(fSimulationManager->fEvents->TRIG->gen_event_trigtype[i] )
-//     fSimulationManager->fInSANERun->fTriggers[i]++;
-//   }
-// 
-
-// 
-//   fSimulationManager->fEvents->FillTrees();//fDetectorTree->Fill();
-
- // Trigger=1; // Record  event
-      /*
-       if ( fSimulationManager->plotterVisible() != 0 && ( numberOfEvent%10 ) == 0  ) {
-        c1->cd(0);
-        TfakePlaneElectronEnergy->Draw();
-        c1->cd(1);
-        TfakePlanePositronEnergy->Draw();
-        c1->Update();
-       }
-      */
-/////////
-// Simulated Truths
-//recordedEvent->mc_e= generator->momentum;
-//recordedEvent->mc_theta=generator->theta_particle;
-//recordedEvent->mc_phi=generator->phi_particle;
-////////////////////////////////////////
-//     DONE grabbing data from detectors
-////////////////////////////////////////
 
       if ( ( numberOfEvent%10 ) == 0 ) G4cout << " Event " << numberOfEvent << G4endl;
       numberOfEvent++;

@@ -16,14 +16,8 @@
 
 G4Allocator<BETAFakePlaneHit> BETAFakePlaneHitAllocator;
 
-BETAFakePlaneHit::BETAFakePlaneHit()
-      :pid ( -1 )
-
-{;
-}
-
-BETAFakePlaneHit::BETAFakePlaneHit ( G4int id )
-      :pid ( id )
+BETAFakePlaneHit::BETAFakePlaneHit ( G4int id)
+      : fPID ( id )
 
 {;
 }
