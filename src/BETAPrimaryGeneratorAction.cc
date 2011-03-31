@@ -26,7 +26,9 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction()
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
 
    fMonteCarloEvent=0;
-   fBETAG4EventGen = new BigcalCenterEventGenerator();
+   fBETAG4EventGen = new BeamOnTargetEventGenerator();
+// The following must be called
+   fBETAG4EventGen->Initialize();
 
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
 
@@ -63,7 +65,6 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
-
 /// \todo improve event generator/Geant4 interface -> Number of particles thrown in particular
    Double_t * MCvect ;
    MCvect            = fBETAG4EventGen->GenerateEvent();
@@ -72,18 +73,23 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
    fCurrentPhi       = MCvect[2];
 /*   G4ThreeVector aDirection(1,0,0);
       aDirection.setRThetaPhi(1,fCurrentTheta,fCurrentPhi);*/
-   G4ThreeVector aPosition( 2.*(G4UniformRand()-0.5)*1.0*cm,
-                            2.*(G4UniformRand()-0.5)*1.0*cm,
-                            2.*(G4UniformRand()-0.5)*1.0*cm );
-/// \todo implement target volume sampling 
-  fParticleGun->SetParticlePosition( aPosition );
+//    G4ThreeVector aPosition( 2.*(G4UniformRand()-0.5)*1.0*cm,
+//                             2.*(G4UniformRand()-0.5)*1.0*cm,
+//                             2.*(G4UniformRand()-0.5)*1.0*cm );
+/*  fParticleGun->SetParticlePosition( aPosition );*/
 
+  fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition() );
+
+/*
          G4ThreeVector aDirection(
             std::sin ( fCurrentTheta) *std::cos ( fCurrentPhi ) *m,
             std::sin ( fCurrentTheta ) *std::sin ( fCurrentPhi ) *m ,
-            std::cos ( fCurrentTheta ) *m ); 
-  fParticleGun->SetParticleMomentumDirection( aDirection );
-  fParticleGun->SetParticleEnergy( (fCurrentEnergy)*1000.0*MeV );
+            std::cos ( fCurrentTheta ) *m ); */
+
+  fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection() );
+
+  fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
+
   fParticleGun->SetParticleDefinition(electron);
 
 
@@ -92,8 +98,8 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       fMonteCarloEvent->ClearEvent("C");
 //   if(fBETAG4EventGen->fNumberOfGeneratedParticles == 1) {
       aThrownParticle = new((*fThrownParticles)[0]) BETAG4MonteCarloThrownParticle();
-      aThrownParticle->fPosition.SetXYZ(aPosition.x()/cm,aPosition.y()/cm,aPosition.z()/cm);
-      aThrownParticle->fMomentum.SetXYZ(aDirection.x()/MeV,aDirection.y()/MeV,aDirection.z()/MeV);
+      aThrownParticle->fPosition.SetXYZ(fParticleGun->GetParticlePosition().x()/cm,fParticleGun->GetParticlePosition().y()/cm,fParticleGun->GetParticlePosition().z()/cm);
+      aThrownParticle->fMomentum.SetXYZ(fBETAG4EventGen->GetMomentumVector().x(),fBETAG4EventGen->GetMomentumVector().y(),fBETAG4EventGen->GetMomentumVector().z());
       aThrownParticle->fTheta = fCurrentTheta;
       aThrownParticle->fPhi = fCurrentPhi;
       aThrownParticle->fEnergy = (fCurrentEnergy)*1000.0;

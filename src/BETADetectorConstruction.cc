@@ -67,7 +67,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingFakePlaneAtBigcal  = true;
    usingFakePlaneAtForwardTracker = true;
 
-   expHall_x = expHall_y = expHall_z = 30.0*m;
+   expHall_x = expHall_y = expHall_z = 10.0*m;
 
 // These should be in the cherenkov construction
    // alpha and beta for mirrors
@@ -623,9 +623,17 @@ for(int k = 0;k<28;k++) {
        PMTphotocathode_log->SetSensitiveDetector ( HodoscopePMTs );   
 
 
-// Visualization
-//    hodoscope_log->SetVisAttributes ( G4VisAttributes::Invisible );
-// 
+///////////////////////////////////////////////////
+//  Visualizations
+   hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
+
+   G4VisAttributes* lucAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.,0.5,0.5 ) );
+   lucAttributes->SetVisibility(false);
+   lucAttributes->SetDaughtersInvisible(false);
+   hodoscope_log->SetVisAttributes( lucAttributes );
+
+   G4VisAttributes* lucBarAttributes = new G4VisAttributes ( G4Colour ( 0.5,0.1,0.2 ) );
+   hodoscopeBar_log->SetVisAttributes( lucBarAttributes );
 //    hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
 }
@@ -1679,20 +1687,24 @@ G4double farMirrorAngle = 20* pi/180;
    OpTankFlatBlackSurface->SetModel ( unified );
    OpTankFlatBlackSurface->SetType ( dielectric_metal );
    OpTankFlatBlackSurface->SetFinish ( groundbackpainted );
+
  G4LogicalSkinSurface * flatBalckSurface = new G4LogicalSkinSurface ( "TankFlatBlackSurface", tank_log, OpTankFlatBlackSurface );
+
+///////////////////////////////////////////////////
+//  Visualizations
   tedlarBack_log->SetVisAttributes( G4VisAttributes::Invisible );
   tedlarFront_log->SetVisAttributes( G4VisAttributes::Invisible );
-//  Visualizations
    G4VisAttributes* tankAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5,0.25 ) );
 // tankAttributes->SetForceWireframe ( true );
-//   tankAttributes->SetDaughtersInvisible ( true );
+   tankAttributes->SetDaughtersInvisible ( false );
+   tankAttributes->SetVisibility( false );
    tank_log->SetVisAttributes ( tankAttributes );
 //    tank_log->SetVisAttributes ( G4VisAttributes::Invisible );
-//    tank_log->SetForceWireframe ( true );
-//    AlCans_log->SetVisAttributes(G4VisAttributes::Invisible);
+/*    tankAttributes->SetForceSolid ( true );*/
+   AlCans_log->SetVisAttributes(G4VisAttributes::Invisible);
 //    AlCans_log->SetForceWireframe ( true );
 
-   G4VisAttributes* mirrorAttributes = new G4VisAttributes ( G4Colour ( 1.0,1.0,1.0 ) );
+   G4VisAttributes* mirrorAttributes = new G4VisAttributes ( G4Colour ( 0.80,0.40,1.0 ) );
    mirrorAttributes->SetForceSolid(true);
    nearMirrorGlass_log->SetVisAttributes(mirrorAttributes);
    farMirrorGlass_log->SetVisAttributes(mirrorAttributes);
@@ -1722,6 +1734,8 @@ void BETADetectorConstruction::ConstructFakePlane()
    manager->AddNewDetector((G4VSensitiveDetector*)fakePlane);
    // Attach detector to scoring volume
    fakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)fakePlane);
+   fakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+
 //      planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
    }
 
@@ -1741,11 +1755,21 @@ void BETADetectorConstruction::ConstructFakePlane()
    manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
    // Attach detector to scoring volume
    trackerFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   }
-
+   trackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
 }
 
+}
 //___________________________________________________________________
+
+void BETADetectorConstruction::ConstructeHeliumBag(){
+   
+   
+   G4Box(
+
+
+}
+//___________________________________________________________________
+
 void BETADetectorConstruction::ConstructBETA()
 {
    G4double displacementBackwards = 1.0*cm;
@@ -1821,7 +1845,7 @@ BETADetectorConstruction::Construct()
 
 // The experimental Hall
    G4Box* expHall_box = new G4Box ( "World",expHall_x,expHall_y,expHall_z );
-   expHall_log = new G4LogicalVolume ( expHall_box,Vacuum,"World",0,0,0 );
+   expHall_log = new G4LogicalVolume ( expHall_box,/*Air*/Vacuum,"World",0,0,0 );
    expHall_phys = new G4PVPlacement ( 0,G4ThreeVector(),expHall_log,"World",0,false,0 );
 
 // FLOOR ( only for looks )
@@ -2110,19 +2134,36 @@ void BETADetectorConstruction::ConstructMagneticField() {
       if(!fMagneticField) fMagneticField = new BETAField();
       fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->fTargetAngle ); 
       G4FieldManager* fieldMgr
-      = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+         = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+
       fieldMgr->SetDetectorField ( fMagneticField );
       fieldMgr->CreateChordFinder ( fMagneticField );
-      fieldMgr->GetChordFinder()->SetDeltaChord ( 1.0e-1*cm ); // miss distance
+
+      G4double miss_distance = 0.00010*mm;
+      G4double delta_intersection = 0.5e-3 * mm;
+      G4double delta_one_step = 0.5e-3 * mm;
       G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
       G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
 
+// the “miss distance”
+// It is a measure of the error in whether the approximate track intersects a volume.
+// It is quite expensive in CPU performance to set too small “miss distance”.
+      fieldMgr->GetChordFinder()->SetDeltaChord ( miss_distance ); // miss distance
+
+// The “delta intersection” parameter is the accuracy to which an intersection with a volume boundary is calculated. This parameter is especially important because it is used to limit a bias that our algorithm (for boundary crossing in a field) exhibits. The intersection point is always on the 'inside' of the curve. By setting a value for this parameter that is much smaller than some acceptable error, the user can limit the effect of this bias.
+
+
+      fieldMgr->SetDeltaIntersection(delta_intersection);
+
+// The “delta one step” parameter is the accuracy for the endpoint of 'ordinary' integration steps, those which do not intersect a volume boundary. This parameter is a limit on the estimation error of the endpoint of each physics step.
+      fieldMgr->SetDeltaOneStep( delta_one_step );  // 0.5 micrometer
+
+
       fieldMgr->SetMinimumEpsilonStep( minEps );
       fieldMgr->SetMaximumEpsilonStep( maxEps );
-      fieldMgr->SetDeltaOneStep( 0.5e-1 * mm );  // 0.5 micrometer
 
       G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
-      tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
+//       tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
 
       expHall_log ->SetFieldManager ( fieldMgr, true );
 //    localFieldMgr->CreateChordFinder(fMagneticField);
@@ -2219,7 +2260,7 @@ void BETADetectorConstruction::SetMaterialPropertiesTables()
 // Air
    G4double airIndexOfRefraction=1.000293;
    G4MaterialPropertiesTable* airMPT = new G4MaterialPropertiesTable();
-   airMPT->AddConstProperty ( "RINDEX",airIndexOfRefraction );
+/*   airMPT->AddConstProperty ( "RINDEX",airIndexOfRefraction );*/
    airMPT->AddConstProperty ( "ABSLENGTH",1000.0*m );
    Air->SetMaterialPropertiesTable ( airMPT );
 
@@ -3042,6 +3083,7 @@ void BETADetectorConstruction::ConstructNose()
    physiCell = new G4PVPlacement ( 0, G4ThreeVector(), logicCell, "Cell",
                                    logicCWall, false, 0 );
 
+/// \todo add packing fraction geometry
    //May not need to break it up. I can just randomize the starting point of the
    //   particles over the entire Cell. I would only need to break it up if I were
    //   also going to propagate the particles into the cell...
@@ -3052,30 +3094,30 @@ void BETADetectorConstruction::ConstructNose()
   solidCell = new G4Tubs("Cell", 0.*cm, 1.25*cm, 0.15*cm, 0., 7.);
     logicCell = new G4LogicalVolume(solidCell, TargetNH3, "Cell");
 
-  for(i=0;i<10;i++){
-    x = -1.35*cm + i*0.30*cm;
-    y = 0.;
-    z = 0.;
-    physiCell = new G4PVPlacement(G4Transform3D(RMCell, G4ThreeVector(x,y,z)),
-      logicCell, "Cell", logicNose, true, i);
-  }
+//   for(i=0;i<10;i++){
+//     x = -1.35*cm + i*0.30*cm;
+//     y = 0.;
+//     z = 0.;
+//     physiCell = new G4PVPlacement(G4Transform3D(RMCell, G4ThreeVector(x,y,z)),
+//       logicCell, "Cell", logicNose, true, i);
+//   }
 
    //I want to see the tail...
    G4VisAttributes* TailVisAtt= new G4VisAttributes ( G4Colour ( 1.,0.,0.5,0.2 ) );
    TailVisAtt->SetVisibility ( true );
-   TailVisAtt->SetForceSolid ( true );
+/*   TailVisAtt->SetForceSolid ( true );*/
    logicTail->SetVisAttributes ( TailVisAtt );
 
    //Make the target cell wall visible
-   G4VisAttributes* CWallVisAtt= new G4VisAttributes ( G4Colour ( 1.,0.,0. ) );
+   G4VisAttributes* CWallVisAtt= new G4VisAttributes ( G4Colour ( 0.,0.4,0. ) );
    CWallVisAtt->SetVisibility ( true );
    CWallVisAtt->SetForceSolid ( false );
    logicCWall->SetVisAttributes ( CWallVisAtt );
 
-  G4VisAttributes* CellVisAtt= new G4VisAttributes(G4Colour(.5,1.,.5,0.3));
+  G4VisAttributes* CellVisAtt= new G4VisAttributes(G4Colour(.5,1.,.5,0.0));
   CellVisAtt->SetVisibility(true);
-  CellVisAtt->SetForceSolid(true);
-logicCell->SetVisAttributes ( CellVisAtt );//CellVisAtt);
+/*  CellVisAtt->SetForceSolid(true);*/
+  logicCell->SetVisAttributes ( CellVisAtt );//CellVisAtt);
 //    logicNose->SetVisAttributes ( AlVisAtt );
 //    logic4KSH->SetVisAttributes ( AlVisAtt );
 
@@ -3165,7 +3207,7 @@ void BETADetectorConstruction::ConstructMagnet()
 
    G4VisAttributes* CoilVisAtt= new G4VisAttributes ( G4Colour ( 0.5,0.5,0.5 ) );
    CoilVisAtt->SetVisibility ( true );
-   CoilVisAtt->SetForceSolid ( true );
+   CoilVisAtt->SetForceSolid ( false );
    logicCoil->SetVisAttributes ( CoilVisAtt );
 
    logicBrace1->SetVisAttributes ( CoilVisAtt );
@@ -3176,12 +3218,12 @@ void BETADetectorConstruction::ConstructMagnet()
    //Invisible and AlVisAtt are defined in ConstructAll()
    logicMagnet->SetVisAttributes ( AlVisAtt );
 
-   logicCoil->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
-   logicBrace1->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
-   logicBrace2->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
-   logicBrace3->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
-   logicBrace4->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
-   logicMagnet->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
+//    logicCoil->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
+//    logicBrace1->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
+//    logicBrace2->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
+//    logicBrace3->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
+//    logicBrace4->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
+//    logicMagnet->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
 }
 
 //___________________________________________________________________
@@ -3231,10 +3273,10 @@ void BETADetectorConstruction::ConstructBeamPipe()
                              G4Transform3D(xRM90,
                                            G4ThreeVector(0,0,-4.8433/2*m)));
    logicUpPipe0 = new G4LogicalVolume(UpPipe, Al, "UpPipe");
-   physiUpPipe0 = new G4PVPlacement(G4Transform3D(RM180,
-                                                  G4ThreeVector(0,0,-4.8433/2*m)),
-                                    logicUpPipe0, "UpPipe",
-                                    expHall_log, false, 0);
+//    physiUpPipe0 = new G4PVPlacement(G4Transform3D(RM180,
+//                                                   G4ThreeVector(0,0,-4.8433/2*m)),
+//                                     logicUpPipe0, "UpPipe",
+//                                     expHall_log, false, 0);
 
    G4VSolid* UpPipeCav =
       new G4SubtractionSolid("PipeCav1", solidUpPipe0Cav, FakeCan,
@@ -3289,10 +3331,10 @@ void BETADetectorConstruction::ConstructBeamPipe()
     new G4PVPlacement(G4Transform3D(RM00,
         G4ThreeVector(0,0,-4.8433*m-.25*2.54*cm)),
         logicFlange, "UpPipe", expHall_log, false, 0);
-  physiDownFlange =
-    new G4PVPlacement(G4Transform3D(RM00,
-        G4ThreeVector(0,0,5.25*m+.25*2.54*cm)),
-        logicFlange, "DownPipe", expHall_log, false, 0);
+//   physiDownFlange =
+//     new G4PVPlacement(G4Transform3D(RM00,
+//         G4ThreeVector(0,0,5.25*m+.25*2.54*cm)),
+//         logicFlange, "DownPipe", expHall_log, false, 0);
 
   //  Create the cavities for the flanges
   solidFlangeCav = new G4Tubs("FlangeCav", 0., rad0, .25*2.54*cm, 0., 7.);
@@ -3310,16 +3352,16 @@ void BETADetectorConstruction::ConstructBeamPipe()
     //Create the larger beampipes that lead to the accel. and the He Shroud
   solidUpPipe1 = new G4Tubs("UpPipe", 0., rad1+wall1, 13.8652/2.*m, 0, 7.);
   logicUpPipe1 = new G4LogicalVolume(solidUpPipe1, Al, "UpPipe");
-  physiUpPipe1 =
-    new G4PVPlacement(G4Transform3D(RM00,
-         G4ThreeVector(0,0,-4.8433*m-0.5*2.54*cm-13.8652/2.*m)),
-        logicUpPipe1, "UpPipe", expHall_log, false, 0);
+//   physiUpPipe1 =
+//     new G4PVPlacement(G4Transform3D(RM00,
+//          G4ThreeVector(0,0,-4.8433*m-0.5*2.54*cm-13.8652/2.*m)),
+//         logicUpPipe1, "UpPipe", expHall_log, false, 0);
   solidDownPipe1 = new G4Tubs("DownPipe", 0., rad1+wall1, 9.00/2.*m, 0, 7.);
   logicDownPipe1 = new G4LogicalVolume(solidDownPipe1, Al, "DownPipe");
-  physiDownPipe1 =
-    new G4PVPlacement(G4Transform3D(RM00,
-         G4ThreeVector(0,0,5.25*m+0.5*2.54*cm+9.0/2.*m)),
-        logicDownPipe1, "DownPipe", expHall_log, false, 0);
+//   physiDownPipe1 =
+//     new G4PVPlacement(G4Transform3D(RM00,
+//          G4ThreeVector(0,0,5.25*m+0.5*2.54*cm+9.0/2.*m)),
+//         logicDownPipe1, "DownPipe", expHall_log, false, 0);
 
   // Create cavities for the larger pipes.
 
@@ -3340,10 +3382,10 @@ void BETADetectorConstruction::ConstructBeamPipe()
 //    to detect all particles that hit the "dump"
   solidHeShroud = new G4Tubs("Shroud", 0, rad1+wall1, 1.*mm, 0., 7.);
   logicHeShroud = new G4LogicalVolume(solidHeShroud, Vacuum, "Shroud");
-  physiHeShroud =
-    new G4PVPlacement(G4Transform3D(RM00,
-     G4ThreeVector(0,0,14.25*m+0.5*2.54*cm+0.5*mm)),
-        logicHeShroud, "Shroud", expHall_log, false, 0);
+//   physiHeShroud =
+//     new G4PVPlacement(G4Transform3D(RM00,
+//      G4ThreeVector(0,0,14.25*m+0.5*2.54*cm+0.5*mm)),
+//         logicHeShroud, "Shroud", expHall_log, false, 0);
 
    logicUpPipe0->SetUserLimits(new G4UserLimits(100.*m,100.*m, 1.*s, ULimits));
    logicDownPipe0->SetUserLimits(new G4UserLimits(100.*m,100.*m, 1.*s, ULimits));
@@ -3353,14 +3395,14 @@ void BETADetectorConstruction::ConstructBeamPipe()
    //Vis attributes for the pipes
    G4VisAttributes* PipeVisAtt = new G4VisAttributes(G4Colour(0.5,1.,0.5));
    PipeVisAtt->SetVisibility(true);
-   PipeVisAtt->SetForceSolid(true);
+   PipeVisAtt->SetForceWireframe(true);
    logicUpPipe0->SetVisAttributes(PipeVisAtt);
    logicDownPipe0->SetVisAttributes(PipeVisAtt);
 
    //Vis attributes for the cavities
    G4VisAttributes* PipeCavVisAtt = new G4VisAttributes(G4Colour(0.5,.1,0.7));
    PipeCavVisAtt->SetVisibility(true);
-   PipeCavVisAtt->SetForceSolid(true);
+   PipeCavVisAtt->SetForceWireframe(true);
    logicUpPipe0Cav->SetVisAttributes(PipeCavVisAtt);
    logicDownPipe0Cav->SetVisAttributes(PipeCavVisAtt);
 

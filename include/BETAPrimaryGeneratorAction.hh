@@ -19,7 +19,9 @@ class BETAPrimaryGeneratorMessenger;
 class G4ParticleDefinition;
 // class BETASimulationManager;
 
-
+/**
+ *   \ingroup EventGen
+ */
 /** BETAPrimaryGeneratorAction is a mandatory concrete imp of G4VUserPrimaryGeneratorAction
  */
 class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {

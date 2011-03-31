@@ -10,8 +10,11 @@
 class BETAPrimaryGeneratorAction;
 class G4UIdirectory;
 #include "G4UIcmdWithADouble.hh"
+#include "G4UIcmdWithAString.hh"
 #include "G4UIcmdWithoutParameter.hh"
-
+/**
+ *   \ingroup EventGen
+ */
 class BETAPrimaryGeneratorMessenger: public G4UImessenger
 {
   public:
@@ -21,15 +24,6 @@ class BETAPrimaryGeneratorMessenger: public G4UImessenger
     void SetNewValue(G4UIcommand*, G4String);
     
   private:
-    BETAPrimaryGeneratorAction* BETAAction;
-    G4UIdirectory*               gunDir; 
-    G4UIcmdWithADoubleAndUnit*   polarCmd;
-    G4UIcmdWithAnInteger*   isotropic;
-    G4UIcmdWithADouble*   momentum;
-    G4UIcmdWithADouble*   sigmaMomentum;
-    G4UIcmdWithADouble*   sete_piRatio;
-    G4UIcmdWithADouble*   setpi0Ratio;
-
     G4UIcmdWithoutParameter * initGenerator;
 
     G4UIcmdWithADouble*   setPhiMax;
@@ -38,6 +32,19 @@ class BETAPrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADouble*   setThetaMax;
     G4UIcmdWithADouble*   setEnergyMax;
     G4UIcmdWithADouble*   setEnergyMin;
+    G4UIcmdWithAString*   setType;
+
+    BETAPrimaryGeneratorAction* BETAAction;
+
+    G4UIdirectory*               gunDir; 
+    G4UIcmdWithADoubleAndUnit*   polarCmd;
+    G4UIcmdWithAnInteger*   isotropic;
+    G4UIcmdWithADouble*   momentum;
+    G4UIcmdWithADouble*   sigmaMomentum;
+    G4UIcmdWithADouble*   sete_piRatio;
+    G4UIcmdWithADouble*   setpi0Ratio;
+
+
 };
 
 #endif

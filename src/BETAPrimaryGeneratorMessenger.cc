@@ -70,6 +70,16 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
    initGenerator->SetGuidance ( " Refresh the event generator after modifying settings " );
    initGenerator->AvailableForStates ( G4State_Idle );
 
+   setType = new G4UIcmdWithAString("/beta/gun/setEventType",this);
+   setType->SetGuidance ( " Set the type of event generated. Note that this resets all the set values to their defaults." );
+   setType->SetGuidance ( " Possible arguments are :" );
+   setType->SetGuidance ( " flat - uniformly populate events" );
+   setType->SetGuidance ( " mott - mott cross section" );
+   setType->SetGuidance ( " dis - inclusive DIS (F1p and F2p)" );
+   setType->SetGuidance ( " beamOnTarget - electron beam shot from up stream on the target (GEANT4 physics)" );
+   setType->SetDefaultValue ( "flat" );
+   setType->AvailableForStates ( G4State_Idle );
+
    sigmaMomentum = new G4UIcmdWithADouble ( "/beta/gun/sigmaMomentum",this );
    sigmaMomentum->SetGuidance ( " Set relative error of particle momentum" );
    sigmaMomentum->SetDefaultValue ( 0 );
@@ -102,7 +112,7 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 {
 
    if ( command == setThetaMax ) {
-    BETAAction->fBETAG4EventGen->SetThetaMax(setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      BETAAction->fBETAG4EventGen->SetThetaMax(setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
    }
    if ( command == setPhiMax ) {
       BETAAction->fBETAG4EventGen->SetPhiMax(setPhiMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
@@ -118,6 +128,31 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
    }
    if ( command == setEnergyMin) {
       BETAAction->fBETAG4EventGen->SetEnergyMin(setEnergyMin->GetNewDoubleValue(newValue));
+   }
+   if ( command == setType) {
+      if(newValue == "flat") {
+         if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
+         BETAAction->fBETAG4EventGen = new BigcalSimpleEventGenerator();
+         BETAAction->fBETAG4EventGen->Initialize();
+      } else if(newValue == "cone") {
+         if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
+         BETAAction->fBETAG4EventGen = new ConeEventGenerator();
+         BETAAction->fBETAG4EventGen->Initialize();
+      } else if(newValue == "dis") {
+         if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
+         BETAAction->fBETAG4EventGen = new DISEventGenerator();
+         BETAAction->fBETAG4EventGen->Initialize();
+      } else if(newValue == "mott") {
+         if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
+         BETAAction->fBETAG4EventGen = new MottEventGenerator();
+         BETAAction->fBETAG4EventGen->Initialize();
+     } else if(newValue == "beamOnTarget") {
+         if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
+         BETAAction->fBETAG4EventGen = new BeamOnTargetEventGenerator();
+         BETAAction->fBETAG4EventGen->Initialize();
+      } else {
+         std::cout << " Parameter not found!\n";
+      }
    }
    if ( command == initGenerator) {
       BETAAction->fBETAG4EventGen->Refresh();

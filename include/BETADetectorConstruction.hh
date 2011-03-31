@@ -160,6 +160,12 @@ public :
 ///Constructs the Target Nose
   void ConstructNose();
 
+/** Constructs the Helium Bag and Helium Bag extension
+ * 
+ * 
+ */
+  void ConstructeHeliumBag();
+
 /**
  * Called from ConstructBETA
  * Should get the simulation manager and names and corresponding pointers to scoring volumes.
@@ -351,6 +357,9 @@ G4double alpha1,
 //The spherical mirror (near and far) rotation matrix
   G4RotationMatrix RM1,RM2,RM3,RM4,RM5,RM6,RM7,RM8,
 		   pmtRM1,pmtRM2,pmtRM3,pmtRM4,pmtRM5,pmtRM6,pmtRM7,pmtRM8;
+
+
+
 
 
 

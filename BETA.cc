@@ -111,7 +111,7 @@ int main(int argc,char** argv)
   runManager->SetUserAction(stepping_action);
 
 
-  //new TRint("delayPlots", NULL, NULL, NULL, 0);
+  new TRint("delayPlots", NULL, NULL, NULL, 0);
 
   // Initialize G4 kernel
   runManager->Initialize();
@@ -158,3 +158,9 @@ int main(int argc,char** argv)
 
   return 0;
 }
+
+/** @defgroup EventGen Event Generator
+ *  Event generator 
+ *  @{
+ */
+/** @} */ 
