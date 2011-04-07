@@ -1569,7 +1569,7 @@ G4double farMirrorAngle = 20* pi/180;
 
   BETASimulationManager::GetInstance()->InitScoring();
 
-   BETAG4PMTArray* aPMTModel =
+   G4VSensitiveDetector* aPMTModel =
       new BETAG4PMTArray ( "GasCherenkov" );
    
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
@@ -1604,12 +1604,13 @@ G4double farMirrorAngle = 20* pi/180;
 
    // Register detector with manager
 //   manager->AddNewDetector ( CherenkovTank );
+   pmtFace_log->SetSensitiveDetector (aPMTModel );
+
    manager->AddNewDetector ( aPMTModel );
 
    // Attach detector to scoring volume
  //  pmtFace_log->SetSensitiveDetector(fSimulationManager->fCherenkovDetector);
 // CherenkovTank );
-   pmtFace_log->SetSensitiveDetector (aPMTModel );
 
 /// Also doing mirrors as a detector, but this is only for determining the optical efficiency of the
 /// mirror/pmt combination.
@@ -1761,11 +1762,150 @@ void BETADetectorConstruction::ConstructFakePlane()
 }
 //___________________________________________________________________
 
-void BETADetectorConstruction::ConstructeHeliumBag(){
-   
-   
-   G4Box(
+void BETADetectorConstruction::ConstructHeliumBag() {
 
+   G4double fHorizSize = 4.67*2.54*cm;
+   G4double fVertSize  = 7.97*2.54*cm +0.13*2.54*cm;
+   G4double fLength  = 71.97*2.54*cm;
+   G4double fWindowThickness  = 0.016*2.54*cm;
+   G4RotationMatrix zeroRot;
+   G4double fTopDistaceFromBeamline = 1.5*2.54*cm;
+   G4double small_dist = 0.01*mm;
+   fHeBagExtenderBox     = new G4Box("HeBagExtenderBox", fHorizSize/2.0+small_dist, fVertSize/2.0+small_dist,fLength/2.0+small_dist);
+   fHeBagExtenderBox_log = new G4LogicalVolume(fHeBagExtenderBox, HeGas, "HeBagExtenderBox_log");
+   new G4PVPlacement(0,
+        G4ThreeVector(0,-fVertSize/2.0+fTopDistaceFromBeamline,22.0*2.54*cm+fLength/2.0),
+        fHeBagExtenderBox_log, "HeBagExtenderBox_phys", expHall_log, false, 0);
+
+// Windows front and sides 
+   fHeBagExtenderFrontWindow = new G4Box("HeBagExtenderFrontWindow", 
+      fHorizSize/2.0-2.0*fWindowThickness, // subtracting size from front window to not hit sides
+      fVertSize/2.0-2.0*fWindowThickness, // subtracting size from front window to not hit sides
+      fWindowThickness/2.0);
+   fHeBagExtenderFrontWindow_log = new G4LogicalVolume(fHeBagExtenderFrontWindow, Al, "HeBagExtenderFrontWindow_log");
+   new G4PVPlacement(0,
+        G4ThreeVector( 0, 0, -fLength/2.0+fWindowThickness/2.0),
+        fHeBagExtenderFrontWindow_log, "HeBagExtenderBox_log", fHeBagExtenderBox_log, false, 0);
+
+   fHeBagExtenderHorizWindow = new G4Box("HeBagExtenderHorizWindow", 
+      fHorizSize/2.0, 
+      fWindowThickness/2.0, 
+      fLength/2.0);
+   fHeBagExtenderHorizWindow_log = new G4LogicalVolume(fHeBagExtenderHorizWindow, Al, "HeBagExtenderHorizWindow_log");
+   new G4PVPlacement(0,
+        G4ThreeVector(0.0,fVertSize/2.0-fWindowThickness/2.0,0.0),
+        fHeBagExtenderHorizWindow_log, "HeBagExtenderHorizWindow1_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(0.0,-1.0*fVertSize/2.0+fWindowThickness/2.0,0.0),
+        fHeBagExtenderHorizWindow_log, "HeBagExtenderHorizWindow2_phys", fHeBagExtenderBox_log, false, 0);
+
+   fHeBagExtenderVertWindow = new G4Box("HeBagExtenderVertWindow", 
+      fWindowThickness/2.0, 
+      fVertSize/2.0, 
+      fLength/2.0);
+   fHeBagExtenderVertWindow_log = new G4LogicalVolume(fHeBagExtenderVertWindow, Al, "HeBagExtenderVertWindow_log");
+   new G4PVPlacement(0,
+        G4ThreeVector(fHorizSize/2.0-fWindowThickness/2.0,0.0,0.0),
+        fHeBagExtenderVertWindow_log, "HeBagExtenderVertWindow1_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(-1.0*fHorizSize/2.0+fWindowThickness/2.0,0.0,0.0),
+        fHeBagExtenderVertWindow_log, "HeBagExtenderVertWindow2_phys", fHeBagExtenderBox_log, false, 0);
+
+
+// Angles used as longitudinal support
+// Creat the angle pieces, 4 of them (easier than rotating)
+   fHeBagExtenderAngleBox1     = new G4Box("HeBagExtenderAngleBox1", 1.0*2.54*cm/2.0, 1.0*2.54*cm/2.0,69.98*2.54*cm/2.0);
+   fHeBagExtenderAngleBox2     = new G4Box("HeBagExtenderAngleBox2", 1.0*2.54*cm/2.0, 1.0*2.54*cm/2.0,69.98*2.54*cm/2.0+small_dist);
+   fHeBagExtenderAngle1 = 
+      new G4SubtractionSolid("HeBagExtenderAngle1", 
+                             fHeBagExtenderAngleBox1, 
+                             fHeBagExtenderAngleBox2, 
+                             G4Transform3D(zeroRot, G4ThreeVector(-0.13*2.54*cm,-0.13*2.54*cm,0)));
+   fHeBagExtenderAngle2 = 
+      new G4SubtractionSolid("HeBagExtenderAngle2", 
+                             fHeBagExtenderAngleBox1, 
+                             fHeBagExtenderAngleBox2, 
+                             G4Transform3D(zeroRot, G4ThreeVector(0.13*2.54*cm,-0.13*2.54*cm,0)));
+   fHeBagExtenderAngle3 = 
+      new G4SubtractionSolid("HeBagExtenderAngle3", 
+                             fHeBagExtenderAngleBox1, 
+                             fHeBagExtenderAngleBox2, 
+                             G4Transform3D(zeroRot, G4ThreeVector(0.13*2.54*cm,0.13*2.54*cm,0)));
+   fHeBagExtenderAngle4 = 
+      new G4SubtractionSolid("HeBagExtenderAngle4", 
+                             fHeBagExtenderAngleBox1, 
+                             fHeBagExtenderAngleBox2, 
+                             G4Transform3D(zeroRot, G4ThreeVector(-0.13*2.54*cm,0.13*2.54*cm,0)));
+   fHeBagExtenderAngle1_log = new G4LogicalVolume(fHeBagExtenderAngle1, Al, "HeBagExtenderAngle1_log");
+   fHeBagExtenderAngle2_log = new G4LogicalVolume(fHeBagExtenderAngle2, Al, "HeBagExtenderAngle2_log");
+   fHeBagExtenderAngle3_log = new G4LogicalVolume(fHeBagExtenderAngle3, Al, "HeBagExtenderAngle3_log");
+   fHeBagExtenderAngle4_log = new G4LogicalVolume(fHeBagExtenderAngle4, Al, "HeBagExtenderAngle4_log");
+/* 1 is in first quadrant 2 goes CCW */
+
+   new G4PVPlacement(0,
+        G4ThreeVector(fHorizSize/2.0-fWindowThickness-1.0*2.54*cm/2.0,fVertSize/2.0-fWindowThickness-1.0*2.54*cm/2.0,0.0),
+        fHeBagExtenderAngle1_log, "HeBagExtenderAngle1_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(-1.0*fHorizSize/2.0+fWindowThickness+1.0*2.54*cm/2.0,fVertSize/2.0-fWindowThickness-1.0*2.54*cm/2.0,0.0),
+        fHeBagExtenderAngle2_log, "HeBagExtenderAngle2_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(-1.0*fHorizSize/2.0+fWindowThickness+1.0*2.54*cm/2.0,-1.0*fVertSize/2.0+fWindowThickness+1.0*2.54*cm/2.0,0.0),
+        fHeBagExtenderAngle3_log, "HeBagExtenderAngle3_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(fHorizSize/2.0-fWindowThickness-1.0*2.54*cm/2.0,-1.0*fVertSize/2.0+fWindowThickness+1.0*2.54*cm/2.0,0.0),
+        fHeBagExtenderAngle4_log, "HeBagExtenderAngle4_phys", fHeBagExtenderBox_log, false, 0);
+
+// vertical supports
+   fHeBagExtenderVertSupport   = new G4Box("HeBagExtenderVertSupport", 0.13*2.54*cm/2.0, 7.72*2.54*cm/2.0, 1.0*2.54*cm/2.0);
+   fHeBagExtenderVertSupport_log = new G4LogicalVolume(fHeBagExtenderVertSupport, Al, "HeBagExtenderVertSupport_log");
+   new G4PVPlacement(0,
+        G4ThreeVector(fHorizSize/2.0-0.13*2.54*cm/2.0-fWindowThickness,0.0,fLength/2.0-1.0*2.54*cm/2.0),
+        fHeBagExtenderVertSupport_log, "HeBagExtenderVertSupport1_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(-1.0*fHorizSize/2.0+0.13*2.54*cm/2.0+fWindowThickness,0.0,fLength/2.0-1.0*2.54*cm/2.0),
+        fHeBagExtenderVertSupport_log, "HeBagExtenderVertSupport2_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(fHorizSize/2.0-0.13*2.54*cm/2.0-fWindowThickness,0.0,-1.0*fLength/2.0+1.0*2.54*cm/2.0),
+        fHeBagExtenderVertSupport_log, "HeBagExtenderVertSupport3_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(-1.0*fHorizSize/2.0+0.13*2.54*cm/2.0+fWindowThickness,0.0,-1.0*fLength/2.0+1.0*2.54*cm/2.0),
+        fHeBagExtenderVertSupport_log, "HeBagExtenderVertSupport4_phys", fHeBagExtenderBox_log, false, 0);
+
+// horizontal supports
+   fHeBagExtenderHorizSupport   = new G4Box("HeBagExtenderHorizSupport",  4.67*2.54*cm/2.0, 0.13*2.54*cm/2.0, 1.0*2.54*cm/2.0);
+   fHeBagExtenderHorizSupport_log = new G4LogicalVolume(fHeBagExtenderHorizSupport, Al, "HeBagExtenderHorizSupport_log");
+   new G4PVPlacement(0,
+        G4ThreeVector(0.0,fVertSize/2.0-0.13*2.54*cm/2.0-fWindowThickness,fLength/2.0-1.0*2.54*cm/2.0),
+        fHeBagExtenderHorizSupport_log, "HeBagExtenderHorizSupport1_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(0.0,-1.0*fVertSize/2.0+0.13*2.54*cm/2.0+fWindowThickness,fLength/2.0-1.0*2.54*cm/2.0),
+        fHeBagExtenderHorizSupport_log, "HeBagExtenderHorizSupport2_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(0.0,fVertSize/2.0-0.13*2.54*cm/2.0-fWindowThickness,-1.0*fLength/2.0+2.54*cm/2.0),
+        fHeBagExtenderHorizSupport_log, "HeBagExtenderHorizSupport3_phys", fHeBagExtenderBox_log, false, 0);
+   new G4PVPlacement(0,
+        G4ThreeVector(0.0,-1.0*fVertSize/2.0+0.13*2.54*cm/2.0+fWindowThickness,-1.0*fLength/2.0+2.54*cm/2.0),
+        fHeBagExtenderHorizSupport_log, "HeBagExtenderHorizSupport4_phys", fHeBagExtenderBox_log, false, 0);
+/*
+   fHeBagExtenderHorizSupport   = new G4Box("HeBagExtenderHorizSupport", 0.13*2.54*cm/2.0, 7.72*2.54*cm/2.0,1.0*2.54*cm/2.0);
+   fHeBagExtenderHorizSupport_log = new G4LogicalVolume(fHeBagExtenderHorizSupport, Al, "HeBagExtenderHorizSupport_log");  */
+
+// Visualization
+   G4VisAttributes* fHeBagExtenderWallsVisAtt= new G4VisAttributes ( G4Colour ( 0.1,0.0,0.8,0.4 ) );
+   fHeBagExtenderWallsVisAtt->SetVisibility ( true );
+   fHeBagExtenderWallsVisAtt->SetForceSolid ( true );
+
+   fHeBagExtenderFrontWindow_log->SetVisAttributes ( fHeBagExtenderWallsVisAtt );
+   fHeBagExtenderVertWindow_log->SetVisAttributes ( fHeBagExtenderWallsVisAtt );
+   fHeBagExtenderHorizWindow_log->SetVisAttributes ( fHeBagExtenderWallsVisAtt );
+
+   G4VisAttributes* fHeBagExtenderAngleVisAtt= new G4VisAttributes ( G4Colour ( 0.,0.4,0. ) );
+   fHeBagExtenderAngleVisAtt->SetVisibility ( true );
+/*   fHeBagExtenderAngleVisAtt->SetForceSolid ( false );*/
+   fHeBagExtenderAngle1_log->SetVisAttributes ( fHeBagExtenderAngleVisAtt );
+   fHeBagExtenderAngle2_log->SetVisAttributes ( fHeBagExtenderAngleVisAtt );
+   fHeBagExtenderAngle3_log->SetVisAttributes ( fHeBagExtenderAngleVisAtt );
+   fHeBagExtenderAngle4_log->SetVisAttributes ( fHeBagExtenderAngleVisAtt );
 
 }
 //___________________________________________________________________
@@ -1801,8 +1941,6 @@ void BETADetectorConstruction::ConstructBETA()
    if (usingGasCherenkov)  ConstructCherenkov();
    if (usingLuciteHodoscope)  ConstructHodoscope();
    if (usingBigcal)   ConstructBIGCAL();
-
-
 
    expHall_log->SetVisAttributes ( G4VisAttributes::Invisible );
    BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
@@ -1864,11 +2002,13 @@ ConstructTarget();
 // From Justin Wright:
 //    Construct everything in the target can.
   //Also constructs the target magnet and nosepiece.
-ConstructTCan();
-G4cout<<"Tcan";
-ConstructN2Shield();
-G4cout<<"N2shield";
-ConstructBeamPipe();
+   ConstructTCan();
+   G4cout<<"Tcan";
+   ConstructN2Shield();
+//   G4cout<<"N2shield";
+//   ConstructBeamPipe();
+   G4cout<<"Helium Bag";
+   ConstructHeliumBag();
    G4Element* H  = new G4Element ( "Hydrogen","H" ,1., 1.01*g/mole );
    G4Element* N  = new G4Element ( "Nitrogen","N" , 7.,  14.01*g/mole );
    G4Material* NH3solid =
@@ -2097,7 +2237,7 @@ ConstructBeamPipe();
    // Import Geant4 geometry to VGM
    //
 
-             Geant4GM::Factory g4Factory;
+/*             Geant4GM::Factory g4Factory;
     //         g4Factory.SetDebug(1);
              g4Factory.Import(expHall_phys);
      // Export VGM geometry to Root
@@ -2113,6 +2253,7 @@ ConstructBeamPipe();
               g4Factory.Export(&rtFactory);
               gGeoManager->CloseGeometry();
               gGeoManager->Export("SANEGeometry.root");
+*/
 //    
 ///////////////////////////////////////////////////////
 // END OF OPTICAL SURFACES
@@ -2375,6 +2516,9 @@ void BETADetectorConstruction::DefineMaterials()
 
    N2Gas = new G4Material ( "N2Gas", density=1.*g/cm3, ncomponents=1 );
    N2Gas->AddElement ( N, natoms = 2 );
+
+   HeGas =  new G4Material ( "HeGas", z=2., a=4.002602*g/mole, density=(0.1786/1000.0)*g/cm3 );
+
 
    G4Material* H2O =
       new G4Material ( "Water", density= 1.000*g/cm3, ncomponents=2 );

@@ -24,7 +24,7 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
 {
    G4String HCname;
    detname = name;
-   collectionName.insert ( HCname="pmt" );
+   collectionName.insert ( HCname="lpmt" );
    HCID = -1;
    fDiscriminatorThreshold = 2;
 

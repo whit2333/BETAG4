@@ -6,8 +6,9 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCSums" );
   fBigcalADCSumDC =
       new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCSums" );
-
-  fSimulationManager = BETASimulationManager::GetInstance();
+  
+  fSimulationManager = 0;
+//   fSimulationManager = BETASimulationManager::GetInstance();
 
    fBigcalHCID=-1;
    fCherenkovHCID=-1;
@@ -15,22 +16,29 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    fBigcalFakePlaneHCID=-1;
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
+  G4String colName;
 
-  if(fSimulationManager->fConstruction->usingBigcal)
-    fBigcalHCID  = SDman->GetCollectionID ( "BIGCAL/bigcal" );
+/*  if(fSimulationManager->fConstruction->usingBigcal)*/
+     fBigcalHCID  = SDman->GetCollectionID (colName= "BIGCAL/bigcal" );
+  if(fBigcalHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-  if(fSimulationManager->fConstruction->usingGasCherenkov)
-    fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+/*  if(fSimulationManager->fConstruction->usingGasCherenkov)*/
+     fCherenkovHCID  = SDman->GetCollectionID (colName= "GasCherenkov/pmt" );
+  if(fCherenkovHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-  if(fSimulationManager->fConstruction->usingFakePlaneAtBigcal)
-    fBigcalFakePlaneHCID  = SDman->GetCollectionID ( "ForwardTrackerPlane/fakePlane" );
+/*  if(fSimulationManager->fConstruction->usingFakePlaneAtBigcal)*/
+    fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
+  if(fBigcalFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-  if(fSimulationManager->fConstruction->usingFakePlaneAtForwardTracker)
-    fTrackerFakePlaneHCID  = SDman->GetCollectionID ( "BIGCALPlane/fakePlane" );
+/*  if(fSimulationManager->fConstruction->usingFakePlaneAtForwardTracker)*/
+    fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
+  if(fTrackerFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
   fBigcalTriggerThreshold    = 500.0; //MeV
   fCherenkovTriggerThreshold = 5;//photons???
+  
 
+    Reset();
 }
 //__________________________________________________________________
 
@@ -43,6 +51,7 @@ BETAG4DAQReadout::~BETAG4DAQReadout() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::Digitize() {
+   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
 
 // Reset all event level values
 
@@ -59,7 +68,12 @@ void BETAG4DAQReadout::Digitize() {
 
   if( fCherenkovHCID != -1 ) {
     fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+  } else {
+     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+     fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
   }
+
+//   std::cout << " fBigcalHCID " << fBigcalHCID << "  fCherenkovHCID " << fCherenkovHCID << "\n";
 
 // Loop over bigcal and add up the energy for each trigger group
   BETAG4BigcalHit * bcHit;
@@ -67,17 +81,15 @@ void BETAG4DAQReadout::Digitize() {
   fNBigcalHits=0;
   for ( int gg =0;gg<1744;gg++ )
   {
-    bcHit      = ( *fBigcalHC)[gg];
+    bcHit      = (*fBigcalHC)[gg];
     energyTemp = bcHit->GetDepositedEnergy();
 
-    if(energyTemp > 0.01){ ///10 MeV Block Threshold?
+    if(energyTemp > 0.01) { ///10 MeV Block Threshold?
       fNBigcalHits++;
       fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
     }
-
   }
-
-  fNCherenkovHits=0;
+  fNCherenkovHits = 0;
 // Loop over gas cherenkov
   BETAG4PMTHit * cerHit;
   for ( int i1=0 ; i1 < fGasCherenkovHC->entries();i1++ ) {
@@ -121,6 +133,8 @@ void BETAG4DAQReadout::Digitize() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::ReadOut() {
+   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
+
 // Get pointers
   G4String colName;
   G4SDManager* SDman = G4SDManager::GetSDMpointer();

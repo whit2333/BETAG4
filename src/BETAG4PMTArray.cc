@@ -30,7 +30,7 @@ BETAG4PMTArray::BETAG4PMTArray ( G4String  name )
    detname = name;
    collectionName.insert ( HCname="pmt" );
    HCID = -1;
-   BETADetectorConstruction * construction = BETASimulationManager::GetInstance()->fConstruction;
+/*   BETADetectorConstruction * construction = BETASimulationManager::GetInstance()->fConstruction;*/
    fDiscriminatorThreshold = 2; // photoelectrons
 
 //   G4double tubeDiameter=4.0*2.54*cm;
@@ -80,11 +80,12 @@ void BETAG4PMTArray::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
 
    // Initialise hits
-
-   for (int i=0; i<GetNumberOfChannels(); i++ )
+      BETAG4PMTHit * aHit;
+   for (int i=0; i < GetNumberOfChannels(); i++ )
    {
-      BETAG4PMTHit * aHit = new BETAG4PMTHit ( i+1);
+      aHit = new BETAG4PMTHit ( i+1 );
       fHitsCollection->insert ( aHit );
+/*      std::cout << "tube number: " << aHit->fTubeNumber << "\n";*/
    }
 
 }
@@ -92,11 +93,13 @@ void BETAG4PMTArray::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 //________________________________________________________________//
 G4bool BETAG4PMTArray::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
   G4Track * theTrack = aStep->GetTrack();
+
   if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition()  &&
       theTrack->GetNextVolume()->GetName() == "tank_phys" )
     {
 /// \todo there has to be a better way than this. Need to remove strings!!!
       G4int pmtNumber  = theTrack->GetVolume()->GetCopyNo();
+//       std::cout << "pmt number: " << pmtNumber << "\n";
       BETAG4PMTHit* aHit = ( *fHitsCollection ) [pmtNumber-1];
       aHit->AddPhoton();
       if( aHit->GetNumberOfPhotoElectrons() > fDiscriminatorThreshold  && aHit->fTimingHit == false) {

@@ -49,8 +49,9 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
   void ReadOut();
 
   virtual void Print() {
-    std::cout << " Bigcal     : " << fNBigcalHits << " hits \n";
-    std::cout << " Cherenkov  : " << fNCherenkovHits << " hits.\n";
+    std::cout << "++ DAQ Readout ++\n";
+    std::cout << "  Bigcal     (" << fBigcalHCID << "): " << fNBigcalHits << " hits , " << fBigcalHC->entries() << " entries.\n";
+    std::cout << "  Cherenkov  (" << fCherenkovHCID << "): " << fNCherenkovHits << " hits, " << fGasCherenkovHC->entries() << " entries.\n";
   };
 
   void Clear(){
@@ -90,6 +91,7 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
     fCherenkovTotal = 0;
     fCherenkovFired=false;
     fBigcalFired=false;
+    fNCherenkovHits=0;
     fNumberOfTriggeredGroups=0;
     fIsTriggered=false;
     for(int i = 1;i<4;i++) fTriggerGroupEnergy[i]=0.0;

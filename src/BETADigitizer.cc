@@ -10,7 +10,7 @@
 #include "BIGCALGeometryCalculator.h"
 
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
-
+  fSimulationManager=0;
   fRandomNumberGenerator = new TRandom();
 
   fCherenkovADCDC =
@@ -30,20 +30,22 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
   fTrackerTDCDC =
       new BETAG4DigiTDCCollection ( this->GetName(), "trackerTDCs" );
 
-  fSimulationManager = BETASimulationManager::GetInstance();
-
-  fBetaEvent = fSimulationManager->fEvents->BETA;
+//   fSimulationManager = BETASimulationManager::GetInstance();
+//  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
-  if(fSimulationManager->fConstruction->usingBigcal)
+/*  if(fSimulationManager->fConstruction->usingBigcal)*/
     fBigcalHCID  = SDman->GetCollectionID ( "BIGCAL/bigcal" );
-  if(fSimulationManager->fConstruction->usingGasCherenkov)
+
+/*  if(fSimulationManager->fConstruction->usingGasCherenkov)*/
     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
-  if(fSimulationManager->fConstruction->usingForwardTracker)
+
+/*  if(fSimulationManager->fConstruction->usingForwardTracker)*/
     fTrackerHCID  = SDman->GetCollectionID ( "ForwardTracker/tracking" );
-  if(fSimulationManager->fConstruction->usingLuciteHodoscope)
-    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/pmt" );
+
+/*  if(fSimulationManager->fConstruction->usingLuciteHodoscope)*/
+    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
   fBigcalChannelThreshold = 10.0; //MeV
 
@@ -66,6 +68,10 @@ BETADigitizer::~BETADigitizer() {
 
 void BETADigitizer::Digitize() {
   G4String colName;
+   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
+
+  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
+
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
   G4RunManager* fRM = G4RunManager::GetRunManager();
   const G4Event* currentEvent = fRM->GetCurrentEvent();
@@ -81,7 +87,13 @@ void BETADigitizer::Digitize() {
 
 // Get Hits Collection pointers
   if( fBigcalHCID != -1 )    fBigcalHC          = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
-  if( fCherenkovHCID != -1 ) fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+  if( fCherenkovHCID != -1 ) 
+     fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+  else  {
+     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+     fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+  }
+
   if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
   if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAFrontTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
 
@@ -136,6 +148,7 @@ void BETADigitizer::Digitize() {
 // Loop over Cherenkov Hits
   for ( int i=0 ; i < fGasCherenkovHC->entries();i++ ) {
     cerHit =  ( *fGasCherenkovHC )[i];
+    std::cout << "tube number: " << cerHit->fTubeNumber << "\n";
     aDigi = new BETAG4DigiADC(cerHit->fTubeNumber);
     aDigi->fTrueValue = cerHit->GetNumberOfPhotons();
     aDigi->fADCValue = 100.*cerHit->GetNumberOfPhotoElectrons();
@@ -185,9 +198,11 @@ void BETADigitizer::Digitize() {
 //__________________________________________________________________
 
 void BETADigitizer::ReadOut() {
+   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
 
   BETAG4DigiADC * aDigi;
   BETAG4DigiTDC * tDigi;
+  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
 
 // Get Digi Collection pointers
 //   if( fBigcal != -1 )    fBigcalHC          = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
@@ -550,10 +565,17 @@ void BETADigitizer::Clear() {
 //__________________________________________________________________
 
 void BETADigitizer::Print() {
-    std::cout << " Bigcal    Entries : " << fBigcalADCDC->entries() << " adc, " << fBigcalTDCDC->entries() << " tdc.\n";
-    std::cout << " Cherenkov Entries : " << fCherenkovADCDC->entries() << " adc, " << fCherenkovTDCDC->entries() << " tdc.\n";
-    std::cout << " Hodoscope Entries : " << fHodoscopeADCDC->entries() << " adc, " << fHodoscopeTDCDC->entries() << " tdc.\n";
-    std::cout << " Tracker   Entries : " << fTrackerADCDC->entries() << " adc, " << fTrackerTDCDC->entries() << " tdc.\n";
+    std::cout << "++ BETA Digitizer ++\n";
+
+    std::cout << "   Bigcal    (" << fBigcalHCID << ")   Entries : " 
+              << fBigcalADCDC->entries() << " adc, " 
+              << fBigcalTDCDC->entries() << " tdc.\n";
+    std::cout << "   Cherenkov (" << fCherenkovHCID << ")  Entries : " 
+              << fCherenkovADCDC->entries() << " adc, " 
+              << fCherenkovTDCDC->entries() << " tdc.\n";
+
+    std::cout << "   Hodoscope (" << fHodoscopeHCID << ")  Entries : " << fHodoscopeADCDC->entries() << " adc, " << fHodoscopeTDCDC->entries() << " tdc.\n";
+    std::cout << "   Tracker   (" << fTrackerHCID << ")  Entries : " << fTrackerADCDC->entries() << " adc, " << fTrackerTDCDC->entries() << " tdc.\n";
 }
 //__________________________________________________________________
 

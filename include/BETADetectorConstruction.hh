@@ -145,8 +145,7 @@ public :
  */
   void ConstructMagneticField();
 
-/**
- * Wright's code which constructs the UVA NH3 Target
+/** Wright's code which constructs the UVA NH3 Target
  */
   void ConstructTarget();
 ///Constructs the Target Can
@@ -162,9 +161,38 @@ public :
 
 /** Constructs the Helium Bag and Helium Bag extension
  * 
- * 
+ * The Box has dimensions (ignoring the flange) 4.67 x 7.97 x 71.97 in^3
  */
-  void ConstructeHeliumBag();
+  void ConstructHeliumBag();
+
+  G4Box*            fHeBagExtenderBox;
+  G4LogicalVolume*   fHeBagExtenderBox_log;
+  G4VPhysicalVolume* fHeBagExtenderBox_phys;
+
+  G4Box*            fHeBagExtenderAngleBox1;
+  G4Box*            fHeBagExtenderAngleBox2;
+  G4VSolid*   fHeBagExtenderAngle1;
+  G4VSolid*   fHeBagExtenderAngle2;
+  G4VSolid*   fHeBagExtenderAngle3;
+  G4VSolid*   fHeBagExtenderAngle4;
+  G4LogicalVolume*   fHeBagExtenderAngle1_log;
+  G4LogicalVolume*   fHeBagExtenderAngle2_log;
+  G4LogicalVolume*   fHeBagExtenderAngle3_log;
+  G4LogicalVolume*   fHeBagExtenderAngle4_log;
+
+
+  G4Box*   fHeBagExtenderHorizSupport;
+  G4Box*   fHeBagExtenderVertSupport;
+  G4LogicalVolume*   fHeBagExtenderHorizSupport_log;
+  G4LogicalVolume*   fHeBagExtenderVertSupport_log;
+
+  G4Box*            fHeBagExtenderHorizWindow;
+  G4Box*            fHeBagExtenderVertWindow;
+  G4Box*            fHeBagExtenderFrontWindow;
+  G4LogicalVolume*   fHeBagExtenderHorizWindow_log;
+  G4LogicalVolume*   fHeBagExtenderVertWindow_log;
+  G4LogicalVolume*   fHeBagExtenderFrontWindow_log;
+
 
 /**
  * Called from ConstructBETA
@@ -281,7 +309,7 @@ void SetMaterialPropertiesTables();
     G4Material*        NitrogenGas_NoOptics;
     G4Material*        Lucite_NoOptics;
     G4Material*        LeadGlass_NoOptics;
-
+    G4Material*        HeGas;
   G4Material* LHe;
   G4Material* TargetNH3;
   G4Material* Pb;
