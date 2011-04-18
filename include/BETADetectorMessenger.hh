@@ -32,7 +32,7 @@ class BETADetectorMessenger: public G4UImessenger
     BETADetectorConstruction * construction;
     G4UIdirectory*               fieldDir; 
     G4UIcmdWithoutParameter*   polSwitch;
-    G4UIcmdWithAString*      lookAtField;
+    G4UIcmdWithoutParameter*      lookAtField;
 
     G4UIcmdWithAString*      toggleTargetField;
     G4UIcmdWithAString*      toggleTargetMaterial;

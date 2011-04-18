@@ -148,7 +148,7 @@ void BETADigitizer::Digitize() {
 // Loop over Cherenkov Hits
   for ( int i=0 ; i < fGasCherenkovHC->entries();i++ ) {
     cerHit =  ( *fGasCherenkovHC )[i];
-    std::cout << "tube number: " << cerHit->fTubeNumber << "\n";
+/*    std::cout << "tube number: " << cerHit->fTubeNumber << "\n";*/
     aDigi = new BETAG4DigiADC(cerHit->fTubeNumber);
     aDigi->fTrueValue = cerHit->GetNumberOfPhotons();
     aDigi->fADCValue = 100.*cerHit->GetNumberOfPhotoElectrons();

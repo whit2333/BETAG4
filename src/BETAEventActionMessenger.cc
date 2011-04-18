@@ -6,12 +6,12 @@
 BETAEventActionMessenger::BETAEventActionMessenger ( BETAEventAction * mpga )
       :target ( mpga )
 {
-   verboseCmd = new G4UIcmdWithAnInteger ( "/mydet/verbose",this );
-   verboseCmd->SetGuidance ( "Verbose level for each event." );
-   verboseCmd->SetGuidance ( " Event summary will be displayed for every 'level' events." );
-   verboseCmd->SetParameterName ( "level",true );
-   verboseCmd->SetRange ( "level>=0" );
-   verboseCmd->SetDefaultValue ( 1 );
+//    verboseCmd = new G4UIcmdWithAnInteger ( "/mydet/verbose",this );
+//    verboseCmd->SetGuidance ( "Verbose level for each event." );
+//    verboseCmd->SetGuidance ( " Event summary will be displayed for every 'level' events." );
+//    verboseCmd->SetParameterName ( "level",true );
+//    verboseCmd->SetRange ( "level>=0" );
+//    verboseCmd->SetDefaultValue ( 1 );
 }
 
 BETAEventActionMessenger::~BETAEventActionMessenger()

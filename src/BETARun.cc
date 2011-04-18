@@ -167,7 +167,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 //     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
 //     fSimulationManager->fEvents->MC->fParticleThrown = 1;
 
-     fBETADigitizer->Print();
+//      fBETADigitizer->Print();
 
       fBETADigitizer->ReadOut();
       fDAQReadout->ReadOut();

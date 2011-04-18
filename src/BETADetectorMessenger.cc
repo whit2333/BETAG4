@@ -12,9 +12,9 @@
 BETADetectorMessenger::BETADetectorMessenger ( BETADetectorConstruction * detConstruction )
       :construction ( detConstruction )
 {
-  fTargetAngle=TMath::Pi();
+   fTargetAngle = TMath::Pi();
 
-   fieldDir = new G4UIdirectory ( "/beta/target" );
+   fieldDir = new G4UIdirectory ( "/beta/target/" );
    fieldDir->SetGuidance ( "Polarized target controls" );
 
    polSwitch = new G4UIcmdWithoutParameter ( "/beta/target/switchTargetPolarization",this );
@@ -26,14 +26,18 @@ BETADetectorMessenger::BETADetectorMessenger ( BETADetectorConstruction * detCon
    polSet->SetGuidance ( "Set the target field polariztion" );
    polSet->SetGuidance ( "angle in units of degrees. For SANE, " );
    polSet->SetGuidance ( "transverse = 80 and antiparallel = 180" );
+   polSet->SetDefaultValue ( fTargetAngle );
+   polSet->AvailableForStates ( G4State_Idle );
+
 
    rotateMirror = new G4UIcmdWithAString ( "/beta/gasCherenkov/mirrors/rotateToroidalMirrors",this );
    rotateMirror->SetGuidance ( "Arguments: [mirror number] [rotate horz] [rotate  vert]" );
    rotateMirror->AvailableForStates ( G4State_Idle );
 
-   lookAtField = new G4UIcmdWithAString ( "/beta/target/lookAtField",this );
-   lookAtField->SetGuidance ( "Arguments: [component]" );
-   lookAtField->SetGuidance ( "where component can be Z, z, R, or r" );
+   lookAtField = new G4UIcmdWithoutParameter ( "/beta/target/lookAtField",this );
+   lookAtField->SetGuidance ( "Displays current magnetic field.  " );
+//    lookAtField->SetGuidance ( "Arguments: [component]" );
+//    lookAtField->SetGuidance ( "where component can be Z, z, R, or r" );
    lookAtField->SetGuidance ( "Runs root interpreter, so use .q to quit when finished looking at plot" );
    lookAtField->AvailableForStates ( G4State_Idle );
 
@@ -48,6 +52,7 @@ BETADetectorMessenger::BETADetectorMessenger ( BETADetectorConstruction * detCon
    toggleTargetMaterial->SetGuidance ( "Turns off or deletes the geometry and material of the target" );
    toggleTargetMaterial->SetGuidance ( "Note: this does not turn off the field! " );
    toggleTargetMaterial->AvailableForStates ( G4State_Idle );
+
 //   rotateToroidalMirrors = new G4UIcmdWithADouble("/field/rotateToroidalMirrors",this);
 //   rotateToroidalMirrors->SetGuidance("Rotate all toroidal mirros by given angle (degrees) along horz");
 //   rotateToroidalMirrors->AvailableForStates(G4State_Idle);
@@ -84,13 +89,13 @@ e
    {
       G4cout << " Switching target field " <<  G4endl;
       construction->switchTargetField();
-   G4RunManager::GetRunManager()->GeometryHasBeenModified();
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
    }
    if ( command == polSet )
    {
-      construction->setTargetAngle ( ( polSet->GetNewDoubleValue ( newValue ) ) *TMath::Pi()/180. );
-   G4RunManager::GetRunManager()->GeometryHasBeenModified();
+      construction->setTargetAngle( ( polSet->GetNewDoubleValue ( newValue ) ) *TMath::Pi()/180. );
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
    }
    if ( command == rotateMirror )
@@ -105,9 +110,9 @@ e
    if ( command == lookAtField )
    {
       //G4Tokenizer next ( newValue );
-      G4String component = newValue;
+      G4String component = "r";//newValue;
       construction->lookAtField(component);
-   G4RunManager::GetRunManager()->GeometryHasBeenModified();
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
    }
    if ( command == toggleTargetField )

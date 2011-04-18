@@ -81,7 +81,6 @@ int main(int argc,char** argv)
 
   // UserInitialization classes - mandatory
   G4VUserDetectorConstruction* detector = new BETADetectorConstruction;
-
   runManager->SetUserInitialization(detector);
 
   // Physics List
@@ -110,8 +109,9 @@ int main(int argc,char** argv)
   G4UserSteppingAction* stepping_action = new BETASteppingAction;
   runManager->SetUserAction(stepping_action);
 
-
-  new TRint("delayPlots", NULL, NULL, NULL, 0);
+  int fnargs = 2;
+  char * fargs[2] = {"delayPlots"," -l "};
+  new TRint("delayPlots", &fnargs,&fargs[0], NULL, -1);
 
   // Initialize G4 kernel
   runManager->Initialize();

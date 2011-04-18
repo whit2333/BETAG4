@@ -1589,7 +1589,7 @@ G4double farMirrorAngle = 20* pi/180;
 ////////////////////////// Print out Magnetic field at pmt face ////////////////
    G4ThreeVector localPosition = pmtFace4_phys->GetTranslation();
 //G4ThreeVector fieldVector =
-   std::cout << "\n\nPMT#4 : POSITION (" << localPosition.x()/cm << ", " << localPosition.y()/cm << ", " <<localPosition.z()/cm << ") and Field \n\n" ;
+//    std::cout << "\n\nPMT#4 : POSITION (" << localPosition.x()/cm << ", " << localPosition.y()/cm << ", " <<localPosition.z()/cm << ") and Field \n\n" ;
 //     G4ThreeVector localPosition = theTouchable->GetHistory()->
 //                                   GetTopTransform().TransformPoint(worldPosition);
 /////////////////////////////////////////////////
@@ -3351,7 +3351,7 @@ void BETADetectorConstruction::ConstructMagnet()
 
    G4VisAttributes* CoilVisAtt= new G4VisAttributes ( G4Colour ( 0.5,0.5,0.5 ) );
    CoilVisAtt->SetVisibility ( true );
-   CoilVisAtt->SetForceSolid ( false );
+   CoilVisAtt->SetForceSolid ( true );
    logicCoil->SetVisAttributes ( CoilVisAtt );
 
    logicBrace1->SetVisAttributes ( CoilVisAtt );

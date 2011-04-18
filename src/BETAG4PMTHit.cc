@@ -18,7 +18,7 @@ BETAG4PMTHit::BETAG4PMTHit ( G4int id )
       :fTubeNumber ( id )
       ,fPhotons ( 0 )
 {
-  fQuantumEfficiency = 0.2; /// This number was adjusted until the mean #PE was about right
+  fQuantumEfficiency = 0.1; /// This number was adjusted until the mean #PE was about right
   fTimingHit=false;
   fTiming=0.0;
 }

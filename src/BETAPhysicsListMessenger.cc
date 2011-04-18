@@ -9,21 +9,21 @@
 BETAPhysicsListMessenger::BETAPhysicsListMessenger ( BETAPhysicsList* pPhys )
       :pPhysicsList ( pPhys )
 {
-   BETADir = new G4UIdirectory ( "/BETA/" );
+   BETADir = new G4UIdirectory ( "/beta/" );
    BETADir->SetGuidance ( "UI commands of this example" );
 
-   physDir = new G4UIdirectory ( "/BETA/phys/" );
+   physDir = new G4UIdirectory ( "/beta/phys/" );
    physDir->SetGuidance ( "PhysicsList control" );
 
-   verboseCmd = new G4UIcmdWithAnInteger ( "/BETA/phys/verbose",this );
-   verboseCmd->SetGuidance ( "set verbose for physics processes" );
+   verboseCmd = new G4UIcmdWithAnInteger ( "/beta/phys/verbose",this );
+   verboseCmd->SetGuidance ( "Set verbose for physics processes" );
    verboseCmd->SetParameterName ( "verbose",true );
-   verboseCmd->SetDefaultValue ( 1 );
+   verboseCmd->SetDefaultValue ( 0 );
    verboseCmd->SetRange ( "verbose>=0" );
    verboseCmd->AvailableForStates ( G4State_PreInit,G4State_Idle );
 
-   cerenkovCmd = new G4UIcmdWithAnInteger ( "/BETA/phys/cerenkovMaxPhotons",this );
-   cerenkovCmd->SetGuidance ( "set max nb of photons per step" );
+   cerenkovCmd = new G4UIcmdWithAnInteger ( "/beta/phys/cerenkovMaxPhotons",this );
+   cerenkovCmd->SetGuidance ( "Set max # of photons per step" );
    cerenkovCmd->SetParameterName ( "MaxNumber",false );
    cerenkovCmd->SetRange ( "MaxNumber>=0" );
    cerenkovCmd->AvailableForStates ( G4State_Idle );

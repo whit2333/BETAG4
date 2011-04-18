@@ -19,11 +19,11 @@ public:
    ConeEventGenerator() {
       fCentralTheta = 40.0;
       fCentralPhi = 0.0;
-      fCentralEnergy = 0.50;
-      fDeltaTheta = 40.0;
-      fDeltaPhi = 180.0;
+      fCentralEnergy = 2.00;
+      fDeltaTheta = 2.0;
+      fDeltaPhi = 20.0;
       fDeltaEnergy = 0.400; //GeV
-      fUpstreamPosition = 50.0;//cm
+      fUpstreamPosition = 0.0;//cm
    }
 
    virtual ~ConeEventGenerator() {
@@ -161,26 +161,30 @@ public:
 class BeamOnTargetEventGenerator : public BETAG4EventGenerator   {
 public:
    BeamOnTargetEventGenerator(){
-      fUpstreamPosition = 0.0;//cm
-      fBeamEnergy=4.7;//GeV
+      fUpstreamPosition = 150.0;//cm
+      fYPosition = -1.0*(100.0-99.944)*100.0/*-0.43*/;//cm
+      fBeamEnergy= 5.9;//GeV
+      fChicaneBendAngle = 2.214*TMath::Pi()/180.0;
    }
    virtual ~BeamOnTargetEventGenerator() {
    }
 
+   double fYPosition;
+   double fChicaneBendAngle;
    double fUpstreamPosition;
    double fBeamEnergy;
 
    virtual  G4ThreeVector &  GetInitialPosition(){
       fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
-      fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm);
-      fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
+      fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm + fYPosition*cm);
+      fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*0.0*cm  - fUpstreamPosition*cm);
       return(*fInitialPosition);
    }
 
    virtual  G4ThreeVector &  GetInitialDirection(){
       fInitialDirection->setX(0.0);
-      fInitialDirection->setY(0.0);
-      fInitialDirection->setZ(1.0);
+      fInitialDirection->setY(1.0*TMath::Sin(fChicaneBendAngle));
+      fInitialDirection->setZ(1.0*TMath::Cos(fChicaneBendAngle));
       return(*fInitialDirection);
    }
    virtual  G4ThreeVector &  GetMomentumVector(){

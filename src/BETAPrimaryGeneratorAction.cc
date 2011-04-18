@@ -26,7 +26,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction()
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
 
    fMonteCarloEvent=0;
-   fBETAG4EventGen = new BeamOnTargetEventGenerator();
+   fBETAG4EventGen = new ConeEventGenerator();
 // The following must be called
    fBETAG4EventGen->Initialize();
 
