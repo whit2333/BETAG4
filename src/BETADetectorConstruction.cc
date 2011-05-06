@@ -10,9 +10,11 @@
 //
 /////////////////////////////////////////////////////////////////////
 // VGM
+#ifdef VGM_SYSTEM
 #include "Geant4GM/volumes/Factory.h" 
 #include "RootGM/volumes/Factory.h" 
 #include "XmlVGM/GDMLExporter.h"
+#endif
 #include "BETAG4BigcalSD.hh"
 #include "TGeoManager.h"
 #include "TROOT.h"

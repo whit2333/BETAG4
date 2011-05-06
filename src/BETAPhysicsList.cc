@@ -152,7 +152,7 @@ void BETAPhysicsList::ConstructGeneral()
 
 #include "G4eMultipleScattering.hh"
 #include "G4MuMultipleScattering.hh"
-#include "G4MultipleScattering.hh"
+//#include "G4MultipleScattering.hh"
 #include "G4hMultipleScattering.hh"
 
 #include "G4eIonisation.hh"

@@ -30,14 +30,15 @@ include $(G4INSTALL)/config/binmake.gmk
    CPPFLAGS += -I$(InSANEDIR)/include
 # ROOT and  GNU Scientific Librarires and 
    LDLIBS += -lgsl -lgslcblas -lm  $(shell root-config --nonew --glibs)
+
 # VGM
-   CPPFLAGS  += -I$(VGM_INSTALL)/packages/VGM/include
-   CPPFLAGS  += -I$(VGM_INSTALL)/packages/BaseVGM/include
-   CPPFLAGS  += -I$(VGM_INSTALL)/packages/Geant4GM/include
-   CPPFLAGS  += -I$(VGM_INSTALL)/packages/XmlVGM/include
-   CPPFLAGS  += -I$(VGM_INSTALL)/packages/RootGM/include
-   LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
-   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM -lXmlVGM
+#   CPPFLAGS  += -I$(VGM_INSTALL)/packages/VGM/include
+#   CPPFLAGS  += -I$(VGM_INSTALL)/packages/BaseVGM/include
+#   CPPFLAGS  += -I$(VGM_INSTALL)/packages/Geant4GM/include
+#   CPPFLAGS  += -I$(VGM_INSTALL)/packages/XmlVGM/include
+#   CPPFLAGS  += -I$(VGM_INSTALL)/packages/RootGM/include
+#   LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
+#   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM -lXmlVGM
 
    CXXFLAGS  += -O2 -Wall -fPIC
    CXXFLAGS  += $(CPPFLAGS)
