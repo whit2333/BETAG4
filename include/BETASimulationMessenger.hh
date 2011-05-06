@@ -44,6 +44,9 @@ class BETASimulationMessenger: public G4UImessenger
 // Detector  Construction
     BETADetectorConstruction * construction;
     G4UIdirectory*               fieldDir; 
+
+
+
     G4UIcmdWithoutParameter*   polSwitch;
     G4UIcmdWithAString*   lookAtField;
 

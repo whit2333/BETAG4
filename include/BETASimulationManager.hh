@@ -61,7 +61,6 @@ public:
  */
   static void Dispose();
 
-
 /**
  * Set detector's verbosity for debugging purposes
  */
@@ -167,6 +166,7 @@ public:
   bool fSimulateCherenkovOptics;
   bool fSimulateTrackerOptics;
   bool fSimulateHodoscopeOptics;
+  bool fSimulateBigcalOptics;
 
   int  fDebugLevel;
 

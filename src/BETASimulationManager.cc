@@ -35,7 +35,7 @@ BETASimulationManager::BETASimulationManager () :
   fSimulationMessenger = new BETASimulationMessenger ( this );
    showPlot(plotVis);
 
-   fGasCherenkovVerbosity=1;
+   fGasCherenkovVerbosity=0;
    fBigcalVerbosity=0;
    fLuciteHodoscopeVerbosity=0;
    fForwardTrackerVerbosity=0;

@@ -53,6 +53,27 @@ BETADetectorMessenger::BETADetectorMessenger ( BETADetectorConstruction * detCon
    toggleTargetMaterial->SetGuidance ( "Note: this does not turn off the field! " );
    toggleTargetMaterial->AvailableForStates ( G4State_Idle );
 
+
+   toggleForwardTracker = new G4UIcmdWithAString ( "/beta/toggleForwardTracker",this );
+   toggleForwardTracker->SetGuidance ( "Turn on and off the simulation of the forward tracker" );
+   toggleForwardTracker->SetGuidance ( "Arguments can be either on, off, or noOptics" );
+   toggleForwardTracker->AvailableForStates ( G4State_Idle );
+
+   toggleGasCherenkov = new G4UIcmdWithAString ( "/beta/toggleGasCherenkov",this );
+   toggleGasCherenkov->SetGuidance ( "Turn on and off the simulation of the gas cherenkov" );
+   toggleGasCherenkov->SetGuidance ( "Arguments can be either on, off, or noOptics" );
+   toggleGasCherenkov->AvailableForStates ( G4State_Idle );
+
+   toggleLuciteHodoscope = new G4UIcmdWithAString ( "/beta/toggleLuciteHodoscope",this );
+   toggleLuciteHodoscope->SetGuidance ( "Turn on and off the simulation of the lucite hodoscope" );
+   toggleLuciteHodoscope->SetGuidance ( "Arguments can be either on, off, or noOptics" );
+   toggleLuciteHodoscope->AvailableForStates ( G4State_Idle );
+
+   toggleBigcal = new G4UIcmdWithAString ( "/beta/toggleBigcal",this );
+   toggleBigcal->SetGuidance ( "Turn on and off the simulation of BigCal" );
+   toggleBigcal->SetGuidance ( "Arguments can be either on, off, or noOptics" );
+   toggleBigcal->AvailableForStates ( G4State_Idle );
+
 //   rotateToroidalMirrors = new G4UIcmdWithADouble("/field/rotateToroidalMirrors",this);
 //   rotateToroidalMirrors->SetGuidance("Rotate all toroidal mirros by given angle (degrees) along horz");
 //   rotateToroidalMirrors->AvailableForStates(G4State_Idle);
@@ -132,10 +153,50 @@ e
       if(arg == "on") construction->ToggleTargetMaterial(1);
       else if(arg == "off") construction->ToggleTargetMaterial(0);
       else  std::cout << "Unknown option" << arg << "\n"; 
-
    G4RunManager::GetRunManager()->GeometryHasBeenModified();
-
    }
+
+   if ( command == toggleLuciteHodoscope )
+   {
+      std::cout << " args = " << newValue.data() << "\n";
+      if( !(strcmp(newValue.data(),"on")) )  {
+         construction->usingLuciteHodoscope = true;
+         if(construction->constructed == true) construction->ConstructHodoscope();
+      }
+      if( !(strcmp(newValue.data(),"off"))) {
+         construction->usingLuciteHodoscope = false;
+         delete construction->hodoscopeContainerBox_phys;
+      }
+      if( !(strcmp(newValue.data(),"noOptics"))) {
+         construction->usingLuciteHodoscope = true;
+         construction->fSimulationManager->fSimulateHodoscopeOptics = false;
+         if(construction->hodoscopeContainerBox_phys) delete construction->hodoscopeContainerBox_phys;
+         if(construction->hodoscopeContainerBox_log)  delete construction->hodoscopeContainerBox_log;
+/*         if(constructi*/
+      }
+         G4RunManager::GetRunManager()->GeometryHasBeenModified();
+   }
+   if ( command == toggleForwardTracker )
+   {
+      std::cout << " args = " << newValue.data() << "\n";
+      if( !(strcmp(newValue.data(),"on")) )  {
+         construction->usingForwardTracker = true;
+/*         if(construction->constructed == true) construction->ConstructHodoscope();*/
+      }
+      if( !(strcmp(newValue.data(),"off"))) {
+         construction->usingForwardTracker = false;
+/*         delete construction->hodoscopeContainerBox_phys;*/
+      }
+      if( !(strcmp(newValue.data(),"noOptics"))) {
+         construction->usingForwardTracker = true;
+         construction->fSimulationManager->fSimulateTrackerOptics = false;
+/*         if(construction->hodoscopeContainerBox_phys) delete construction->hodoscopeContainerBox_phys;*/
+/*         if(construction->hodoscopeContainerBox_log)  delete construction->hodoscopeContainerBox_log;*/
+/*         if(constructi*/
+      }
+         G4RunManager::GetRunManager()->GeometryHasBeenModified();
+   }
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

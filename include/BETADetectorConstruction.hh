@@ -114,26 +114,48 @@ public :
  *
  */
   void ConstructBETA();
+ 
+
+
+   bool usingTargetCup;
+
+   bool usingTargetOVC;
+
+   bool usingFakePlaneAtBigcal; 
+
+   bool usingFakePlaneAtForwardTracker;
 
 /**
  * Called from ConstructBETA
  */
-  void ConstructBIGCAL();
+   void ConstructBIGCAL();
+   bool usingBigcal;
+   G4LogicalVolume * calorimeterTop_log;
+   G4VPhysicalVolume * calorimeterTop_phys;
+   G4LogicalVolume * calorimeterBottom_log;
+   G4VPhysicalVolume * calorimeterBottom_phys;
 
 /**
  * Called from ConstructBETA
  */
-  void ConstructCherenkov();
+   void ConstructCherenkov();
+   bool usingGasCherenkov;
+   G4LogicalVolume*   tank_log; 
+   G4VPhysicalVolume * cherenkovTank_phys;
 
 /**
  * Called from ConstructBETA
  */
-  void ConstructForwardTracker();
+   void ConstructForwardTracker();
+   bool usingForwardTracker; 
+   G4LogicalVolume*   hodoscopeContainerBox_log; 
+   G4VPhysicalVolume* hodoscopeContainerBox_phys;
 
-/**
- * Called from ConstructBETA
- */
-  void ConstructHodoscope();
+/** Called from ConstructBETA */
+   void ConstructHodoscope();
+   bool usingLuciteHodoscope;
+   G4LogicalVolume*   tracker_log; 
+   G4VPhysicalVolume* tracker_phys;
 
 /**
  * Called from Construct BETA
@@ -240,14 +262,6 @@ int fTargetState;
 /**
  * For which detectors are constructed
  */
-bool usingGasCherenkov;
-bool usingForwardTracker;  
-bool usingLuciteHodoscope;
-bool usingBigcal;
-bool usingTargetCup;
-bool usingTargetOVC;
-bool usingFakePlaneAtBigcal;
-bool usingFakePlaneAtForwardTracker;
 
 BETASimulationManager * fSimulationManager;
 
@@ -344,7 +358,6 @@ void SetMaterialPropertiesTables();
 // Cherenkov Members
 // Mirror memebers
 private:
-G4LogicalVolume * tank_log;
 G4LogicalVolume * farMirrorGlass_log;
 G4LogicalVolume * nearMirrorGlass_log;
 G4VPhysicalVolume * MirrorGlass_phys1;

@@ -22,7 +22,6 @@ class BETADetectorMessenger: public G4UImessenger
     BETADetectorMessenger(BETADetectorConstruction *  );
    ~BETADetectorMessenger();
 
-
     void SetNewValue(G4UIcommand*, G4String); 
 
     G4double fTargetAngle;
@@ -41,6 +40,12 @@ class BETADetectorMessenger: public G4UImessenger
     G4UIcmdWithADouble*        polSet;
     G4UIcmdWithADouble*        rotateToroidalMirrors;
     G4UIcmdWithAString*        rotateMirror;
+
+    G4UIcmdWithAString*   toggleForwardTracker;
+    G4UIcmdWithAString*   toggleGasCherenkov;
+    G4UIcmdWithAString*   toggleLuciteHodoscope;
+    G4UIcmdWithAString*   toggleBigcal;
+
 
 
 };

@@ -19,43 +19,32 @@
 #include "G4SPSEneDistribution.hh"
 #include "G4SPSAngDistribution.hh"
 
-using namespace std;
 double mottCrossSection(double p, double theta) ;
 
-/**
- * \brief Define 
- * 
- **/
 BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() 
 {
+   G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
 
-///\todo allow for phase space and xsec to be controlled a bit better???...
-  fPhaseSpace = new InSANEInclusivePhaseSpace();
-  fDiffXSec = new InSANEInclusiveDiffXSec();
-  fDiffXSec->SetPhaseSpace(fPhaseSpace);
-  fEventSampler = new InSANEPhaseSpaceSampler(xsec);
+   fMonteCarloEvent=0;
+   fBETAG4EventGen = new ();
+// The following must be called
+   fBETAG4EventGen->Initialize();
 
-  G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-
-   G4String particleName;
-
-   fParticleGun = new G4ParticleGun(1);
-   //fParticlesSource  = new G4GeneralParticleSource ( );
-   //fParticlesSource->SetNumberOfParticles(1);
-   G4cout << "primary Generator constructor" << G4endl;
-
-   //create a messenger for this class
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
 
-   electron = particleTable->FindParticle ( particleName="e-" );
-   pionminus = particleTable->FindParticle ( particleName="pi-" );
-   pionplus = particleTable->FindParticle ( particleName="pi+" );
-   pionzero = particleTable->FindParticle ( particleName="pi0" );
-   kaon = particleTable->FindParticle ( particleName="kaon+" );
-   proton = particleTable->FindParticle ( particleName="proton" );
+   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+   G4String particleName;
+   fParticleGun = new G4ParticleGun(1);
 
-// Using  particle gun
-  fParticleGun->SetParticleDefinition(electron);
+   //fParticlesSource  = new G4GeneralParticleSource ( );
+   //fParticlesSource->SetNumberOfParticles(1);
+
+    electron = particleTable->FindParticle ( particleName="e-" );
+    pionminus = particleTable->FindParticle ( particleName="pi-" );
+    pionplus = particleTable->FindParticle ( particleName="pi+" );
+    pionzero = particleTable->FindParticle ( particleName="pi0" );
+    kaon = particleTable->FindParticle ( particleName="kaon+" );
+    proton = particleTable->FindParticle ( particleName="proton" );
 
 // Using General Particle Source
 //   fParticlesSource->SetParticleDefinition(electron);
@@ -76,81 +65,58 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
-  double deltatheta, deltaphi,sigmaOverN, N,sigma,x,y,tempmom;
-  Double_t *MCvect ;
-  MCvect =fEventSampler->GenerateEvent();
-  fCurrentEnergy=MCvect[0];
-  fCurrentTheta=MCvect[1];
-  fCurrentPhi=MCvect[2];
+/// \todo improve event generator/Geant4 interface -> Number of particles thrown in particular
+   Double_t * MCvect ;
+   MCvect            = fBETAG4EventGen->GenerateEvent();
+   fCurrentEnergy    = MCvect[0];
+   fCurrentTheta     = MCvect[1];
+   fCurrentPhi       = MCvect[2];
+/*   G4ThreeVector aDirection(1,0,0);
+      aDirection.setRThetaPhi(1,fCurrentTheta,fCurrentPhi);*/
+//    G4ThreeVector aPosition( 2.*(G4UniformRand()-0.5)*1.0*cm,
+//                             2.*(G4UniformRand()-0.5)*1.0*cm,
+//                             2.*(G4UniformRand()-0.5)*1.0*cm );
+/*  fParticleGun->SetParticlePosition( aPosition );*/
 
-  fParticleGun->SetParticlePosition ( G4ThreeVector(
-    2.*(G4UniformRand()-0.5)*1.0*cm,2.*(G4UniformRand()-0.5)*1.0*cm,
-    2.*(G4UniformRand()-0.5)*1.0*cm ) );
+  fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition() );
 
-  fParticleGun->SetParticleMomentumDirection (
-         G4ThreeVector (
+/*
+         G4ThreeVector aDirection(
             std::sin ( fCurrentTheta) *std::cos ( fCurrentPhi ) *m,
             std::sin ( fCurrentTheta ) *std::sin ( fCurrentPhi ) *m ,
-            std::cos ( fCurrentTheta ) *m ) );
-  fParticleGun->SetParticleEnergy( (fCurrentEnergy)*1000.0*MeV );
+            std::cos ( fCurrentTheta ) *m ); */
 
-  fParticleGun->GeneratePrimaryVertex ( anEvent );
-//deltaphi   = 30.0*pi/180.0;
-//    phi     =  2.*(G4UniformRand()-0.5)*deltaphi;
-/*
-   bool bigcal_background = true;
-   if (bigcal_background) {
-deltatheta = 10.0*pi/180.0;//deltatheta
-deltaphi   = 20.0*pi/180.0;
+  fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection() );
 
-theta   = 40.0*pi/180.0 + 2.*(G4UniformRand()-0.5)*deltatheta;//deltatheta
-phi     =  2.*(G4UniformRand()-0.5)*deltaphi;
+  fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
 
-     particleGun->SetParticlePosition ( G4ThreeVector(
-       2.*(G4UniformRand()-0.5)*1.0*cm,2.*(G4UniformRand()-0.5)*1.0*cm,
-       2.*(G4UniformRand()-0.5)*1.0*cm ) );
-     particleGun->SetParticleMomentumDirection (
-         G4ThreeVector (
-            std::sin ( theta) *std::cos ( phi ) *m,
-            std::sin ( theta ) *std::sin ( phi ) *m ,
-            std::cos ( theta ) *m ) );
-      particleGun->SetParticleEnergy ( (2.4+sigmaMomentum*G4UniformRand())*1000.0*MeV );
+  fParticleGun->SetParticleDefinition(electron);
+
+
+   if(fMonteCarloEvent) {
+/*      std::cout << " Filling thrown particle !!!!\n";*/
+      fMonteCarloEvent->ClearEvent("C");
+//   if(fBETAG4EventGen->fNumberOfGeneratedParticles == 1) {
+      aThrownParticle = new((*fThrownParticles)[0]) BETAG4MonteCarloThrownParticle();
+      aThrownParticle->fPosition.SetXYZ(fParticleGun->GetParticlePosition().x()/cm,fParticleGun->GetParticlePosition().y()/cm,fParticleGun->GetParticlePosition().z()/cm);
+      aThrownParticle->fMomentum.SetXYZ(fBETAG4EventGen->GetMomentumVector().x(),fBETAG4EventGen->GetMomentumVector().y(),fBETAG4EventGen->GetMomentumVector().z());
+      aThrownParticle->fTheta = fCurrentTheta;
+      aThrownParticle->fPhi = fCurrentPhi;
+      aThrownParticle->fEnergy = (fCurrentEnergy)*1000.0;
+      aThrownParticle->fPID = fParticleGun->GetParticleDefinition()->GetPDGEncoding();
+      //aThrownParticle->fMomentum.
    }
-   else {*/
-/*      bool straightOnDetector = true;
-      double E, theta,phi,sigmaOverN, N,sigma,x,y,tempmom;
-      background=false;
-/// WARNING HARD CODING OVERTOP stupid me i know
-//theta_particle = 40;
-      phi_particle = 90.0; //
-//particleGun->SetParticleDefinition ( G4Gamma::GammaDefinition() );
-      theta = ( theta_particle + 20.*2.0* ( G4UniformRand()-0.5 ) ) *pi/180. ;
-      phi = ( 35.0* 2.0* ( G4UniformRand()-0.5 ) +phi_particle) *pi/180. ;
-//  theta = -1.0* ( theta_particle  ) *pi/180.;
-//  phi = ( phi_particle ) *pi/180.;
-      particleGun->SetParticleMomentumDirection (
-         G4ThreeVector (
-            std::sin ( theta ) *std::cos ( phi ) *m,
-            std::sin ( theta ) *std::sin ( phi ) *m ,
-            std::cos ( theta ) *m ) );
-      double tempmom= (momentum+(G4UniformRand()-0.5)*2.0*sigmaMomentum)*GeV;
-      eventTheta = theta;
-      eventPhi=phi;
-      particleGun->SetParticleEnergy ( tempmom );
-      eventMomentum=tempmom;
-      eventEnergy = std::sqrt(tempmom*tempmom+0.000511*0.000511*GeV*GeV);
-      particleGun->GeneratePrimaryVertex ( anEvent );
-*/
-//  }
-//     Double_t *MCvect 
-//     =new Double_t[3]; // 2-dim vector generated in the MC run
-//      fEventSampler->FoamX->MakeEvent();          // generate MC event
-//      fEventSampler->FoamX->GetMCvect( MCvect);   // get generated vector (x,y)
+//       for(int i=0;i<fBETAG4EventGen->fNumberOfParticlesThrown;i++) {
+//          
+//       }
+  
+  
+  
+  fParticleGun->GeneratePrimaryVertex ( anEvent );
 
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//________________________________________________________
+/*
 void BETAPrimaryGeneratorAction::SetOptPhotonPolar()
 {
    G4double angle = G4UniformRand() * 360.0*deg;
@@ -220,7 +186,7 @@ G4double BETAPrimaryGeneratorAction::GetPartTheta (  )
 
 void BETAPrimaryGeneratorAction::SetPartPhi ( G4double P )
 {
-
+   
    phi_particle = P;
 }
 //________________________________________________________//
@@ -244,7 +210,7 @@ void BETAPrimaryGeneratorAction::SetPiZeroRatio ( G4double Ratio )
 
    Pi0Ratio = Ratio;
 }
-//________________________________________________________//
+//________________________________________________________//*/
 
 double mottCrossSection(double p, double theta) {
 // MeV and degrees

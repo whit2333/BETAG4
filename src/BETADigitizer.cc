@@ -86,15 +86,15 @@ void BETADigitizer::Digitize() {
   BETAG4DigiTDC * tDigi;
 
 // Get Hits Collection pointers
-  if( fBigcalHCID != -1 )    fBigcalHC          = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
+  if( fBigcalHCID != -1 ) 
+    fBigcalHC = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
   if( fCherenkovHCID != -1 ) 
-     fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-  else  {
-     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
-     fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-  }
+     fGasCherenkovHC   = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+//   else  {
+//      fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+//      fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+//   }
 
-  if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
   if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAFrontTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
 
   BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
@@ -163,6 +163,9 @@ void BETADigitizer::Digitize() {
     }
   }
 
+
+  if( fHodoscopeHCID != -1 ) {
+     fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
 // Loop over Hodoscope Hits
   for ( int i=0 ; i < fLuciteHodoscopeHC->entries();i++ ) {
     lucHit =  ( *fLuciteHodoscopeHC )[i];
@@ -178,6 +181,7 @@ void BETADigitizer::Digitize() {
       tDigi->fNumberOfHits++;
       fHodoscopeTDCDC->insert ( tDigi );
     }
+  }
   }
 
 // Loop over Tracker Hits

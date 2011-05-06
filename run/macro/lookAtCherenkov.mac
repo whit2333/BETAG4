@@ -10,7 +10,9 @@
 /vis/scene/add/trajectories
 /vis/scene/add/hits
 /vis/scene/endOfEventAction accumulate 2 
+
 /vis/sceneHandler/attach
+
 /vis/modeling/trajectories/create/drawByCharge
 /vis/modeling/trajectories/drawByCharge-0/set -1 blue
 /vis/modeling/trajectories/drawByCharge-0/set 1 blue

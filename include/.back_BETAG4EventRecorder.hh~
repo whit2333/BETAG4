@@ -1,6 +1,5 @@
 #ifndef BETAG4EventRecorder_HH
 #define BETAG4EventRecorder_HH
-
 // ROOT //
 #include "Riostream.h"
 #include "TROOT.h"
@@ -62,7 +61,7 @@ BETAG4EventRecorder();
  * Constructor initializes counters, arrays, pointers, etc....
  * Also sets the address of the detector events
  */
-BETAG4EventRecorder(SANEEvents * );
+BETAG4EventRecorder(SANEEvents *);
 
 /**
  * dtor

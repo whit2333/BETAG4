@@ -58,7 +58,6 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    messenger = new BETADetectorMessenger ( this );
 
    fMagneticField = 0;
- 
 
    usingGasCherenkov       = true;
    usingBigcal             = true;
@@ -66,6 +65,20 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingForwardTracker     = true;
    usingFakePlaneAtBigcal  = true;
    usingFakePlaneAtForwardTracker = true;
+
+   tracker_log=0;
+   tracker_phys=0;
+
+   tank_log=0;
+   cherenkovTank_phys=0;
+
+   hodoscopeContainerBox_log=0;
+   hodoscopeContainerBox_phys=0;
+
+   calorimeterTop_log=0;
+   calorimeterTop_phys=0;
+   calorimeterBottom_log=0;
+   calorimeterBottom_phys=0;
 
    expHall_x = expHall_y = expHall_z = 10.0*m;
 
@@ -171,7 +184,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
    trackerRot.rotateZ (-1.0*PI/2.0 ); 
 //
    G4Box* tracker_box = new G4Box ( "tracker_box",42.*cm/2., 24.*cm/2., 10.*mm/2. );
-   G4LogicalVolume* tracker_log = new G4LogicalVolume ( tracker_box,Air,"tracker_log",0,0,0 );
+   tracker_log = new G4LogicalVolume ( tracker_box,Air,"tracker_log",0,0,0 );
    tracker_log->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 10.0*ns ) );
 
    G4Box* trackerY1_box = new G4Box ( "trackerY1_box", // Name
@@ -225,7 +238,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
 
 
 
- G4VPhysicalVolume* tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
+   tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
 
 
    G4LogicalVolume*   trackerY1_log = new G4LogicalVolume ( trackerY1_box,Air,"trackerY1_log",0,0,0 );
@@ -349,12 +362,12 @@ void BETADetectorConstruction::ConstructHodoscope()
 {
 
    G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope",75.0*cm ,28.0*6.4*cm/2.0,30.0*cm );
-   G4LogicalVolume * hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
+   hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
    G4double hodocenter = -DetectorLength/2 -50.*cm+ 240.*cm;
    G4RotationMatrix rotOldCoords;
 //   rotOldCoords.rotateX ( pi/2. );
 
-   new G4PVPlacement ( 0,G4ThreeVector ( 0,0,hodocenter+5.0*cm+25*cm  ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
+   hodoscopeContainerBox_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,hodocenter+5.0*cm+25*cm  ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
 
 //G4Box * hodoscopePMT = new G4Box("hodoscopePMTinquotes", 6.*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.);
 //G4LogicalVolume * hodoscopePMT_log = new G4LogicalVolume(hodoscopePMT, Lucite ,"hodoscopePMTinquotes_log");
@@ -644,44 +657,48 @@ void BETADetectorConstruction::ConstructBIGCAL()
 ///////////////////////////////////////////////////////
 //   BIG CAL
    BIGCALGeometryCalculator * BCgeo = BIGCALGeometryCalculator::GetCalculator();
+
 // Target
    G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
    G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
 
-// RCS
+// Sensitive detector (for all of bigcal)
+   G4SDManager* manager = G4SDManager::GetSDMpointer();
+   G4VSensitiveDetector* fBigcalSD =
+       new BETAG4BigcalSD ( "BIGCAL" );
+
+// pointers used 
+   G4VSolid* cellSolid=0;
+   G4LogicalVolume* cellLogical;
+   G4VPVParameterisation* cellParam;
+   G4VSolid* calorimeterSolidBottom;
+   G4VSolid* cellSolidBottom ;
+   G4LogicalVolume* cellLogicalBottom;
+   G4VPVParameterisation* cellParamBottom;
+
+
+// RCS Section (TOP)
+   if(!calorimeterTop_log) {
    G4VSolid* calorimeterSolidTop = new G4Box ( "RCS_BOX", // Name
-                                               BCgeo->rcsXSize*cm/2.0,                // y half length
-                                               BCgeo->rcsYSize*cm/2.0,                // x half length
+                                               BCgeo->rcsXSize*cm/2.0,                   // y half length
+                                               BCgeo->rcsYSize*cm/2.0,                   // x half length
                                                BCgeo->rcsCellZSize*cm/2.0 ) ;            // z half length
 
-   G4LogicalVolume* calorimeterTop_log =
+   calorimeterTop_log =
       new G4LogicalVolume ( calorimeterSolidTop,     // Solid
                             Air,                    // Material
                             "RCS_BOX_Logical" ); // Name
-
-
-   new G4PVPlacement ( 0,G4ThreeVector ( 
-      BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm+BCgeo->rcsYSize*cm/2.0,
-                                         bigcalFaceRelative+40.*cm/2.0 ), calorimeterTop_log,     // Logical volume
-                       "RCS_BOX_Physical",     // Name
-                       BETADetector_log,             // Mother volume
-                       false,                      // Unused boolean
-                       0 );                        // Copy number
-
-   // 100 rectangular cells
-
-
-   G4VSolid* cellSolid = new G4Box ( "Cell_Solid", // Name
+   cellSolid = new G4Box ( "Cell_Solid", // Name
                                      4.02167*cm/2.0,         // x half length
                                      4.02167*cm/2.0,         // y half length
                                      40.*cm/2.0 );     // z half length
 
-   G4LogicalVolume* cellLogical
+   cellLogical
    = new G4LogicalVolume ( cellSolid,     // Solid
                            LeadGlass,             // Material
                            "Cell_Logical" ); // Name
 
-   G4VPVParameterisation* cellParam = new BETARCSCellParameterisation();
+   cellParam = new BETARCSCellParameterisation();
 
    /*uncomment for placement */
    new G4PVParameterised ( "Cell_Physical",  // Name
@@ -691,52 +708,56 @@ void BETADetectorConstruction::ConstructBIGCAL()
                            720,                // Number of replicas
                            cellParam );        // Parameterisation
 
-   G4SDManager* manager = G4SDManager::GetSDMpointer();
-
-   //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
-
+//cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
 //    G4VSensitiveDetector* BIGCALRCS =
 //       new BETARCSCalorimeter ( "BIGCALRCS" );
-    G4VSensitiveDetector* fBigcalSD =
-       new BETAG4BigcalSD ( "BIGCAL" );
-   // Register detector with manager
+
+// Register detector with manager
    manager->AddNewDetector ( fBigcalSD );
-   // Attach detector to scoring volume
+// Attach detector to scoring volume
    cellLogical->SetSensitiveDetector ( fBigcalSD );
+   }
+
+   if(usingBigcal && calorimeterTop_phys==0) {
+   calorimeterTop_phys = new G4PVPlacement ( 0,G4ThreeVector ( 
+      BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm+BCgeo->rcsYSize*cm/2.0,
+                                         bigcalFaceRelative+40.*cm/2.0 ), calorimeterTop_log,     // Logical volume
+                       "RCS_BOX_Physical",     // Name
+                       BETADetector_log,             // Mother volume
+                       false,                      // Unused boolean
+                       0 );                        // Copy number
+  }
+
+
 
 
 // Protvino
-   G4VSolid* calorimeterSolidBottom = new G4Box ( "Protvino_BOX", // Name
+   if(!calorimeterBottom_log) {
+
+
+   calorimeterSolidBottom = new G4Box ( "Protvino_BOX", // Name
                                                   BCgeo->protXSize*cm/2.0,                // y half length
                                                   BCgeo->protYSize*cm/2.0,                // x half length
                                                   BCgeo->protCellZSize*cm/2.0 ) ;
 
-   G4LogicalVolume* calorimeterBottom_log =
+   calorimeterBottom_log =
       new G4LogicalVolume ( calorimeterSolidBottom,     // Solid
                             Air,                   // Material
                             "Protvino_BOX_Logical" ); // Name
 
-   new G4PVPlacement ( 0,G4ThreeVector (BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm-BCgeo->protYSize*cm/2.0,
-                                         bigcalFaceRelative+45.*cm/2.0 ), calorimeterBottom_log,    // Logical volume
-                       "Protvino_BOX_Physical",     // Name
-                       BETADetector_log,             // Mother volume
-                       false,                      // Unused boolean
-                       0 );                        // Copy number
-
-   // 100 rectangular CsI cells
 
 
-   G4VSolid* cellSolidBottom = new G4Box ( "Cell_Solid_bottom", // Name
+   cellSolidBottom = new G4Box ( "Cell_Solid_bottom", // Name
                                            3.8*cm/2.0,         // x half length
                                            3.8*cm/2.0,         // y half length
                                            45.*cm/2.0 );     // z half length
 
-   G4LogicalVolume* cellLogicalBottom
+   cellLogicalBottom
    = new G4LogicalVolume ( cellSolidBottom,     // Solid
                            LeadGlass,             // Material
                            "Cell_Logical" ); // Name
 
-   G4VPVParameterisation* cellParamBottom = new BETAProtvinoCellParameterisation();
+   cellParamBottom = new BETAProtvinoCellParameterisation();
 
 // uncomment for placement
    new G4PVParameterised ( "Cell_Physical",  // Name
@@ -759,7 +780,16 @@ void BETADetectorConstruction::ConstructBIGCAL()
 //    manager->AddNewDetector ( fBigcalSDprot );
    // Attach detector to scoring volume
    cellLogicalBottom->SetSensitiveDetector ( fBigcalSD );
+   }  
 
+   if(usingBigcal && calorimeterBottom_phys==0) {
+   calorimeterBottom_phys = new G4PVPlacement ( 0,G4ThreeVector (BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm-BCgeo->protYSize*cm/2.0,
+                                         bigcalFaceRelative+45.*cm/2.0 ), calorimeterBottom_log,    // Logical volume
+                       "Protvino_BOX_Physical",     // Name
+                       BETADetector_log,             // Mother volume
+                       false,                      // Unused boolean
+                       0 );                        // Copy number
+   }
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
 /*   BIGCALAttributes->SetForceSolid ( false );*/
@@ -1130,7 +1160,7 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    } else {
      tank_log = new G4LogicalVolume ( TANK, NitrogenGas_NoOptics,"tank_log",0,0,0 );
    }
-   G4VPhysicalVolume * tank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
+   cherenkovTank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
    G4Box * tedlarFront = new  G4Box ( "tedlarFrontBox", xSnoutEnd/2, ySnoutEnd/2, frontWindowThickness );
    G4Box * tedlarBack = new  G4Box ( "tedlarBackBox", xTank/2, yTank/2, frontWindowThickness );
@@ -1679,10 +1709,10 @@ G4double farMirrorAngle = 20* pi/180;
 // Workaround: use border surface instead of skin for elliptical mirrors
 //  G4LogicalSkinSurface * farMirrorSurface = new G4LogicalSkinSurface("silversurface", farMirrorGlass_log, OpMirrorSurface);
 // elliptical mirror work around for far elliptical mirrors
-   G4LogicalBorderSurface * farMirrorSurfaceTEMP2 = new G4LogicalBorderSurface ( "farmirror1", tank_phys, MirrorGlass_phys2, OpMirrorSurface );
-   G4LogicalBorderSurface * farMirrorSurfaceTEMP4 = new G4LogicalBorderSurface ( "farmirror3", tank_phys, MirrorGlass_phys4, OpMirrorSurface );
-   G4LogicalBorderSurface * farMirrorSurfaceTEMP6 = new G4LogicalBorderSurface ( "farmirror6", tank_phys, MirrorGlass_phys6, OpMirrorSurface );
-   G4LogicalBorderSurface * farMirrorSurfaceTEMP8 = new G4LogicalBorderSurface ( "farmirror7", tank_phys, MirrorGlass_phys8, OpMirrorSurface );
+   G4LogicalBorderSurface * farMirrorSurfaceTEMP2 = new G4LogicalBorderSurface ( "farmirror1", cherenkovTank_phys, MirrorGlass_phys2, OpMirrorSurface );
+   G4LogicalBorderSurface * farMirrorSurfaceTEMP4 = new G4LogicalBorderSurface ( "farmirror3", cherenkovTank_phys, MirrorGlass_phys4, OpMirrorSurface );
+   G4LogicalBorderSurface * farMirrorSurfaceTEMP6 = new G4LogicalBorderSurface ( "farmirror6", cherenkovTank_phys, MirrorGlass_phys6, OpMirrorSurface );
+   G4LogicalBorderSurface * farMirrorSurfaceTEMP8 = new G4LogicalBorderSurface ( "farmirror7", cherenkovTank_phys, MirrorGlass_phys8, OpMirrorSurface );
 
    G4OpticalSurface* OpTankFlatBlackSurface = new G4OpticalSurface ( "FlatBlackSurface" );
    OpTankFlatBlackSurface->SetModel ( unified );
@@ -1944,7 +1974,6 @@ void BETADetectorConstruction::ConstructBETA()
 
    expHall_log->SetVisAttributes ( G4VisAttributes::Invisible );
    BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
-
 
 }
 //___________________________________________________________________

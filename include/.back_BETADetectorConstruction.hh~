@@ -11,7 +11,6 @@
 /////////////////////////////////////////////////////////////////////
 #ifndef BETADetectorConstruction_h
 #define BETADetectorConstruction_h 1
-
 #include "globals.hh"
 #include "G4VUserDetectorConstruction.hh"
 #include "G4RotationMatrix.hh"
@@ -59,7 +58,7 @@
 #include "G4SDParticleWithEnergyFilter.hh"
 #include "G4Trd.hh"
 #include "BETAField.hh"
-#include "BETAG4PMT.hh"
+//#include "BETAG4PMT.hh"
 #include "BETASimulationManager.hh"
 
 class BETADetectorMessenger;
@@ -92,6 +91,10 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction
   public:
 friend class BETASimulationManager;
 
+public :
+
+   G4RotationMatrix fMagnetRotationMatirx;
+
 /**
  *  Constructor
  */
@@ -111,26 +114,48 @@ friend class BETASimulationManager;
  *
  */
   void ConstructBETA();
+ 
+
+
+   bool usingTargetCup;
+
+   bool usingTargetOVC;
+
+   bool usingFakePlaneAtBigcal; 
+
+   bool usingFakePlaneAtForwardTracker;
 
 /**
  * Called from ConstructBETA
  */
-  void ConstructBIGCAL();
+   void ConstructBIGCAL();
+   bool usingBigcal;
+   G4LogicalVolume * calorimeterTop_log;
+   G4VPhysicalVolume * calorimeterTop_phys;
+   G4LogicalVolume * calorimeterBottom_log;
+   G4VPhysicalVolume * calorimeterBottom_log;
 
 /**
  * Called from ConstructBETA
  */
-  void ConstructCherenkov();
+   void ConstructCherenkov();
+   bool usingGasCherenkov;
+   G4LogicalVolume*   tank_log; 
+   G4VPhysicalVolume * cherenkovTank_phys;
 
 /**
  * Called from ConstructBETA
  */
-  void ConstructForwardTracker();
+   void ConstructForwardTracker();
+   bool usingForwardTracker; 
+   G4LogicalVolume*   hodoscopeContainerBox_log; 
+   G4VPhysicalVolume* hodoscopeContainerBox_phys;
 
-/**
- * Called from ConstructBETA
- */
-  void ConstructHodoscope();
+/** Called from ConstructBETA */
+   void ConstructHodoscope();
+   bool usingLuciteHodoscope;
+   G4LogicalVolume*   tracker_log; 
+   G4VPhysicalVolume* tracker_phys;
 
 /**
  * Called from Construct BETA
@@ -138,7 +163,11 @@ friend class BETASimulationManager;
   void ConstructFakePlane();
 
 /**
- * Wright's code which constructs the UVA NH3 Target
+ * Called from Construct()
+ */
+  void ConstructMagneticField();
+
+/** Wright's code which constructs the UVA NH3 Target
  */
   void ConstructTarget();
 ///Constructs the Target Can
@@ -151,6 +180,41 @@ friend class BETASimulationManager;
   void ConstructMagnet();
 ///Constructs the Target Nose
   void ConstructNose();
+
+/** Constructs the Helium Bag and Helium Bag extension
+ * 
+ * The Box has dimensions (ignoring the flange) 4.67 x 7.97 x 71.97 in^3
+ */
+  void ConstructHeliumBag();
+
+  G4Box*            fHeBagExtenderBox;
+  G4LogicalVolume*   fHeBagExtenderBox_log;
+  G4VPhysicalVolume* fHeBagExtenderBox_phys;
+
+  G4Box*            fHeBagExtenderAngleBox1;
+  G4Box*            fHeBagExtenderAngleBox2;
+  G4VSolid*   fHeBagExtenderAngle1;
+  G4VSolid*   fHeBagExtenderAngle2;
+  G4VSolid*   fHeBagExtenderAngle3;
+  G4VSolid*   fHeBagExtenderAngle4;
+  G4LogicalVolume*   fHeBagExtenderAngle1_log;
+  G4LogicalVolume*   fHeBagExtenderAngle2_log;
+  G4LogicalVolume*   fHeBagExtenderAngle3_log;
+  G4LogicalVolume*   fHeBagExtenderAngle4_log;
+
+
+  G4Box*   fHeBagExtenderHorizSupport;
+  G4Box*   fHeBagExtenderVertSupport;
+  G4LogicalVolume*   fHeBagExtenderHorizSupport_log;
+  G4LogicalVolume*   fHeBagExtenderVertSupport_log;
+
+  G4Box*            fHeBagExtenderHorizWindow;
+  G4Box*            fHeBagExtenderVertWindow;
+  G4Box*            fHeBagExtenderFrontWindow;
+  G4LogicalVolume*   fHeBagExtenderHorizWindow_log;
+  G4LogicalVolume*   fHeBagExtenderVertWindow_log;
+  G4LogicalVolume*   fHeBagExtenderFrontWindow_log;
+
 
 /**
  * Called from ConstructBETA
@@ -179,6 +243,13 @@ void setTargetAngle(G4double);
  * For User Interface
  */
 void setMirrorAngles(int,G4double, G4double);
+
+/** turn on and off the target geometry and material */
+void ToggleTargetMaterial(int);
+
+/** turn on and off the target magnetic field*/
+void ToggleTargetField(int);
+
 /**
  * For User Interface
  */
@@ -186,17 +257,11 @@ void rotateMirror(int , G4double , G4double );
 
 void lookAtField(G4String);
 
+int fTargetState;
+
 /**
  * For which detectors are constructed
  */
-bool usingGasCherenkov;
-bool usingForwardTracker;  
-bool usingLuciteHodoscope;
-bool usingBigcal;
-bool usingTargetCup;
-bool usingTargetOVC;
-bool usingFakePlaneAtBigcal;
-bool usingFakePlaneAtForwardTracker;
 
 BETASimulationManager * fSimulationManager;
 
@@ -258,7 +323,7 @@ void SetMaterialPropertiesTables();
     G4Material*        NitrogenGas_NoOptics;
     G4Material*        Lucite_NoOptics;
     G4Material*        LeadGlass_NoOptics;
-
+    G4Material*        HeGas;
   G4Material* LHe;
   G4Material* TargetNH3;
   G4Material* Pb;
@@ -293,7 +358,6 @@ void SetMaterialPropertiesTables();
 // Cherenkov Members
 // Mirror memebers
 private:
-G4LogicalVolume * tank_log;
 G4LogicalVolume * farMirrorGlass_log;
 G4LogicalVolume * nearMirrorGlass_log;
 G4VPhysicalVolume * MirrorGlass_phys1;
@@ -334,6 +398,9 @@ G4double alpha1,
 //The spherical mirror (near and far) rotation matrix
   G4RotationMatrix RM1,RM2,RM3,RM4,RM5,RM6,RM7,RM8,
 		   pmtRM1,pmtRM2,pmtRM3,pmtRM4,pmtRM5,pmtRM6,pmtRM7,pmtRM8;
+
+
+
 
 
 
@@ -499,7 +566,7 @@ G4double alpha1,
   G4LogicalVolume*   logicBrace4;
   G4VPhysicalVolume* physiBrace4;
 public:
-    BETAField * myField;
+    BETAField * fMagneticField;
 private:
     BETADetectorMessenger* messenger;
 };
