@@ -32,7 +32,9 @@ class BETAPrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADouble*   setThetaMax;
     G4UIcmdWithADouble*   setEnergyMax;
     G4UIcmdWithADouble*   setEnergyMin;
+
     G4UIcmdWithAString*   setType;
+    G4UIcmdWithAString*   setParticle;
 
     BETAPrimaryGeneratorAction* BETAAction;
 

@@ -46,6 +46,9 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction()
     kaon = particleTable->FindParticle ( particleName="kaon+" );
     proton = particleTable->FindParticle ( particleName="proton" );
 
+/// Electron by default. Use /beta/gun/setParticle
+  fParticleGun->SetParticleDefinition(electron);
+
 // Using General Particle Source
 //   fParticlesSource->SetParticleDefinition(electron);
 //   fParticlesSource->SetCurrentSourceto(1);
@@ -90,7 +93,6 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 
   fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
 
-  fParticleGun->SetParticleDefinition(electron);
 
 
    if(fMonteCarloEvent) {

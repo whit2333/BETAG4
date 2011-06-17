@@ -793,6 +793,27 @@ void BETADetectorConstruction::ConstructBIGCAL()
                        0 );                        // Copy number
    }
 
+// OPTICS
+
+   G4OpticalSurface* bigcalReflecitveSurface = new G4OpticalSurface ( "BigcalLeadGlassOpticalSurface" );
+     bigcalReflecitveSurface->SetModel ( unified );
+     bigcalReflecitveSurface->SetType ( dielectric_dielectric );
+     bigcalReflecitveSurface->SetFinish ( groundbackpainted);
+//      forwardTrackerSurface->SetFinish ( polishedfrontpainted);
+
+   G4OpticalSurface* bigcalNonReflectiveSurface = new G4OpticalSurface ( "BigcalLeadGlassOpticalSurface" );
+     bigcalNonReflectiveSurface->SetModel ( unified );
+     bigcalNonReflectiveSurface->SetType ( dielectric_metal);
+     bigcalNonReflectiveSurface->SetFinish ( groundbackpainted);
+
+if(fSimulationManager->fSimulateTrackerOptics) {
+   new G4LogicalSkinSurface ( "protLeadGassSurface",  cellLogicalBottom, bigcalNonReflectiveSurface );
+   new G4LogicalSkinSurface ( "rcsLeadGassSurface", cellLogical, bigcalNonReflectiveSurface );
+} else {
+   new G4LogicalSkinSurface ( "protLeadGassSurface",  cellLogicalBottom, bigcalNonReflectiveSurface );
+   new G4LogicalSkinSurface ( "rcsLeadGassSurface", cellLogical, bigcalNonReflectiveSurface );
+}
+
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
 /*   BIGCALAttributes->SetForceSolid ( false );*/
    BIGCALAttributes->SetForceWireframe( true );
@@ -2368,6 +2389,22 @@ void BETADetectorConstruction::SetMaterialPropertiesTables()
     luciteMPT->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
     luciteMPT->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
     Lucite->SetMaterialPropertiesTable ( luciteMPT );
+
+// LeadGlass
+//    G4double LeadGlassPhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
+//       {0.2*eV,1.4*eV};
+//    G4double LeadGlassRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
+//       {2.3,2.30 };
+//    G4double LeadGlassAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
+//       {0.2611*m, 0.2791*m/*, 0.2791*m, 0.26115*m,
+//        0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
+//        0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
+//        0.021193*m,0.021193*m*/
+//       };
+//     G4MaterialPropertiesTable* LeadGlassMPT = new G4MaterialPropertiesTable();
+//     LeadGlassMPT->AddProperty ( "RINDEX", LeadGlassPhotonEnergy, LeadGlassRefractiveIndex, lucitedatapoints );
+//     LeadGlassMPT->AddProperty ( "ABSLENGTH",    LeadGlassPhotonEnergy, LeadGlassAbsLength,     lucitedatapoints );
+//     LeadGlass->SetMaterialPropertiesTable ( LeadGlassMPT );
 
 
    const G4int nEntries = 32;

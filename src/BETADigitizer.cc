@@ -418,7 +418,8 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
     aBChit->fTDCGroup = bigcalGeoCalc->GetTDCGroup(aBChit->fiCell,aBChit->fjCell);
     aBChit->fTDCLevel=-1;
     aBChit->fLevel=0;
-    aBChit->fEnergy=(Float_t)aBChit->fADC*(Float_t)bigcalGeoCalc->GetCalibrationCoefficient(aBChit->fiCell,aBChit->fjCell);
+    aBChit->fEnergy= aDigi->fTrueValue;
+//(Float_t)aBChit->fADC*(Float_t)bigcalGeoCalc->GetCalibrationCoefficient(aBChit->fiCell,aBChit->fjCell);
     bcEvent->fTotalEnergyDeposited+=aBChit->fEnergy;
   }
 
@@ -429,8 +430,8 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
 /*    for(int j=0;j<Bigcal_tdc_nhit;j++)  {*/
     aBChit = new(BCHits[bcEvent->fNumberOfHits]) BigcalHit();
     bcEvent->fNumberOfHits++;
-    aBChit->fADC=0; 
-    aBChit->fEnergy=0; 
+    aBChit->fADC=0;
+    aBChit->fEnergy=0;
     aBChit->fTDC      = tDigi->fTDCValue + fSimulationManager->fBigcalDetector->fTypicalTDCPeak +
            fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalTDCPeakWidth);
     aBChit->fTDCRow   = (tDigi->fChannelNumber-1)/4 +1;

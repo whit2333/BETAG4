@@ -167,7 +167,7 @@ public:
   bool fSimulateTrackerOptics;
   bool fSimulateHodoscopeOptics;
   bool fSimulateBigcalOptics;
-
+  bool fSimulateTrigger;
   int  fDebugLevel;
 
   G4MultiFunctionalDetector* fTrackerScoring;

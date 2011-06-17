@@ -3,7 +3,8 @@
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithAnInteger.hh"
-
+#include "G4ParticleGun.hh"
+#include "G4ParticleTable.hh"
 /// \todo Implement directory with relevent commands based upon  which 
 /// Type of PrimaryGenerator is used. 
 /// eg BeamOnTarget, ZeroAsymmetryElectrons, ZeroAsymmetryBeamOnTarget etc...
@@ -89,8 +90,7 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
    sigmaMomentum->AvailableForStates ( G4State_Idle );
 
    sete_piRatio = new G4UIcmdWithADouble ( "/beta/gun/SetElectronPionRatio",this );
-   sete_piRatio->SetGuidance ( " Set the electron - pion ratio " );
-   sete_piRatio->SetGuidance ( " Setting to one is all electrons " );
+   sete_piRatio->SetGuidance ( " Set the electron - pion ratio \nSetting to one is all electrons " );
    sete_piRatio->SetDefaultValue ( 1.0/100.0 );
    sete_piRatio->AvailableForStates ( G4State_Idle );
 
@@ -98,6 +98,11 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
    setpi0Ratio->SetGuidance ( "  Set the pi0 - charged pion ratio \n Setting >= 1 makes all pions neutral " );
    setpi0Ratio->SetDefaultValue ( 0.0 );
    setpi0Ratio->AvailableForStates ( G4State_Idle );
+
+   setParticle = new G4UIcmdWithAString ( "/beta/gun/setParticle",this );
+   setParticle->SetGuidance ( "  Set the particle thrown (if event generator is applicable) \n use the simple particle name... e-,e+,pi+,proton,kaon- " );
+   setParticle->SetDefaultValue ( "e-" );
+   setParticle->AvailableForStates ( G4State_Idle );
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -191,10 +196,12 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 //    {
 //       BETAAction->SetElectronPionRatio ( sete_piRatio->GetNewDoubleValue ( newValue ) );
 //    }
-//    if ( command == setpi0Ratio )
-//    {
-//       BETAAction->SetPiZeroRatio ( setpi0Ratio->GetNewDoubleValue ( newValue ) );
-//    }
+   if ( command == setParticle )
+   {
+      G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+      BETAAction->fParticleGun->SetParticleDefinition(particleTable->FindParticle ( newValue ));
+      
+   }
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

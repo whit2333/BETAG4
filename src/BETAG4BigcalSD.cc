@@ -79,7 +79,7 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
    aHit->AddDepositedEnergy ( depositedEnergy/MeV );
    // if the energy is above the threshold to fire a discriminator (10MeV)
    // and has not had a time recorded, then record the time
-   if( aHit->GetDepositedEnergy() > 10.0 && (!aHit->fTimingHit) ) {
+   if( aHit->GetDepositedEnergy()/MeV > 10.0 && (!aHit->fTimingHit) ) {
      aHit->fTiming = theTrack->GetGlobalTime()/ns;
      aHit->fTimingHit = true;
    }

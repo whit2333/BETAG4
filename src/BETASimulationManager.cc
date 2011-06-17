@@ -29,7 +29,7 @@ BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 BETASimulationManager::BETASimulationManager () : 
      fIsAppendMode(false),fRunNumber(0),plotVis(0),
      fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(true),
-     fSimulateTrackerOptics(false),fDebugLevel(3)
+     fSimulateTrackerOptics(false),fDebugLevel(3),fSimulateTrigger(false)
 {
 
   fSimulationMessenger = new BETASimulationMessenger ( this );

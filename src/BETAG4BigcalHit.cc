@@ -21,6 +21,7 @@ BETAG4BigcalHit::BETAG4BigcalHit ( G4int id )
       ,fPosition()
       ,fRotation()
       ,pLogicalVolume ( 0 )  {
+   fDepositedEnergy=0;
    fNHits=0;
    fTimingHit=false;
 }

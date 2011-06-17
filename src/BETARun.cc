@@ -153,7 +153,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    fDAQReadout->Digitize();
 /*   fDAQReadout->Print();*/
 //  fBETAScalers->Digitize();
-   if( fDAQReadout->IsGoodEvent() ) {
+   if( fDAQReadout->IsGoodEvent() || !(fSimulationManager->fSimulateTrigger) ) {
 
 /*    std::cout << " Above Readout Triggered DAQ! \n";*/
       fBETADigitizer->Digitize();
