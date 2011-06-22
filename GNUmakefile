@@ -19,10 +19,13 @@ include $(G4INSTALL)/config/binmake.gmk
 #   LDLIBS += $(shell root-config --glibs) 
    LDLIBS += -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam  -lLHAPDF
    LDLIBS +=  $(shell root-config --ldflags)
-#   LDLIBS += $(shell gsl-config --libs) 
    LDLIBS += $(shell root-config --glibs --libs ) 
    LDLIBS += -lTreePlayer -lGed -lRGL -lEve -lEG
    LDLIBS += $(shell mysql_config --libs)
+
+#LHAPDF
+  LDLIBS += $(shell lhapdf-config --ldflags ) 
+
 
 # InSANE 
    LDLIBS += -L$(InSANEDIR)/lib
