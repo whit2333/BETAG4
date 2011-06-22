@@ -16,11 +16,13 @@ include $(G4INSTALL)/config/binmake.gmk
 #   LDLIBS += `aida-config --lib `
 # ROOT
   CPPFLAGS += $(shell root-config --cflags )
-   CPPFLAGS += -g 
+  CPPFLAGS += -g 
 #   LDLIBS += $(shell root-config --glibs) 
-   LDLIBS += -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam  -lLHAPDF
+   LDLIBS += -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam 
+# -lLHAPDF
    LDLIBS +=  $(shell root-config --ldflags)
-   LDLIBS += $(shell gsl-config --libs) $(shell root-config --glibs --libs ) 
+#   LDLIBS += $(shell gsl-config --libs) 
+   LDLIBS += $(shell root-config --glibs --libs ) 
    LDLIBS += -lTreePlayer -lGed -lRGL -lEve -lEG
    LDLIBS += $(shell mysql_config --libs)
 
@@ -29,7 +31,7 @@ include $(G4INSTALL)/config/binmake.gmk
    LDLIBS += -lInSANE  
    CPPFLAGS += -I$(InSANEDIR)/include
 # ROOT and  GNU Scientific Librarires and 
-   LDLIBS += -lgsl -lgslcblas -lm  $(shell root-config --nonew --glibs)
+   LDLIBS += -lm  $(shell root-config --nonew --glibs)
 
 # VGM
 #   CPPFLAGS  += -I$(VGM_INSTALL)/packages/VGM/include
