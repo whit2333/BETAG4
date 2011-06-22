@@ -17,8 +17,7 @@ include $(G4INSTALL)/config/binmake.gmk
   CPPFLAGS += $(shell root-config --cflags )
   CPPFLAGS += -g
 #   LDLIBS += $(shell root-config --glibs) 
-   LDLIBS += -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam 
-# -lLHAPDF
+   LDLIBS += -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam  -lLHAPDF
    LDLIBS +=  $(shell root-config --ldflags)
 #   LDLIBS += $(shell gsl-config --libs) 
    LDLIBS += $(shell root-config --glibs --libs ) 
