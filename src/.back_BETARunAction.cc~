@@ -13,7 +13,7 @@
 #include "TDatime.h"
 #include "SANERunManager.h"
 #include "BETAPrimaryGeneratorAction.hh"
-#include "InSANEDatabaseManager.hh"
+#include "InSANEDatabaseManager.h"
 
 //_________________________________________________________________//
 
