@@ -151,7 +151,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
 // Simulates the trigger supervisor
    fDAQReadout->Digitize();
-   fDAQReadout->Print();
+/*   fDAQReadout->Print();*/
 //  fBETAScalers->Digitize();
    if( fDAQReadout->IsGoodEvent() ) {
 

@@ -13,11 +13,11 @@
 #include "TDatime.h"
 #include "SANERunManager.h"
 #include "BETAPrimaryGeneratorAction.hh"
+#include "InSANEDatabaseManager.hh"
+
 //_________________________________________________________________//
 
-BETARunAction::BETARunAction() :showThePlots ( 0 )
-{
-
+BETARunAction::BETARunAction() :showThePlots ( 0 ) {
    fSimulationManager = BETASimulationManager::GetInstance();
 
    fRunNumber = fSimulationManager->InitializeNewRun();
@@ -26,7 +26,6 @@ BETARunAction::BETARunAction() :showThePlots ( 0 )
    timer = new G4Timer;
    fCurrentRun=0;
 }
-
 //_________________________________________________________________//
 
 BETARunAction::~BETARunAction()
@@ -39,19 +38,18 @@ BETARunAction::~BETARunAction()
 
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 {
-//G4cout <<"START of RUN ACTION"<< G4endl;
+//   G4cout <<"START of RUN ACTION"<< G4endl;
    G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
 //_________________________________________________________________//
 
-/**
- *  Fills the database as much as possible
+/** Fills the database as much as possible
  *  Grabs the runmanager and
  */
 G4Run*  BETARunAction::GenerateRun() 
 {
    fRunNumber = fSimulationManager->IncrementRunNumber();
-   
+
    G4cout << " = BETARunAction - GenerateRun   " << G4endl;
    G4cout << "  - Creating Run Number " << fRunNumber << "   " << G4endl;
 
@@ -67,7 +65,6 @@ G4Run*  BETARunAction::GenerateRun()
       const char * rootName = fname.c_str();
       fSimulationManager->fRootFile = new TFile ( rootName,"UPDATE" );
       fSimulationManager->fEvents = new SANEEvents("betaDetectors0");
-
    } else {
       out << "data/rootfiles/InSANE" << fRunNumber << ".0.root"  ;
       fname = out.str();
@@ -75,14 +72,12 @@ G4Run*  BETARunAction::GenerateRun()
       fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
       fSimulationManager->fDetectorTree = new TTree("betaDetectors","Simulated BETA Detectors");
       fSimulationManager->fEvents = new SANEEvents("betaDetectors");
-
    }
    fSimulationManager->AddDetectors();
 
 //    if (! fSimulationManager->IsAppendMode() ) {
 //       //fSimulationManager->CreateTrees();
 //     }
-
 // New concrete InSANE Run class
     fSimulationManager->fInSANERun = new BETAG4SimulationRun(fRunNumber);
 
@@ -90,15 +85,17 @@ G4Run*  BETARunAction::GenerateRun()
 // you have them!
    double targetAngle = 0.0;
    if (runManager) {
-     BETADetectorConstruction *  construction 
-       = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
+      BETADetectorConstruction *  construction 
+         = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
+
+
      if (construction) {
         targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
          //printf("\n got run manager %f\n",targetAngle);
 
 /// \todo Better database filling!!
 // FILL THE DATABASE
-        TSQLServer * db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
+        TSQLServer * db = InSANEDatabaseManager::GetManager()->dbServer;// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
         TSQLResult * res;
         TString SQLq("REPLACE into BETAG4_run_info set "); // dont forget the extra space at the end
 //aSQL  "Insert into BETAG4_run_info set " ;s
@@ -154,7 +151,7 @@ G4Run*  BETARunAction::GenerateRun()
    }
 
    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-   genAction->SetMCEventAddress(fSimulationManager->fEvents->MC);
+   genAction->SetMCEventAddress((BETAG4MonteCarloEvent *)fSimulationManager->fEvents->MC);
 //    fRunNumber = fSimulationManager;
 //   if(fCurrentRun) delete fCurrentRun;
    fCurrentRun = new BETARun ( fRunNumber );
@@ -165,7 +162,7 @@ G4Run*  BETARunAction::GenerateRun()
 }
 //_________________________________________________________________//
 
-/**
+/** 
  *
  *
  */
@@ -212,13 +209,13 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
    G4cout <<"Number of Events Processed:" << aRun->GetNumberOfEvent() << " events. " <<G4endl;
    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
 
-G4cout << "Writing ROOT File\n";
+   G4cout << "Writing ROOT File\n";
 
-  fSimulationManager->fEvents->fTree->Write();
+   fSimulationManager->fEvents->fTree->Write();
 
-  fSimulationManager->fEvents->fTree->FlushBaskets();
+   fSimulationManager->fEvents->fTree->FlushBaskets();
 
-  fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
+   fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
 
 // Save all objects in this file
 //   fSimulationManager->fDetectorTree->Write();
@@ -232,12 +229,9 @@ G4cout << "Writing ROOT File\n";
 // fOutputTree->FlushBaskets();
 // fAnalysisFile->Write();
 // fAnalysisFile->Flush();
-
-
    fSimulationManager->fRootFile->Close();
    assert ( 0 != fCurrentRun );
 //   currentRun->DumpData();
-
 }
 
 /**

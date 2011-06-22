@@ -26,7 +26,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction()
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
 
    fMonteCarloEvent=0;
-   fBETAG4EventGen = new ();
+   fBETAG4EventGen = new ConeEventGenerator();
 // The following must be called
    fBETAG4EventGen->Initialize();
 
@@ -45,6 +45,9 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction()
     pionzero = particleTable->FindParticle ( particleName="pi0" );
     kaon = particleTable->FindParticle ( particleName="kaon+" );
     proton = particleTable->FindParticle ( particleName="proton" );
+
+/// Electron by default. 
+  fParticleGun->SetParticleDefinition(electron);
 
 // Using General Particle Source
 //   fParticlesSource->SetParticleDefinition(electron);
@@ -90,7 +93,6 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 
   fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
 
-  fParticleGun->SetParticleDefinition(electron);
 
 
    if(fMonteCarloEvent) {
