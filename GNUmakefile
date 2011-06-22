@@ -1,7 +1,6 @@
 # --------------------------------------------------------------
 # GNUmakefile beta simulation        Whitney Armstrong 12/16/07
 # --------------------------------------------------------------
-
   name := BETA
   G4TARGET := $(name)
   G4EXLIB := true
@@ -16,7 +15,7 @@ include $(G4INSTALL)/config/binmake.gmk
 #   LDLIBS += `aida-config --lib `
 # ROOT
   CPPFLAGS += $(shell root-config --cflags )
-  CPPFLAGS += -g 
+  CPPFLAGS += -g
 #   LDLIBS += $(shell root-config --glibs) 
    LDLIBS += -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam 
 # -lLHAPDF
