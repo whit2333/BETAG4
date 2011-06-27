@@ -1,0 +1,19 @@
+PROJECT: sane 
+TRACK: test
+JOBNAME: rootfiletest 
+COMMAND: ./simubkgd > test.out
+CPU: 1
+MAIL: whit@temple.edu
+MEMORY: 1024 MB 
+INPUT_FILES: /home/whit/SimuBkgd/macro/run1.mac
+INPUT_DATA: run.mac 
+OTHER_FILES:
+/home/whit/SimuBkgd/batch/.bashrc
+/home/whit/scratch/bin/Linux-g++/SimuBkgd
+/home/whit/SimuBkgd/bin/simubkgd
+/home/whit/SimuBkgd/run/run.txt
+SINGLE_JOB: 
+OUTPUT_DATA: test1.out 
+OUTPUT_TEMPLATE: /home/whit/output/test1.out
+OUTPUT_DATA: test.out 
+OUTPUT_TEMPLATE: /home/whit/SimuBkgd/restuls/test.out

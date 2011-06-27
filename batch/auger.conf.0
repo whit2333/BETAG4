@@ -1,0 +1,14 @@
+PROJECT: sane 
+TRACK: test
+JOBNAME: tester 
+COMMAND: ls -la > test.out
+CPU: 1
+MAIL: whit@temple.org
+INPUT_FILES: /home/whit/SimuBkgd/macro/run1.mac
+INPUT_DATA: run.mac 
+OUTPUT_DATA: test.out
+OUTPUT_TEMPLATE: /home/whit/SimuBkgd/results/test.out
+OTHER_FILES:
+/home/whit/.bashrc
+/home/whit/scratch/bin/Linux-g++/SimuBkgd
+/home/whit/SimuBkgnd/bin/simubkgd 
