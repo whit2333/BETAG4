@@ -1,0 +1,14 @@
+PROJECT: sane 
+TRACK: test  
+JOBNAME: betag4test 
+COMMAND: bash betag4run > betag4.out
+MAIL: whit@temple.edu
+MEMORY: 2025 MB 
+OTHER_FILES:
+/home/whit/BETAG4/bin/betag4run 
+/home/whit/.bashrc
+/home/whit/bin/BETA
+OS: linux64
+SINGLE_JOB: 
+OUTPUT_DATA: betag4.out 
+OUTPUT_TEMPLATE: /home/whit/BETAG4/run/betag4.out
