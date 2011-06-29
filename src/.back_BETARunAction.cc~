@@ -95,7 +95,7 @@ G4Run*  BETARunAction::GenerateRun()
 
 /// \todo Better database filling!!
 // FILL THE DATABASE
-        TSQLServer * db = InSANEDatabaseManager::GetManager()->dbServer;// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
+        TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
         TSQLResult * res;
         TString SQLq("REPLACE into BETAG4_run_info set "); // dont forget the extra space at the end
 //aSQL  "Insert into BETAG4_run_info set " ;s
@@ -144,7 +144,8 @@ G4Run*  BETARunAction::GenerateRun()
 
          cout << SQLq.Data() << "\n";
 
-         db->Close();
+//          db->Close();
+
 /// DONE with database
 
       }
@@ -171,7 +172,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 //theRun->getRunAnalysisManager()->getTree()->commit();
 // BETASimulationManager::dispose();
    timer->Stop();
-        TSQLServer * db = InSANEDatabaseManager::GetManager()->dbServer;// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
+        TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
    TSQLResult * res;
    TDatime * dt = new TDatime();
    TString datetime( dt->AsSQLString() );
