@@ -31,7 +31,7 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
  */
   ~BETAG4DAQReadout();
 
-/**  Digitize
+/**  Digitize simulated trigger
  * For each event this is called
  * First it looks at the sum of bigcal's trigger groups to see if it is
  * above the energy threshold.

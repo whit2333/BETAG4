@@ -50,10 +50,18 @@ class BETADigitizer : public G4VDigitizerModule {
  */
   void DigitizePedestals();
 
+/** Loop over Detector Hit Collections and creates
+ *  The ADC and TDC Digi collections
+ */
   void Digitize();
 
+/** Loops over the Digi Collection and creates
+ *  the InSANEDetectorHits and fills out InSANEDetectorEvent data 
+ */
   void ReadOut();
-  
+
+/** Clears Digi collections
+ */
   void Clear();
 
   virtual void Print();

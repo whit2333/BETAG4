@@ -47,7 +47,7 @@ include $(G4INSTALL)/config/binmake.gmk
    CXXFLAGS  += $(CPPFLAGS)
 
 
-doc:
+doc: 
 	doxygen /home/whit/sane08/InSANE/doc/BETAG4_Doxyfile
 
 rootdict: 

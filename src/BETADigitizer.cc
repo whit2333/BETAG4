@@ -47,7 +47,7 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
 /*  if(fSimulationManager->fConstruction->usingLuciteHodoscope)*/
     fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-  fBigcalChannelThreshold = 10.0; //MeV
+  fBigcalChannelThreshold = 5.0; //MeV
 
 }
 //_______________________________________________________//
@@ -99,7 +99,9 @@ void BETADigitizer::Digitize() {
 
   BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
 
-// Loop over Bigcal Hits
+  /////////////////////////////////
+  /// Bigcal Hits
+  /////////////////////////////////
   G4double energyTemp = 0.0;
   G4int deltaT = 10;//ns
   tDigi=0;
@@ -114,12 +116,23 @@ void BETADigitizer::Digitize() {
   {
     bcHit = ( *fBigcalHC)[gg];
     energyTemp = bcHit->GetDepositedEnergy();
-    if(energyTemp > fBigcalChannelThreshold) { // Record Bigcal Data !
+
+    if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold )
+      { // Record Bigcal Data !
       aDigi = new BETAG4DigiADC(gg+1);
       fNADC++;
-      aDigi->fTrueValue = energyTemp; 
-      aDigi->fADCValue = energyTemp;
+      aDigi->fTrueValue = energyTemp;
+      /// Divide the energy deposited by the calibration coefficient so that 
+      /// in reconstruction, we can multiply by the calibration coefficient.
+      aDigi->fADCValue = 
+          (float)energyTemp/((float) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
       fBigcalADCDC->insert ( aDigi );
+
+
+//       std::cout << aDigi->fChannelNumber +1 <<  " has calib coef = " 
+//                 << bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber) << "\n";
+//       std::cout << " digi value = " << aDigi->fADCValue << " from energy value " << energyTemp << "\n";
+
 // Fill the "TDC hits" if there was a discriminator fire with the time that was recorded
 // The hits are summed for the "group of 8" 
 // since we loop through all blocks, we just add a hit indexed by group if there was a hit
@@ -130,12 +143,12 @@ void BETADigitizer::Digitize() {
           currentGroup = bigcalGeoCalc->GetGroupNumber(gg+1);
 /*      tDigi = new(fBigcalTDCDC[fNTDC]) BETAG4DigiTDC(currentGroup);*/
           tDigi = new BETAG4DigiTDC(currentGroup);
-          tDigi->fADCValue += energyTemp;
+          tDigi->fADCValue += energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
           tDigi->fTrueValue += bcHit->fTiming;
           tDigi->fNumberOfHits++;
           tDigi->fTDCValue = (bcHit->fTiming*bigcalTDCChannelScaleFactor)/(tDigi->fNumberOfHits);
         } else {
-          tDigi->fADCValue += energyTemp;
+          tDigi->fADCValue += energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
           tDigi->fTrueValue += bcHit->fTiming;
           tDigi->fNumberOfHits++;
           tDigi->fTDCValue = (bcHit->fTiming*bigcalTDCChannelScaleFactor)/(tDigi->fNumberOfHits);
@@ -275,9 +288,9 @@ void BETADigitizer::ReadOut() {
 // //           << "\n";
 //   }
 
-//////////////////////
-// LUCITE HODOSCOPE
-// only timing information
+   //////////////////////
+   /// LUCITE HODOSCOPE
+   // only timing information
    LuciteHodoscopeEvent * lhEvent = fSimulationManager->fEvents->BETA->fLuciteHodoscopeEvent;
    Int_t lucpedval = fSimulationManager->fHodoscopeDetector->fTypicalPedestal;
    Int_t luctdcval = fSimulationManager->fHodoscopeDetector->fTypicalTDCPeak ;
@@ -315,7 +328,7 @@ void BETADigitizer::ReadOut() {
   }
 
 //////////////////////
-// GAS CHERENKOV
+/// GAS CHERENKOV
 // We count the number of hits by TDC hits
    GasCherenkovEvent * gcEvent = fSimulationManager->fEvents->BETA->fGasCherenkovEvent;
    Int_t cerpedval = fSimulationManager->fCherenkovDetector->fTypicalPedestal;
@@ -367,8 +380,9 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
    }
 }
 
-
-// BIGCAL
+  ///////////////////////////
+  /// BIGCAL
+  ///////////////////////////
   BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
   BigcalEvent * bcEvent = fBetaEvent->fBigcalEvent;
 
@@ -418,7 +432,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
     aBChit->fTDCGroup = bigcalGeoCalc->GetTDCGroup(aBChit->fiCell,aBChit->fjCell);
     aBChit->fTDCLevel=-1;
     aBChit->fLevel=0;
-    aBChit->fEnergy= aDigi->fTrueValue;
+    aBChit->fEnergy = aDigi->fTrueValue;
 //(Float_t)aBChit->fADC*(Float_t)bigcalGeoCalc->GetCalibrationCoefficient(aBChit->fiCell,aBChit->fjCell);
     bcEvent->fTotalEnergyDeposited+=aBChit->fEnergy;
   }

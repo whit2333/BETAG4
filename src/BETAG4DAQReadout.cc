@@ -1,4 +1,5 @@
 #include "BETAG4DAQReadout.hh"
+#include "BIGCALGeometryCalculator.h"
 
 BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modName) {
 
@@ -52,9 +53,7 @@ BETAG4DAQReadout::~BETAG4DAQReadout() {
 
 void BETAG4DAQReadout::Digitize() {
    if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
-
 // Reset all event level values
-
 // Get pointers
   G4String colName;
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
@@ -77,12 +76,13 @@ void BETAG4DAQReadout::Digitize() {
 
 // Loop over bigcal and add up the energy for each trigger group
   BETAG4BigcalHit * bcHit;
+  BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
   G4double energyTemp;
   fNBigcalHits=0;
   for ( int gg =0;gg<1744;gg++ )
   {
     bcHit      = (*fBigcalHC)[gg];
-    energyTemp = bcHit->GetDepositedEnergy();
+    energyTemp = bcHit->GetDepositedEnergy()/ (bigcalGeoCalc->GetCalibrationCoefficient(bcHit->fCellID));;
 
     if(energyTemp > 0.01) { ///10 MeV Block Threshold?
       fNBigcalHits++;
