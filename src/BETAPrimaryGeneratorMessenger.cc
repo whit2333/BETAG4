@@ -14,8 +14,6 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
       :BETAAction ( BETAGun )
 {
    gunDir = new G4UIdirectory ( "/beta/" );
-
-
    gunDir = new G4UIdirectory ( "/beta/gun/" );
    gunDir->SetGuidance ( "PrimaryGenerator control" );
 
@@ -109,8 +107,7 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
 
 BETAPrimaryGeneratorMessenger::~BETAPrimaryGeneratorMessenger()
 {
-   delete polarCmd;
-   delete gunDir;
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
