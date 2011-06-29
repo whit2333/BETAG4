@@ -171,7 +171,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 //theRun->getRunAnalysisManager()->getTree()->commit();
 // BETASimulationManager::dispose();
    timer->Stop();
-   TSQLServer *db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
+        TSQLServer * db = InSANEDatabaseManager::GetManager()->dbServer;// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
    TSQLResult * res;
    TDatime * dt = new TDatime();
    TString datetime( dt->AsSQLString() );
@@ -191,7 +191,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 
 //printf"\n %s  \n",SQLq.Data())  ;
    res = db->Query(SQLq.Data());
-   db->Close();
+/*   db->Close();*/
    /*
     TSQLServer *db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
     TSQLResult * res;

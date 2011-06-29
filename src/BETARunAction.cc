@@ -144,7 +144,8 @@ G4Run*  BETARunAction::GenerateRun()
 
          cout << SQLq.Data() << "\n";
 
-         db->Close();
+//          db->Close();
+
 /// DONE with database
 
       }
@@ -191,7 +192,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 
 //printf"\n %s  \n",SQLq.Data())  ;
    res = db->Query(SQLq.Data());
-   db->Close();
+/*   db->Close();*/
    /*
     TSQLServer *db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
     TSQLResult * res;
