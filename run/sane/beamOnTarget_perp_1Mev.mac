@@ -1,0 +1,4 @@
+/beta/gun/setEventType beamOnTarget
+/beta/target/setPolarizationAngle 260
+/run/beamOn 1000000
+/control/shell replaySimulation 
