@@ -15,7 +15,7 @@ class G4Step;
 
 /**  Fake plane Sensitive Detector
  *  
- *  Used
+ * \ingroup Detectors
  */
 class BETAFakePlane : public G4VSensitiveDetector {
 public:

@@ -9,6 +9,10 @@
 
 all: lib bin
 
+doc: /home/whit/sane08/InSANE/doc/BETAG4_Doxyfile
+	doxygen /home/whit/sane08/InSANE/doc/BETAG4_Doxyfile
+
+
 include $(G4INSTALL)/config/binmake.gmk
 
 #   CPPFLAGS += `aida-config --include `
@@ -47,9 +51,6 @@ include $(G4INSTALL)/config/binmake.gmk
    CXXFLAGS  += $(CPPFLAGS)
 
 
-doc: 
-	doxygen /home/whit/sane08/InSANE/doc/BETAG4_Doxyfile
 
-rootdict: 
 
 

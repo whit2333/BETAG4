@@ -7,6 +7,10 @@
 
 class G4VPhysicalVolume;
 
+/**
+ *
+ * \ingroup Detectors
+ */
 class BETAProtvinoCellParameterisation : public G4VPVParameterisation {
 
 public:

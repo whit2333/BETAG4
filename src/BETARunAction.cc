@@ -19,9 +19,7 @@
 
 BETARunAction::BETARunAction() :showThePlots ( 0 ) {
    fSimulationManager = BETASimulationManager::GetInstance();
-
    fRunNumber = fSimulationManager->InitializeNewRun();
-
    messenger = new BETARunActionMessenger ( this );
    timer = new G4Timer;
    fCurrentRun=0;
@@ -38,6 +36,7 @@ BETARunAction::~BETARunAction()
 
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 {
+   
 //   G4cout <<"START of RUN ACTION"<< G4endl;
    G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
@@ -56,7 +55,7 @@ G4Run*  BETARunAction::GenerateRun()
    G4RunManager *   runManager = G4RunManager::GetRunManager();
    timer->Start();
 
-// Open Root File With A name Depending on the Run number
+/// Opens Root File With a name Depending on the Run number
    std::string fname;
    std::stringstream out;
    if ( fSimulationManager->IsAppendMode() ) {
@@ -81,18 +80,18 @@ G4Run*  BETARunAction::GenerateRun()
 // New concrete InSANE Run class
     fSimulationManager->fInSANERun = new BETAG4SimulationRun(fRunNumber);
 
+//     fSimulationManager->fInSANERun->fPolarizationAngle
+
+
 // Get the runmanager and constructors/messengers and only fill the database if
 // you have them!
    double targetAngle = 0.0;
    if (runManager) {
       BETADetectorConstruction *  construction 
          = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
-
-
      if (construction) {
         targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
          //printf("\n got run manager %f\n",targetAngle);
-
 /// \todo Better database filling!!
 // FILL THE DATABASE
         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();
@@ -139,12 +138,9 @@ G4Run*  BETARunAction::GenerateRun()
 
 //          SQLq += ", target_angle=" ;
 //          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
-
 // Fill MySQL table
          res = db->Query(SQLq.Data());
-
          cout << SQLq.Data() << "\n";
-
 //          db->Close();
 
 /// DONE with database

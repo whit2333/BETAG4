@@ -12,8 +12,9 @@ class G4UIdirectory;
 class G4UIcmdWithoutParameter;
 class BETADetectorConstruction;
 
-/**
- * \brief User Interface Messenger for Detector Construction
+/**User Interface Messenger for Detector Construction
+ *
+ * \ingroup Detectors
  */
 class BETADetectorMessenger: public G4UImessenger
 {

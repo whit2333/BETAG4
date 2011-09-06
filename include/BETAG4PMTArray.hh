@@ -16,7 +16,8 @@ class G4Step;
 /** A concrete G4VSensitiveDetector class for an array of photomultiplier tubes
  * 
  *  The number of Channels should be set only once.
- * 
+ *
+ * \ingroup Detectors
  */
 class BETAG4PMTArray : public G4VSensitiveDetector {
 

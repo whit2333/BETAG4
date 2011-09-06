@@ -75,6 +75,7 @@ public:
 
 /** Event generator for inclusive electron DIS
  *
+ *   \ingroup EventGen
  */
 class DISEventGenerator : public BETAG4EventGenerator {
 public:
@@ -96,6 +97,7 @@ public:
 
 /**  Mott Cross section event generator
  *
+ *   \ingroup EventGen
  */
 class MottEventGenerator : public BETAG4EventGenerator   {
 public:
@@ -116,6 +118,7 @@ public:
 
 /**  Flat Event generator spread over bigcal
  *
+ *   \ingroup EventGen
  */
 class BigcalSimpleEventGenerator : public BETAG4EventGenerator   {
 public:
@@ -143,6 +146,7 @@ public:
 /**  Flat Event generator centered on bigcal with small solid angle
  *   and near mono chromatic energies
  *
+ *   \ingroup EventGen
  */
 class BigcalCenterEventGenerator : public BETAG4EventGenerator   {
 public:
@@ -157,6 +161,7 @@ public:
 /** Beam on target event generator that simply puts an electron beam upstream towards the target.
  *
  *  The starting position is a few cm upstream of the target
+ *   \ingroup EventGen
  */
 class BeamOnTargetEventGenerator : public BETAG4EventGenerator   {
 public:
@@ -199,6 +204,7 @@ public:
 };
 
 /**
+ *   \ingroup EventGen
  */
 class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
 public:

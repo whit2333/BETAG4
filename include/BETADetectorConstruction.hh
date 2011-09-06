@@ -84,7 +84,7 @@ class BETASimulationManager;
  *   for reconstruction. For this we make use of the VGM framework which allows for easy conversion from one
  *   geometry model to another (eg ROOT->GEANT4 or XML->ROOT etc...)
  *
- *
+ * \ingroup Detectors
  */
 class BETADetectorConstruction : public G4VUserDetectorConstruction
 {

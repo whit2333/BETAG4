@@ -8,6 +8,10 @@ class G4HCofThisEvent;
 class G4TouchableHistory;
 class G4Step;
 
+/**
+ *
+ * \ingroup Detectors
+ */
 class BETARCSCalorimeter : public G4VSensitiveDetector {
 
 public:

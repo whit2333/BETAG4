@@ -18,7 +18,8 @@ class BETASimulationManager;
 
 /** 
  * Data acquisition readout simulation
- * 
+ *
+ * \ingroup Detectors
  */
 class BETAG4DAQReadout : public G4VDigitizerModule {
   public:

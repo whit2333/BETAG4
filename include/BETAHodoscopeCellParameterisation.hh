@@ -11,6 +11,10 @@
 
 class G4VPhysicalVolume;
 
+/**
+ *
+ * \ingroup Detectors
+ */
 class BETAHodoscopeCellParameterisation : public G4VPVParameterisation {
 
 public:

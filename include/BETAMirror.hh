@@ -12,6 +12,10 @@ class G4HCofThisEvent;
 class G4TouchableHistory;
 class G4Step;
 
+/**
+ *
+ * \ingroup Detectors
+ */
 class BETAMirror : public G4VSensitiveDetector {
 
 public:

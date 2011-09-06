@@ -1,6 +1,9 @@
 /** 
  * \mainpage 
  *  BETAG4 is a simulation designed for the Spin Asymmetries of the Nucleon Experiment (SANE).
+ *  <img src="http://quarks.temple.edu/~whit/SANE/analysis_main/images/BETAG4/BETA-event1.jpg" alt="BETA Event" />
+ * 
+ * <img src="http://quarks.temple.edu/~whit/SANE/analysis_main/images/BETAG4/BETA-top.jpg" alt="Top view of BETA" />
  * 
  * \section intro Introduction
  * In addition to the GEANT4 libraries, BETAG4 relies on having the
@@ -164,3 +167,12 @@ int main(int argc,char** argv)
  *  @{
  */
 /** @} */ 
+
+/** @defgroup Detectors Detectors
+ *  Event generator 
+ *  @{
+ */
+/** @} */ 
+
+
+

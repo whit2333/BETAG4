@@ -133,7 +133,7 @@ public :
    G4LogicalVolume * calorimeterTop_log;
    G4VPhysicalVolume * calorimeterTop_phys;
    G4LogicalVolume * calorimeterBottom_log;
-   G4VPhysicalVolume * calorimeterBottom_log;
+   G4VPhysicalVolume * calorimeterBottom_phys;
 
 /**
  * Called from ConstructBETA

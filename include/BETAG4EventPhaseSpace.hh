@@ -7,6 +7,8 @@
 
 /**
  *  ABC for an event phase space
+ *
+ *   \ingroup EventGen
  */
 class BETAG4EventPhaseSpace 
 {

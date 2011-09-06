@@ -31,7 +31,7 @@
  *  Next ReadOut() is called which translates the digi collections to
  *  the InSANEDetectorEvent derived classes for ROOT file output.
  *
- *
+ * \ingroup Detectors
  */
 class BETADigitizer : public G4VDigitizerModule {
   public:
