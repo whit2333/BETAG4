@@ -1,4 +1,4 @@
-/beta/target/setPolarizationAngle 280
+/beta/target/setPolarizationAngle 80
 /beta/gun/setEnergyMin 0.021
 /beta/gun/setEnergyMax  4.7
 # Straight down the middle

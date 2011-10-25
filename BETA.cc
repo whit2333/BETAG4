@@ -1,5 +1,6 @@
-/** 
+/**
  * \mainpage 
+ * 
  *  BETAG4 is a simulation designed for the Spin Asymmetries of the Nucleon Experiment (SANE).
  *  <img src="http://quarks.temple.edu/~whit/SANE/analysis_main/images/BETAG4/BETA-event1.jpg" alt="BETA Event" />
  * 
@@ -19,6 +20,7 @@
 //-----------------------------------------------------------
 
 /*! \page intro Introduction
+
 This page introduces the user to the topic.
 Now you can proceed to the \ref advanced "advanced section".  
 */

@@ -25,78 +25,17 @@
 #include "TCanvas.h"
 #include "TStyle.h"
 
-//#define CKOVFIELD_OFF 1
-//#define fieldDataPoints 30800
-//double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y)  ;
-
 BETAField::BETAField() 
 {
    fUVAMagnet = new UVAOxfordMagneticField();
-   /*
-   BzFieldRaw = BzRpoint;
-   BrFieldRaw = BrRpoint;
-// Unfortunately, the data reads in the z's first,
-// so it is BzFieldRaw[R index][Z index]
-   for ( int g=0;g<221;g++ )
-   {
-      BzRpoint[g]=&RawBZ[141*g];
-      BrRpoint[g]=&RawBR[141*g];
-   }
-   ReadDataFile(); /// New data file
-*/
 }
+//___________________________________________________________________
 
 BETAField::~BETAField()
 {
   if(fUVAMagnet) delete fUVAMagnet ;
 }
-/*
-void BETAField::ReadDataFile() {
-// this function is designed to read in the csv extended field map data for the UVA target
-   fieldDataPoint temp;
-   ifstream input_file ;
-   int i=0;
-   int j = 0;
-   double tempz, tempr, tempBz , tempBr;
-   input_file.open ("UVA-ExtendedFieldMap.csv");
-   if (!input_file) { "\n \n BREAK";
-   }
-   for (j=0;j<141;j++) {
-      for (i=0;i<221;i++)
-      {
-         input_file >> tempz >> tempr >> tempBz >> tempBr ;
-// fieldData.push_back(temp);
-// G4cout << tempz <<" "<<tempr<<" "<< tempBz <<" "<< tempBr << G4endl;
-         BzFieldRaw[i][j] = tempBz*tesla;
-         BrFieldRaw[i][j] = tempBr*tesla;
-// G4cout << i <<" "<< j <<  G4endl;
-      }
-
-   }
-   input_file.close();
-}*/
-/// Z -> i, R -> j
-/*
-   double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y) {
-
-   double Q11 = cornerDataPoints[0];
-   double Q21 = cornerDataPoints[1];
-   double Q12 = cornerDataPoints[2];
-   double Q22 = cornerDataPoints[3];
-   double x1 = corners[0];
-   double x2 = corners[1];
-   double y1 = corners[2];
-   double y2 = corners[3];
-
-   double dxdy = (x2-x1)*(y2-y1);
-
-   double result  = Q11*(x2-x)*(y2-y)/dxdy +
-                    Q21*(x-x1)*(y2-y)/dxdy +
-                    Q12*(x2-x)*(y-y1)/dxdy +
-                    Q22*(x-x1)*(y-y1)/dxdy  ;
-   return(result);
-}
-*/
+//___________________________________________________________________
 
 void BETAField::GetFieldValue ( const double Point[4],double *Bfield ) const
 {
@@ -107,6 +46,8 @@ void BETAField::GetFieldValue ( const double Point[4],double *Bfield ) const
   Bfield[1]=Bfield[1]*tesla;
   Bfield[2]=Bfield[2]*tesla;
 }
+//___________________________________________________________________
+
 /*
 void BETAField::switchPolarization() {
    if ( polAngle==pi )
@@ -229,3 +170,51 @@ void BETAField::TestInterpolation() {
 
 //          return(0);
 //}
+
+/*
+void BETAField::ReadDataFile() {
+// this function is designed to read in the csv extended field map data for the UVA target
+   fieldDataPoint temp;
+   ifstream input_file ;
+   int i=0;
+   int j = 0;
+   double tempz, tempr, tempBz , tempBr;
+   input_file.open ("UVA-ExtendedFieldMap.csv");
+   if (!input_file) { "\n \n BREAK";
+   }
+   for (j=0;j<141;j++) {
+      for (i=0;i<221;i++)
+      {
+         input_file >> tempz >> tempr >> tempBz >> tempBr ;
+// fieldData.push_back(temp);
+// G4cout << tempz <<" "<<tempr<<" "<< tempBz <<" "<< tempBr << G4endl;
+         BzFieldRaw[i][j] = tempBz*tesla;
+         BrFieldRaw[i][j] = tempBr*tesla;
+// G4cout << i <<" "<< j <<  G4endl;
+      }
+
+   }
+   input_file.close();
+}*/
+/// Z -> i, R -> j
+/*
+   double BilinearInterpolation(double * cornerDataPoints, double * corners, double x, double y) {
+
+   double Q11 = cornerDataPoints[0];
+   double Q21 = cornerDataPoints[1];
+   double Q12 = cornerDataPoints[2];
+   double Q22 = cornerDataPoints[3];
+   double x1 = corners[0];
+   double x2 = corners[1];
+   double y1 = corners[2];
+   double y2 = corners[3];
+
+   double dxdy = (x2-x1)*(y2-y1);
+
+   double result  = Q11*(x2-x)*(y2-y)/dxdy +
+                    Q21*(x-x1)*(y2-y)/dxdy +
+                    Q12*(x2-x)*(y-y1)/dxdy +
+                    Q22*(x-x1)*(y-y1)/dxdy  ;
+   return(result);
+}
+*/

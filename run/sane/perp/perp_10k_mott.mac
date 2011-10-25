@@ -1,5 +1,5 @@
 
-/beta/target/setPolarizationAngle 280
+/beta/target/setPolarizationAngle 80
 /beta/gun/setEventType dis 
 /beta/gun/refresh
 /beta/gun/setEnergyMin 1.00

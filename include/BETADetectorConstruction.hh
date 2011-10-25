@@ -64,7 +64,7 @@
 class BETADetectorMessenger;
 class BETASimulationManager;
 
-/** \brief Detector construction class
+/** BETAG4 Detector construction class
  *
  *   Detector construction class which builds all geometries and returns the world volume 
  *   following the standard GEANT4 way...
@@ -93,16 +93,10 @@ friend class BETASimulationManager;
 
 public :
 
-   G4RotationMatrix fMagnetRotationMatirx;
+    G4RotationMatrix fMagnetRotationMatirx;
 
-/**
- *  Constructor
- */
     BETADetectorConstruction();
 
-/**
- *  Destructor
- */
    ~BETADetectorConstruction();
 
 /**

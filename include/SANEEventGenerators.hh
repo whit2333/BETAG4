@@ -75,6 +75,8 @@ public:
 
 /** Event generator for inclusive electron DIS
  *
+ *  Uses F1F2 Code. 
+ *
  *   \ingroup EventGen
  */
 class DISEventGenerator : public BETAG4EventGenerator {
@@ -203,18 +205,29 @@ public:
    }
 };
 
-/**
+/** Uses QFS
+ * 
  *   \ingroup EventGen
  */
 class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
-public:
+public :
    SANEInclusiveDISEventGenerator(){}
 
-   virtual ~SANEInclusiveDISEventGenerator() {
-   }
+   virtual ~SANEInclusiveDISEventGenerator() { }
 
 };
 
+/** Uses A1,A2 models
+ * 
+ *   \ingroup EventGen
+ */
+class PolarizedInclusiveDISEventGenerator : public BETAG4EventGenerator  {
+public :
+   PolarizedInclusiveDISEventGenerator(){}
+
+   virtual ~PolarizedInclusiveDISEventGenerator() { }
+
+};
 
 
 #endif

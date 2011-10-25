@@ -1,4 +1,4 @@
-#indef GasCherenkovPMT_HH
+#ifndef GasCherenkovPMT_HH
 #define GasCherenkovPMT_HH
 
 
