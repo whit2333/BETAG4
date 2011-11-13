@@ -3,10 +3,8 @@
 
 #include "globals.hh"
 
-/// \brief ABC for event phase space
 
-/**
- *  ABC for an event phase space
+/** ABC for an event phase space
  *
  *   \ingroup EventGen
  */

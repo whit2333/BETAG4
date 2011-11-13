@@ -7,13 +7,11 @@
 #include "G4ThreeVector.hh"
 #include "TMath.h"
 
-/**
- *   \ingroup EventGen
- */
-
 /** Base class for InSANE -> BETAG4
  *  
  *  By default it assumes there is only one particle and thus 3 random variables
+ *
+ *   \ingroup EventGen
  */ 
 class BETAG4EventGenerator   {
 public:
@@ -123,6 +121,8 @@ public:
    double fCentralPhi;
 
    double * fEventVector;
+
+   int fPID;
 
    InSANEInclusivePhaseSpace * fPhaseSpace;
    InSANEPhaseSpaceSampler * fEventSampler;

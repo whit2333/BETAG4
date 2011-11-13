@@ -2,27 +2,35 @@
  * \mainpage 
  * 
  *  BETAG4 is a simulation designed for the Spin Asymmetries of the Nucleon Experiment (SANE).
- *  <img src="http://quarks.temple.edu/~whit/SANE/analysis_main/images/BETAG4/BETA-event1.jpg" alt="BETA Event" />
+ *  <img src="http://quarks.temple.edu/~whit/SANE/analysis_main/images/BETAG4/BETA-event1.jpg" alt="BETA Event" width="300px"/>
  * 
+ *  - \subpage intro
+ *  - \subpage eventgenerators
+ *  - \subpage UIcommands
+ *  
+ *   author Whitney Armstrong (whit@temple.edu)
  * <img src="http://quarks.temple.edu/~whit/SANE/analysis_main/images/BETAG4/BETA-top.jpg" alt="Top view of BETA" />
  * 
- * \section intro Introduction
- * In addition to the GEANT4 libraries, BETAG4 relies on having the
- * <a href="http://quarks.temple.edu/~whit/code/InSANE++/html/">InSANE libraries</a>
- * 
- *   author Whitney Armstrong (whit@temple.edu)
- * 
- * 
- * 
  */
-//
-//
-//-----------------------------------------------------------
 
 /*! \page intro Introduction
+     In addition to the GEANT4 libraries, BETAG4 relies on having the
 
-This page introduces the user to the topic.
-Now you can proceed to the \ref advanced "advanced section".  
+     <a href="http://quarks.temple.edu/~whit/code/InSANE++/html/">InSANE libraries</a>
+*/
+
+/*!  \page UIcommands User interface commands
+
+     See the <a href="http://quarks.temple.edu/~whit/SANE/analysis_main/betag4_commands/_.html">
+     user interface commands list </a>
+
+ */
+
+/*! \page eventgenerators Event Generators
+
+    - 
+    - 
+
 */
 
 #include "G4RunManager.hh"
@@ -164,17 +172,12 @@ int main(int argc,char** argv)
   return 0;
 }
 
-/** @defgroup EventGen Event Generator
- *  Event generator 
- *  @{
- */
-/** @} */ 
+/*! @defgroup EventGen Event Generator
+    Event generator 
+*/ 
 
-/** @defgroup Detectors Detectors
- *  Event generator 
- *  @{
+/*! @defgroup Detectors Detectors
+    Detectors
  */
-/** @} */ 
-
 
 

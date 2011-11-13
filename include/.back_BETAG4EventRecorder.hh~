@@ -31,24 +31,24 @@
 #include "BETAMirrorHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-#include "BigcalFakePlaneEvent.h"
+#include "InSANEFakePlaneHit.h"
 #include "BigcalFakePlaneHit.h"
+
 class BETASimulationManager;
 class BETADetectorConstruction;
-/**
- * \ingroup Simulation
- */
-/**
- * \ingroup Event
- */
-/**
- * \brief Constructssd the data to be recorded from the GEANT4
- */
-/**
+
+
+/** Constructs the data to be recorded from the GEANT4
+ *
  * Constructs the recorded data from the GEANT4 G4Event derived classes
  * This class defines the data which *should* look like the real data.
+ * 
  * \todo{ Add multihit TDC type hits.}
  * \todo{ Use ABC G4Digi to emulate TDC? }
+ * 
+ * 
+ * \ingroup Simulation
+ * \ingroup Event
  */
 class BETAG4EventRecorder {
 public : 

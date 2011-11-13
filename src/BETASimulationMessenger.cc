@@ -14,12 +14,13 @@
 BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
       :manager ( mgr )
 {
+  simulation = new G4UIdirectory ( "/simulation/" );
+  simulation->SetGuidance ( "Simulation Configuration commands" );
 //    analysis = new G4UIdirectory ( "/analysis/" );
 //    analysis->SetGuidance ( "Various analysis commands" );
 // 
-//    writeTree = new G4UIcmdWithoutParameter ( "/analysis/writeTree",this );
-//    writeTree->SetGuidance ( "Write analysis file" );
-//    writeTree->SetGuidance ( "  angle w.r.t. (k,n) plane" );
+    simType = new G4UIcmdWithAString ( "/simulation/setType",this );
+    simType->SetGuidance ( " Set the simulation type " );
 // //   writeTree->SetParameterName("angle",true);
 // //   writeTree->SetUnitCategory("Angle");
 // //   writeTree->SetDefaultValue(-360.0);
@@ -42,14 +43,16 @@ BETASimulationMessenger::~BETASimulationMessenger()
 void BETASimulationMessenger::SetNewValue (
    G4UIcommand* command, G4String newValue )
 {
-//    if ( command == showPlot )
-//    {
-// /*      manager->showPlot ( showPlot->GetNewIntValue ( newValue ) );*/
-//    }
+    if ( command == simType )
+    {
+    /* manager->showPlot ( showPlot->GetNewIntValue ( newValue ) );*/
+    }
 }
 //___________________________________________________________________//
 
 void BETASimulationMessenger::AddDetectorUICommands() {
+
+	 simType->AvailableForStates ( G4State_Idle );
 
 //    fieldDir = new G4UIdirectory ( "/BETAG4/targetField" );
 //    fieldDir->SetGuidance ( "Magnetic Detector control" );

@@ -37,7 +37,9 @@ class BETASimulationMessenger: public G4UImessenger
   private:
 //    BETAAnalysisAction* BETAAction;
     BETASimulationManager* manager;
-    G4UIdirectory*               analysis; 
+    G4UIdirectory*               analysis;
+    G4UIdirectory*               simulation; 
+    G4UIcmdWithAString*       simType;
     G4UIcmdWithoutParameter*   writeTree;
     G4UIcmdWithAnInteger*	showPlot;
 

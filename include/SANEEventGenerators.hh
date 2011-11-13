@@ -7,12 +7,10 @@
 #include "TMath.h"
 #include "F1F209eInclusiveDiffXSec.h"
 
-/**
- *   \ingroup EventGen
- */
 /**  Flat Event generator centered on bigcal with small solid angle
  *   and near mono chromatic energies, hence a cone
  *
+ *   \ingroup EventGen
  */
 class ConeEventGenerator : public BETAG4EventGenerator   {
 public:
@@ -226,6 +224,76 @@ public :
    PolarizedInclusiveDISEventGenerator(){}
 
    virtual ~PolarizedInclusiveDISEventGenerator() { }
+
+};
+
+/** Event generator for inclusive electron DIS
+ *
+ *   \ingroup EventGen
+ */
+class PolarizedDISEventGenerator : public BETAG4EventGenerator {
+public:
+   PolarizedDISEventGenerator() {
+      fVarHelicity=0;
+   }
+
+   /**  Add the helicity variable to the normal 
+    *   BETAG4EventGenerator::InitializePhaseSpace()
+    */
+   virtual void InitializePhaseSpace() {
+      BETAG4EventGenerator::InitializePhaseSpace();
+      fVarHelicity = new InSANEDiscretePhaseSpaceVariable();
+      fVarHelicity->fVariableName="helicity"; 
+      fVarHelicity->fVariable="#lambda";
+      ((InSANEDiscretePhaseSpaceVariable*)fVarHelicity)->SetNumberOfValues(3); // ROOT string latex
+/*      varHelicity->SetVariableMaxima(1.0); //*/
+      fPhaseSpace->AddVariable(fVarHelicity);
+   }
+
+
+   /** Initialize the event generator
+    */
+   virtual void Initialize() {
+      // InitializePhaseSpace() must be called
+      InitializePhaseSpace();
+
+      // Create the differential cross section to be used
+      fDiffXSec = new F1F209eInclusiveDiffXSec();
+      // Set the cross section's phase space
+      fDiffXSec->SetPhaseSpace(fPhaseSpace);
+      // Create event sampler
+      fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+      // Set the seed 
+      fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
+   }
+
+   InSANEPhaseSpaceVariable * fVarHelicity;
+
+   Int_t fHelicity;
+
+};
+
+/** NH3 Event Generator for getting the dilution factor
+ *
+ *  Emulates the UVA Polarized NH3 target 
+ *
+ *  Note the various paramteres for configuration
+ *
+ *   \ingroup EventGen
+ */
+class NH3TargetEventGenerator : public PolarizedDISEventGenerator  {
+public :
+   NH3TargetEventGenerator(){
+      fNH3PackingFraction = 0.5;
+      fN14Density;
+      fH3Density;
+   }
+
+   virtual ~NH3TargetEventGenerator() { }
+
+   Double_t fNH3PackingFraction;
+   Double_t fN14Density;
+   Double_t fH3Density;
 
 };
 
