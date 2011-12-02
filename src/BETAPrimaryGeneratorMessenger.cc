@@ -151,6 +151,10 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
          if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
          BETAAction->fBETAG4EventGen = new MottEventGenerator();
          BETAAction->fBETAG4EventGen->Initialize();
+     }else if(newValue == "wiser") {
+         if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
+         BETAAction->fBETAG4EventGen = new WiserEventGenerator();
+         BETAAction->fBETAG4EventGen->Initialize();
      } else if(newValue == "beamOnTarget") {
          if(BETAAction->fBETAG4EventGen) delete BETAAction->fBETAG4EventGen;
          BETAAction->fBETAG4EventGen = new BeamOnTargetEventGenerator();

@@ -80,7 +80,7 @@ G4Run*  BETARunAction::GenerateRun()
 // New concrete InSANE Run class
     fSimulationManager->fInSANERun = new BETAG4SimulationRun(fRunNumber);
 
-    fSimulationManager->fInSANERun->fPolarizationAngle
+//     fSimulationManager->fInSANERun->fPolarizationAngle
 
 
 // Get the runmanager and constructors/messengers and only fill the database if
@@ -148,14 +148,15 @@ G4Run*  BETARunAction::GenerateRun()
       }
    }
 
-   BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-   genAction->SetMCEventAddress((BETAG4MonteCarloEvent *)fSimulationManager->fEvents->MC);
+//    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
+//    
+//    genAction->SetMCEventAddress(fSimulationManager->fEvents->MC);
 //    fRunNumber = fSimulationManager;
 //   if(fCurrentRun) delete fCurrentRun;
    fCurrentRun = new BETARun ( fRunNumber );
 // Simulate Pedestals before entering actual simulation
    fCurrentRun->GeneratePedestals();
-
+   std::cout << " Pedestals Done. \n";
    return (G4Run*)fCurrentRun;
 }
 //_________________________________________________________________//

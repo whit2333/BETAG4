@@ -9,25 +9,26 @@
 #include "G4RandomDirection.hh"
 #include "fstream"
 
-#include "InSANEPhaseSpaceSampler.h"
-#include "InSANEInclusivePhaseSpace.h"
-#include "InSANEInclusiveDiffXSec.h"
+// #include "InSANEPhaseSpaceSampler.h"
+// #include "InSANEPhaseSpace.h"
+// #include "InSANEInclusiveDiffXSec.h"
 
 #include "G4GeneralParticleSource.hh"
 #include "G4SingleParticleSource.hh"
 #include "G4SPSPosDistribution.hh"
 #include "G4SPSEneDistribution.hh"
 #include "G4SPSAngDistribution.hh"
-
+#include "BETAG4EventGenerator.hh"
 double mottCrossSection(double p, double theta) ;
 
 BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() 
 {
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
 
+   
    fMonteCarloEvent=0;
-   fBETAG4EventGen = new ConeEventGenerator();
-// The following must be called
+
+   fBETAG4EventGen = new BETAG4EventGenerator();
    fBETAG4EventGen->Initialize();
 
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
@@ -46,7 +47,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction()
     kaon = particleTable->FindParticle ( particleName="kaon+" );
     proton = particleTable->FindParticle ( particleName="proton" );
 
-/// Electron by default. 
+/// Electron by default. Use /beta/gun/setParticle
   fParticleGun->SetParticleDefinition(electron);
 
 // Using General Particle Source
@@ -68,20 +69,57 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
-/// \todo improve event generator/Geant4 interface -> Number of particles thrown in particular
+   if(fMonteCarloEvent) fMonteCarloEvent->ClearEvent("C");
    Double_t * MCvect ;
-   MCvect            = fBETAG4EventGen->GenerateEvent();
-   fCurrentEnergy    = MCvect[0];
-   fCurrentTheta     = MCvect[1];
-   fCurrentPhi       = MCvect[2];
+   TParticle * aPart=0;
+   /// Generate the event and get the list of particles
+   TList * parts = fBETAG4EventGen->GenerateEvent();
+   /// Loop over all particles to create. (usually just a single electron)
+   for(int ipart = 0;ipart<parts->GetEntries();ipart++) {
+      aPart = (TParticle*) parts->At(ipart);
+      if( aPart->GetPdgCode() == 11) fParticleGun->SetParticleDefinition(electron);
+      else if( aPart->GetPdgCode() == 111) fParticleGun->SetParticleDefinition(pionzero);
+      else if( aPart->GetPdgCode() == 211) fParticleGun->SetParticleDefinition(pionplus);
+      else if( aPart->GetPdgCode() == -211) fParticleGun->SetParticleDefinition(pionminus);
+      else fParticleGun->SetParticleDefinition(electron);
+      
+      fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition(aPart) );
+      fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection(aPart) );
+      fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy(aPart))*1000.0*MeV );
+
+      /// Gather information about the event for simulated truth
+      if(fMonteCarloEvent) {
+         fMonteCarloEvent->fNumberOfParticlesThrown++;
+         aThrownParticle = new((*fThrownParticles)[ipart]) BETAG4MonteCarloThrownParticle();
+         (*(TParticle *)aThrownParticle) = (*aPart);
+//          aThrownParticle->fPosition.SetXYZ(
+//                 fParticleGun->GetParticlePosition().x()/cm,
+//                 fParticleGun->GetParticlePosition().y()/cm,
+//                 fParticleGun->GetParticlePosition().z()/cm);
+//          aThrownParticle->fMomentum.SetXYZ(
+//                 fBETAG4EventGen->GetMomentumVector(aPart).x()*1000.0,
+//                 fBETAG4EventGen->GetMomentumVector(aPart).y()*1000.0,
+//                 fBETAG4EventGen->GetMomentumVector(aPart).z()*1000.0);
+//          aThrownParticle->fTheta = fCurrentTheta;
+//          aThrownParticle->fPhi = fCurrentPhi;
+//          aThrownParticle->fEnergy = (fCurrentEnergy)*1000.0;
+//          aThrownParticle->fPID = aPart->GetPdgCode();
+         //aThrownParticle->fMomentum.
+      }
+   fParticleGun->GeneratePrimaryVertex ( anEvent );
+   } // end of loop over particles to throw for this event. 
+
+/*   MCvect            = fBETAG4EventGen->GenerateEvent();*/
+//    fCurrentEnergy    = MCvect[0];
+//    fCurrentTheta     = MCvect[1];
+//    fCurrentPhi       = MCvect[2];
 /*   G4ThreeVector aDirection(1,0,0);
       aDirection.setRThetaPhi(1,fCurrentTheta,fCurrentPhi);*/
 //    G4ThreeVector aPosition( 2.*(G4UniformRand()-0.5)*1.0*cm,
 //                             2.*(G4UniformRand()-0.5)*1.0*cm,
 //                             2.*(G4UniformRand()-0.5)*1.0*cm );
 /*  fParticleGun->SetParticlePosition( aPosition );*/
-
-  fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition() );
+//   fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition() );
 
 /*
          G4ThreeVector aDirection(
@@ -89,32 +127,17 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
             std::sin ( fCurrentTheta ) *std::sin ( fCurrentPhi ) *m ,
             std::cos ( fCurrentTheta ) *m ); */
 
-  fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection() );
-
-  fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
-
+//   fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection() );s
+//   fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
 
 
-   if(fMonteCarloEvent) {
-/*      std::cout << " Filling thrown particle !!!!\n";*/
-      fMonteCarloEvent->ClearEvent("C");
-//   if(fBETAG4EventGen->fNumberOfGeneratedParticles == 1) {
-      aThrownParticle = new((*fThrownParticles)[0]) BETAG4MonteCarloThrownParticle();
-      aThrownParticle->fPosition.SetXYZ(fParticleGun->GetParticlePosition().x()/cm,fParticleGun->GetParticlePosition().y()/cm,fParticleGun->GetParticlePosition().z()/cm);
-      aThrownParticle->fMomentum.SetXYZ(fBETAG4EventGen->GetMomentumVector().x(),fBETAG4EventGen->GetMomentumVector().y(),fBETAG4EventGen->GetMomentumVector().z());
-      aThrownParticle->fTheta = fCurrentTheta;
-      aThrownParticle->fPhi = fCurrentPhi;
-      aThrownParticle->fEnergy = (fCurrentEnergy)*1000.0;
-      aThrownParticle->fPID = fParticleGun->GetParticleDefinition()->GetPDGEncoding();
-      //aThrownParticle->fMomentum.
-   }
+
+
 //       for(int i=0;i<fBETAG4EventGen->fNumberOfParticlesThrown;i++) {
 //          
 //       }
-  
-  
-  
-  fParticleGun->GeneratePrimaryVertex ( anEvent );
+
+//   fParticleGun->GeneratePrimaryVertex ( anEvent );
 
 }
 //________________________________________________________

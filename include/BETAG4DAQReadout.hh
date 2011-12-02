@@ -13,6 +13,7 @@
 #include "BETAG4BigcalHit.hh"
 #include "BETAG4PMTHit.hh"
 #include "BETAFakePlaneHit.hh"
+#include "BETAG4MonteCarloEvent.h"
 
 class BETASimulationManager;
 
@@ -57,18 +58,24 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
 
   void Clear(){
     Reset();
+    
     delete fCherenkovADCSumDC;
     fCherenkovADCSumDC =
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCSums" );
     delete fBigcalADCSumDC;
     fBigcalADCSumDC =
       new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCSums" );
-  };
+  }
 
   void SetTriggerEvent(InSANETriggerEvent* evt) {fTriggerEvent=evt; };
 
   InSANETriggerEvent * fTriggerEvent;
-
+  
+  
+  BETAG4MonteCarloEvent * mcEvent;
+  TClonesArray * fBCPlaneHits;
+  TClonesArray * fFTPlaneHits;
+  
   Bool_t IsGoodEvent() {
     return(fIsTriggered);
   };

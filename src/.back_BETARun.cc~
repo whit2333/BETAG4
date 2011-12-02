@@ -54,7 +54,7 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
     fSimulationManager->SetDetectorVerbosity("GasCherenkov",0);
   }
 
-
+   mcEvent = fSimulationManager->fEvents->MC;
 
 // Get the event generator and detector constructoion so we can write the simulation truths to tree
    runManager = G4RunManager::GetRunManager();
@@ -153,7 +153,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    fDAQReadout->Digitize();
 /*   fDAQReadout->Print();*/
 //  fBETAScalers->Digitize();
-   if( fDAQReadout->IsGoodEvent() ) {
+   if( fDAQReadout->IsGoodEvent() || !(fSimulationManager->fSimulateTrigger) ) {
 
 /*    std::cout << " Above Readout Triggered DAQ! \n";*/
       fBETADigitizer->Digitize();
@@ -166,12 +166,10 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 //     fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
 //     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
 //     fSimulationManager->fEvents->MC->fParticleThrown = 1;
-
 //      fBETADigitizer->Print();
 
       fBETADigitizer->ReadOut();
       fDAQReadout->ReadOut();
-
       fSimulationManager->fDetectorTree->Fill();
 
       fBETADigitizer->Clear();

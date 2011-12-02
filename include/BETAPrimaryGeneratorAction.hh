@@ -3,7 +3,7 @@
 
 #include "BETASimulationManager.hh"
 #include "InSANEPhaseSpaceSampler.h"
-#include "InSANEInclusivePhaseSpace.h"
+#include "InSANEPhaseSpace.h"
 #include "InSANEInclusiveDiffXSec.h"
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
@@ -19,10 +19,11 @@ class BETAPrimaryGeneratorMessenger;
 class G4ParticleDefinition;
 // class BETASimulationManager;
 
-/**
- *   \ingroup EventGen
- */
 /** BETAPrimaryGeneratorAction is a mandatory concrete imp of G4VUserPrimaryGeneratorAction
+ *
+ *   Geant4 Mandatory Class 
+ *
+ *   \ingroup EventGen
  */
 class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 public:
@@ -35,16 +36,23 @@ private:
    BETAG4MonteCarloThrownParticle * aThrownParticle;
 
 public:
+   /** C'tor :
+    *   - defines some particles 
+    *   - Creates particle gun
+    *   - Creates the event generator
+    */
     BETAPrimaryGeneratorAction();
    ~BETAPrimaryGeneratorAction();
 
   public:
     void SetMCEventAddress(BETAG4MonteCarloEvent * mcevent) {
        std::cout << "BETAPrimaryGeneratorAction::SetMCEventAddress()\n";
-       if(mcevent) {
+/*       if(mcevent) {*/
           fMonteCarloEvent = mcevent;
-          fThrownParticles = fMonteCarloEvent->fThrownParticles;
-       }
+          fThrownParticles = fMonteCarloEvent->GetThrownParticlesArray();
+          std::cout << " tracker " << fMonteCarloEvent->GetTrackerPlaneHitsArray() << "\n";
+          std::cout << " bigcal " << fMonteCarloEvent->GetBigcalPlaneHitsArray() << "\n";
+//        }
     }
 
     void GeneratePrimaries(G4Event*);
