@@ -59,7 +59,6 @@ BETAG4DAQReadout::~BETAG4DAQReadout() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::Digitize() {
-/*   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();*/
 // Reset all event level values
 // Get pointers
   G4String colName;
@@ -144,8 +143,6 @@ void BETAG4DAQReadout::Digitize() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::ReadOut() {
-//    if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
-
 // Get pointers
   G4String colName;
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
@@ -228,22 +225,4 @@ void BETAG4DAQReadout::ReadOut() {
 
 }
 
-
-//     if ( energyTemp > bigcal_block_thresh)
-//     {
-//       aBigcalHit = new(bigcalHits[prot_hits]) BigcalHit();
-//       aBigcalHit->fADC  = 10.0*energyTemp/MeV;
-//       aBigcalHit->fEnergy = energyTemp/MeV;
-//       aBigcalHit->fHitNumber = prot_hits+1;
-//       aBigcalHit->fiCell = (gg)%32 +1;
-//       aBigcalHit->fjCell = (gg)/32 +1;
-//       aBigcalHit->fTDCLevel=-1;
-//       prot_hits++;
-//     }
-//     if ( energyTemp != 0. )
-//     {
-//       xAverage += ( ( double ) ( gg%32 ) ) *energyTemp/MeV;
-//       yAverage += ( ( double ) ( gg/32 ) ) *energyTemp/MeV;
-//       fBETAEvent->fBigcalEvent->fTotalEnergyDeposited = fBETAEvent->fBigcalEvent->fTotalEnergyDeposited+ energyTemp ;
-//     }
 
