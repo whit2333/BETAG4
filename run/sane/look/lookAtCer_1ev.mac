@@ -1,0 +1,66 @@
+/vis/open DAWNFILE 900x800
+
+/vis/viewer/reset
+#/vis/viewer/set/hiddenEdge 1
+
+########### Variables / Alias ###############
+/control/alias theta1 130
+/control/alias phi1 65
+/control/alias panx1 2.7
+/control/alias pany1 3.9
+/control/alias zoom1 24.0
+#/control/alias dolly1 5.0 m
+/control/alias dolly1 10
+/control/alias interval 0.4
+/control/alias halfInterval 0.25
+/control/alias dx -0.5 #cm
+/control/alias perspectiveangle 23
+/vis/scene/create
+
+### NOTE Viewer commands don't work with OIX
+############## Set up the viewer #################
+# The Scene : Full view of BETA
+# orthogonal or perspective (o,p)
+
+/vis/viewer/set/style solid
+
+/vis/viewer/set/projection p {perspectiveangle} 
+/vis/viewer/dollyTo -1
+
+/vis/viewer/set/projection o 
+/vis/viewer/panTo 0 0
+/vis/viewer/zoomTo {zoom1}
+/vis/viewer/pan {panx1} {pany1} 
+
+/vis/viewer/set/projection p {perspectiveangle} 
+#/vis/viewer/dolly {dolly1}
+/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+#/vis/viwer/set/viewpointVector 7 3.8 -0.6
+
+/vis/sceneHandler/attach
+
+/vis/viewer/set/projection p {perspectiveangle} 
+
+/vis/scene/add/volume  
+/vis/scene/add/axes  
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+
+/vis/scene/endOfEventAction accumulate 1
+
+###### Modeling #########
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/set -1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 1 blue
+/vis/modeling/trajectories/drawByCharge-0/set 0 red
+
+/tracking/storeTrajectory 1 
+
+
+
+/run/beamOn 1
+
+
+
+
+

@@ -26,14 +26,13 @@
 BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 //_________________________________________________________________//
 
-BETASimulationManager::BETASimulationManager () : 
-     fIsAppendMode(false),fRunNumber(0),plotVis(0),
+BETASimulationManager::BETASimulationManager () :
+     fIsAppendMode(false),fRunNumber(0),
      fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(true),
      fSimulateTrackerOptics(false),fDebugLevel(3),fSimulateTrigger(false)
 {
 
-  fSimulationMessenger = new BETASimulationMessenger ( this );
-   showPlot(plotVis);
+   fSimulationMessenger = new BETASimulationMessenger ( this );
 
    fGasCherenkovVerbosity=0;
    fBigcalVerbosity=0;
@@ -87,7 +86,7 @@ void BETASimulationManager::Dispose()
 
 void BETASimulationManager::showPlot ( int arg )
 {
-   plotVis = arg;
+/*   plotVis = arg;*/
 }
 //_________________________________________________________________//
 
@@ -101,12 +100,10 @@ void BETASimulationManager::SetDetectorVerbosity( char * detName, int level) {
   if( detName == "GasCherenkov" ) {
     std::cout << "Setting Gas Cherenkov verbosity level to " << level << "\n";
     fGasCherenkovVerbosity = level;
-  }
-  else if( detName == "Bigcal" ) {
+  } else if( detName == "Bigcal" ) {
     std::cout << "Setting Bigcal verbosity level to " << level << "\n";
     fBigcalVerbosity = level;
-  }
-  else {
+  } else {
     std::cout << "No such detector, " << detName << "\n";
   }
 }
@@ -144,7 +141,6 @@ int BETASimulationManager::IncrementRunNumber()
    output_file.open ( "run.txt" ,ios::trunc); // this incremtents a number so that it acts like a normal DAQ
    output_file << fRunNumber ;
    output_file.close();
-
    return fRunNumber;
 }
 //_________________________________________________________________//

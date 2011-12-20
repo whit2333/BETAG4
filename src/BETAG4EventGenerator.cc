@@ -10,13 +10,14 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
       varPhi=0;
       varEnergy=0;
       var=0;
+      fPrimaryPS=0;
 
 //       fCentralTheta = 10.0;
 //       fCentralPhi = -20.0;
 //       fCentralEnergy = 0.30;
 //       fDeltaTheta = 1.0;
 //       fDeltaPhi = 1.0;
-//       fDeltaEnergy = 0.1; //GeV
+//       fDeltaEnergy = 0.1;
 
       fInitialPosition = new G4ThreeVector(0,0,0);
       fInitialDirection = new G4ThreeVector(0,0,0);

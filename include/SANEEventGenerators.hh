@@ -6,7 +6,10 @@
 #include "G4ThreeVector.hh"
 #include "TMath.h"
 #include "F1F209eInclusiveDiffXSec.h"
+#include "InSANEInclusiveDiffXSec.h"
 #include "InSANEXSections.h"
+#include "WiserXSection.h"
+
 /**  Flat Event generator centered on bigcal with small solid angle
  *   and near mono chromatic energies, hence a cone
  *
@@ -14,20 +17,8 @@
  */
 class ConeEventGenerator : public BETAG4EventGenerator   {
 public:
-   ConeEventGenerator() {
-      fCentralTheta = 40.0;
-      fCentralPhi = 0.0;
-      fCentralEnergy = 2.00;
-      fDeltaTheta = 2.0;
-      fDeltaPhi = 20.0;
-      fDeltaEnergy = 0.400; //GeV
-      fUpstreamPosition = 0.0;//cm
-   }
-
-   virtual ~ConeEventGenerator() {
-
-   }
-   double fUpstreamPosition;
+   ConeEventGenerator();
+   virtual ~ConeEventGenerator();
 
    virtual  G4ThreeVector &  GetInitialPosition(){
       fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
@@ -35,61 +26,89 @@ public:
       fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
       return(*fInitialPosition);
    }
-//    virtual void InitializePhaseSpace() {
-//       fEnergyMin = fCentralEnergy-fDeltaEnergy;
-//       fEnergyMax = fCentralEnergy+fDeltaEnergy;
-// 
-//       fThetaMin  = fCentralTheta-fDeltaTheta;
-//       fThetaMax  = fCentralTheta+fDeltaTheta;
-// 
-//       fPhiMin    = fCentralPhi-fDeltaPhi;
-//       fPhiMax    = fCentralPhi+fDeltaPhi;
-// 
-// 
-//       fPhaseSpace = new InSANEInclusivePhaseSpace();
-//       // Add random variables ( 3 needed) to phase space
-//       varEnergy = new InSANEPhaseSpaceVariable();
-//       varEnergy->SetNameTitle("Energy","E_{e'}");
-//       varEnergy->SetVariableMinima(fEnergyMin); //GeV
-//       varEnergy->SetVariableMaxima(fEnergyMax); //GeV
-//       fPhaseSpace->AddVariable(varEnergy);
-// 
-//       varTheta = new InSANEPhaseSpaceVariable();
-//       varTheta->SetNameTitle("theta","theta_{e}"); 
-//       varTheta->SetVariableMinima(fThetaMin*TMath::Pi()/180.0); //
-//       varTheta->SetVariableMaxima(fThetaMax*TMath::Pi()/180.0); //
-//       fPhaseSpace->AddVariable(varTheta);
-// 
-//       varPhi = new InSANEPhaseSpaceVariable();
-//       varPhi->SetNameTitle("phi","phi_{e}");
-//       varPhi->SetVariableMinima(fPhiMin*TMath::Pi()/180.0); //
-//       varPhi->SetVariableMaxima(fPhiMax*TMath::Pi()/180.0); //
-//       fPhaseSpace->AddVariable(varPhi);
-//    }
+
+   double fUpstreamPosition;
 };
 
-/** Event generator for inclusive electron DIS
- *
- *  Uses F1F2 Code. 
+/** Event generator for inclusive electron DIS.  Uses F1F2 Code. 
  *
  *   \ingroup EventGen
  */
 class DISEventGenerator : public BETAG4EventGenerator {
 public:
-/*   virtual void Initialize() {
-      // InitializePhaseSpace() must be called
-      InitializePhaseSpace();
+   DISEventGenerator(){}
+   ~DISEventGenerator(){}
 
-      // Create the differential cross section to be used
-      fDiffXSec = new F1F209eInclusiveDiffXSec();
-      // Set the cross section's phase space
-      fDiffXSec->SetPhaseSpace(fPhaseSpace);
-      // Create event sampler
-      fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      // Set the seed 
-      fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
-   }*/
+   /** */
+   virtual void Initialize(){
+     fBeamEnergy=5.9;
+     F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+     fDiffXSec->SetBeamEnergy(fBeamEnergy);
+     fDiffXSec->InitializePhaseSpaceVariables();
+     fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
+     fPrimaryPS->ListVariables();
+     InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+     AddSampler(fF1F2EventSampler);
+     CalculateTotalCrossSection();
+
+   }
+
 };
+
+
+/** Electrons and pi0s thrown 
+ */
+class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
+public :
+   InclusiveElectronPionGenerator(){
+   }
+
+   virtual ~InclusiveElectronPionGenerator() { }
+
+   virtual void Initialize(){
+      fBeamEnergy=5.9;
+
+      /// Neutral Pion
+      InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
+      fDiffXSec1->SetBeamEnergy(fBeamEnergy);
+      fDiffXSec1->SetProductionParticleType(111);
+      fDiffXSec1->InitPhaseSpace();
+      fDiffXSec1->InitializeFinalStateParticles();
+      InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
+      AddSampler(pi0EventSampler);
+
+      /// Positive Pion
+      InSANEInclusiveWiserXSec * fDiffXSec2 = new InSANEInclusiveWiserXSec();
+      fDiffXSec2->SetBeamEnergy(fBeamEnergy);
+      fDiffXSec2->SetProductionParticleType(211);
+      fDiffXSec2->InitPhaseSpace();
+      fDiffXSec2->InitializeFinalStateParticles();
+      InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
+      AddSampler(pi0EventSampler2);
+
+      /// Negative Pion
+      InSANEInclusiveWiserXSec * fDiffXSec3 = new InSANEInclusiveWiserXSec();
+      fDiffXSec3->SetBeamEnergy(fBeamEnergy);
+      fDiffXSec3->SetProductionParticleType(-211);
+      fDiffXSec3->InitPhaseSpace();
+      fDiffXSec3->InitializeFinalStateParticles();
+      InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
+      AddSampler(pi0EventSampler3);
+
+
+      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+      fDiffXSec->SetBeamEnergy(fBeamEnergy);
+      fDiffXSec->InitializePhaseSpaceVariables();
+//      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+//     ps->ListVariables();
+      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+      AddSampler(fF1F2EventSampler);
+
+      CalculateTotalCrossSection();
+   }
+
+};
+
 
 
 /**  Mott Cross section event generator
@@ -98,19 +117,20 @@ public:
  */
 class MottEventGenerator : public BETAG4EventGenerator   {
 public:
-
-//    virtual void Initialize() {
-//       InitializePhaseSpace();
-// 
-//       // Create the differential cross section to be used
-//       fDiffXSec = new InSANEInclusiveMottXSec();
-//       // Set the cross section's phase space
-//       fDiffXSec->SetPhaseSpace(fPhaseSpace);
-//       // Create event sampler
-//       fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-//       // Set the seed 
-//       fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
-//    }
+   MottEventGenerator(){}
+   ~MottEventGenerator(){}
+   /** */
+   virtual void Initialize(){
+     fBeamEnergy=5.9;
+     F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+     fDiffXSec->SetBeamEnergy(fBeamEnergy);
+     fDiffXSec->InitializePhaseSpaceVariables();
+     InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+     ps->ListVariables();
+     InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+     AddSampler(fF1F2EventSampler);
+     CalculateTotalCrossSection();
+   }
 };
 
 /**  Flat Event generator spread over bigcal
@@ -119,22 +139,22 @@ public:
  */
 class WiserEventGenerator : public BETAG4EventGenerator   {
 public:
-   WiserEventGenerator(){
-     
-   };
-   virtual ~WiserEventGenerator() {
-   }
-   virtual void Initialize(){
-     fBeamEnergy=5.9;
-   InSANEInclusiveWiserXSec * fDiffXSec = new InSANEInclusiveWiserXSec();
-   fDiffXSec->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec->SetProductionParticleType(111);
-   fDiffXSec->InitPhaseSpace();
-   fDiffXSec->InitializeFinalStateParticles();
+   WiserEventGenerator(){ }
+   virtual ~WiserEventGenerator() { }
 
-     InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-     AddSampler(fEventSampler);
-     CalculateTotalCrossSection();
+   virtual void Initialize() {
+      fBeamEnergy=5.9;
+      InSANEInclusiveWiserXSec * fDiffXSec = new InSANEInclusiveWiserXSec();
+      fDiffXSec->SetBeamEnergy(fBeamEnergy);
+      fDiffXSec->SetProductionParticleType(111);
+      fDiffXSec->InitPhaseSpace();
+      fDiffXSec->InitializeFinalStateParticles();
+      fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
+      InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+      AddSampler(fEventSampler);
+      CalculateTotalCrossSection();
+     fPrimaryPS->Print();
+
    }
 };
 
@@ -178,6 +198,20 @@ public:
    virtual ~BigcalCenterEventGenerator() {
    }
 
+   virtual void Initialize() {
+      fBeamEnergy=5.9;
+      InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
+      fDiffXSec->SetBeamEnergy(fBeamEnergy);
+/*      fDiffXSec->SetProductionParticleType(111);*/
+      fDiffXSec->InitPhaseSpace();
+      fDiffXSec->InitializeFinalStateParticles();
+      fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
+      InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+      AddSampler(fEventSampler);
+      CalculateTotalCrossSection();
+     fPrimaryPS->Print();
+
+   }
 
 };
 
@@ -319,6 +353,7 @@ public :
    Double_t fH3Density;
 
 };
+
 
 
 #endif

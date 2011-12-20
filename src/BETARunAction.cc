@@ -36,8 +36,6 @@ BETARunAction::~BETARunAction()
 
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
 {
-   
-//   G4cout <<"START of RUN ACTION"<< G4endl;
    G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
 //_________________________________________________________________//
@@ -71,14 +69,19 @@ G4Run*  BETARunAction::GenerateRun()
       fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
       fSimulationManager->fDetectorTree = new TTree("betaDetectors","Simulated BETA Detectors");
       fSimulationManager->fEvents = new SANEEvents("betaDetectors");
+
    }
+
+      fSimulationManager->fScalerTree = new TTree("Scalers","The SANE Scaler Data");
+      fSimulationManager->fSANEScalers = new SANEScalers("Scalers");
+
    fSimulationManager->AddDetectors();
 
 //    if (! fSimulationManager->IsAppendMode() ) {
 //       //fSimulationManager->CreateTrees();
 //     }
 // New concrete InSANE Run class
-    fSimulationManager->fInSANERun = new BETAG4SimulationRun(fRunNumber);
+    fSimulationManager->fInSANERun = new InSANERun(fRunNumber);
 
 //     fSimulationManager->fInSANERun->fPolarizationAngle
 
@@ -148,8 +151,8 @@ G4Run*  BETARunAction::GenerateRun()
       }
    }
 
-   BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-   genAction->SetMCEventAddress((BETAG4MonteCarloEvent *)fSimulationManager->fEvents->MC);
+//    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
+/*   genAction->SetMCEventAddress((BETAG4MonteCarloEvent *)fSimulationManager->fEvents->MC);*/
 //    fRunNumber = fSimulationManager;
 //   if(fCurrentRun) delete fCurrentRun;
    fCurrentRun = new BETARun ( fRunNumber );
@@ -205,8 +208,7 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 // Print interesting data
    G4cout <<"=================== END RUN #" << fRunNumber << "===================" << G4endl;
    G4cout <<"Number of Events Processed:" << aRun->GetNumberOfEvent() << " events. " <<G4endl;
-   G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
-
+//    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
    G4cout << "Writing ROOT File\n";
 
    fSimulationManager->fEvents->fTree->Write();

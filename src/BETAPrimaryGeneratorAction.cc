@@ -8,54 +8,48 @@
 #include "G4ParticleDefinition.hh"
 #include "G4RandomDirection.hh"
 #include "fstream"
-
-// #include "InSANEPhaseSpaceSampler.h"
-// #include "InSANEPhaseSpace.h"
-// #include "InSANEInclusiveDiffXSec.h"
-
 #include "G4GeneralParticleSource.hh"
 #include "G4SingleParticleSource.hh"
 #include "G4SPSPosDistribution.hh"
 #include "G4SPSEneDistribution.hh"
 #include "G4SPSAngDistribution.hh"
-#include "BETAG4EventGenerator.hh"
+#include "BETASimulationManager.hh"
+
 double mottCrossSection(double p, double theta) ;
 
-BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() 
-{
+BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
+
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
-
    
-   fMonteCarloEvent=0;
-
    fBETAG4EventGen = new BETAG4EventGenerator();
    fBETAG4EventGen->Initialize();
-
+   
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
-
+   
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-   G4String particleName;
    fParticleGun = new G4ParticleGun(1);
+
+   G4String particleName;
+   electron = particleTable->FindParticle ( particleName="e-" );
+   pionminus = particleTable->FindParticle ( particleName="pi-" );
+   pionplus = particleTable->FindParticle ( particleName="pi+" );
+   pionzero = particleTable->FindParticle ( particleName="pi0" );
+   kaon = particleTable->FindParticle ( particleName="kaon+" );
+   proton = particleTable->FindParticle ( particleName="proton" );
+
+   /// Electron by default. Use /beta/gun/setParticle
+   fParticleGun->SetParticleDefinition(electron);
 
    //fParticlesSource  = new G4GeneralParticleSource ( );
    //fParticlesSource->SetNumberOfParticles(1);
-
-    electron = particleTable->FindParticle ( particleName="e-" );
-    pionminus = particleTable->FindParticle ( particleName="pi-" );
-    pionplus = particleTable->FindParticle ( particleName="pi+" );
-    pionzero = particleTable->FindParticle ( particleName="pi0" );
-    kaon = particleTable->FindParticle ( particleName="kaon+" );
-    proton = particleTable->FindParticle ( particleName="proton" );
-
-/// Electron by default. Use /beta/gun/setParticle
-  fParticleGun->SetParticleDefinition(electron);
-
-// Using General Particle Source
-//   fParticlesSource->SetParticleDefinition(electron);
-//   fParticlesSource->SetCurrentSourceto(1);
-//   fParticlesSource->GetCurrentSource()->GetEneDist()->SetEneDisType("Gauss");
-//   fParticlesSource->GetCurrentSource()->GetAngDist()->SetAngDisType("iso");
-//   fParticlesSource->GetCurrentSource()->GetPosDist()->SetEneDisType("Volume");
+   // Using General Particle Source
+   //   fParticlesSource->SetParticleDefinition(electron);
+   //   fParticlesSource->SetCurrentSourceto(1);
+   //   fParticlesSource->GetCurrentSource()->GetEneDist()->SetEneDisType("Gauss");
+   //   fParticlesSource->GetCurrentSource()->GetAngDist()->SetAngDisType("iso");
+   //   fParticlesSource->GetCurrentSource()->GetPosDist()->SetEneDisType("Volume");
+   /*   fSimulationManager = ;*/
+   fMonteCarloEvent = BETASimulationManager::GetInstance()->fEvents->MC;
 
 }
 //________________________________________________________//
@@ -69,7 +63,10 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
-   if(fMonteCarloEvent) fMonteCarloEvent->ClearEvent("C");
+   if(fMonteCarloEvent) {
+      fMonteCarloEvent->ClearEvent("C");
+/*      fMonteCarloEvent->Dump();*/
+   }
    Double_t * MCvect ;
    TParticle * aPart=0;
    /// Generate the event and get the list of particles
@@ -77,6 +74,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
    /// Loop over all particles to create. (usually just a single electron)
    for(int ipart = 0;ipart<parts->GetEntries();ipart++) {
       aPart = (TParticle*) parts->At(ipart);
+/*      aPart->Print();*/
       if( aPart->GetPdgCode() == 11) fParticleGun->SetParticleDefinition(electron);
       else if( aPart->GetPdgCode() == 111) fParticleGun->SetParticleDefinition(pionzero);
       else if( aPart->GetPdgCode() == 211) fParticleGun->SetParticleDefinition(pionplus);

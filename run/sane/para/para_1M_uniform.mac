@@ -1,0 +1,11 @@
+/beta/target/setPolarizationAngle 180
+#/beta/gun/setEventType dis 
+/beta/gun/setEnergyMin 0.8
+/beta/gun/setEnergyMax  4.7
+/beta/gun/setThetaMin 28.0
+/beta/gun/setThetaMax 52.0
+/beta/gun/setPhiMin   -50.0
+/beta/gun/setPhiMax   50.0
+/beta/gun/refresh
+/run/beamOn 1000000
+#/control/shell replaySimulation 

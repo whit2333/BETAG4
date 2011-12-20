@@ -1,6 +1,5 @@
 #ifndef BETASimulationManager_h
 #define BETASimulationManager_h 1
-
 #include "G4UserEventAction.hh"
 #include "globals.hh"
 #include "BETASimulationMessenger.hh"
@@ -17,7 +16,7 @@
 #include "ForwardTrackerDetector.h"
 #include "G4SDKineticEnergyFilter.hh"
 #include "G4SDChargedFilter.hh"
-
+#include "BETAG4EventGenerator.hh"
 #include "HallCBeamEvent.h"
 #include "HMSEvent.h"
 #include "BETAEvent.h"
@@ -28,6 +27,8 @@
 #include "BETAG4SimulationRun.h"
 #include "G4ScoringManager.hh"
 #include "SANEEvents.h"
+#include "SANEScalers.h"
+
 class BETARunAction;
 class G4Track;
 class BETASimulationMessenger;
@@ -158,37 +159,37 @@ public:
   public:
 
 /// Pointer to the BETADetectorConstruction 
-  BETADetectorConstruction * fConstruction;
+//  BETADetectorConstruction * fConstruction;
 
-/// Pointer to the BETASimulationMessenger 
-  BETASimulationMessenger * fSimulationMessenger;
+   /// Pointer to the BETASimulationMessenger 
+   BETASimulationMessenger * fSimulationMessenger;
 
-  bool fSimulateCherenkovOptics;
-  bool fSimulateTrackerOptics;
-  bool fSimulateHodoscopeOptics;
-  bool fSimulateBigcalOptics;
-  bool fSimulateTrigger;
-  int  fDebugLevel;
+   bool fSimulateCherenkovOptics;
+   bool fSimulateTrackerOptics;
+   bool fSimulateHodoscopeOptics;
+   bool fSimulateBigcalOptics;
+   bool fSimulateTrigger;
+   int  fDebugLevel;
 
-  G4MultiFunctionalDetector* fTrackerScoring;
-  G4MultiFunctionalDetector* fCherenkovScoring;
-  G4MultiFunctionalDetector* fBigcalScoring;
-  G4MultiFunctionalDetector* fHodoscopeScoring;
+   G4MultiFunctionalDetector* fTrackerScoring;
+   G4MultiFunctionalDetector* fCherenkovScoring;
+   G4MultiFunctionalDetector* fBigcalScoring;
+   G4MultiFunctionalDetector* fHodoscopeScoring;
 
-  ForwardTrackerDetector * fTrackerDetector;
-  GasCherenkovDetector * fCherenkovDetector;
-  BigcalDetector* fBigcalDetector;
-  LuciteHodoscopeDetector* fHodoscopeDetector;
+   ForwardTrackerDetector * fTrackerDetector;
+   GasCherenkovDetector * fCherenkovDetector;
+   BigcalDetector* fBigcalDetector;
+   LuciteHodoscopeDetector* fHodoscopeDetector;
 
-  G4PSFlatSurfaceFlux * protonSurfFlux;
-  G4PSPassageCellCurrent * electronSurfFlux;
-  G4PSPassageCellCurrent * photonSurfFlux;
-  G4PSTrackLength* electronTracklength;
-  G4PSEnergyDeposit * calEnergyDeposit;
-  G4PSPassageCellCurrent * chargeSurfFlux;
+   G4PSFlatSurfaceFlux * protonSurfFlux;
+   G4PSPassageCellCurrent * electronSurfFlux;
+   G4PSPassageCellCurrent * photonSurfFlux;
+   G4PSTrackLength* electronTracklength;
+   G4PSEnergyDeposit * calEnergyDeposit;
+   G4PSPassageCellCurrent * chargeSurfFlux;
 
-
-  G4int plotterVisible() {return plotVis; }
+   SANEScalers * fSANEScalers;
+   TTree * fScalerTree;
 
 private: 
   int fGasCherenkovVerbosity;
@@ -203,20 +204,18 @@ private:
   G4SDChargedFilter* chargeFilter;
 
 public:
+   SANEEvents * fEvents;
 
-/// pointer for all output stuff
-  SANEEvents * fEvents;
-
-  int GetEventNumber() { return(fEventNumber); };
+   int GetEventNumber() { return(fEventNumber); };
 
 private: 
-
-  G4int plotVis;
   BETASimulationManager( );
   static BETASimulationManager* fgBETASimulationManager;
+
+
+  InSANERun * fInSANERun;
   int instanceNumber;
   bool fIsAppendMode;
-  BETAG4SimulationRun * fInSANERun;
   int fRunNumber;
   int fEventNumber;
 
@@ -225,7 +224,6 @@ private:
 
   friend class BETARunAction;
   friend class BETARun;
-
 };
 
 #endif

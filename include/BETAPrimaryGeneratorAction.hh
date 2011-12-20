@@ -1,6 +1,5 @@
 #ifndef BETAPrimaryGeneratorAction_h
 #define BETAPrimaryGeneratorAction_h 1
-
 #include "BETASimulationManager.hh"
 #include "InSANEPhaseSpaceSampler.h"
 #include "InSANEPhaseSpace.h"
@@ -30,7 +29,19 @@ public:
    bool fInitialized;
    BETAG4MonteCarloEvent * fMonteCarloEvent;
    TClonesArray * fThrownParticles;
+   
+   
+   BETAG4EventGenerator * GetEventGenerator(){ return fBETAG4EventGen; }
+
+   void  SetEventGenerator(BETAG4EventGenerator * gen){
+      if(fBETAG4EventGen) delete fBETAG4EventGen;
+      fBETAG4EventGen = 0;
+      fBETAG4EventGen = gen;
+   }
+
+protected:
    BETAG4EventGenerator * fBETAG4EventGen;
+
 
 private:
    BETAG4MonteCarloThrownParticle * aThrownParticle;
@@ -84,11 +95,11 @@ public:
    G4ParticleGun  * fParticleGun;
 private:
         Int_t fNumberOfParticles;
-	bool background;
-	bool goodElectron;
-	bool backgroundAndElectron;
+   bool background;
+   bool goodElectron;
+   bool backgroundAndElectron;
 
-//     G4double sigmaTheta, sigmaPhi;
+   //G4double sigmaTheta, sigmaPhi;
 
     BETAPrimaryGeneratorMessenger* gunMessenger;
     G4ParticleDefinition* electron;

@@ -1,0 +1,5 @@
+/beta/target/setPolarizationAngle 180
+/beta/gun/setEventType electronPion 
+/beta/gun/refresh
+/run/beamOn 10000
+/control/shell replaySimulation 

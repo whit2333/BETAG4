@@ -25,12 +25,14 @@ BETAEventAction::BETAEventAction()
    verboseLevel = 0;
    messenger = new BETAEventActionMessenger ( this );
 
-//moved junk to RunAction :  BeginOfRunAction
+   //moved junk to RunAction :  BeginOfRunAction
    G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
    if ( pVVisManager )
    {
       //    pVVisManager ->Draw();
    }
+  analysisManager = BETASimulationManager::GetInstance();
+
 /*
   fSimulationManager = BETASimulationManager::GetInstance ();
   if(fSimulationManager) {
@@ -64,7 +66,7 @@ BETAEventAction::~BETAEventAction()
 
 void BETAEventAction::BeginOfEventAction ( const G4Event* )
 {
-
+   analysisManager->fEvents->Clear();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

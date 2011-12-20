@@ -1,0 +1,15 @@
+/beta/target/setPolarizationAngle 180
+
+/beta/gun/setEventType wiser 
+/beta/gun/setPhiMin -30 #degrees
+/beta/gun/setPhiMax 30 #degrees
+/beta/gun/setThetaMin 30  #degrees
+/beta/gun/setThetaMax 50 #degrees
+/beta/gun/setMomentumMin 0.8 #GeV
+/beta/gun/setMomentumMax 5.9 #GeV
+
+/beta/gun/refresh
+/beta/gun/listPSVariables 
+
+/run/beamOn 100000
+#/control/shell replaySimulation 

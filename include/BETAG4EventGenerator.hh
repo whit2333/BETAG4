@@ -18,96 +18,39 @@
 class BETAG4EventGenerator : public InSANEEventGenerator {
 public:
    BETAG4EventGenerator();
+   virtual ~BETAG4EventGenerator() { }
 
-   virtual ~BETAG4EventGenerator() {
-
-   }
-
-//    double * GenerateEvent() {
-//       fEventArray = fEventSampler->GenerateEvent();
-//       return(fEventArray);
-//    }
-
-/** Generates the randomly distributed initial position(s)
- *  \todo modify to be able to generate more than a single primary particle
- */ 
+   /** Generates the randomly distributed initial position(s)
+    *  \todo modify to be able to generate more than a single primary particle
+    */ 
    virtual void ShootPositions(){ }
 
+   /** Sets the cross section and creates the phase space sampler
+    *
+    *  Must be called before using event generator
+    *  and should first call InitializePhaseSpace() or take care of
+    *  phase space definition 
+    *
+    *  This is called from the constructor and each implementation
+    *  requiring a different cross section should reimplement this method
+    */
    virtual void Initialize(){
+     
      fBeamEnergy=5.9;
      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
      fDiffXSec->SetBeamEnergy(fBeamEnergy);
      fDiffXSec->InitializePhaseSpaceVariables();
-     InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-     ps->ListVariables();
+     fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+     fPrimaryPS->ListVariables();
      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
      AddSampler(fF1F2EventSampler);
      CalculateTotalCrossSection();
    }
 
-/**  Sets the phase space used and initializes
- *   each phase space variable
- */
-//    virtual void InitializePhaseSpace() {
-//       fEnergyMin = 0.80;
-//       fEnergyMax = 4.7;
-//       fThetaMin  = 30.0;
-//       fThetaMax  = 50.0;
-//       fPhiMin    =-90.0;
-//       fPhiMax    = 90.0;
-// 
-//       fPhaseSpace = new InSANEPhaseSpace();
-//       // Add random variables ( 3 needed) to phase space
-//       varEnergy = new InSANEPhaseSpaceVariable();
-//       varEnergy->fVariableName="Energy"; 
-//       varEnergy->fVariable="E#prime"; // ROOT string latex
-//       varEnergy->SetVariableMinima(fEnergyMin); //GeV
-//       varEnergy->SetVariableMaxima(fEnergyMax); //GeV
-//       fPhaseSpace->AddVariable(varEnergy);
-// 
-//       varTheta = new InSANEPhaseSpaceVariable();
-//       varTheta->fVariableName="theta"; 
-//       varTheta->fVariable="#theta"; // ROOT string latex
-//       varTheta->SetVariableMinima(fThetaMin*TMath::Pi()/180.0); //
-//       varTheta->SetVariableMaxima(fThetaMax*TMath::Pi()/180.0); //
-//       fPhaseSpace->AddVariable(varTheta);
-// 
-//       varPhi = new InSANEPhaseSpaceVariable();
-//       varPhi->fVariableName="phi"; 
-//       varPhi->fVariable="#phi"; // ROOT string latex
-//       varPhi->SetVariableMinima(fPhiMin*TMath::Pi()/180.0); //
-//       varPhi->SetVariableMaxima(fPhiMax*TMath::Pi()/180.0); //
-//       fPhaseSpace->AddVariable(varPhi);
-//    }
+protected :
+   InSANEPhaseSpace * fPrimaryPS;
 
-/** Sets the cross section and creates the phase space sampler
- *
- *  Must be called before using event generator
- *  and should first call InitializePhaseSpace() or take care of
- *  phase space definition
- *
- *  This is called from the constructor and each implementation
- *  requiring a different cross section should reimplement this method
- */
-//    virtual void  Initialize() {
-//       InitializePhaseSpace();
-//       // Create the differential cross section to be used
-//       fDiffXSec = new InSANEFlatInclusiveDiffXSec();
-//       // Set the cross section's phase space
-//       fDiffXSec->SetPhaseSpace(fPhaseSpace);
-//       // Create event sampler
-//       fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-//       // Set the seed 
-//       fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
-//    } 
-
-/** Re-initializes the event generator after modification
- */
-//    virtual void Refresh() {
-//       if(fDiffXSec) fDiffXSec->Refresh();
-//       if(fEventSampler)fEventSampler->Refresh(fDiffXSec);
-//    } 
-
+public :
    int fNumberOfGeneratedParticles;
    G4ThreeVector * fInitialPosition ;
    G4ThreeVector * fInitialDirection ;
@@ -117,10 +60,13 @@ public:
    InSANEPhaseSpaceVariable * varPhi;
    InSANEPhaseSpaceVariable * varEnergy;
    InSANEPhaseSpaceVariable * var;
+   InSANEPhaseSpaceVariable * varMomentum;
 
    double fBeamEnergy;
    double fEnergyMax;
    double fEnergyMin;
+   double fMomentumMax;
+   double fMomentumMin;
    double fDeltaEnergy;
    double fCentralEnergy;
 
@@ -138,21 +84,7 @@ public:
 
    int fPID;
 
-//    InSANEInclusivePhaseSpace * fPhaseSpace;
-//    InSANEPhaseSpaceSampler * fEventSampler;
-//    InSANEInclusiveDiffXSec * fDiffXSec;
-
 public:
-//    void Print() {
-//       std::cout << " ==== BETAG4EventGenerator ==== \n";
-//       if(fPhaseSpace)fPhaseSpace->Print();
-//       if(fDiffXSec)fDiffXSec->Print();
-//       if(fEventSampler)fEventSampler->Print();
-//       std::cout << " BETAG4EventGenerator member variables: ";
-//       std::cout << "   Energy: " << fEnergyMin << " - " << fEnergyMax << "\n";
-//       std::cout << "    Theta: " << fThetaMin << " - " << fThetaMax<< "\n";
-//       std::cout << "      Phi: " << fPhiMin << " - " << fPhiMax<< "\n";
-//    }
 
 /** Returns the starting postiong of the primary particle
  */
@@ -191,28 +123,71 @@ public:
 
    void SetThetaMax(double val) { 
      fThetaMax = val;
-     varTheta->SetVariableMaxima(val);
+     if(varTheta) varTheta->SetVariableMaxima(val);
+     else if (fPrimaryPS) {
+        varTheta = fPrimaryPS->GetVariable("theta");
+        if(varTheta) varTheta->SetVariableMaxima(val);
+        else printf("No theta variable found !!!!!!!!!!!!!!!!!!!\n");
+     }
    }
    void SetThetaMin(double val) { 
      fThetaMin = val;
-     varTheta->SetVariableMinima(val);
+     if(varTheta) varTheta->SetVariableMinima(val);
+     else if (fPrimaryPS) {
+        varTheta = fPrimaryPS->GetVariable("theta");
+        if(varTheta) varTheta->SetVariableMinima(val);
+     }
    }
    void SetPhiMax(double val) { 
      fPhiMax = val;
-     varPhi->SetVariableMaxima(val);
+     if(varPhi) varPhi->SetVariableMaxima(val);
+     else if (fPrimaryPS) {
+        varPhi = fPrimaryPS->GetVariable("phi");
+        if(varPhi) varPhi->SetVariableMaxima(val);
+     }
    }
    void SetPhiMin(double val) { 
      fPhiMin = val;
-     varPhi->SetVariableMinima(val);
+     if(varPhi) varPhi->SetVariableMinima(val);
+     else if (fPrimaryPS) {
+        varPhi = fPrimaryPS->GetVariable("phi");
+        if(varPhi) varPhi->SetVariableMinima(val);
+     }
    }
+
    void SetEnergyMax(double val) { 
      fEnergyMax = val;
-     varEnergy->SetVariableMaxima(val);
+     if(varEnergy) varEnergy->SetVariableMaxima(val);
+     else if (fPrimaryPS) {
+        varEnergy = fPrimaryPS->GetVariable("energy");
+        if(varEnergy) varEnergy->SetVariableMaxima(val);
+     }
    }
    void SetEnergyMin(double val) { 
      fEnergyMin = val;
-     varEnergy->SetVariableMinima(val);
+     if(varEnergy) varEnergy->SetVariableMinima(val);
+     else if (fPrimaryPS) {
+        varEnergy = fPrimaryPS->GetVariable("energy");
+        if(varEnergy) varEnergy->SetVariableMinima(val);
+     }
    }
+   void SetMomentumMax(double val) { 
+     fMomentumMax = val;
+     if(varMomentum) varMomentum->SetVariableMaxima(val);
+     else if (fPrimaryPS) {
+        varMomentum = fPrimaryPS->GetVariable("momentum");
+        if(varMomentum) varMomentum->SetVariableMaxima(val);
+     }
+   }
+   void SetMomentumMin(double val) { 
+     fMomentumMin = val;
+     if(varMomentum) varMomentum->SetVariableMinima(val);
+     else if (fPrimaryPS) {
+        varMomentum = fPrimaryPS->GetVariable("momentum");
+        if(varMomentum) varMomentum->SetVariableMinima(val);
+     }
+   }
+
 };
 
 

@@ -78,22 +78,22 @@ class BETARun : public G4Run {
 
 public:
 
-/**
- *  Constructor opens ROOT file \todo{ add open new file or append to existing flag...}.)
- */
-  BETARun(const int runNumber);
-/**
- *  Destructor
- */
-  ~BETARun();
+   /**  Constructor opens ROOT file..
+    *  
+    */
+   BETARun(const int runNumber);
 
-BETADigitizer * fBETADigitizer;
+   /**  Destructor
+    */
+   ~BETARun();
 
-void GeneratePedestals();
+   /** Generates 1000 pedestal events before running /run/beamOn */
+   void GeneratePedestals();
+
+   BETADigitizer * fBETADigitizer;
 
 private:
   BETAG4DAQReadout * fDAQReadout;
-
   BETASimulationManager * fSimulationManager;
   G4RunManager * runManager;
   BETAPrimaryGeneratorAction * generator;
@@ -101,49 +101,45 @@ private:
 
 public:
 
-/// Contains all BETA detector's data
-  BETAEvent * betaEvent;
-/// Contains all the HMS data
-  HMSEvent* hmsEvent;
-/// Contains all the Hall C beam data
-  HallCBeamEvent * beamEvent;
-/// Contains all the Thrown and unrealistically obtained Montecarlo data
-  BETAG4MonteCarloEvent * mcEvent;
-/// Simulation Run object
+//   BETAEvent * betaEvent;
+//   HMSEvent* hmsEvent;
+//   HallCBeamEvent * beamEvent;
   InSANERun * simulationRun;
+  BETAG4MonteCarloEvent * mcEvent;
 
 
-/// Override this method in G4Run
- void RecordEvent(const G4Event*);
-/// Returns the Analysis manager singleton
- BETASimulationManager* GetRunAnalysisManager() const { return fSimulationManager ;}
+   /**  G4Run virtual method for recording all sensitive detector data
+    *
+    *  Makes use of BETAG4DAQReadout and BETADigitizer classes
+    *
+    */
+   void RecordEvent(const G4Event*);
+
+   /* Returns the Analysis manager singleton */
+//   BETASimulationManager* GetRunAnalysisManager() const { return fSimulationManager ;}
 
   // Dump all data
   void DumpData() const;
 
 private:
 
- TH1F * waveforms;
+   G4int colIDSum[4];
+
+   bool catLastFile;
+   bool fShowUnrealisticData;
+
+   ofstream MCOutput ;
 
 
-G4int colIDSum[4];
-
-bool catLastFile;
-bool fShowUnrealisticData;
 // TROOT * theRoot; 
 // TApplication * theApp;
-
-   TFile * RootFile;
-
-
-   G4int pmtTotalCount, mirrorTotalCount;
-	ofstream MCOutput ;
+//    TFile * RootFile;
 
 void DumpHallCMC();
 
 public:
 
-  G4double getPMT_MirrorEfficiency() {return(static_cast<G4double>(pmtTotalCount)/static_cast<G4double>(mirrorTotalCount) ); }
+//   G4double getPMT_MirrorEfficiency() {return(static_cast<G4double>(pmtTotalCount)/static_cast<G4double>(mirrorTotalCount) ); }
 
 TCanvas * c1;
 
