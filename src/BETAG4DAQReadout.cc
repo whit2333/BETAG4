@@ -86,7 +86,7 @@ void BETAG4DAQReadout::Digitize() {
     bcHit      = (*fBigcalHC)[gg];
     energyTemp = bcHit->GetDepositedEnergy()/ (bigcalGeoCalc->GetCalibrationCoefficient(bcHit->fCellID));;
 
-    if(energyTemp > 0.001) { ///10 MeV Block Threshold?
+    if(energyTemp > 0.01) { ///10 MeV Block Threshold?
       fNBigcalHits++;
       fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
     }
@@ -109,26 +109,28 @@ void BETAG4DAQReadout::Digitize() {
    }
 
    /// Determine if Bigcal would have fired
+   fNumberOfTriggeredGroups=0;
    fBigcalFired=false;
    for(int i=0;i<4;i++) {
+//      std::cout << "Bigcal trigger group " << i+1 << " has energy "  << fTriggerGroupEnergy[i] << " MeV \n";
       if( fTriggerGroupEnergy[i] > fBigcalTriggerThreshold ) {
          fBigcalFired=true;
          fNumberOfTriggeredGroups++;
-/*         std::cout << "Bigcal Total " << fNumberOfTriggeredGroups << " \n";*/
+//         std::cout << "Bigcal Total " << fNumberOfTriggeredGroups << " \n";
       }
    }
 
 
    if(fBigcalFired) {
       /// pi0 trigger bits
-      if( fNumberOfTriggeredGroups > 1) {
          fSimulationManager->fEvents->TRIG->fCodaType = 5; // bigcal types
+      if( fNumberOfTriggeredGroups > 1) {
          fSimulationManager->fEvents->TRIG->fTriggerBits[2] = true;
 /*       fTriggerEvent->fTriggerBits[3] = true;*/
          fIsTriggered=true;
       }
-// Beta trigger bits
-      if(fCherenkovFired) {
+      /// Beta trigger bits
+      if(fCherenkovFired && fBigcalFired ) {
          fSimulationManager->fEvents->TRIG->fCodaType = 5; // bigcal types
 /*         fSimulationManager->fEvents->TRIG->fTriggerBits[1] = true;//b1trig*/
          fSimulationManager->fEvents->TRIG->fTriggerBits[3] = true;//b2trig

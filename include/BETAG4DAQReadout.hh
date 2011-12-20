@@ -95,7 +95,7 @@ public:
     fNCherenkovHits=0;
     fNumberOfTriggeredGroups=0;
     fIsTriggered=false;
-    for(int i = 1;i<4;i++) fTriggerGroupEnergy[i]=0.0;
+    for(int i = 0;i<4;i++) fTriggerGroupEnergy[i]=0.0;
   }
 
   BETAG4DigiADCCollection * fCherenkovADCSumDC;
