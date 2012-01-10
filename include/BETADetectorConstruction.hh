@@ -58,7 +58,6 @@
 #include "G4SDParticleWithEnergyFilter.hh"
 #include "G4Trd.hh"
 #include "BETAField.hh"
-//#include "BETAG4PMT.hh"
 #include "BETASimulationManager.hh"
 
 class BETADetectorMessenger;
@@ -88,40 +87,31 @@ class BETASimulationManager;
  */
 class BETADetectorConstruction : public G4VUserDetectorConstruction
 {
-  public:
-friend class BETASimulationManager;
+public:
+  friend class BETASimulationManager;
 
 public :
-
     G4RotationMatrix fMagnetRotationMatirx;
 
     BETADetectorConstruction();
-
    ~BETADetectorConstruction();
 
-/**
- * Constructs the BETA Detector Package
- * 
- *  We construct the BETADetectors in a box for which y is vertical and x is horizontal.
- *  These are the Bigcal Coordinates.
- *
- *
- */
-  void ConstructBETA();
- 
-
+   /** Constructs the BETA Detector Package.
+    * 
+    *  We construct the BETADetectors in a box for which y is vertical and x is horizontal.
+    *  These are the Bigcal Coordinates.
+    */
+   void ConstructBETA();
 
    bool usingTargetCup;
-
    bool usingTargetOVC;
-
    bool usingFakePlaneAtBigcal; 
-
    bool usingFakePlaneAtForwardTracker;
 
-/**
- * Called from ConstructBETA
- */
+public:
+   /**
+    * Called from ConstructBETA
+    */
    void ConstructBIGCAL();
    bool usingBigcal;
    G4LogicalVolume * calorimeterTop_log;
@@ -129,140 +119,145 @@ public :
    G4LogicalVolume * calorimeterBottom_log;
    G4VPhysicalVolume * calorimeterBottom_phys;
 
-/**
- * Called from ConstructBETA
- */
+   /**
+    * Called from ConstructBETA
+    */
    void ConstructCherenkov();
    bool usingGasCherenkov;
    G4LogicalVolume*   tank_log; 
    G4VPhysicalVolume * cherenkovTank_phys;
 
-/**
- * Called from ConstructBETA
- */
+   /**
+    * Called from ConstructBETA
+    */
    void ConstructForwardTracker();
    bool usingForwardTracker; 
    G4LogicalVolume*   hodoscopeContainerBox_log; 
    G4VPhysicalVolume* hodoscopeContainerBox_phys;
 
-/** Called from ConstructBETA */
+   /** Called from ConstructBETA */
    void ConstructHodoscope();
    bool usingLuciteHodoscope;
    G4LogicalVolume*   tracker_log; 
    G4VPhysicalVolume* tracker_phys;
 
-/**
- * Called from Construct BETA
- */
-  void ConstructFakePlane();
+   /**
+    * Called from Construct BETA
+    */
+   void ConstructFakePlane();
 
-/**
- * Called from Construct()
- */
-  void ConstructMagneticField();
+   /**
+    * Called from Construct()
+    */
+   void ConstructMagneticField();
 
-/** Wright's code which constructs the UVA NH3 Target
- */
-  void ConstructTarget();
-///Constructs the Target Can
-  void ConstructTCan();
-///Constructs the Beam pipes up sstream and down stream
-  void ConstructBeamPipe();
-///Constructs the Liquid Nitrogen Shield
-  void ConstructN2Shield();
-///Constructs the Oxford Magnet geometry
-  void ConstructMagnet();
-///Constructs the Target Nose
-  void ConstructNose();
+   /** Wright's code which constructs the UVA NH3 Target
+    */
+   void ConstructTarget();
 
-/** Constructs the Helium Bag and Helium Bag extension
- * 
- * The Box has dimensions (ignoring the flange) 4.67 x 7.97 x 71.97 in^3
- */
-  void ConstructHeliumBag();
+   ///Constructs the Target Can
+   void ConstructTCan();
 
-  G4Box*            fHeBagExtenderBox;
-  G4LogicalVolume*   fHeBagExtenderBox_log;
-  G4VPhysicalVolume* fHeBagExtenderBox_phys;
+   ///Constructs the Beam pipes up sstream and down stream
+   void ConstructBeamPipe();
 
-  G4Box*            fHeBagExtenderAngleBox1;
-  G4Box*            fHeBagExtenderAngleBox2;
-  G4VSolid*   fHeBagExtenderAngle1;
-  G4VSolid*   fHeBagExtenderAngle2;
-  G4VSolid*   fHeBagExtenderAngle3;
-  G4VSolid*   fHeBagExtenderAngle4;
-  G4LogicalVolume*   fHeBagExtenderAngle1_log;
-  G4LogicalVolume*   fHeBagExtenderAngle2_log;
-  G4LogicalVolume*   fHeBagExtenderAngle3_log;
-  G4LogicalVolume*   fHeBagExtenderAngle4_log;
+   ///Constructs the Liquid Nitrogen Shield
+   void ConstructN2Shield();
+
+   ///Constructs the Oxford Magnet geometry
+   void ConstructMagnet();
+
+   ///Constructs the Target Nose
+   void ConstructNose();
+
+   /** Constructs the Helium Bag and Helium Bag extension
+    * 
+    * The Box has dimensions (ignoring the flange) 4.67 x 7.97 x 71.97 in^3
+    */
+   void ConstructHeliumBag();
+
+   G4Box*            fHeBagExtenderBox;
+   G4LogicalVolume*   fHeBagExtenderBox_log;
+   G4VPhysicalVolume* fHeBagExtenderBox_phys;
+
+   G4Box*            fHeBagExtenderAngleBox1;
+   G4Box*            fHeBagExtenderAngleBox2;
+   G4VSolid*   fHeBagExtenderAngle1;
+   G4VSolid*   fHeBagExtenderAngle2;
+   G4VSolid*   fHeBagExtenderAngle3;
+   G4VSolid*   fHeBagExtenderAngle4;
+   G4LogicalVolume*   fHeBagExtenderAngle1_log;
+   G4LogicalVolume*   fHeBagExtenderAngle2_log;
+   G4LogicalVolume*   fHeBagExtenderAngle3_log;
+   G4LogicalVolume*   fHeBagExtenderAngle4_log;
+ 
+   G4Box*   fHeBagExtenderHorizSupport;
+   G4Box*   fHeBagExtenderVertSupport;
+   G4LogicalVolume*   fHeBagExtenderHorizSupport_log;
+   G4LogicalVolume*   fHeBagExtenderVertSupport_log;
+
+   G4Box*            fHeBagExtenderHorizWindow;
+   G4Box*            fHeBagExtenderVertWindow;
+   G4Box*            fHeBagExtenderFrontWindow;
+   G4LogicalVolume*   fHeBagExtenderHorizWindow_log;
+   G4LogicalVolume*   fHeBagExtenderVertWindow_log;
+   G4LogicalVolume*   fHeBagExtenderFrontWindow_log;
 
 
-  G4Box*   fHeBagExtenderHorizSupport;
-  G4Box*   fHeBagExtenderVertSupport;
-  G4LogicalVolume*   fHeBagExtenderHorizSupport_log;
-  G4LogicalVolume*   fHeBagExtenderVertSupport_log;
-
-  G4Box*            fHeBagExtenderHorizWindow;
-  G4Box*            fHeBagExtenderVertWindow;
-  G4Box*            fHeBagExtenderFrontWindow;
-  G4LogicalVolume*   fHeBagExtenderHorizWindow_log;
-  G4LogicalVolume*   fHeBagExtenderVertWindow_log;
-  G4LogicalVolume*   fHeBagExtenderFrontWindow_log;
-
-
-/**
- * Called from ConstructBETA
- * Should get the simulation manager and names and corresponding pointers to scoring volumes.
- */
-  void SetupScoring(G4LogicalVolume * scoringVolume);
+   /**
+    * Called from ConstructBETA
+    * Should get the simulation manager and names and corresponding pointers to scoring volumes.
+    */
+   void SetupScoring(G4LogicalVolume * scoringVolume);
   
-/**
- * GEANT4 user hook which initiates all geometry constructions
- */
-    G4VPhysicalVolume* Construct();
+   /**
+    * GEANT4 user hook which initiates all geometry constructions
+    */
+   G4VPhysicalVolume* Construct();
 
-/**
- * For User Interface
- */
-void switchTargetField();
-/**
- * For User Interface
- */
-double getTargetAngle();
-/**
- * For User Interface
- */
-void setTargetAngle(G4double);
-/**
- * For User Interface
- */
-void setMirrorAngles(int,G4double, G4double);
+   /**
+    * For User Interface
+    */
+   void switchTargetField();
 
-/** turn on and off the target geometry and material */
-void ToggleTargetMaterial(int);
+   /**
+    * For User Interface
+    */
+   double getTargetAngle();
+   /**
+    * For User Interface
+    */
+   void setTargetAngle(G4double);
+   /**
+    * For User Interface
+    */
+   void setMirrorAngles(int,G4double, G4double);
+  
+   /** turn on and off the target geometry and material */
+   void ToggleTargetMaterial(int);
 
-/** turn on and off the target magnetic field*/
-void ToggleTargetField(int);
+   /** turn on and off the target magnetic field*/
+   void ToggleTargetField(int);
 
-/**
- * For User Interface
- */
-void rotateMirror(int , G4double , G4double );
+   /**
+    * For User Interface
+    */
+   void rotateMirror(int , G4double , G4double );
 
-void lookAtField(G4String);
+   void lookAtField(G4String);
 
-int fTargetState;
+   int fTargetState;
 
-/**
- * For which detectors are constructed
- */
+   /**
+    * For which detectors are constructed
+    */
 
-BETASimulationManager * fSimulationManager;
+   BETASimulationManager * fSimulationManager;
 
 
-  private:
+ private:
 
-  G4float ULimits;
+   G4float ULimits;
 
 /*     void SetFrontThickness (G4String);     
      void SetBackThickness(G4String);     
@@ -276,7 +271,7 @@ BETASimulationManager * fSimulationManager;
  *  The former has an index of refraction associated with it, which thus 
  *  triggers the GEANT4 kernel to produce Optical Photon processes.
  */
-void SetMaterialPropertiesTables();
+   void SetMaterialPropertiesTables();
 
 /**
  *  Defines All Detector Materials
@@ -318,17 +313,17 @@ void SetMaterialPropertiesTables();
     G4Material*        Lucite_NoOptics;
     G4Material*        LeadGlass_NoOptics;
     G4Material*        HeGas;
-  G4Material* LHe;
-  G4Material* TargetNH3;
-  G4Material* Pb;
-  G4Material* Nb;
-  G4Material* N2Gas;
+    G4Material*        LHe;
+    G4Material*        TargetNH3;
+    G4Material*        Pb;
+    G4Material*        Nb;
+    G4Material*        N2Gas;
     G4Material*        NitrogenGas;
     G4Material*        Aluminum;
-    G4Material* Al;
-    G4Material* H;
-    G4Material* Cu;
-    G4Material* Be;
+    G4Material*        Al;
+    G4Material*        H;
+    G4Material*        Cu;
+    G4Material*        Be;
     G4Material*        Water;
     G4Material*        Vacuum;
     G4Material*        Air;
@@ -339,8 +334,11 @@ void SetMaterialPropertiesTables();
     G4Material*        PVF;
     G4Material*        NH3;
     G4Material*        Lead;
-    G4Material*  LeadGlass;
-    G4Material*  Lucite;
+    G4Material*        LeadGlass;
+    G4Material*        Lucite;
+    G4Material        *TrackerScint_NoOptics;
+    G4Material        *TrackerScint;	   
+
     G4double expHall_x;
     G4double expHall_y;
     G4double expHall_z;

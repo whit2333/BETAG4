@@ -250,7 +250,7 @@ void BETAPhysicsList::ConstructOp()
    theCerenkovProcess->SetTrackSecondariesFirst ( true );
 
    theScintillationProcess->SetScintillationYieldFactor ( 1. );
-//   theScintillationProcess->SetTrackSecondariesFirst ( true );
+   theScintillationProcess->SetTrackSecondariesFirst ( true );
 
    G4OpticalSurfaceModel themodel = unified;
    theBoundaryProcess->SetModel ( themodel );
@@ -315,7 +315,7 @@ void BETAPhysicsList::SetCuts()
    //
    SetCutsWithDefault();
 
-   if ( verboseLevel>0 ) DumpCutValuesTable();
+   if ( verboseLevel>1 ) DumpCutValuesTable();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

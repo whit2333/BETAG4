@@ -52,8 +52,8 @@ public:
 
   void Clear(){
     Reset();
-    if(fTriggerEvent)fTriggerEvent->Clear();
-    if(mcEvent)mcEvent->Clear();
+    if(fTriggerEvent)fTriggerEvent->ClearEvent();
+    if(mcEvent)mcEvent->ClearEvent();
     delete fCherenkovADCSumDC;
     fCherenkovADCSumDC =
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCSums" );

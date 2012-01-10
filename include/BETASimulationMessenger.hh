@@ -52,6 +52,7 @@ class BETASimulationMessenger: public G4UImessenger
     G4UIcmdWithoutParameter*   polSwitch;
     G4UIcmdWithAString*   lookAtField;
 
+    G4UIcmdWithADouble*   setBeamEnergy;
 
     G4UIcmdWithADouble*        polSet;
     G4UIcmdWithADouble*        rotateToroidalMirrors;

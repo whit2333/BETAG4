@@ -28,12 +28,12 @@ BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 
 BETASimulationManager::BETASimulationManager () :
      fIsAppendMode(false),fRunNumber(0),
-     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(true),
-     fSimulateTrackerOptics(false),fDebugLevel(3),fSimulateTrigger(false)
+     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(false),
+     fSimulateTrackerOptics(true),fDebugLevel(3),fSimulateTrigger(false)
 {
 
    fSimulationMessenger = new BETASimulationMessenger ( this );
-
+   fEvents=0;
    fGasCherenkovVerbosity=0;
    fBigcalVerbosity=0;
    fLuciteHodoscopeVerbosity=0;
@@ -46,6 +46,7 @@ BETASimulationManager::BETASimulationManager () :
   fHodoscopeDetector   =0;
   fTrackerDetector     =0;
 
+   fBeamEnergy = 5.9*GeV;
   //InitScoring();
 }
 //_________________________________________________________________//

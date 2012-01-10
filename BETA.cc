@@ -85,90 +85,89 @@
  */
 int main(int argc,char** argv)
 {
-  // Seed the random number generator manually
-  G4long myseed = 98983;
-    ifstream input_file ;
-    ofstream output_file ;
-    input_file.open ( "seed.txt" );
-    input_file >> myseed;
-    input_file.close();
-  myseed++;
-    output_file.open ( "seed.txt" ,ios::trunc); // this incremtents a number
-    output_file << myseed ;
-    output_file.close();
-  CLHEP::HepRandom::setTheSeed(myseed);
+   // Seed the random number generator manually
+   G4long myseed = 983;
+   ifstream input_file ;
+   ofstream output_file ;
+   input_file.open ( "seed.txt" );
+   input_file >> myseed;
+   input_file.close();
+   myseed++;
+   output_file.open ( "seed.txt" ,ios::trunc); // this incremtents a number
+   output_file << myseed ;
+   output_file.close();
+   CLHEP::HepRandom::setTheSeed(myseed);
 
-  /// User Verbose output class
-  G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
-  G4VSteppingVerbose::SetInstance(verbosity);
+   /// User Verbose output class
+   G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
+   G4VSteppingVerbose::SetInstance(verbosity);
 
-  /// Run manager
-  G4RunManager* runManager = new G4RunManager;
+   /// Run manager
+   G4RunManager* runManager = new G4RunManager;
 
-  /// UserInitialization classes - mandatory
-  G4VUserDetectorConstruction* detector = new BETADetectorConstruction;
-  runManager->SetUserInitialization(detector);
+   /// UserInitialization classes - mandatory
+   G4VUserDetectorConstruction* detector = new BETADetectorConstruction;
+   runManager->SetUserInitialization(detector);
 
-  /// Physics List
-  G4VUserPhysicsList* physics = new BETAPhysicsList;
-  runManager-> SetUserInitialization(physics);
+   /// Physics List
+   G4VUserPhysicsList* physics = new BETAPhysicsList;
+   runManager-> SetUserInitialization(physics);
 
-  /// visualization manager
-#ifdef G4VIS_USE
-  G4VisManager* visManager = new G4VisExecutive;
-  visManager->Initialize();
-#endif
+   /// visualization manager
+   #ifdef G4VIS_USE
+   G4VisManager* visManager = new G4VisExecutive;
+   visManager->Initialize();
+   #endif
 
-  /// UserAction classes
-  G4UserRunAction* run_action = new BETARunAction;
-  runManager->SetUserAction(run_action);
+   /// UserAction classes
+   G4UserRunAction* run_action = new BETARunAction;
+   runManager->SetUserAction(run_action);
 
-  G4VUserPrimaryGeneratorAction* gen_action = new BETAPrimaryGeneratorAction;
-  runManager->SetUserAction(gen_action);
+   G4VUserPrimaryGeneratorAction* gen_action = new BETAPrimaryGeneratorAction;
+   runManager->SetUserAction(gen_action);
 
-  G4UserEventAction* event_action = new BETAEventAction;
-  runManager->SetUserAction(event_action);
+   G4UserEventAction* event_action = new BETAEventAction;
+   runManager->SetUserAction(event_action);
 
-  G4UserStackingAction* stacking_action = new BETAStackingAction;
-  runManager->SetUserAction(stacking_action);
+   G4UserStackingAction* stacking_action = new BETAStackingAction;
+   runManager->SetUserAction(stacking_action);
 
-  G4UserSteppingAction* stepping_action = new BETASteppingAction;
-  runManager->SetUserAction(stepping_action);
+   G4UserSteppingAction* stepping_action = new BETASteppingAction;
+   runManager->SetUserAction(stepping_action);
 
-  int fnargs = 2;
-  char * fargs[2] = {"delayPlots"," -l "};
-  new TRint("delayPlots", &fnargs,&fargs[0], NULL, -1);
+   int fnargs = 2;
+   char * fargs[2] = {"delayPlots","-l"};
+   TRint * fApp = new TRint("delayPlots", &fnargs,&fargs[0], NULL, -1);
 
-  /// Initialize G4 kernel
-  runManager->Initialize();
+   /// Initialize G4 kernel
+   runManager->Initialize();
 
-  /// Get the pointer to the User Interface manager
-  G4UImanager* UI = G4UImanager::GetUIpointer(); 
+   /// Get the pointer to the User Interface manager
+   G4UImanager* UI = G4UImanager::GetUIpointer(); 
 
-  if (argc==1)   // Define UI session for interactive mode
-    {
+   if (argc==1)   // Define UI session for interactive mode
+   {
       G4UIsession* session = 0;
-#ifdef G4UI_USE_TCSH
-// session = new G4UIGAG;      
+      #ifdef G4UI_USE_TCSH
+      // session = new G4UIGAG;      
       session = new G4UIterminal(new G4UItcsh);      
-//      session = new G4UIQt(argc, argv);    
-#else
+      // session = new G4UIQt(argc, argv);    
+      #else
       session = new G4UIterminal();
-#endif
-//      UI->ApplyCommand("/control/execute vis.mac"); 
+      #endif
+      //UI->ApplyCommand("/control/execute vis.mac"); 
       session->SessionStart();
       delete session;
-   }
-  else         // Batch mode, quit at the end
-   {
-     G4String command = "/control/execute ";
-     G4String fileName = argv[1];
-//     UI->ApplyCommand(command+fileName);
+   } else {
+      // Batch mode, quit at the end
+      G4String command = "/control/execute ";
+      G4String fileName = argv[1];
+      //UI->ApplyCommand(command+fileName);
       G4UIsession* session = 0;
-//      UI->ApplyCommand("/control/execute vis.mac"); 
-     UI->ApplyCommand(command+fileName);
-     // session->SessionStart();
-     if(session) delete session;
+      // UI->ApplyCommand("/control/execute vis.mac"); 
+      UI->ApplyCommand(command+fileName);
+      // session->SessionStart();
+      if(session) delete session;
    }
 
   // Job termination

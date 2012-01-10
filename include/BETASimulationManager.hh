@@ -52,115 +52,108 @@ class BETASimulationManager {
 public:
   ~BETASimulationManager();
 
-/**
- *  Get the simulation manager singleton
- */
-  static BETASimulationManager* GetInstance();
+   /**
+    *  Get the simulation manager singleton
+    */
+   static BETASimulationManager* GetInstance();
 
-/**
- *  dispose (delete?)
- */
-  static void Dispose();
+   /**
+    *  dispose (delete?)
+    */
+   static void Dispose();
 
-/**
- * Set detector's verbosity for debugging purposes
- */
-  void SetDetectorVerbosity( char * detName, int level);
+   /**
+    * Set detector's verbosity for debugging purposes
+    */
+   void SetDetectorVerbosity( char * detName, int level);
 
-/**
- * Get detector's verbosity for debugging purposes
- */
-  int GetDetectorVerbosity( char * detName);
+   /**
+    * Get detector's verbosity for debugging purposes
+    */
+   int GetDetectorVerbosity( char * detName);
 
-/**
- * Sets whether plots are shown or not.
- * Not yet implemented.
- */
-  void showPlot(int );
+   /**
+    * Sets whether plots are shown or not.
+    * Not yet implemented.
+    */
+   void showPlot(int );
 
-/**
- * Not yet implemented.
- */
-  void write();
+   /**
+    * Not yet implemented.
+    */
+   void write();
 
-/**
- * Prints a general statement about the current run configuration
- * Not yet implemented.
- */ 
- void GetRunInfo(){ ; };
+   /**
+    * Prints a general statement about the current run configuration
+    * Not yet implemented.
+    */ 
+   void GetRunInfo(){ ; };
 
-/**
- * If true, data is to be appeneded to the root file with current run number, which is not incremented
- * If false, the run number is incremented and a new root file is created.
- */ 
- void SetAppendMode(bool mode){ fIsAppendMode=mode; };
+   /**
+    * If true, data is to be appeneded to the root file with current run number, which is not incremented
+    * If false, the run number is incremented and a new root file is created.
+    */ 
+   void SetAppendMode(bool mode){ fIsAppendMode=mode; };
 
-/**
- * If true, data is to be appeneded to the root file with current run number, which is not incremented
- * If false, the run number is incremented and a new root file is created.
- */ 
- bool IsAppendMode(){ return fIsAppendMode; };
+   /**
+    * If true, data is to be appeneded to the root file with current run number, which is not incremented
+    * If false, the run number is incremented and a new root file is created.
+    */ 
+   bool IsAppendMode(){ return fIsAppendMode; };
 
-/**
- * Returns the run number 
- * \todo Make the source of run number a database, not a text file. 
- */ 
- int GetRunNumber(){ return fRunNumber; };
+   /**
+    * Returns the run number 
+    * \todo Make the source of run number a database, not a text file. 
+    */ 
+   int GetRunNumber(){ return fRunNumber; };
 
-/**
- * Increments the run number in memory and in file/database
- * returns the run number
- * \todo Make the source of run number a database, not a text file. 
- */
+   /**
+    * Increments the run number in memory and in file/database
+    * returns the run number
+    * \todo Make the source of run number a database, not a text file. 
+    */
+   int IncrementRunNumber();
 
- int IncrementRunNumber();
+   /**
+    * Gets the run number from a file/database
+    * \todo Make the source of run number a database, not a text file. 
+    */
+   int RetrieveRunNumber();
 
+   /**
+    * Allocate Event and Hit memory
+    */
+   int AllocateTreeMemory();
 
-/**
- * Gets the run number from a file/database
- * \todo Make the source of run number a database, not a text file. 
- */
- int RetrieveRunNumber();
+   /**
+    * Free Event and Hit memory
+    */
+   int Reset();
 
-/**
- * Allocate Event and Hit memory
- */
- int AllocateTreeMemory();
+   /** Creates the InSANEDetector Base classes and sets event addresses
+    *  used in pedestal and noise simulation
+    */
+   int AddDetectors(int runNumber = 0) ;
 
-/**
- * Free Event and Hit memory
- */
- int Reset();
+   /**
+    * Sets up detector's scoring
+    * This defines what should be detected but not which volume it is associated with
+    * this should be done within the det const class
+    */
+   int InitScoring();
 
-/** Creates the InSANEDetector Base classes and sets event addresses
- *  used in pedestal and noise simulation
- */
-  int AddDetectors(int runNumber = 0) ;
+   /**
+    *  Defines the scoring filters
+    *  This must come during detector construction...??
+    */ 
+   int DefineScoringFilters();
 
+   /**
+    *  
+    */
+   int InitializeNewRun();
 
-/**
- * Sets up detector's scoring
- * This defines what should be detected but not which volume it is associated with
- * this should be done within the det const class
- */
-  int InitScoring();
-
-/**
- *  Defines the scoring filters
- *  This must come during detector construction...??
- */ 
-  int DefineScoringFilters();
-
-/**
- *  
- */
-  int InitializeNewRun();
-
-  public:
-
-/// Pointer to the BETADetectorConstruction 
-//  BETADetectorConstruction * fConstruction;
-
+public:
    /// Pointer to the BETASimulationMessenger 
    BETASimulationMessenger * fSimulationMessenger;
 
@@ -203,9 +196,13 @@ private:
   G4SDKineticEnergyFilter* bigcalEnergyFilter;
   G4SDChargedFilter* chargeFilter;
 
+   G4double GetBeamEnergy(){return(fBeamEnergy);}
+   void     SetBeamEnergy(G4double en){fBeamEnergy=en;}
+protected: 
+   G4double fBeamEnergy;  
+  
 public:
    SANEEvents * fEvents;
-
    int GetEventNumber() { return(fEventNumber); };
 
 private: 

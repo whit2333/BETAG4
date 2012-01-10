@@ -177,7 +177,7 @@ void BETADigitizer::Digitize() {
   }
 
 
-  if( fHodoscopeHCID != -1 ) {
+  if( fTrackerHCID != -1 ) {
      fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
 // Loop over Hodoscope Hits
   for ( int i=0 ; i < fLuciteHodoscopeHC->entries();i++ ) {
@@ -198,19 +198,20 @@ void BETADigitizer::Digitize() {
   }
 
 // Loop over Tracker Hits
-//   for ( int i=0 ; i < fLuciteHodoscopeHC->entries();i++ ) {
-//     lucHit =  ( *fLuciteHodoscopeHC )[i];
+   for ( int i=0 ; i < fForwardTrackerHC->entries();i++ ) {
+     ftHit =  ( *fForwardTrackerHC )[i];
 //     aDigi = new BETAG4DigiADC(i);
-//     aDigi->fTrueValue = lucHit->GetNumberOfPhotons();
+//     aDigi->fTrueValue = ftHit->GetNumberOfPhotons();
 //     aDigi->fADCValue = 90*cerHit->GetNumberOfPhotons();
 //     fCherenkovADCDC->insert ( aDigi );
 //     if(cerHit->fTimingHit) {
-//       tDigi = new BETAG4DigiTDC(i);
-//       tDigi->fTDCValue = cerHit->fTiming; 
-//       tDigi->fADCValue = aDigi->fADCValue;
-//       fCherenkovTDCDC->insert ( tDigi );
+       tDigi = new BETAG4DigiTDC(ftHit->cellNumber);
+       tDigi->fTrueValue = ftHit->fTiming; 
+       tDigi->fChannelNumber = ftHit->cellNumber ;
+       fTrackerTDCDC->insert ( tDigi );
 //     }
-//   }
+   }
+
 }
 //__________________________________________________________________
 
@@ -230,63 +231,43 @@ void BETADigitizer::ReadOut() {
 // We now make it look like class AnalyzerToInSANE::Process()
 
 ////////////////////////
-// FORWARD TRACKER
-//   ForwardTrackerEvent * ftEvent = fSimulationManager->fEvents->BETA->fForwardTrackerEvent;
-//   ftEvent->ClearEvent("C");
-//   TClonesArray  &trackerHits = *(ftEvent->fHits);
-// 
-//   ftEvent->fRunNumber =  currentRunNumber;
-//   ftEvent->fEventNumber =  gen_event_id_number;
-// 
-//   ForwardTrackerHit *aFThit;
-// 
-//   for(i=0;i<y1t_hit;i++) {
-//     aFThit = new(trackerHits[ftEvent->fNumberOfHits]) ForwardTrackerHit();
-//     aFThit->fHitNumber          = ftEvent->fNumberOfHits;
-//     ftEvent->fNumberOfHits++;
-//     aFThit->fLevel              = 1;
-//     aFThit->fScintLayer         = 1;
-//     aFThit->fPositionCoordinate = 2;
-//     aFThit->fRow                = y1t_row[i];
-//     aFThit->fTDC                = y1t_tdc[i];
-//     aFThit->fPosition           = y1t_y[i];
-// // std::cout << "alayer " << aFThit->fScintLayer 
+/// FORWARD TRACKER
+   ForwardTrackerEvent * ftEvent = fSimulationManager->fEvents->BETA->fForwardTrackerEvent;
+   ftEvent->ClearEvent("C");
+   TClonesArray  &trackerHits = *(ftEvent->fTrackerHits);
+  ftEvent->fNumberOfHits = 0;
+  ftEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
+  ftEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
+
+   ForwardTrackerHit *aFThit;
+   for(int i = 0; i < fTrackerTDCDC->entries() ; i++ ) {
+      tDigi = (*fTrackerTDCDC)[i];
+      aFThit = new( trackerHits[ftEvent->fNumberOfHits] ) ForwardTrackerHit(); 
+      aFThit->fChannel = tDigi->fChannelNumber;
+      aFThit->fTDC     = tDigi->fTrueValue;
+      tDigi->Print();
+      aFThit->Print(); 
+      ftEvent->fNumberOfHits++;    
+   }  
+   // 
+/*
+   for(i=0;i<y1t_hit;i++) {
+     aFThit = new(trackerHits[ftEvent->fNumberOfHits]) ForwardTrackerHit();
+     aFThit->fHitNumber          = ftEvent->fNumberOfHits;
+     ftEvent->fNumberOfHits++;
+     aFThit->fLevel              = 1;
+     aFThit->fScintLayer         = 1;
+     aFThit->fPositionCoordinate = 2;
+     aFThit->fRow                = y1t_row[i];
+     aFThit->fTDC                = y1t_tdc[i];
+     aFThit->fPosition           = y1t_y[i];
+
+   // // std::cout << "alayer " << aFThit->fScintLayer 
 // //           << " row "  << aFThit->fRow 
 // //           << " tdc "  << aFThit->fTDC 
 // //           << "\n";
-//   }
-// 
-//   for(i=0;i<y2t_hit;i++) {
-//     aFThit = new(trackerHits[ftEvent->fNumberOfHits]) ForwardTrackerHit();
-//     aFThit->fHitNumber          = ftEvent->fNumberOfHits; //
-//     ftEvent->fNumberOfHits++;
-//     aFThit->fLevel              = 1; //
-//     aFThit->fScintLayer         = 2; //
-//     aFThit->fPositionCoordinate = 2; //
-//     aFThit->fRow                = y2t_row[i];
-//     aFThit->fTDC                = y2t_tdc[i];
-//     aFThit->fPosition           = y2t_y[i];
-// // std::cout << "blayer " << aFThit->fScintLayer
-// //           << " row "  << aFThit->fRow
-// //           << " tdc "  << aFThit->fTDC
-// //           << "\n";
-//   }
-// 
-//   for(i=0;i<x1t_hit;i++) {
-//     aFThit = new(trackerHits[ftEvent->fNumberOfHits]) ForwardTrackerHit();
-//     aFThit->fHitNumber          = ftEvent->fNumberOfHits; // 
-//     ftEvent->fNumberOfHits++;
-//     aFThit->fLevel              = 1; // 
-//     aFThit->fScintLayer         = 0; // 
-//     aFThit->fPositionCoordinate = 1; // 
-//     aFThit->fRow                = x1t_row[i];
-//     aFThit->fTDC                = x1t_tdc[i];
-//     aFThit->fPosition           = x1t_x[i];
-// // std::cout << "clayer " << aFThit->fScintLayer 
-// //           << " row "  << aFThit->fRow 
-// //           << " tdc "  << aFThit->fTDC 
-// //           << "\n";
-//   }
+   }
+   */
 
    //////////////////////
    /// LUCITE HODOSCOPE
@@ -295,7 +276,7 @@ void BETADigitizer::ReadOut() {
    Int_t lucpedval = fSimulationManager->fHodoscopeDetector->fTypicalPedestal;
    Int_t luctdcval = fSimulationManager->fHodoscopeDetector->fTypicalTDCPeak ;
    lhEvent->ClearEvent("C");
-   TClonesArray &lucHits = *(lhEvent->fHits);
+   TClonesArray &lucHits = *(lhEvent->fLuciteHits);
    LuciteHodoscopeHit * aLUChit;
 
   lhEvent->fNumberOfHits = 0;
@@ -336,7 +317,7 @@ void BETADigitizer::ReadOut() {
 
   gcEvent->ClearEvent("C");
   gcEvent->fNumberOfHits = 0;
-  TClonesArray &cherenkovHits = *(gcEvent->fHits);
+  TClonesArray &cherenkovHits = *(gcEvent->fGasCherenkovHits);
   GasCherenkovHit * aCERhit;
 //cherenkovHits.Delete();
 
@@ -394,7 +375,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
   bcEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
   bcEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
 
-  TClonesArray &BCHits = *(bcEvent->fHits);
+  TClonesArray &BCHits = *(bcEvent->fBigcalHits);
   BigcalHit * aBChit;
   Int_t * rows;
   Int_t grouprowNumber;

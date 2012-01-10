@@ -10,6 +10,7 @@
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 #include "fstream"
+#include "G4OpticalPhoton.hh"
 
 // CONSTRUCTOR
 BETAFrontTracker::BETAFrontTracker ( G4String  name )
@@ -63,28 +64,39 @@ G4bool BETAFrontTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 ///////////////////////////////////////////////////////////////////////////////
 /*theTrack->GetDefinition() == G4Electron::ElectronDefinition() */
     G4String aName;
-    if( (theTrack->GetVolume()->GetLogicalVolume()->GetName() == "horizBarScore_log" ||
-        theTrack->GetVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" )/*&&(
-        theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "horizBarScore_log" ||
-        theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" )*/)
-//trackerY1_phys
+    if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && 
+          aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary    )
     {
+//(theTrack->GetVolume()->GetLogicalVolume()->GetName() == "tracker_horizBarScore_log" ||
+//theTrack->GetVolume()->GetLogicalVolume()->GetName() == "tracker_vertBarScore_log" )
+/*&&(
+ theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "horizBarScore_log" ||
+ theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" ))*/
+//trackerY1_phys
+
       aName=theTrack->GetVolume()->GetMotherLogical()->GetName();
 //      G4cout << " SHOULD REGISTER HIT in physical volume "<< aName << G4endl;
+
       BETAFrontTrackerHit* aHit = new BETAFrontTrackerHit();
       fHitsCollection->insert ( aHit );
-      aHit->cellNumber = theTrack->GetVolume()->GetCopyNo();
+      aHit->cellNumber = theTrack->GetNextVolume()->GetCopyNo();
+
       if(aName=="trackerX1_log") aHit->layerNumber = 1;
       else if(aName=="trackerY1_log") aHit->layerNumber = 2;
       else if(aName=="trackerY2_log") aHit->layerNumber = 3;
+
       G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
       G4TouchableHistory* theTouchable
-      = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
+           = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
       G4ThreeVector worldPosition = preStepPoint->GetPosition();
+
       aHit->localPos = theTouchable->GetHistory()->GetTopTransform().TransformPoint ( worldPosition ) ;
       aHit->worldPos = worldPosition;
       aHit->worldMom = theTrack->GetMomentum();
-
+      aHit->fTiming = theTrack->GetGlobalTime()/ns;
+	 
+      // Kill the track since we have already counted it. 
+      theTrack->SetTrackStatus(fStopAndKill);
    }
 
    return true;

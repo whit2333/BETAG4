@@ -49,8 +49,9 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    //   fParticlesSource->GetCurrentSource()->GetAngDist()->SetAngDisType("iso");
    //   fParticlesSource->GetCurrentSource()->GetPosDist()->SetEneDisType("Volume");
    /*   fSimulationManager = ;*/
-   fMonteCarloEvent = BETASimulationManager::GetInstance()->fEvents->MC;
-
+//   if(BETASimulationManager::GetInstance()->fEvents) std::cout << "fEvents Found !\n";
+//   fMonteCarloEvent = BETASimulationManager::GetInstance()->fEvents->MC;
+   fMonteCarloEvent=0;
 }
 //________________________________________________________//
 
@@ -66,7 +67,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
    if(fMonteCarloEvent) {
       fMonteCarloEvent->ClearEvent("C");
 /*      fMonteCarloEvent->Dump();*/
-   }
+   } else { std::cout << " NO MC EVENT!!!\n"; }
    Double_t * MCvect ;
    TParticle * aPart=0;
    /// Generate the event and get the list of particles

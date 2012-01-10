@@ -4,6 +4,8 @@
 
 #/beta/toggleForwardTracker noOptics
 
+#/tracking/verbose 1
+
 ########### Variables / Alias ###############
 /control/alias theta1 130
 /control/alias phi1 65

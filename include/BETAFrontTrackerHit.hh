@@ -55,7 +55,7 @@ public:
   G4ThreeVector  worldPos;
   G4ThreeVector  worldMom;
   G4int fPhotons;
-
+  G4double fTiming;
 
 private:
   

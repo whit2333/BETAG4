@@ -32,7 +32,6 @@
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
 #include "InSANEFakePlaneHit.h"
-#include "BigcalFakePlaneHit.h"
 
 class BETASimulationManager;
 class BETADetectorConstruction;
