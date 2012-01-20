@@ -31,11 +31,13 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 
    G4String particleName;
    electron = particleTable->FindParticle ( particleName="e-" );
+   positron = particleTable->FindParticle ( particleName="e+" );
    pionminus = particleTable->FindParticle ( particleName="pi-" );
    pionplus = particleTable->FindParticle ( particleName="pi+" );
    pionzero = particleTable->FindParticle ( particleName="pi0" );
    kaon = particleTable->FindParticle ( particleName="kaon+" );
    proton = particleTable->FindParticle ( particleName="proton" );
+   gamma = particleTable->FindParticle ( particleName="gamma" );
 
    /// Electron by default. Use /beta/gun/setParticle
    fParticleGun->SetParticleDefinition(electron);
@@ -77,9 +79,11 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       aPart = (TParticle*) parts->At(ipart);
 /*      aPart->Print();*/
       if( aPart->GetPdgCode() == 11) fParticleGun->SetParticleDefinition(electron);
+      else if( aPart->GetPdgCode() == -11) fParticleGun->SetParticleDefinition(positron);
       else if( aPart->GetPdgCode() == 111) fParticleGun->SetParticleDefinition(pionzero);
       else if( aPart->GetPdgCode() == 211) fParticleGun->SetParticleDefinition(pionplus);
       else if( aPart->GetPdgCode() == -211) fParticleGun->SetParticleDefinition(pionminus);
+      else if( aPart->GetPdgCode() == 22) fParticleGun->SetParticleDefinition(gamma);
       else fParticleGun->SetParticleDefinition(electron);
       
       fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition(aPart) );

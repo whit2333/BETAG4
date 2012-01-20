@@ -153,7 +153,7 @@ public:
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fEventSampler);
       CalculateTotalCrossSection();
-     fPrimaryPS->Print();
+      fPrimaryPS->Print();
 
    }
 };

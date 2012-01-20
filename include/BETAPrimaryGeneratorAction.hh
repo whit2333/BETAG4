@@ -103,11 +103,13 @@ private:
 
     BETAPrimaryGeneratorMessenger* gunMessenger;
     G4ParticleDefinition* electron;
+    G4ParticleDefinition* positron;
     G4ParticleDefinition* pionminus;
     G4ParticleDefinition* pionplus;
     G4ParticleDefinition* pionzero;
     G4ParticleDefinition* kaon;
     G4ParticleDefinition* proton;
+    G4ParticleDefinition* gamma;
 
 //     G4double sigmaAngle;
 // 	G4double ElectronPionRatio;

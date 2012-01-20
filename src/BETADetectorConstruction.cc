@@ -317,18 +317,20 @@ fMinRange;
 //      new G4PVReplica("trackerY2_phys", vertBar_log,trackerY2_log, kXAxis, 132, 3.0*mm+smallSeparation);
 //    G4VPhysicalVolume* trackerX1_phys = 
 //      new G4PVReplica("trackerX1_phys", horizBar_log,trackerX1_log, kYAxis, 72, 3.0*mm+smallSeparation);
-// work around
+
+   // work around
+   // Also sets the copy number used to get the correct scint
    for(int i0=0;i0<72;i0++) {
       new G4PVPlacement(0,G4ThreeVector (0,(3.0*mm+smallSeparation/2.0)*(Double_t)(i0-72/2),0),horizBar_log,
                         "TrackerHorizontalX1",trackerX1_log,true,i0);
    }
    for(int i0=0;i0<132;i0++) {
       new G4PVPlacement(0,G4ThreeVector ((3.0*mm+smallSeparation/2.0)*(Double_t)(i0-132/2),0,0),vertBar_log,
-                        "TrackerHorizontalY1",trackerY1_log,true,i0);
+                        "TrackerHorizontalY1",trackerY1_log,true,i0+72);
    }
    for(int i0=0;i0<132;i0++) {
       new G4PVPlacement(0,G4ThreeVector ((3.0*mm+smallSeparation/2.0)*(Double_t)(i0-132/2),0,0),vertBar_log,
-                        "TrackerHorizontalY2",trackerY2_log,true,i0);
+                        "TrackerHorizontalY2",trackerY2_log,true,i0+72+132);
    }
    new G4PVPlacement ( 0,G4ThreeVector (0,22.0*cm/2.-smallSeparation/2.0,0 ),vertBarScore_log, "tracker_Y_scint_scorer_phys", vertBar_log,true,0 );
 // //    new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),vertBarScore_log, "verttracker+leftBox+rightbox", vertBar_log,true,0 );

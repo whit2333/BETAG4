@@ -39,7 +39,7 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
     fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
    if(fTrackerFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-   fBigcalTriggerThreshold    = 400.0; //MeV
+   fBigcalTriggerThreshold    = 200.0; //MeV
    fCherenkovTriggerThreshold = 3;//photons???
 
     Reset();

@@ -8,6 +8,7 @@
 #include "GasCherenkovHit.h"
 #include "GasCherenkovEvent.h"
 #include "BIGCALGeometryCalculator.h"
+#include "ForwardTrackerGeometryCalculator.h"
 
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
   fSimulationManager=0;
@@ -243,10 +244,13 @@ void BETADigitizer::ReadOut() {
    for(int i = 0; i < fTrackerTDCDC->entries() ; i++ ) {
       tDigi = (*fTrackerTDCDC)[i];
       aFThit = new( trackerHits[ftEvent->fNumberOfHits] ) ForwardTrackerHit(); 
-      aFThit->fChannel = tDigi->fChannelNumber;
+      aFThit->fChannel = tDigi->fChannelNumber+1;
       aFThit->fTDC     = tDigi->fTrueValue;
-      tDigi->Print();
-      aFThit->Print(); 
+      aFThit->fScintLayer  = ForwardTrackerGeometryCalculator::GetCalculator()->GetLayerNumber(aFThit->fChannel);
+      aFThit->fRow  = ForwardTrackerGeometryCalculator::GetCalculator()->GetScintNumber(aFThit->fChannel);
+      
+//      tDigi->Print();
+//      aFThit->Print(); 
       ftEvent->fNumberOfHits++;    
    }  
    // 
