@@ -11,6 +11,8 @@
 #include "ForwardTrackerGeometryCalculator.h"
 #include "InSANERunManager.h"
 
+
+
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
   fSimulationManager=0;
   fRandomNumberGenerator = InSANERunManager::GetRunManager()->GetRandom(); //new TRandom();
