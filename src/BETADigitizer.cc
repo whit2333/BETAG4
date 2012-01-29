@@ -9,10 +9,11 @@
 #include "GasCherenkovEvent.h"
 #include "BIGCALGeometryCalculator.h"
 #include "ForwardTrackerGeometryCalculator.h"
+#include "InSANERunManager.h"
 
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
   fSimulationManager=0;
-  fRandomNumberGenerator = new TRandom();
+  fRandomNumberGenerator = InSANERunManager::GetRunManager()->GetRandom(); //new TRandom();
 
   fCherenkovADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );
@@ -296,9 +297,9 @@ void BETADigitizer::ReadOut() {
     aLUChit->fRow       = (tDigi->fChannelNumber-1)/2 +1;
     aLUChit->fPMTNumber =(tDigi->fChannelNumber);
     aLUChit->fADC       = tDigi->fADCValue + lucpedval +
-           fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalPedestalWidth); ;
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalPedestalWidth/2.0); ;
     aLUChit->fTDC       = tDigi->fTDCValue + luctdcval +
-           fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalTDCPeakWidth);  ;
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalTDCPeakWidth/2.0);  ;
     aLUChit->fPosition  = 0;
     aLUChit->fLevel     = 1;
     lhEvent->fNumberOfHits++;
@@ -339,7 +340,7 @@ void BETADigitizer::ReadOut() {
       aCERhit->fTDC           = 0;
       aCERhit->fLevel         = 0; /// Level zero is just ADC data
       aCERhit->fADC           = aDigi->fADCValue + cerpedval+
-           fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth); 
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth/2.0); 
       aCERhit->fHitNumber     = gcEvent->fNumberOfHits;;
       aCERhit->fMirrorNumber  = aDigi->fChannelNumber;
       gcEvent->fNumberOfHits++;
@@ -355,7 +356,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
 
       aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
       aCERhit->fTDC          = tDigi->fTDCValue + certdcval +
-           fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalTDCPeakWidth); 
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalTDCPeakWidth/2.0); 
       aCERhit->fADC          = aDigi->fADCValue ;
       aCERhit->fLevel        = 1; /// Level 1 is TDC data with ADC data
       aCERhit->fHitNumber    = gcEvent->fNumberOfHits;
@@ -395,7 +396,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
     aBChit->fiCell = bigcalGeoCalc->GetBlock_i(aDigi->fChannelNumber);
     aBChit->fjCell = bigcalGeoCalc->GetBlock_j(aDigi->fChannelNumber);
     aBChit->fADC   = aDigi->fADCValue + fSimulationManager->fBigcalDetector->fTypicalPedestal+
-           fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth);
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth/2.0);
 
 /// Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
     grouprowNumber = bigcalGeoCalc->GetGroupNumber(aBChit->fiCell,aBChit->fjCell);
@@ -432,7 +433,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
     aBChit->fADC=0;
     aBChit->fEnergy=0;
     aBChit->fTDC      = tDigi->fTDCValue + fSimulationManager->fBigcalDetector->fTypicalTDCPeak +
-           fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalTDCPeakWidth);
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalTDCPeakWidth/2.0);
     aBChit->fTDCRow   = (tDigi->fChannelNumber-1)/4 +1;
     aBChit->fTDCGroup = (tDigi->fChannelNumber-1)%4 +1;
 /*std::cout << " " << tDigi->fChannelNumber << ", " << tDigi->fTDCValue << ", " << tDigi->fADCValue << "\n";*/

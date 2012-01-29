@@ -97,6 +97,9 @@ int main(int argc,char** argv)
    output_file << myseed ;
    output_file.close();
    CLHEP::HepRandom::setTheSeed(myseed);
+   TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
+   rand->SetSeed(myseed);
+
 
    /// User Verbose output class
    G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
