@@ -27,6 +27,7 @@ include $(G4INSTALL)/config/binmake.gmk
 
 #LHAPDF
   LDLIBS += $(shell lhapdf-config --ldflags ) 
+  CPPFLAGS += $(shell lhapdf-config --cppflags )
 
 
 # InSANE 
