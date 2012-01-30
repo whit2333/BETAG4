@@ -11,9 +11,9 @@
 /////////////////////////////////////////////////////////////////////
 // VGM
 //#ifdef VGM_SYSTEM
-#include "Geant4GM/volumes/Factory.h" 
-#include "RootGM/volumes/Factory.h" 
-#include "XmlVGM/GDMLExporter.h"
+//#include "Geant4GM/volumes/Factory.h" 
+//#include "RootGM/volumes/Factory.h" 
+//#include "XmlVGM/GDMLExporter.h"
 //#endif
 #include "BETAG4BigcalSD.hh"
 #include "TGeoManager.h"
@@ -2408,9 +2408,9 @@ ConstructTarget();
    // Import Geant4 geometry to VGM
    //
 
-             Geant4GM::Factory g4Factory;
+//             Geant4GM::Factory g4Factory;
     //         g4Factory.SetDebug(1);
-             g4Factory.Import(expHall_phys);
+//             g4Factory.Import(expHall_phys);
      // Export VGM geometry to Root
 // 
 //  XmlVGM::GDMLExporter xmlExporter2(&g4Factory);
@@ -2419,11 +2419,11 @@ ConstructTarget();
 // 
 //      // Export VGM geometry to Root
 //      //
-              RootGM::Factory rtFactory;
+//              RootGM::Factory rtFactory;
    //           rtFactory.SetDebug(1);
-              g4Factory.Export(&rtFactory);
-              gGeoManager->CloseGeometry();
-              gGeoManager->Export("SANEGeometry.root");
+//              g4Factory.Export(&rtFactory);
+//              gGeoManager->CloseGeometry();
+//              gGeoManager->Export("SANEGeometry.root");
 
 //    
 ///////////////////////////////////////////////////////

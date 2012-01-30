@@ -15,8 +15,6 @@ doc: /home/whit/sane08/InSANE/doc/BETAG4_Doxyfile
 
 include $(G4INSTALL)/config/binmake.gmk
 
-#   CPPFLAGS += `aida-config --include `
-#   LDLIBS += `aida-config --lib `
 # ROOT
   CPPFLAGS += $(shell root-config --cflags )
   CPPFLAGS += -g
@@ -35,6 +33,7 @@ include $(G4INSTALL)/config/binmake.gmk
    LDLIBS += -L$(InSANEDIR)/lib
    LDLIBS += -lInSANE  
    CPPFLAGS += -I$(InSANEDIR)/include
+
 # ROOT and  GNU Scientific Librarires and 
    LDLIBS += -lm  $(shell root-config --nonew --glibs)
    LDLIBS += $(shell gsl-config  --libs)
@@ -45,8 +44,8 @@ include $(G4INSTALL)/config/binmake.gmk
 #   CPPFLAGS  += -I$(VGM_INSTALL)/packages/Geant4GM/include
 #   CPPFLAGS  += -I$(VGM_INSTALL)/packages/XmlVGM/include
 #   CPPFLAGS  += -I$(VGM_INSTALL)/packages/RootGM/include
-   LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
-   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM -lXmlVGM
+#   LDLIBS += -L$(VGM_INSTALL)/lib/$(VGM_SYSTEM)
+#   LDLIBS += -lGeant4GM -lRootGM  -lBaseVGM -lClhepVGM -lXmlVGM
 
    CXXFLAGS  += -O2 -Wall -fPIC
    CXXFLAGS  += $(CPPFLAGS)
