@@ -75,13 +75,16 @@ G4Run*  BETARunAction::GenerateRun()
       fSimulationManager->fScalerTree = new TTree("Scalers","The SANE Scaler Data");
       fSimulationManager->fSANEScalers = new SANEScalers("Scalers");
 
+      BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
+     genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
+
    fSimulationManager->AddDetectors();
 
 //    if (! fSimulationManager->IsAppendMode() ) {
 //       //fSimulationManager->CreateTrees();
 //     }
 // New concrete InSANE Run class
-    fSimulationManager->fInSANERun = new BETAG4SimulationRun(fRunNumber);
+    fSimulationManager->fInSANERun = new InSANERun(fRunNumber);
 
 //     fSimulationManager->fInSANERun->fPolarizationAngle
 
@@ -96,55 +99,55 @@ G4Run*  BETARunAction::GenerateRun()
         targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
          //printf("\n got run manager %f\n",targetAngle);
 /// \todo Better database filling!!
-// FILL THE DATABASE
-        TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();
-// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
-        TSQLResult * res;
-        TString SQLq("REPLACE into BETAG4_run_info set "); // dont forget the extra space at the end
-//aSQL  "Insert into BETAG4_run_info set " ;s
-
-        SQLq +=" run_number=" ; // Dont add space here
-        SQLq +=fRunNumber;
-// starting Date and time
-        TDatime * dt = new TDatime();
-        TString datetime( dt->AsSQLString() );
-        TString date(datetime(0,10));
-        TString time(datetime(11,8));
-        SQLq += ", start_date='";
-        SQLq += date.Data();
-        SQLq += "', start_time='";
-        SQLq += time.Data();
-// SQLq.Append(Form(" start_date='%s', start_time='%s' ",date.Data(),time.Data() ));
-// SQLq.Append(Form(" start_date='%s', start_time='%s' ",date.Data(),time.Data() ));
-//  res = db->Query(Form("Insert into BETAG4_run_info set run_number=%d, start_date='%s',
-//  start_time='%s',  target_angle=%f ", runNumber,date.Data(), time.Data(), targetAngle));
-
-         SQLq += "', BETAg4_Lucite_On=" ;
-         SQLq += (int)construction->usingLuciteHodoscope;
-
-         SQLq += ", BETAg4_Bigcal_on=" ;
-         SQLq += (int)construction->usingBigcal;
-
-         SQLq += ", Betag4_tracker_on=" ;
-         SQLq += (int)construction->usingForwardTracker;
-
-         SQLq += ", betag4_cherenkov_on=" ;
-         SQLq += (int)construction->usingGasCherenkov;
-
-         SQLq += ", betag4_bigcal_plane_on=" ;
-         SQLq += (int)construction->usingFakePlaneAtBigcal;
-
-         SQLq += ", target_angle=" ;
-         SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
-         SQLq += ", target_field=" ;
-         SQLq += construction->fMagneticField->fUVAMagnet->GetScaleFactor();
-
+// // FILL THE DATABASE
+//         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();
+// // = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
+//         TSQLResult * res;
+//         TString SQLq("REPLACE into BETAG4_run_info set "); // dont forget the extra space at the end
+// //aSQL  "Insert into BETAG4_run_info set " ;s
+// 
+//         SQLq +=" run_number=" ; // Dont add space here
+//         SQLq +=fRunNumber;
+// // starting Date and time
+//         TDatime * dt = new TDatime();
+//         TString datetime( dt->AsSQLString() );
+//         TString date(datetime(0,10));
+//         TString time(datetime(11,8));
+//         SQLq += ", start_date='";
+//         SQLq += date.Data();
+//         SQLq += "', start_time='";
+//         SQLq += time.Data();
+// // SQLq.Append(Form(" start_date='%s', start_time='%s' ",date.Data(),time.Data() ));
+// // SQLq.Append(Form(" start_date='%s', start_time='%s' ",date.Data(),time.Data() ));
+// //  res = db->Query(Form("Insert into BETAG4_run_info set run_number=%d, start_date='%s',
+// //  start_time='%s',  target_angle=%f ", runNumber,date.Data(), time.Data(), targetAngle));
+// 
+//          SQLq += "', BETAg4_Lucite_On=" ;
+//          SQLq += (int)construction->usingLuciteHodoscope;
+// 
+//          SQLq += ", BETAg4_Bigcal_on=" ;
+//          SQLq += (int)construction->usingBigcal;
+// 
+//          SQLq += ", Betag4_tracker_on=" ;
+//          SQLq += (int)construction->usingForwardTracker;
+// 
+//          SQLq += ", betag4_cherenkov_on=" ;
+//          SQLq += (int)construction->usingGasCherenkov;
+// 
+//          SQLq += ", betag4_bigcal_plane_on=" ;
+//          SQLq += (int)construction->usingFakePlaneAtBigcal;
+// 
 //          SQLq += ", target_angle=" ;
 //          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
-// Fill MySQL table
-         res = db->Query(SQLq.Data());
-         cout << SQLq.Data() << "\n";
-//          db->Close();
+//          SQLq += ", target_field=" ;
+//          SQLq += construction->fMagneticField->fUVAMagnet->GetScaleFactor();
+// 
+// //          SQLq += ", target_angle=" ;
+// //          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
+// // Fill MySQL table
+//          res = db->Query(SQLq.Data());
+//          cout << SQLq.Data() << "\n";
+// //          db->Close();
 
 /// DONE with database
 
