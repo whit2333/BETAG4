@@ -68,7 +68,7 @@ class BETAField :public G4MagneticField /*, public UVAOxfordMagneticField */
    double * BzRpoint[221];
    double * BrRpoint[221];
 
-   vector<fieldDataPoint> fieldData;
+   std::vector<fieldDataPoint> fieldData;
     G4double ** BzFieldRaw;
     G4double ** BrFieldRaw;
     G4double *** BF;

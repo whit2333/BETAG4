@@ -59,8 +59,8 @@ class BETARunAction : public G4UserRunAction
     void showPlot(int);
 
   private:
-	ifstream input_file ;
-	ofstream output_file ;
+	std::ifstream input_file ;
+	std::ofstream output_file ;
 
     BETASimulationManager* fSimulationManager;
     G4Timer* timer;

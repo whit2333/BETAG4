@@ -10,7 +10,7 @@
 #include "BETAMirrorHit.hh"
 #include "InSANERun.h"
 // ROOT //
-#include "Riostream.h"
+//#include "Riostream.h"
 #include "TFile.h"
 #include "TNetFile.h"
 #include "TRandom.h"
@@ -41,7 +41,7 @@
 #include "GasCherenkovHit.h"
 
 
-#include <iostream>
+//#include <iostream>
 #include <algorithm>
 #include <vector>
 
@@ -128,7 +128,7 @@ private:
    bool catLastFile;
    bool fShowUnrealisticData;
 
-   ofstream MCOutput ;
+   std::ofstream MCOutput ;
 
 
 // TROOT * theRoot; 

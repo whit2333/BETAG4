@@ -87,13 +87,13 @@ int main(int argc,char** argv)
 {
    // Seed the random number generator manually
    G4long myseed = 983;
-   ifstream input_file ;
-   ofstream output_file ;
+   std::ifstream input_file ;
+   std::ofstream output_file ;
    input_file.open ( "seed.txt" );
    input_file >> myseed;
    input_file.close();
    myseed++;
-   output_file.open ( "seed.txt" ,ios::trunc); // this incremtents a number
+   output_file.open ( "seed.txt" ,std::ios::trunc); // this incremtents a number
    output_file << myseed ;
    output_file.close();
    CLHEP::HepRandom::setTheSeed(myseed);
@@ -141,9 +141,12 @@ int main(int argc,char** argv)
    int fnargs = 2;
    char * fargs[2] = {"delayPlots","-l"};
    TRint * fApp = new TRint("delayPlots", &fnargs,&fargs[0], NULL, -1);
+    
+   std::cout << " Initializing G4 kernel " << std::endl;
 
    /// Initialize G4 kernel
    runManager->Initialize();
+   std::cout << " DONE Initializing G4 kernel " << std::endl;
 
    /// Get the pointer to the User Interface manager
    G4UImanager* UI = G4UImanager::GetUIpointer(); 

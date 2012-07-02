@@ -127,7 +127,7 @@ return(1);
 
 int BETASimulationManager::RetrieveRunNumber()
 {
-   ifstream input_file;
+   std::ifstream input_file;
    input_file.open ( "run.txt" );
    input_file >> fRunNumber ;
    input_file.close(); 
@@ -138,8 +138,8 @@ int BETASimulationManager::RetrieveRunNumber()
 int BETASimulationManager::IncrementRunNumber()   
 {
    fRunNumber++;
-   ofstream output_file;
-   output_file.open ( "run.txt" ,ios::trunc); // this incremtents a number so that it acts like a normal DAQ
+   std::ofstream output_file;
+   output_file.open ( "run.txt" ,std::ios::trunc); // this incremtents a number so that it acts like a normal DAQ
    output_file << fRunNumber ;
    output_file.close();
    return fRunNumber;
@@ -252,16 +252,16 @@ return(0);
 
 int BETASimulationManager::AddDetectors(int runNumber) {
 
-  fCherenkovDetector = new GasCherenkovDetector(/*fRunNumber*/);
+  fCherenkovDetector = new GasCherenkovDetector(runNumber);
   fCherenkovDetector->SetEventAddress(fEvents->BETA->fGasCherenkovEvent);
 
-  fBigcalDetector = new BigcalDetector(/*fRunNumber*/);
+  fBigcalDetector = new BigcalDetector(runNumber);
   fBigcalDetector->SetEventAddress(fEvents->BETA->fBigcalEvent);
 
-  fHodoscopeDetector = new LuciteHodoscopeDetector(/*fRunNumber*/);
+  fHodoscopeDetector = new LuciteHodoscopeDetector(runNumber);
   fHodoscopeDetector->SetEventAddress(fEvents->BETA->fLuciteHodoscopeEvent);
 
-  fTrackerDetector = new ForwardTrackerDetector(/*fRunNumber*/);
+  fTrackerDetector = new ForwardTrackerDetector(runNumber);
   fTrackerDetector->SetEventAddress(fEvents->BETA->fForwardTrackerEvent);
 
 return(0);

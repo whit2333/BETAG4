@@ -10,7 +10,7 @@
 #include "BETAMirrorHit.hh"
 #include "InSANERun.h"
 // ROOT //
-#include "Riostream.h"
+//#include "Riostream.h"
 #include "TFile.h"
 #include "TNetFile.h"
 #include "TRandom.h"
@@ -41,7 +41,7 @@
 #include "GasCherenkovHit.h"
 
 
-#include <iostream>
+//#include <iostream>
 #include <algorithm>
 #include <vector>
 
@@ -105,7 +105,7 @@ public:
 //   HMSEvent* hmsEvent;
 //   HallCBeamEvent * beamEvent;
   InSANERun * simulationRun;
-//   BETAG4MonteCarloEvent * mcEvent;
+  BETAG4MonteCarloEvent * mcEvent;
 
 
    /**  G4Run virtual method for recording all sensitive detector data

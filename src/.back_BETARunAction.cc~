@@ -78,13 +78,17 @@ G4Run*  BETARunAction::GenerateRun()
       BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
      genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
 
-   fSimulationManager->AddDetectors();
+
+    SANERunManager::GetRunManager()->SetRun(fRunNumber);
+    fSimulationManager->fInSANERun  = SANERunManager::GetRunManager()->GetCurrentRun();// = new InSANERun(fRunNumber);
+
+
+    fSimulationManager->AddDetectors();
 
 //    if (! fSimulationManager->IsAppendMode() ) {
 //       //fSimulationManager->CreateTrees();
 //     }
 // New concrete InSANE Run class
-    fSimulationManager->fInSANERun = new InSANERun(fRunNumber);
 
 //     fSimulationManager->fInSANERun->fPolarizationAngle
 
@@ -175,26 +179,26 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 //theRun->getRunAnalysisManager()->getTree()->commit();
 // BETASimulationManager::dispose();
    timer->Stop();
-        TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
-   TSQLResult * res;
-   TDatime * dt = new TDatime();
-   TString datetime( dt->AsSQLString() );
-   TString date(datetime(0,10));
-   TString time(datetime(11,8));
-
-   TString SQLq("UPDATE BETAG4_run_info set "); // dont forget the extra space at the end
-//aSQL  "Insert into BETAG4_run_info set " ;
-   SQLq += " end_date='";
-   SQLq += date.Data();
-   SQLq += "', end_time='";
-   SQLq += time.Data();
-   SQLq += "', number_of_events=";
-   SQLq += aRun->GetNumberOfEvent();
-   SQLq += " Where run_number=";
-   SQLq += fRunNumber;
-
-//printf"\n %s  \n",SQLq.Data())  ;
-   res = db->Query(SQLq.Data());
+//         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
+//    TSQLResult * res;
+//    TDatime * dt = new TDatime();
+//    TString datetime( dt->AsSQLString() );
+//    TString date(datetime(0,10));
+//    TString time(datetime(11,8));
+// 
+//    TString SQLq("UPDATE BETAG4_run_info set "); // dont forget the extra space at the end
+// //aSQL  "Insert into BETAG4_run_info set " ;
+//    SQLq += " end_date='";
+//    SQLq += date.Data();
+//    SQLq += "', end_time='";
+//    SQLq += time.Data();
+//    SQLq += "', number_of_events=";
+//    SQLq += aRun->GetNumberOfEvent();
+//    SQLq += " Where run_number=";
+//    SQLq += fRunNumber;
+// 
+// //printf"\n %s  \n",SQLq.Data())  ;
+//    res = db->Query(SQLq.Data());
 /*   db->Close();*/
    /*
     TSQLServer *db = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");

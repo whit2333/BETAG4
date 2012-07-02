@@ -7,6 +7,7 @@
 #include <string>  //For the string functions
 #include <sstream>
 #include <fstream>
+#include <cstdlib>
 #include <algorithm>
 #include "Riostream.h"
 #include "TROOT.h"
@@ -171,6 +172,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
       fBETADigitizer->ReadOut();
       fDAQReadout->ReadOut();
+
       fSimulationManager->fDetectorTree->Fill();
 
       fBETADigitizer->Clear();

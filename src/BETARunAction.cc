@@ -78,13 +78,17 @@ G4Run*  BETARunAction::GenerateRun()
       BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
      genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
 
-   fSimulationManager->AddDetectors();
+
+    SANERunManager::GetRunManager()->SetRun(fRunNumber);
+    fSimulationManager->fInSANERun  = SANERunManager::GetRunManager()->GetCurrentRun();// = new InSANERun(fRunNumber);
+
+
+    fSimulationManager->AddDetectors(fRunNumber);
 
 //    if (! fSimulationManager->IsAppendMode() ) {
 //       //fSimulationManager->CreateTrees();
 //     }
 // New concrete InSANE Run class
-    fSimulationManager->fInSANERun = new InSANERun(fRunNumber);
 
 //     fSimulationManager->fInSANERun->fPolarizationAngle
 

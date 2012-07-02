@@ -91,87 +91,304 @@ public:
   friend class BETASimulationManager;
 
 public :
-    G4RotationMatrix fMagnetRotationMatirx;
-
     BETADetectorConstruction();
    ~BETADetectorConstruction();
 
-   /** Constructs the BETA Detector Package.
-    * 
+    G4bool             constructed;
+    G4VPhysicalVolume* expHall_phys;
+
+    G4LogicalVolume* expHall_log;
+
+   /** @name Big Electron Telescope Array Construction
+    *  Constructs the BETA Detector Package.
     *  We construct the BETADetectors in a box for which y is vertical and x is horizontal.
     *  These are the Bigcal Coordinates.
     */
    void ConstructBETA();
+   G4LogicalVolume* BETADetector_log;
+   G4RotationMatrix fMagnetRotationMatirx;
 
+   //@}
+
+   /** 
+    *
+    */
    bool usingTargetCup;
    bool usingTargetOVC;
    bool usingFakePlaneAtBigcal; 
    bool usingFakePlaneAtForwardTracker;
 
-public:
-   /**
-    * Called from ConstructBETA
+
+
+
+
+   /** @name BigCal construction.
+    *  @{
     */
    void ConstructBIGCAL();
    bool usingBigcal;
-   G4LogicalVolume * calorimeterTop_log;
+   G4LogicalVolume *   calorimeterTop_log;
    G4VPhysicalVolume * calorimeterTop_phys;
-   G4LogicalVolume * calorimeterBottom_log;
+   G4LogicalVolume *   calorimeterBottom_log;
    G4VPhysicalVolume * calorimeterBottom_phys;
+   G4LogicalVolume*    cellLogicalBottom;
+   G4LogicalVolume*    cellLogical;
+   //@}
 
-   /**
-    * Called from ConstructBETA
+   /** @name Cherenkov Construction.
+    *  @{
     */
    void ConstructCherenkov();
    bool usingGasCherenkov;
-   G4LogicalVolume*   tank_log; 
    G4VPhysicalVolume * cherenkovTank_phys;
+   G4LogicalVolume*   tank_log; 
+   G4LogicalVolume * cherenkovContainer_log;
+   G4LogicalVolume * fCerFrontWindow_log;
+   G4LogicalVolume * fCerBackWindow_log;
+   G4LogicalVolume * AlCans_log;
+   G4LogicalVolume * fCerFrameTopBottom_log;
+   G4LogicalVolume * fCerToroidalMirror_log;
+   G4LogicalVolume * fCerSphericalMirror_log;
+   G4LogicalVolume * container_log;
+   G4LogicalVolume * MUPipe_log;
+   G4LogicalVolume * pmtFace_log;
+   //@}
 
-   /**
-    * Called from ConstructBETA
+   /** @name Forwart Tracker Construction.
+    *  @{
     */
    void ConstructForwardTracker();
    bool usingForwardTracker; 
-   G4LogicalVolume*   hodoscopeContainerBox_log; 
-   G4VPhysicalVolume* hodoscopeContainerBox_phys;
-
-   /** Called from ConstructBETA */
-   void ConstructHodoscope();
-   bool usingLuciteHodoscope;
    G4LogicalVolume*   tracker_log; 
    G4VPhysicalVolume* tracker_phys;
+   G4LogicalVolume*   fTrackerHorizBar_log  ;
+   G4LogicalVolume*   fTrackerVertBar_log ;
+   G4LogicalVolume*   fTrackerHorizBarScore_log  ;
+   G4LogicalVolume*   fTrackerVertBarScore_log ;
+   G4LogicalVolume*   trackerY1_log;
+   G4LogicalVolume*   trackerY2_log;
+   G4LogicalVolume*   trackerX1_log;
+   //@}
 
-   /**
-    * Called from Construct BETA
+   /** @name Lucite Hodoscope Construction
+    *  @{
+    */
+   void ConstructHodoscope();
+   bool usingLuciteHodoscope;
+   G4LogicalVolume*   hodoscopeContainerBox_log; 
+   G4VPhysicalVolume* hodoscopeContainerBox_phys;
+   G4LogicalVolume*   fLuciteHodoPMTphotocathode_log;
+   G4LogicalVolume*   fLuciteHodoPMTinquotes_log;
+   G4LogicalVolume*   fLuciteHodoBar_log;
+   //@}
+
+   /** @name Construct "fake" scoring planes
+    *  @{
     */
    void ConstructFakePlane();
+   G4LogicalVolume * fBigCalFakePlane_log;
+   G4LogicalVolume * fTrackerFakePlane_log;
+   //@}
 
-   /**
-    * Called from Construct()
+   /** @name Target Magnetic Field
+    *  @{
     */
    void ConstructMagneticField();
 
-   /** Wright's code which constructs the UVA NH3 Target
+   //@}
+
+
+   /** @name Polarized Ammonia Target Construction
+    *  From Wright's code which constructs the UVA NH3 Target
+    *  @{
     */
+   /** From Wright's code which constructs the UVA NH3 Target. */
    void ConstructTarget();
 
-   ///Constructs the Target Can
+   /**Constructs the Target Can.*/
    void ConstructTCan();
 
-   ///Constructs the Beam pipes up sstream and down stream
-   void ConstructBeamPipe();
-
-   ///Constructs the Liquid Nitrogen Shield
+   /**Constructs the Liquid Nitrogen Shield.*/
    void ConstructN2Shield();
 
-   ///Constructs the Oxford Magnet geometry
+   /**Constructs the Oxford Magnet geometry.*/
    void ConstructMagnet();
 
-   ///Constructs the Target Nose
+   /**Constructs the Target Nose.*/
    void ConstructNose();
 
-   /** Constructs the Helium Bag and Helium Bag extension
-    * 
+   /// Copied from Justin Wright's code:
+
+   G4double CuRadiationLength;
+   G4double radPercent;          // Enter as percentage of radiation length
+   G4double radX;
+
+   //define some constants 
+   G4double OVCIR;          //inner radius of can
+   G4double OVCCthick;      //thickness of can (0.935 inch Al)
+   G4double OVCCheight;     //length of can along axis
+   G4double OVCWthick;      //window thickness (0.013 inch)
+   G4double OVCWheight;     //height of window along can axis
+   G4double OVCBrad;        //beam window radius (2.00 inches)
+   G4double OVCBthick;      //beam window thickness (0.02 inch Be)
+   G4double OVCdis;         //The displacement of the OVC windows
+                            //    in the Z direction
+
+   G4double LN2IR;          //inner radius of can
+   G4double LN2Cthick;      //thickness of can (0.935 inch Al)
+   G4double LN2Cheight;     //length of can along axis (30.5 inches)
+   G4double LN2Wthick;      //window thickness (0.002 inch)
+   G4double LN2Wheight;     //height of window along can axis
+   G4double LN2Brad;        //beam window radius (2.25 inches)
+   G4double LN2Bthick;      //beam window thickness (0.013 inch Be)
+   G4double LN2dis;         //vertical displacement of windows and 
+                           //target from center of can.
+
+   G4double HeIR;           //4K He shield inner radius
+   G4double HeShThick;      //4K He shield thickness
+   G4double HeLength;       //4K He shield length (same as LN2 shield)
+   G4double NoseIR;         //Inner radius of the Nose
+   G4double NoseThick;      //Thickness of the Nosepiece
+   G4double NoseLength;     //Length of the nosepiece (same as LN2Shield)
+   G4double CellOR;         //OuterRadius of the cellwall
+   G4double CellLength;     //Axial length of the cell wall
+   G4double CellThick;      //Thickness of the cell wall
+
+   //-----------The target can------------------------------------
+   G4LogicalVolume*   logicTCan;    //pointer to the Target Can as a whole
+   G4VPhysicalVolume* physiTCan;
+
+   G4Tubs*            solidRad;     //pointer to the solid radiator
+   G4LogicalVolume*   logicRad;
+   G4VPhysicalVolume* physiRad;
+
+   G4LogicalVolume*   logicWinCan;
+   G4VPhysicalVolume* physiWinCan;
+   G4LogicalVolume*   logicBeamWin;
+   G4VPhysicalVolume* physiBeamWin;
+
+   //----------The Beam Pipes---------------------------------------
+   G4Tubs*            solidUpPipe0;     //Pointers to the narrow pipe
+   G4LogicalVolume*   logicUpPipe0;     // (upstream)
+   G4VPhysicalVolume* physiUpPipe0;
+
+   G4Tubs*            solidUpPipe0Cav;  //Pointers to the narrow pipe
+   G4LogicalVolume*   logicUpPipe0Cav;  // cavity (upstream)
+   G4VPhysicalVolume* physiUpPipe0Cav;
+
+   G4Tubs*            solidUpPipe1;     //Pointers to the wider pipe
+   G4LogicalVolume*   logicUpPipe1;     // (upstream)
+   G4VPhysicalVolume* physiUpPipe1;
+
+   G4Tubs*            solidUpPipe1Cav;  //Pointers to the wider pipe
+   G4LogicalVolume*   logicUpPipe1Cav;  // cavity (upstream)
+   G4VPhysicalVolume* physiUpPipe1Cav;
+
+   G4Tubs*            solidDownPipe0;   //Pointers to the narrow pipe
+   G4LogicalVolume*   logicDownPipe0;   // (downstream)
+   G4VPhysicalVolume* physiDownPipe0;
+
+   G4Tubs*            solidDownPipe0Cav;  //Pointers to the narrow pipe
+   G4LogicalVolume*   logicDownPipe0Cav;  // cavity (downstream)
+   G4VPhysicalVolume* physiDownPipe0Cav;
+
+   G4Tubs*            solidDownPipe1;   //Pointers to the wider pipe
+   G4LogicalVolume*   logicDownPipe1;   // (downstream)
+   G4VPhysicalVolume* physiDownPipe1;
+
+   G4Tubs*            solidDownPipe1Cav;  //Pointers to the wider pipe
+   G4LogicalVolume*   logicDownPipe1Cav;  // cavity (downstream)
+   G4VPhysicalVolume* physiDownPipe1Cav;
+
+   G4Tubs*            solidFlange;      //Pointers to the flanges
+   G4LogicalVolume*   logicFlange;
+   G4VPhysicalVolume* physiUpFlange;
+   G4VPhysicalVolume* physiDownFlange;
+
+   G4Tubs*            solidFlangeCav;   //Pointers to the cavity
+   G4LogicalVolume*   logicFlangeCav;   //   in the flanges
+   G4VPhysicalVolume* physiUpFlangeCav;
+   G4VPhysicalVolume* physiDownFlangeCav;
+
+   G4Tubs*            solidHeShroud;    //Pointers to the He Shroud
+   G4LogicalVolume*   logicHeShroud;  
+   G4VPhysicalVolume* physiHeShroud;
+
+   //----------The LN2 shield----------------------------------------
+   G4LogicalVolume*   logicLN2Shield;
+   G4VPhysicalVolume* physiLN2Shield;
+   G4LogicalVolume*   logicLN2BeamWin;
+   G4VPhysicalVolume* physiLN2BeamWin;
+
+   //------Part of old target can... NOT new target can------------------------
+   //    G4Tubs*            solidTWin;   //Pointer to the Target Window
+   //    G4LogicalVolume*   logicTWin;
+   //    G4VPhysicalVolume* physiTWin;
+
+   G4Tubs*            solidLN2Can;   //Pointer to the LN2 shield can as a whole
+   G4LogicalVolume*   logicLN2Can;
+   G4VPhysicalVolume* physiLN2Can;
+
+   G4Tubs*            solid4KSH;   //Pointer to the 4 K shield (LHe)
+   G4LogicalVolume*   logic4KSH;
+   G4VPhysicalVolume* physi4KSH; 
+
+   G4Tubs*            solidHelium; //Pointer to the Helium inside the 4Kshield
+   G4LogicalVolume*   logicHelium;
+   G4VPhysicalVolume* physiHelium;
+
+   //----------The NosePiece and Target Cell--------------------------
+   G4Tubs*            solidNose;   //Pointer to the whole Nose
+   G4LogicalVolume*   logicNose;
+   G4VPhysicalVolume* physiNose;
+  
+   G4Tubs*            solidTail;   //Pointer to the shell of the Nose
+   G4LogicalVolume*   logicTail;
+   G4VPhysicalVolume* physiTail;
+
+   G4Tubs*            solidCell;   //Pointer to the Cell contents
+   G4LogicalVolume*   logicCell;
+   G4VPhysicalVolume* physiCell;
+
+   G4Tubs*            solidCWall;
+   G4LogicalVolume*   logicCWall;   //Pointer to the Cell's container
+   G4VPhysicalVolume* physiCWall;
+  
+   //-----------The target magnet-----------------------------------
+   G4LogicalVolume*   logicMagnet;    //Pointer to the Magnet as a whole
+   G4VPhysicalVolume* physiMagnet;
+
+   //NOTE: CoilUp is the upstream coil. CoilDown is the downstream coil.
+   G4Cons*            solidCoil;      //pointer to the magnet coils
+   G4LogicalVolume*   logicCoil;
+   G4VPhysicalVolume* physiCoilUp;   
+   G4VPhysicalVolume* physiCoilDown;
+  
+   G4Tubs*            solidBrace1;    //Pointer to the target magnet braces
+   G4LogicalVolume*   logicBrace1;
+   G4VPhysicalVolume* physiBrace1;
+
+   G4Tubs*            solidBrace2;    
+   G4LogicalVolume*   logicBrace2;
+   G4VPhysicalVolume* physiBrace2; 
+  
+   G4Tubs*            solidBrace3;   
+   G4LogicalVolume*   logicBrace3;
+   G4VPhysicalVolume* physiBrace3;
+
+   G4Tubs*            solidBrace4;    
+   G4LogicalVolume*   logicBrace4;
+   G4VPhysicalVolume* physiBrace4;
+
+   //@}
+
+   /** @name Beamline components
+    *  @{
+    */
+   /**Constructs the Beam pipes up sstream and down stream*/
+   void ConstructBeamPipe();
+
+   /** Constructs the Helium Bag and Helium Bag extension used for SANE.
     * The Box has dimensions (ignoring the flange) 4.67 x 7.97 x 71.97 in^3
     */
    void ConstructHeliumBag();
@@ -202,7 +419,7 @@ public:
    G4LogicalVolume*   fHeBagExtenderHorizWindow_log;
    G4LogicalVolume*   fHeBagExtenderVertWindow_log;
    G4LogicalVolume*   fHeBagExtenderFrontWindow_log;
-
+   //@}
 
    /**
     * Called from ConstructBETA
@@ -210,8 +427,7 @@ public:
     */
    void SetupScoring(G4LogicalVolume * scoringVolume);
   
-   /**
-    * GEANT4 user hook which initiates all geometry constructions
+   /** Mandatory GEANT4 user hook which initiates all geometry constructions
     */
    G4VPhysicalVolume* Construct();
 
@@ -239,8 +455,7 @@ public:
    /** turn on and off the target magnetic field*/
    void ToggleTargetField(int);
 
-   /**
-    * For User Interface
+   /** For User Interface
     */
    void rotateMirror(int , G4double , G4double );
 
@@ -248,14 +463,11 @@ public:
 
    int fTargetState;
 
-   /**
-    * For which detectors are constructed
+   /** For which detectors are constructed
     */
-
    BETASimulationManager * fSimulationManager;
 
-
- private:
+private:
 
    G4float ULimits;
 
@@ -264,41 +476,51 @@ public:
      void SetFrontMaterial (G4double);     
      void SetBackMaterial(G4double);
 */
-/**
- *  Assigns material property tables to G4Materials
- *  Called from DefineMaterials
- *  Important differences are between, say, Lucite and Lucite_NoOptics.
- *  The former has an index of refraction associated with it, which thus 
- *  triggers the GEANT4 kernel to produce Optical Photon processes.
- */
+
+public: 
+   /** Assigns material property tables to G4Materials
+    *  Called from DefineMaterials
+    *  Important differences are between, say, Lucite and Lucite_NoOptics.
+    *  The former has an index of refraction associated with it, which thus 
+    *  triggers the GEANT4 kernel to produce Optical Photon processes.
+    */
    void SetMaterialPropertiesTables();
 
-/**
- *  Defines All Detector Materials
- */
-	void DefineMaterials();
+   /**
+    *  Defines All Detector Materials
+    */
+   void DefineMaterials();
+
 /*	void ConstructAluminumFrame();
 	void ConstructMirrors();
 	void ConstructPMTs();
 	void Construct*/
 
-  public:
+public:
 
-///\todo Create a BETAG4Look containing all visualization settings for different scenarios. 
-/// Visualization Attributes for Aluminum
-  G4VisAttributes* AlVisAtt;        //
-/// Visualization for invisible things
-  G4VisAttributes* Invisible;       //
-/// //Visualization for lead. 
-  G4VisAttributes* LeadVis;
-/// Visualization for solid object.
-  G4VisAttributes* Opaque;           
+   /** @name Vis Attributes
+    *  For controlling visualiztion.
+    * @{
+    */
+   G4VisAttributes*   AlVisAtt;
+   G4VisAttributes*   Invisible;
+   G4VisAttributes*   LeadVis;
+   G4VisAttributes*   Opaque;
 
-    G4bool             constructed;
-    G4VPhysicalVolume* expHall_phys;
+   G4VisAttributes*   fPrimaryColorLineVisAtt;
+   G4VisAttributes*   fComplementaryColorLineVisAtt;
+   G4VisAttributes*   fSecondaryColorALineVisAtt;
+   G4VisAttributes*   fSecondaryColorBLineVisAtt;
 
-    G4LogicalVolume* expHall_log;
-    G4LogicalVolume* BETADetector_log;
+   G4VisAttributes*   fInvisibleVisAtt;
+   G4VisAttributes*   fBlackLineVisAtt;
+   G4bool             fIsBlackLineVis;
+
+   void               ConstructVisAtt();
+   void               SetVisAtt();
+
+   //@}
+
 
 	G4double DetectorAngle ;
 	G4double DetectorLength ;
@@ -350,8 +572,7 @@ public:
 // Cherenkov Members
 // Mirror memebers
 private:
-G4LogicalVolume * farMirrorGlass_log;
-G4LogicalVolume * nearMirrorGlass_log;
+
 G4VPhysicalVolume * MirrorGlass_phys1;
 G4VPhysicalVolume * MirrorGlass_phys2;
 G4VPhysicalVolume * MirrorGlass_phys3;
@@ -396,167 +617,8 @@ G4double alpha1,
 
 
 
-// Copy of Justin Wrights code
- G4double CuRadiationLength;
-  G4double radPercent;          // Enter as percentage of radiation length
-  G4double radX;
- 
-  //define some constants 
-  G4double OVCIR;          //inner radius of can
-  G4double OVCCthick;      //thickness of can (0.935 inch Al)
-  G4double OVCCheight;     //length of can along axis
-  G4double OVCWthick;      //window thickness (0.013 inch)
-  G4double OVCWheight;     //height of window along can axis
-  G4double OVCBrad;        //beam window radius (2.00 inches)
-  G4double OVCBthick;      //beam window thickness (0.02 inch Be)
-  G4double OVCdis;         //The displacement of the OVC windows
-                           //    in the Z direction
 
-  G4double LN2IR;          //inner radius of can
-  G4double LN2Cthick;      //thickness of can (0.935 inch Al)
-  G4double LN2Cheight;     //length of can along axis (30.5 inches)
-  G4double LN2Wthick;      //window thickness (0.002 inch)
-  G4double LN2Wheight;     //height of window along can axis
-  G4double LN2Brad;        //beam window radius (2.25 inches)
-  G4double LN2Bthick;      //beam window thickness (0.013 inch Be)
-  G4double LN2dis;         //vertical displacement of windows and 
-                           //target from center of can.
 
-  G4double HeIR;           //4K He shield inner radius
-  G4double HeShThick;      //4K He shield thickness
-  G4double HeLength;       //4K He shield length (same as LN2 shield)
-  G4double NoseIR;         //Inner radius of the Nose
-  G4double NoseThick;      //Thickness of the Nosepiece
-  G4double NoseLength;     //Length of the nosepiece (same as LN2Shield)
-  G4double CellOR;         //OuterRadius of the cellwall
-  G4double CellLength;     //Axial length of the cell wall
-  G4double CellThick;      //Thickness of the cell wall
-
-//-----------The target can------------------------------------
-  G4LogicalVolume*   logicTCan;    //pointer to the Target Can as a whole
-  G4VPhysicalVolume* physiTCan;
-
-  G4Tubs*            solidRad;     //pointer to the solid radiator
-  G4LogicalVolume*   logicRad;
-  G4VPhysicalVolume* physiRad;
-
-  G4LogicalVolume*   logicWinCan;
-  G4VPhysicalVolume* physiWinCan;
-  G4LogicalVolume*   logicBeamWin;
-  G4VPhysicalVolume* physiBeamWin;
-
-  //----------The Beam Pipes---------------------------------------
-  G4Tubs*            solidUpPipe0;     //Pointers to the narrow pipe
-  G4LogicalVolume*   logicUpPipe0;     // (upstream)
-  G4VPhysicalVolume* physiUpPipe0;
-
-  G4Tubs*            solidUpPipe0Cav;  //Pointers to the narrow pipe
-  G4LogicalVolume*   logicUpPipe0Cav;  // cavity (upstream)
-  G4VPhysicalVolume* physiUpPipe0Cav;
-
-  G4Tubs*            solidUpPipe1;     //Pointers to the wider pipe
-  G4LogicalVolume*   logicUpPipe1;     // (upstream)
-  G4VPhysicalVolume* physiUpPipe1;
-
-  G4Tubs*            solidUpPipe1Cav;  //Pointers to the wider pipe
-  G4LogicalVolume*   logicUpPipe1Cav;  // cavity (upstream)
-  G4VPhysicalVolume* physiUpPipe1Cav;
-
-  G4Tubs*            solidDownPipe0;   //Pointers to the narrow pipe
-  G4LogicalVolume*   logicDownPipe0;   // (downstream)
-  G4VPhysicalVolume* physiDownPipe0;
-
-  G4Tubs*            solidDownPipe0Cav;  //Pointers to the narrow pipe
-  G4LogicalVolume*   logicDownPipe0Cav;  // cavity (downstream)
-  G4VPhysicalVolume* physiDownPipe0Cav;
-
-  G4Tubs*            solidDownPipe1;   //Pointers to the wider pipe
-  G4LogicalVolume*   logicDownPipe1;   // (downstream)
-  G4VPhysicalVolume* physiDownPipe1;
-
-  G4Tubs*            solidDownPipe1Cav;  //Pointers to the wider pipe
-  G4LogicalVolume*   logicDownPipe1Cav;  // cavity (downstream)
-  G4VPhysicalVolume* physiDownPipe1Cav;
-
-  G4Tubs*            solidFlange;      //Pointers to the flanges
-  G4LogicalVolume*   logicFlange;
-  G4VPhysicalVolume* physiUpFlange;
-  G4VPhysicalVolume* physiDownFlange;
-
-  G4Tubs*            solidFlangeCav;   //Pointers to the cavity
-  G4LogicalVolume*   logicFlangeCav;   //   in the flanges
-  G4VPhysicalVolume* physiUpFlangeCav;
-  G4VPhysicalVolume* physiDownFlangeCav;
-
-  G4Tubs*            solidHeShroud;    //Pointers to the He Shroud
-  G4LogicalVolume*   logicHeShroud;  
-  G4VPhysicalVolume* physiHeShroud;
-
-  //----------The LN2 shield----------------------------------------
-  G4LogicalVolume*   logicLN2Shield;
-  G4VPhysicalVolume* physiLN2Shield;
-  G4LogicalVolume*   logicLN2BeamWin;
-  G4VPhysicalVolume* physiLN2BeamWin;
-
-  //------Part of old target can... NOT new target can------------------------
-//    G4Tubs*            solidTWin;   //Pointer to the Target Window
-//    G4LogicalVolume*   logicTWin;
-//    G4VPhysicalVolume* physiTWin;
-
-  G4Tubs*            solidLN2Can;   //Pointer to the LN2 shield can as a whole
-  G4LogicalVolume*   logicLN2Can;
-  G4VPhysicalVolume* physiLN2Can;
-
-  G4Tubs*            solid4KSH;   //Pointer to the 4 K shield (LHe)
-  G4LogicalVolume*   logic4KSH;
-  G4VPhysicalVolume* physi4KSH; 
-
-  G4Tubs*            solidHelium; //Pointer to the Helium inside the 4Kshield
-  G4LogicalVolume*   logicHelium;
-  G4VPhysicalVolume* physiHelium;
-
-  //----------The NosePiece and Target Cell--------------------------
-  G4Tubs*            solidNose;   //Pointer to the whole Nose
-  G4LogicalVolume*   logicNose;
-  G4VPhysicalVolume* physiNose;
-  
-  G4Tubs*            solidTail;   //Pointer to the shell of the Nose
-  G4LogicalVolume*   logicTail;
-  G4VPhysicalVolume* physiTail;
-
-  G4Tubs*            solidCell;   //Pointer to the Cell contents
-  G4LogicalVolume*   logicCell;
-  G4VPhysicalVolume* physiCell;
-
-  G4Tubs*            solidCWall;
-  G4LogicalVolume*   logicCWall;   //Pointer to the Cell's container
-  G4VPhysicalVolume* physiCWall;
-  
-  //-----------The target magnet-----------------------------------
-  G4LogicalVolume*   logicMagnet;    //Pointer to the Magnet as a whole
-  G4VPhysicalVolume* physiMagnet;
-
-  //NOTE: CoilUp is the upstream coil. CoilDown is the downstream coil.
-  G4Cons*            solidCoil;      //pointer to the magnet coils
-  G4LogicalVolume*   logicCoil;
-  G4VPhysicalVolume* physiCoilUp;   
-  G4VPhysicalVolume* physiCoilDown;
-  
-  G4Tubs*            solidBrace1;    //Pointer to the target magnet braces
-  G4LogicalVolume*   logicBrace1;
-  G4VPhysicalVolume* physiBrace1;
-
-  G4Tubs*            solidBrace2;    
-  G4LogicalVolume*   logicBrace2;
-  G4VPhysicalVolume* physiBrace2; 
-  
-  G4Tubs*            solidBrace3;   
-  G4LogicalVolume*   logicBrace3;
-  G4VPhysicalVolume* physiBrace3;
-
-  G4Tubs*            solidBrace4;    
-  G4LogicalVolume*   logicBrace4;
-  G4VPhysicalVolume* physiBrace4;
 public:
     BETAField * fMagneticField;
 private:
