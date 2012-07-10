@@ -274,7 +274,7 @@ void BETADetectorConstruction::SetVisAtt(){
       if(cellLogicalBottom)cellLogicalBottom->SetVisAttributes(fInvisibleVisAtt);
 
       /// Cherenkov - tank invisible
-      if(tank_log)tank_log->SetVisAttributes(fInvisibleVisAtt);
+      if(tank_log)tank_log->SetVisAttributes(fBlackLineVisAtt);
       if(fCerFrontWindow_log)fCerFrontWindow_log->SetVisAttributes(fBlackLineVisAtt);
       if(fCerBackWindow_log)fCerBackWindow_log->SetVisAttributes(fBlackLineVisAtt);
       if(AlCans_log)AlCans_log->SetVisAttributes(fBlackLineVisAtt);
@@ -287,8 +287,8 @@ void BETADetectorConstruction::SetVisAtt(){
 
       /// Forward Tracker - 
       if(tracker_log)tracker_log->SetVisAttributes(fInvisibleVisAtt);
-      if(fTrackerHorizBar_log)fTrackerHorizBar_log->SetVisAttributes(fBlackLineVisAtt);
-      if(fTrackerVertBar_log)fTrackerVertBar_log->SetVisAttributes(fBlackLineVisAtt);
+      if(fTrackerHorizBar_log)fTrackerHorizBar_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerVertBar_log)fTrackerVertBar_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerHorizBarScore_log)fTrackerHorizBarScore_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerVertBarScore_log)fTrackerVertBarScore_log->SetVisAttributes(fInvisibleVisAtt);
       if(trackerY1_log)trackerY1_log->SetVisAttributes(fBlackLineVisAtt);
@@ -1398,10 +1398,10 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4ThreeVector TopPanelTrdTrans ( 0, yTank/2+TopPanelThickness/2,-zTopPanelTrd/2-zTopPanelBox/2 );
 
 
-   TANK =
-      new G4UnionSolid ( "topPanelBox", TANK, TopPanelBox, noRot, TopPanelBoxTrans );
-   TANK =
-      new G4UnionSolid ( "topPanelTrd", TANK, TopPanelTrd, noRot, TopPanelTrdTrans );
+//    TANK =
+//       new G4UnionSolid ( "topPanelBox", TANK, TopPanelBox, noRot, TopPanelBoxTrans );
+//    TANK =
+//       new G4UnionSolid ( "topPanelTrd", TANK, TopPanelTrd, noRot, TopPanelTrdTrans );
 
    G4Box * BottomPanelBox = new  G4Box ( "bottom panel", xBottomPanelBox/2, BottomPanelThickness/2, zBottomPanelBox/2 );
    G4Trd * BottomPanelTrd = new  G4Trd ( "Bottom panel trd",  endBottomPanelTrd/2, yBottomPanelBox/2, BottomPanelThickness/2, BottomPanelThickness/2, zBottomPanelTrd/2 );
@@ -1410,10 +1410,10 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4ThreeVector BottomPanelBoxTrans ( 0, -yTank/2-BottomPanelThickness/2,0 );
    G4ThreeVector BottomPanelTrdTrans ( 0,-yTank/2-BottomPanelThickness/2,-zBottomPanelTrd/2-zBottomPanelBox/2 );
 
-   TANK =
-      new G4UnionSolid ( "bottomPanelBox", TANK, BottomPanelBox, noRot, BottomPanelBoxTrans );
-   TANK =
-      new G4UnionSolid ( "bottomPanelTrd", TANK, BottomPanelTrd, noRot, BottomPanelTrdTrans );
+//    TANK =
+//       new G4UnionSolid ( "bottomPanelBox", TANK, BottomPanelBox, noRot, BottomPanelBoxTrans );
+//    TANK =
+//       new G4UnionSolid ( "bottomPanelTrd", TANK, BottomPanelTrd, noRot, BottomPanelTrdTrans );
 
 
 
@@ -1421,13 +1421,13 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
 
    G4ThreeVector SidePanelTrans ( xTank/2+SidePanelThickness/2,0,0 );
 
-   TANK =
-      new G4UnionSolid ( "tank with side panels", TANK, SidePanelBox, yRot90deg, SidePanelTrans );
-   TANK =
-      new G4UnionSolid ( "tank with side panels", TANK, SidePanelBox, yRot90deg, -SidePanelTrans );
+//    TANK =
+//       new G4UnionSolid ( "tank_side_panel", TANK, SidePanelBox, yRot90deg, SidePanelTrans );
+//    TANK =
+//       new G4UnionSolid ( "tank_side_panel2", TANK, SidePanelBox, yRot90deg, -SidePanelTrans );
 
 // Bevel Panel
-   G4Box * BevelPanelBox = new  G4Box ( "bevel panel", xBevelPanel/2, yBevelPanel/2, BevelPanelThickness/2 );
+   G4Box * BevelPanelBox = new  G4Box ( "bevel_panel", xBevelPanel/2, yBevelPanel/2, BevelPanelThickness/2 );
 
    G4ThreeVector BevelPanelTrans ( - ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2-BevelPanelThickness/2*std::sin ( pmtPlaneAngle ) , 0,
                                    -zTank/2-zTankFront/2-BevelPanelThickness/2*std::cos ( pmtPlaneAngle ) );
@@ -1435,11 +1435,11 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4RotationMatrix *rot45degy = new G4RotationMatrix;
    rot45degy->rotateY ( -pi/4 );
 
-   TANK =
-      new G4UnionSolid ( "tank with side panels", TANK, BevelPanelBox, rot45degy, BevelPanelTrans );
+//    TANK =
+//       new G4UnionSolid ( "tank_bevel_panel", TANK, BevelPanelBox, rot45degy, BevelPanelTrans );
 
 // PMT Panel
-   G4Box * PMTPanelBox = new  G4Box ( "PMT panel", xPMTmountPanel/2, yPMTmountPanel/2, PMTmountThickness/2 );
+   G4Box * PMTPanelBox = new  G4Box ( "PMT_panel", xPMTmountPanel/2, yPMTmountPanel/2, PMTmountThickness/2 );
 
    G4ThreeVector PMTmountPanelTrans ( 
      ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2+PMTmountThickness/2*std::sin ( pmtPlaneAngle ) ,
@@ -1448,8 +1448,8 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
     G4RotationMatrix *rot45degy2 = new G4RotationMatrix;
    rot45degy2->rotateY ( pi/4 );
 
-  TANK =
-    new G4UnionSolid("TANK", TANK, PMTPanelBox, rot45degy2, PMTmountPanelTrans);
+//   TANK =
+//     new G4UnionSolid("Cherenkov_Tank", TANK, PMTPanelBox, rot45degy2, PMTmountPanelTrans);
 
 
 //////////////////////////////////////////////////////////////
@@ -3018,12 +3018,6 @@ void BETADetectorConstruction::DefineMaterials()
 }
 
 //___________________________________________________________________
-double BETADetectorConstruction::getTargetAngle() {
-  if(!fMagneticField) fMagneticField = new BETAField();
-  return( fMagneticField->fUVAMagnet->fPolarizationAngle );
-}
-
-//___________________________________________________________________
 void BETADetectorConstruction::lookAtField(G4String comp) {
   if(!fMagneticField) fMagneticField = new BETAField();
   if( fMagneticField )  {
@@ -3066,8 +3060,10 @@ void BETADetectorConstruction::switchTargetField()
 void BETADetectorConstruction::setTargetAngle ( G4double angle )
 {
   messenger->fTargetAngle = angle;
+  PrintTargetAngle();
   if(!fMagneticField) fMagneticField = new BETAField();
-  fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle);
+  fMagnetRotationMatirx = G4RotationMatrix::IDENTITY;
+  fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle );
   if(fMagneticField) {
     fMagneticField->fUVAMagnet->SetPolarizationAngle (angle );
     fCerSphericalMirror_log->RemoveDaughter ( MirrorGlass_phys1 );
@@ -3078,6 +3074,17 @@ void BETADetectorConstruction::setTargetAngle ( G4double angle )
   }
    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
+}
+//___________________________________________________________________
+
+double BETADetectorConstruction::getTargetAngle() {
+  if(!fMagneticField) fMagneticField = new BETAField();
+  return( fMagneticField->fUVAMagnet->fPolarizationAngle );
+}
+
+void BETADetectorConstruction::PrintTargetAngle() {
+  if(!fMagneticField) fMagneticField = new BETAField();
+  std::cout << " target angle is " << fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi() << " Degrees\n";
 }
 
 //___________________________________________________________________

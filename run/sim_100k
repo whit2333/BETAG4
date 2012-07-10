@@ -1,0 +1,11 @@
+#!/bin/bash
+cd /home/whit/sane08/BETAG4/run
+
+BETA   sane/para/para_100k_uniform_gamma.mac 
+BETA   sane/para/para_100k_uniform_electron.mac 
+BETA   sane/para/para_100k_uniform_positron.mac 
+
+BETA sane/perp/perp_100k_uniform_gamma.mac
+BETA sane/perp/perp_100k_uniform_electron.mac
+BETA sane/perp/perp_100k_uniform_positron.mac
+

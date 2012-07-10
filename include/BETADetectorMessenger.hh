@@ -16,16 +16,15 @@ class BETADetectorConstruction;
  *
  * \ingroup Detectors
  */
-class BETADetectorMessenger: public G4UImessenger
-{
-  public:
-/// Detector Messenger Constructor
-    BETADetectorMessenger(BETADetectorConstruction *  );
+class BETADetectorMessenger: public G4UImessenger {
+public:
+   /// Detector Messenger Constructor
+   BETADetectorMessenger(BETADetectorConstruction *  );
    ~BETADetectorMessenger();
 
     void SetNewValue(G4UIcommand*, G4String); 
 
-    G4double fTargetAngle;
+    G4double fTargetAngle;  /// Target angle in radians
 
   private:
 //    BETAAnalysisAction* BETAAction;

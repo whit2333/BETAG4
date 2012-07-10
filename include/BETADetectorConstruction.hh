@@ -106,7 +106,6 @@ public :
     */
    void ConstructBETA();
    G4LogicalVolume* BETADetector_log;
-   G4RotationMatrix fMagnetRotationMatirx;
 
    //@}
 
@@ -216,6 +215,26 @@ public :
 
    /**Constructs the Target Nose.*/
    void ConstructNose();
+
+   /** For User Interface
+    */
+   void switchTargetField();
+
+   /** For User Interface
+    */
+   double getTargetAngle();
+
+   /**
+    */
+   void PrintTargetAngle();
+
+   /**
+    */
+   G4RotationMatrix fMagnetRotationMatirx;
+
+   /** For User Interface
+    */
+   void setTargetAngle(G4double);
 
    /// Copied from Justin Wright's code:
 
@@ -431,19 +450,7 @@ public :
     */
    G4VPhysicalVolume* Construct();
 
-   /**
-    * For User Interface
-    */
-   void switchTargetField();
 
-   /**
-    * For User Interface
-    */
-   double getTargetAngle();
-   /**
-    * For User Interface
-    */
-   void setTargetAngle(G4double);
    /**
     * For User Interface
     */
