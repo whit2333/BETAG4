@@ -1,0 +1,26 @@
+/beta/target/setPolarizationAngle 180
+
+/beta/gun/setEventType flat
+/beta/gun/setEnergyMin 0.4
+/beta/gun/setEnergyMax  5.0
+/beta/gun/setThetaMin 28.0
+/beta/gun/setThetaMax 52.0
+/beta/gun/setPhiMin   -60.0
+/beta/gun/setPhiMax   60.0
+
+/beta/gun/setParticle e-
+/beta/gun/refresh
+/beta/gun/listPSVariables 
+
+/beta/toggleForwardTracker off
+/beta/toggleLuciteHodoscope off
+
+/run/beamOn 100000
+
+# 1508 -- 1k
+# 1509 -- 1k - changed cherenkov width
+# 1510 -- 10k
+# 1511 -- 1k - doubled cherenkov width
+# 1512 -- 1k - increased cherenkov width
+# 1513 -- 10k - 
+# 1514 -- 100k - 
