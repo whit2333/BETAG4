@@ -109,6 +109,35 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    fBigCalFakePlane_log = 0;
    fTrackerFakePlane_log = 0;
 
+   fHeBagExtenderBox_log = 0;
+   fHeBagExtenderAngle1_log=0;
+   fHeBagExtenderAngle2_log=0;
+   fHeBagExtenderAngle3_log=0;
+   fHeBagExtenderAngle4_log=0;
+   fHeBagExtenderHorizSupport_log=0;
+   fHeBagExtenderVertSupport_log=0;
+   fHeBagExtenderHorizWindow_log=0;
+   fHeBagExtenderVertWindow_log=0;
+   fHeBagExtenderFrontWindow_log=0;
+
+   logicTCan=0;
+   logicRad=0;
+   logicWinCan=0;
+   logicBeamWin=0;
+   logicLN2Shield=0;
+   logicLN2BeamWin=0;
+   logicLN2Can=0;
+   logicHelium=0;
+   logicNose=0;
+   logicTail=0;
+   logicCell=0;
+   logicCWall=0;
+   logicMagnet=0;
+   logicCoil=0;
+   logicBrace1=0;
+   logicBrace2=0;
+   logicBrace3=0;
+   logicBrace4=0;
 
    expHall_x = expHall_y = expHall_z = 10.0*m;
 
