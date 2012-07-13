@@ -22,7 +22,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
    
    fBETAG4EventGen = new BETAG4EventGenerator();
-   fBETAG4EventGen->Initialize();
+   //fBETAG4EventGen->Initialize();
    
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
    
@@ -66,6 +66,10 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
+   if(!fBETAG4EventGen->fIsInitialized) {
+      fBETAG4EventGen->Initialize();
+      fBETAG4EventGen->fIsInitialized = true;
+   }
    if(fMonteCarloEvent) {
       fMonteCarloEvent->ClearEvent("C");
 /*      fMonteCarloEvent->Dump();*/

@@ -9,6 +9,7 @@
 #include "InSANEEventGenerator.h"
 #include "F1F209eInclusiveDiffXSec.h"
 #include "TParticle.h"
+
 /** Base class for InSANE -> BETAG4
  *  
  *  By default it assumes there is only one particle and thus 3 random variables
@@ -35,7 +36,6 @@ public:
     *  requiring a different cross section should reimplement this method
     */
    virtual void Initialize(){
-     
      fBeamEnergy=5.9;
      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
      fDiffXSec->SetBeamEnergy(fBeamEnergy);
@@ -52,6 +52,9 @@ protected :
 
 public :
    int fNumberOfGeneratedParticles;
+   bool fIsInitialized;
+
+
    G4ThreeVector * fInitialPosition ;
    G4ThreeVector * fInitialDirection ;
    G4ThreeVector * fMomentumVector ;

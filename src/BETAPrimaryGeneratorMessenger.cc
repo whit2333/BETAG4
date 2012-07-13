@@ -92,7 +92,7 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
    setType->SetGuidance ( " flat - uniformly populate events" );
    setType->SetGuidance ( " mott - mott cross section" );
    setType->SetGuidance ( " cone - a small cone near with a small energy range " );
-   setType->SetGuidance ( " dis - inclusive DIS (F1p and F2p)" );
+   setType->SetGuidance ( " dis - inclusive electron DIS(F1p and F2p)" );
    setType->SetGuidance ( " beamOnTarget - electron beam shot from up stream on the target (GEANT4 physics)" );
    setType->SetDefaultValue ( "flat" );
    setType->AvailableForStates ( G4State_Idle );
@@ -146,11 +146,9 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
    G4UIcommand* command, G4String newValue )
 {
    BETAG4EventGenerator * anEventGen = BETAAction->GetEventGenerator();
-   
+
 /*   if(anEventGen!) return;*/
-   
-   
-   
+
    if ( command == setThetaMax ) {
       anEventGen->SetThetaMax(setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
    }
@@ -179,31 +177,38 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
       if(newValue == "flat") {
          anEventGen = new BigcalCenterEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else if(newValue == "cone") {
          anEventGen = new ConeEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else if(newValue == "dis") {
          anEventGen = new DISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else if(newValue == "mott") {
          anEventGen = new MottEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else if(newValue == "wiser") {
          anEventGen = new WiserEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else if(newValue == "electronPion") {
          anEventGen =  new InclusiveElectronPionGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else if(newValue == "beamOnTarget") {
          anEventGen = new BeamOnTargetEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
+         anEventGen->fIsInitialized = false;
+/*         anEventGen->Initialize();*/
       } else {
          std::cout << " Illegal parameter: " << newValue << " !\n";
       }

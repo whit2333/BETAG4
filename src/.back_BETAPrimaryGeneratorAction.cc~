@@ -22,7 +22,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
    
    fBETAG4EventGen = new BETAG4EventGenerator();
-   fBETAG4EventGen->Initialize();
+   //fBETAG4EventGen->Initialize();
    
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
    
@@ -66,6 +66,10 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 {
+   if(!fBETAG4EventGen->fIsInitialized) {
+      fBETAG4EventGen->Initialize();
+      fBETAG4EventGen->fIsInitialized
+   }
    if(fMonteCarloEvent) {
       fMonteCarloEvent->ClearEvent("C");
 /*      fMonteCarloEvent->Dump();*/
@@ -83,7 +87,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       else if( aPart->GetPdgCode() == 111) fParticleGun->SetParticleDefinition(pionzero);
       else if( aPart->GetPdgCode() == 211) fParticleGun->SetParticleDefinition(pionplus);
       else if( aPart->GetPdgCode() == -211) fParticleGun->SetParticleDefinition(pionminus);
-      else if( aPart->GetPdgCode() == 22) fParticleGun->SetParticleDefinition(pionminus);
+      else if( aPart->GetPdgCode() == 22) fParticleGun->SetParticleDefinition(gamma);
       else fParticleGun->SetParticleDefinition(electron);
       
       fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition(aPart) );

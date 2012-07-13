@@ -2,7 +2,7 @@
 
 
 BETAG4EventGenerator::BETAG4EventGenerator() {
-      fNumberOfGeneratedParticles = 1;
+   fNumberOfGeneratedParticles = 1;
 //       fDiffXSec=0;
 //       fEventSampler=0;
 //       fPhaseSpace=0;
@@ -11,7 +11,7 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
       varEnergy=0;
       var=0;
       fPrimaryPS=0;
-
+   fIsInitialized = false;
 //       fCentralTheta = 10.0;
 //       fCentralPhi = -20.0;
 //       fCentralEnergy = 0.30;

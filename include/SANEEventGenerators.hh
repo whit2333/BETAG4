@@ -57,6 +57,7 @@ public:
 
 
 /** Electrons and pi0s thrown 
+ *   \ingroup EventGen
  */
 class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
 public :
