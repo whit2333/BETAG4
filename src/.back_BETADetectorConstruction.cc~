@@ -77,6 +77,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    trackerY1_log=0;
    trackerY2_log=0;
    trackerX1_log=0;
+   frontTrackerSD=0;
 
    tank_log=0;
    cherenkovTank_phys=0;
@@ -277,7 +278,7 @@ void BETADetectorConstruction::SetVisAtt(){
       if(tank_log)tank_log->SetVisAttributes(fBlackLineVisAtt);
       if(fCerFrontWindow_log)fCerFrontWindow_log->SetVisAttributes(fBlackLineVisAtt);
       if(fCerBackWindow_log)fCerBackWindow_log->SetVisAttributes(fBlackLineVisAtt);
-      if(AlCans_log)AlCans_log->SetVisAttributes(fBlackLineVisAtt);
+      if(AlCans_log)AlCans_log->SetVisAttributes(fInvisibleVisAtt);
       if(fCerFrameTopBottom_log)fCerFrameTopBottom_log->SetVisAttributes(fBlackLineVisAtt);
       if(fCerToroidalMirror_log)fCerToroidalMirror_log->SetVisAttributes(fBlackLineVisAtt);
       if(fCerSphericalMirror_log)fCerSphericalMirror_log->SetVisAttributes(fBlackLineVisAtt);
@@ -356,6 +357,19 @@ void BETADetectorConstruction::ConstructForwardTracker()
    ////////////////////////////////////////////////////////////////
    // Front Tracker  //////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////
+
+   //Delete existing stuff
+   if(tracker_phys) delete tracker_phys;
+   if(tracker_log) delete tracker_log;
+   if(fTrackerHorizBar_log) delete fTrackerHorizBar_log;
+   if(fTrackerVertBar_log) delete fTrackerVertBar_log;
+   if(fTrackerHorizBarScore_log) delete fTrackerHorizBarScore_log;
+   if(fTrackerVertBarScore_log) delete fTrackerVertBarScore_log;
+   if(trackerY1_log) delete trackerY1_log;
+   if(trackerY2_log) delete trackerY2_log;
+   if(trackerX1_log) delete trackerX1_log;
+//    if(frontTrackerSD) {frontTrackerSD->Activate(false);delete frontTrackerSD;}
+
    G4double smallSeparation = 0.01*mm;
    G4RotationMatrix trackerRot;
    trackerRot.rotateZ (-1.0*PI/2.0 ); 
@@ -574,15 +588,19 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 
 // Detection
    G4SDManager* manager = G4SDManager::GetSDMpointer();
-  G4VSensitiveDetector* frontTracker =
-     new BETAFrontTracker ( "ForwardTracker" );
+/*   manager->ListTree();*/
+   if(!frontTrackerSD) { 
+     frontTrackerSD =  new BETAFrontTracker ( "ForwardTracker" );
    // Register detector with manager
-  manager->AddNewDetector ( frontTracker );
+      manager->AddNewDetector ( frontTrackerSD );
+   }
    // Attach detector to scoring volume
 //    fTrackerHorizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
 //    fTrackerVertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
-  fTrackerHorizBarScore_log->SetSensitiveDetector ( frontTracker );
-  fTrackerVertBarScore_log->SetSensitiveDetector ( frontTracker );
+   if(fSimulationManager->fSimulateTrackerOptics) {
+      fTrackerHorizBarScore_log->SetSensitiveDetector ( frontTrackerSD );
+      fTrackerVertBarScore_log->SetSensitiveDetector ( frontTrackerSD );
+   }
 
 ////// end tracker
 
@@ -626,6 +644,12 @@ fTrackerVertBar_log->SetVisAttributes(lightCollectionFTAttributes);
 void BETADetectorConstruction::ConstructHodoscope()
 {
 
+   if(hodoscopeContainerBox_phys)delete hodoscopeContainerBox_phys;
+   if(hodoscopeContainerBox_log)delete hodoscopeContainerBox_log;
+   if(fLuciteHodoPMTphotocathode_log)delete fLuciteHodoPMTphotocathode_log;
+   if(fLuciteHodoPMTinquotes_log)delete fLuciteHodoPMTinquotes_log;
+   if(fLuciteHodoBar_log)delete fLuciteHodoBar_log;
+
    G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope",75.0*cm ,28.0*6.4*cm/2.0,30.0*cm );
    hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
 
@@ -663,7 +687,6 @@ void BETADetectorConstruction::ConstructHodoscope()
    G4VSolid* hodoscopeSingleBarSection = new G4Tubs ( "Lucite-Singlebar", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10.*cm,6.*cm/2. , -26.*pi/2.0/180.,26.*pi/180. );// made a little bigger around surfaces of reflection
 
 
-G4VSensitiveDetector* HodoscopePMTs;
   G4RotationMatrix hodBarRotateRemove1;
   G4RotationMatrix hodBarRotateRemove2;
   G4RotationMatrix * rotate1;
@@ -893,13 +916,14 @@ for(int k = 0;k<28;k++) {
 
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-       HodoscopePMTs =
-       new BETAHodoscopePMT("LuciteHodoscope");
-     // Register detector with manager
-     manager->AddNewDetector(HodoscopePMTs);
-     // Attach detector to scoring volume
-     // fLuciteHodoBar_log->SetSensitiveDetector(fhodoscopeDet);//fSimulationManager->fHodoscopeDetector);
-       fLuciteHodoPMTphotocathode_log->SetSensitiveDetector ( HodoscopePMTs );   
+   if(!HodoscopePMTSD) {
+      HodoscopePMTSD =  new BETAHodoscopePMT("LuciteHodoscope");
+      // Register detector with manager
+      manager->AddNewDetector(HodoscopePMTSD);
+   }
+   // Attach detector to scoring volume
+   // fLuciteHodoBar_log->SetSensitiveDetector(fhodoscopeDet);//fSimulationManager->fHodoscopeDetector);
+   if(fSimulationManager->fSimulateHodoscopeOptics)fLuciteHodoPMTphotocathode_log->SetSensitiveDetector ( HodoscopePMTSD );
 
 
    ///////////////////////////////////////////////////

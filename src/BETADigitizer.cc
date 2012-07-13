@@ -341,7 +341,7 @@ void BETADigitizer::ReadOut() {
       aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
       aCERhit->fTDC           = 0;
       aCERhit->fLevel         = 0; /// Level zero is just ADC data
-      aCERhit->fADC           = aDigi->fADCValue + cerpedval+
+      aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,2.5*TMath::Sqrt(aDigi->fADCValue)) + cerpedval+
            fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth/2.0); 
       aCERhit->fHitNumber     = gcEvent->fNumberOfHits;;
       aCERhit->fMirrorNumber  = aDigi->fChannelNumber;

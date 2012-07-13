@@ -167,6 +167,7 @@ public :
    G4LogicalVolume*   trackerY1_log;
    G4LogicalVolume*   trackerY2_log;
    G4LogicalVolume*   trackerX1_log;
+   G4VSensitiveDetector* frontTrackerSD;
    //@}
 
    /** @name Lucite Hodoscope Construction
@@ -179,6 +180,8 @@ public :
    G4LogicalVolume*   fLuciteHodoPMTphotocathode_log;
    G4LogicalVolume*   fLuciteHodoPMTinquotes_log;
    G4LogicalVolume*   fLuciteHodoBar_log;
+   G4VSensitiveDetector* HodoscopePMTSD;
+
    //@}
 
    /** @name Construct "fake" scoring planes

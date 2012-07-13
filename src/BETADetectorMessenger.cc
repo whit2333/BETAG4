@@ -161,18 +161,20 @@ e
       std::cout << " args = " << newValue.data() << "\n";
       if( !(strcmp(newValue.data(),"on")) )  {
          construction->usingLuciteHodoscope = true;
+         construction->fSimulationManager->fSimulateHodoscopeOptics = true;
          if(construction->constructed == true) construction->ConstructHodoscope();
       }
       if( !(strcmp(newValue.data(),"off"))) {
          construction->usingLuciteHodoscope = false;
+         construction->fSimulationManager->fSimulateHodoscopeOptics = false;
          delete construction->hodoscopeContainerBox_phys;
+         construction->hodoscopeContainerBox_phys = 0;
       }
       if( !(strcmp(newValue.data(),"noOptics"))) {
          construction->usingLuciteHodoscope = true;
          construction->fSimulationManager->fSimulateHodoscopeOptics = false;
-         if(construction->hodoscopeContainerBox_phys) delete construction->hodoscopeContainerBox_phys;
-         if(construction->hodoscopeContainerBox_log)  delete construction->hodoscopeContainerBox_log;
-/*         if(constructi*/
+         if(construction->constructed == true) construction->ConstructHodoscope();
+
       }
          G4RunManager::GetRunManager()->GeometryHasBeenModified();
    }
@@ -181,16 +183,24 @@ e
       std::cout << " args = " << newValue.data() << "\n";
       if( !(strcmp(newValue.data(),"on")) )  {
          construction->usingForwardTracker = true;
-/*         if(construction->constructed == true) construction->ConstructHodoscope();*/
+         construction->fSimulationManager->fSimulateTrackerOptics = true;
+         if(construction->tracker_phys) delete construction->tracker_phys;
+         construction->tracker_phys = 0;
+         if(construction->constructed == true) construction->ConstructForwardTracker();
       }
       if( !(strcmp(newValue.data(),"off"))) {
          construction->usingForwardTracker = false;
-/*         delete construction->hodoscopeContainerBox_phys;*/
+         construction->fSimulationManager->fSimulateTrackerOptics = false;
+         if(construction->tracker_phys) delete construction->tracker_phys;
+         construction->tracker_phys = 0;
       }
       if( !(strcmp(newValue.data(),"noOptics"))) {
          construction->usingForwardTracker = true;
          construction->fSimulationManager->fSimulateTrackerOptics = false;
-/*         if(construction->hodoscopeContainerBox_phys) delete construction->hodoscopeContainerBox_phys;*/
+         if(construction->tracker_phys) delete construction->tracker_phys;
+         construction->tracker_phys = 0;
+         if(construction->constructed == true) construction->ConstructForwardTracker();
+
 /*         if(construction->hodoscopeContainerBox_log)  delete construction->hodoscopeContainerBox_log;*/
 /*         if(constructi*/
       }
