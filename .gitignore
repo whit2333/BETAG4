@@ -1,0 +1,13 @@
+# Ignore all dotfiles...
+.*
+# except for .gitignore
+!.gitignore
+
+*.[oa]
+*~
+run/data/
+*/*~
+temp
+temp/*
+run/run.txt
+run/seed.txt
