@@ -1,0 +1,40 @@
+#   
+#   Request 1 processors on 1 node 
+#   
+#PBS -l nodes=1:ppn=6
+#
+#   Request 48 hours of walltime
+#
+#PBS -l walltime=10:00:00
+#
+#   Request 1 gigabyte of memory per process
+#
+#PBS -l pmem=2gb
+#
+#   Request that regular output and terminal output go to the same file
+#
+#PBS -j oe
+#
+#   The following is the body of the script. By default,
+#   PBS scripts execute in your home directory, not the
+#   directory from which they were submitted. The following
+#   line places you in the directory from which the job
+#   was submitted.
+#
+# cd $PBS_O_WORKDIR
+cd $HOME/sane08/BETAG4/run
+pwd
+#
+#   Now we want to run the program "hello".  "hello" is in
+#   the directory that this script is being submitted from,
+#   $PBS_O_WORKDIR.
+#
+echo " "
+echo " "
+echo "Job started on `hostname` at `date`"
+#BETA sane/para/para_1k_uniform_electron.mac 
+./sim_100k_parallel
+echo " "
+echo "Job Ended at `date`"
+echo " "
+
