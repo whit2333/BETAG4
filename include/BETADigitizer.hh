@@ -22,103 +22,101 @@
 #include "BETAHodoscopePMTHit.hh"
 #include "BETAG4PMTHit.hh"
 
-/** Digitizer module for BETA
+/**  Digitizer module for BETA.
  *
- *  Digitize() is called from BETARun::RecordEvent() if the event triggered
- *  the BETAG4DAQReadout. This method looks at the detector hits collections
- *  then proceeds to fill the digi collections.
- *
- *  Next ReadOut() is called which translates the digi collections to
- *  the InSANEDetectorEvent derived classes for ROOT file output.
+ *  - Digitize() is called from BETARun::RecordEvent() if the event triggered
+ *    the BETAG4DAQReadout. This method looks at the detector hits collections
+ *    then proceeds to fill the digi collections.
+ *  - Next ReadOut() is called which translates the digi collections to
+ *    the InSANEDetectorEvent derived classes for ROOT file output.
  *
  * \ingroup Detectors
  */
 class BETADigitizer : public G4VDigitizerModule {
-  public:
+public:
 
-  BETADigitizer(G4String modName);
+   BETADigitizer(G4String modName);
+   ~BETADigitizer();
 
-  ~BETADigitizer();
+   /** Simulate pedestal event.
+    *
+    *  Here we "gate" all adcs by making a digi for every channel
+    *  The digi has nominal zero. 
+    *  
+    *  \todo Add pedestal random number for width... 
+    *  possibly correlate with real rates (configuration)
+    */
+   void DigitizePedestals();
 
-/** Simulate pedestal event 
- *
- *  Here we "gate" all adcs by making a digi for every channel
- *  The digi has nominal zero. 
- *  
- *  \todo Add pedestal random number for width... 
- *  possibly correlate with real rates (configuration)
- */
-  void DigitizePedestals();
+   /** Loop over Detector Hit Collections and creates the ADC and TDC Digi collections.
+    */
+   void Digitize();
 
-/** Loop over Detector Hit Collections and creates
- *  The ADC and TDC Digi collections
- */
-  void Digitize();
+   /** Loops over the Digi Collection and creates the InSANEDetectorHits and fills out 
+    *  InSANEDetectorEvent data. 
+    *  These are the event structures which are emulating real data.
+    */
+   void ReadOut();
 
-/** Loops over the Digi Collection and creates
- *  the InSANEDetectorHits and fills out InSANEDetectorEvent data 
- */
-  void ReadOut();
+   /** Clears Digi collections
+    */
+   void Clear();
 
-/** Clears Digi collections
- */
-  void Clear();
+   virtual void Print();
 
-  virtual void Print();
+   void SetTriggerEvent(InSANETriggerEvent* evt) { fTriggerEvent=evt; };
 
-  void SetTriggerEvent(InSANETriggerEvent* evt) { fTriggerEvent=evt; };
+   InSANETriggerEvent * fTriggerEvent;
 
-  InSANETriggerEvent * fTriggerEvent;
+   BETAEvent * fBetaEvent;
 
-  BETAEvent * fBetaEvent;
+private: 
 
-  private: 
+   bool fIsTriggered;
 
-  bool fIsTriggered;
+   void Reset() { fIsTriggered=false;};
 
-  void Reset() { fIsTriggered=false;};
+   BETAG4DigiADCCollection * fCherenkovADCDC;
+   G4int fCherenkovADCDCID;
 
-  BETAG4DigiADCCollection * fCherenkovADCDC;
-  G4int fCherenkovADCDCID;
+   BETAG4DigiTDCCollection * fCherenkovTDCDC;
+   G4int fCherenkovTDCDCID;
 
-  BETAG4DigiTDCCollection * fCherenkovTDCDC;
-  G4int fCherenkovTDCDCID;
+   BETAG4DigiADCCollection * fBigcalADCDC;
+   G4int fBigcalADCDCID;
 
-  BETAG4DigiADCCollection * fBigcalADCDC;
-  G4int fBigcalADCDCID;
+   BETAG4DigiTDCCollection * fBigcalTDCDC;
+   G4int fBigcalTDCDCID;
 
-  BETAG4DigiTDCCollection * fBigcalTDCDC;
-  G4int fBigcalTDCDCID;
+   BETAG4DigiADCCollection * fHodoscopeADCDC;
+   G4int fHodoscopeADCDCID;
 
-  BETAG4DigiADCCollection * fHodoscopeADCDC;
-  G4int fHodoscopeADCDCID;
-
-  BETAG4DigiTDCCollection * fHodoscopeTDCDC;
-  G4int fHodoscopeTDCDCID;
+   BETAG4DigiTDCCollection * fHodoscopeTDCDC;
+   G4int fHodoscopeTDCDCID;
   
-  BETAG4DigiADCCollection * fTrackerADCDC;
-  G4int fTrackerADCDCID;
+   BETAG4DigiADCCollection * fTrackerADCDC;
+   G4int fTrackerADCDCID;
 
-  BETAG4DigiTDCCollection * fTrackerTDCDC;
-  G4int fTrackerTDCDCID;
+   BETAG4DigiTDCCollection * fTrackerTDCDC;
+   G4int fTrackerTDCDCID;
 
-  BETASimulationManager * fSimulationManager;
+   BETASimulationManager * fSimulationManager;
 
-  G4int fCherenkovHCID;
-  G4int fBigcalHCID;
-  G4int fTrackerHCID;
-  G4int fHodoscopeHCID;
+   G4int fCherenkovHCID;
+   G4int fBigcalHCID;
+   G4int fTrackerHCID;
+   G4int fHodoscopeHCID;
 
-  TRandom * fRandomNumberGenerator;
+   TRandom * fRandomNumberGenerator;
 
 private:
-// Geant4 collections, hits, etc....
-  BETAG4BigcalHitsCollection * fBigcalHC;
-  BETAG4PMTHitsCollection * fGasCherenkovHC;
-  BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
-  BETAFrontTrackerHitsCollection * fForwardTrackerHC;
+   // Geant4 collections, hits, etc....
+   BETAG4BigcalHitsCollection * fBigcalHC;
+   BETAG4PMTHitsCollection * fGasCherenkovHC;
+   BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
+   BETAFrontTrackerHitsCollection * fForwardTrackerHC;
 
-  G4double fBigcalChannelThreshold;
+   G4double fBigcalChannelThreshold;
 
 };
 

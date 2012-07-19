@@ -201,7 +201,8 @@ void BETADigitizer::Digitize() {
   }
   }
 
-// Loop over Tracker Hits
+
+   // Loop over Tracker Hits
    for ( int i=0 ; i < fForwardTrackerHC->entries();i++ ) {
      ftHit =  ( *fForwardTrackerHC )[i];
 //     aDigi = new BETAG4DigiADC(i);
@@ -239,18 +240,24 @@ void BETADigitizer::ReadOut() {
    ForwardTrackerEvent * ftEvent = fSimulationManager->fEvents->BETA->fForwardTrackerEvent;
    ftEvent->ClearEvent("C");
    TClonesArray  &trackerHits = *(ftEvent->fTrackerHits);
-  ftEvent->fNumberOfHits = 0;
-  ftEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
-  ftEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
+   ftEvent->fNumberOfHits = 0;
+   ftEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
+   ftEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
 
-   ForwardTrackerHit *aFThit;
+   ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
+
+   ForwardTrackerHit *aFThit = 0;
    for(int i = 0; i < fTrackerTDCDC->entries() ; i++ ) {
       tDigi = (*fTrackerTDCDC)[i];
       aFThit = new( trackerHits[ftEvent->fNumberOfHits] ) ForwardTrackerHit(); 
-      aFThit->fChannel = tDigi->fChannelNumber+1;
-      aFThit->fTDC     = tDigi->fTrueValue;
-      aFThit->fScintLayer  = ForwardTrackerGeometryCalculator::GetCalculator()->GetLayerNumber(aFThit->fChannel);
-      aFThit->fRow  = ForwardTrackerGeometryCalculator::GetCalculator()->GetScintNumber(aFThit->fChannel);
+      aFThit->fChannel             = tDigi->fChannelNumber+1;
+      aFThit->fLevel               = 1; // only tdc hits
+      aFThit->fHitNumber           = ftEvent->fNumberOfHits;
+      aFThit->fTDC                 = tDigi->fTrueValue;
+      aFThit->fScintLayer          = ftgeocalc->GetLayerNumber(aFThit->fChannel);
+      aFThit->fRow                 = ftgeocalc->GetScintNumber(aFThit->fChannel);
+      if(aFThit->fScintLayer == 0) aFThit->fPositionCoordinate  = 1; // x coord
+      else aFThit->fPositionCoordinate  = 2; // ycoord
       
 //      tDigi->Print();
 //      aFThit->Print(); 
