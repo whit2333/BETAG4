@@ -155,8 +155,8 @@ public:
       AddSampler(fEventSampler);
       CalculateTotalCrossSection();
       fPrimaryPS->Print();
-
    }
+
 };
 
 
