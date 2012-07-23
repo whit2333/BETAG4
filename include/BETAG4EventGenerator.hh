@@ -40,6 +40,7 @@ public:
      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
      fDiffXSec->SetBeamEnergy(fBeamEnergy);
      fDiffXSec->InitializePhaseSpaceVariables();
+     fDiffXSec->InitializeFinalStateParticles();
      fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
      fPrimaryPS->ListVariables();
      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);

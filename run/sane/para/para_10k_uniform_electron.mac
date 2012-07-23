@@ -6,7 +6,7 @@
 /beta/gun/setThetaMax 52.0
 /beta/gun/setPhiMin   -60.0
 /beta/gun/setPhiMax   60.0
-
+/beta/gun/refresh
 /beta/gun/setParticle e-
 /beta/gun/refresh
 /beta/gun/listPSVariables 
