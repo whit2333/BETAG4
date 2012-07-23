@@ -203,6 +203,7 @@ public:
       fBeamEnergy=5.9;
       InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
+      fDiffXSec->SetParticleType(11);
       fDiffXSec->InitPhaseSpace();
       fDiffXSec->InitializeFinalStateParticles();
       fPrimaryPS = fDiffXSec->GetPhaseSpace(); 

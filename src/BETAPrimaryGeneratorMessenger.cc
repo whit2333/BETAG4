@@ -175,6 +175,7 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
    }
    if ( command == setType) {
       if(newValue == "flat") {
+/*         if(anEventGen) delete anEventGen;*/
          anEventGen = new BigcalCenterEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
          anEventGen->fIsInitialized = false;
@@ -214,8 +215,10 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
       }
    }
    if ( command == refreshGenerator) {
-        if( !anEventGen->fIsInitialized )
+        if( !anEventGen->fIsInitialized ) {
            anEventGen->Initialize();
+           anEventGen->fIsInitialized = true;
+        }
         else BETAAction->GetEventGenerator()->Refresh();
    }
    if ( command == listPSVariables) {
@@ -260,6 +263,7 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 	 int partnum =  TDatabasePDG::Instance()->GetParticle(newValue.data())->PdgCode(); 
          ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->SetParticleType(partnum );
          ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->InitializeFinalStateParticles( );
+         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->Print( );
 	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
       }
       else std::cout << " NO SAMPLERS YET\n"; 
