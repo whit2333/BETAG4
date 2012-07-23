@@ -85,7 +85,6 @@ public :
 
    double * fEventArray;
 
-   int fPID;
 
 public:
 

@@ -214,7 +214,9 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
       }
    }
    if ( command == refreshGenerator) {
-      BETAAction->GetEventGenerator()->Refresh();
+        if( !anEventGen->fIsInitialized )
+           anEventGen->Initialize();
+        else BETAAction->GetEventGenerator()->Refresh();
    }
    if ( command == listPSVariables) {
       BETAAction->GetEventGenerator()->ListPhaseSpaceVariables();
@@ -254,11 +256,16 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
    {
       G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
       TList * samplers = anEventGen->GetSamplers();
-      if(samplers->GetEntries() > 0 ) 
-         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->SetParticleType( TDatabasePDG::Instance()->GetParticle(newValue.data())->PdgCode() );
+      if(samplers->GetEntries() > 0 ) {
+	 int partnum =  TDatabasePDG::Instance()->GetParticle(newValue.data())->PdgCode(); 
+         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->SetParticleType(partnum );
+         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->InitializeFinalStateParticles( );
+	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
+      }
       else std::cout << " NO SAMPLERS YET\n"; 
+
       BETAAction->fParticleGun->SetParticleDefinition(particleTable->FindParticle ( newValue ));
-      
+
    }
 }
 

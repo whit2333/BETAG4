@@ -134,7 +134,7 @@ public:
    }
 };
 
-/**  Flat Event generator spread over bigcal
+/**  Wiser  Event generator spread over bigcal
  *
  *   \ingroup EventGen
  */
@@ -160,7 +160,7 @@ public:
 };
 
 
-/**  Flat Event generator spread over bigcal
+/**  Bigcal Simple Event generator spread over bigcal
  *
  *   \ingroup EventGen
  */
@@ -203,14 +203,13 @@ public:
       fBeamEnergy=5.9;
       InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
-/*      fDiffXSec->SetProductionParticleType(111);*/
       fDiffXSec->InitPhaseSpace();
       fDiffXSec->InitializeFinalStateParticles();
       fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fEventSampler);
       CalculateTotalCrossSection();
-     fPrimaryPS->Print();
+      fPrimaryPS->Print();
 
    }
 

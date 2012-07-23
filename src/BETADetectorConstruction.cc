@@ -230,7 +230,6 @@ void BETADetectorConstruction::ConstructVisAtt(){
    fInvisibleVisAtt = new G4VisAttributes();
    fInvisibleVisAtt->SetVisibility ( false );
 
-
    /// using color scheme from web ... 
    /*
    #####  Color Palette by Color Scheme Designer
@@ -276,7 +275,6 @@ void BETADetectorConstruction::ConstructVisAtt(){
    */
    fComplementaryColorLineVisAtt = new G4VisAttributes ( G4Colour ( 255.0/255.0,169.0/255.0,0.0/255.0) );
    fComplementaryColorLineVisAtt->SetForceWireframe ( true );
-
 
 
    AlVisAtt = new G4VisAttributes ( G4Colour ( .5,.5,.5 ) );
@@ -3282,8 +3280,7 @@ void BETADetectorConstruction::rotateMirror ( int mirrorNumber, G4double alpha, 
 
 void BETADetectorConstruction::ToggleTargetMaterial( int state) {
    fTargetState = state;
-
-  if(state == 1) {
+   if(state == 1) {
       if(physiTCan)   delete physiTCan;
       physiTCan=0;
       if(physiLN2Can)   delete physiLN2Can;

@@ -6,7 +6,8 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
 //       fDiffXSec=0;
 //       fEventSampler=0;
 //       fPhaseSpace=0;
-      varTheta=0;
+
+     	varTheta=0;
       varPhi=0;
       varEnergy=0;
       var=0;
