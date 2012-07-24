@@ -36,11 +36,8 @@ public:
     *  requiring a different cross section should reimplement this method
     */
    virtual void Initialize(){
-     fBeamEnergy=5.9;
      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-     fDiffXSec->InitializePhaseSpaceVariables();
-     fDiffXSec->InitializeFinalStateParticles();
      fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
      fPrimaryPS->ListVariables();
      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
@@ -54,6 +51,7 @@ protected :
 public :
    int fNumberOfGeneratedParticles;
    bool fIsInitialized;
+   bool fNeedsRefreshed;
 
 
    G4ThreeVector * fInitialPosition ;
@@ -110,9 +108,9 @@ public:
 
 /// \todo assuming particle is electron (eg E=P))
 
-/** Returns the starting postiong of the primary particle
- * \deprecated
- */
+   /** Returns the starting postiong of the primary particle
+    * \deprecated
+    */
    virtual  G4ThreeVector &  GetMomentumVector(TParticle * p){
       fInitialDirection->setX(p->Px());
       fInitialDirection->setY(p->Py());
@@ -126,6 +124,7 @@ public:
 
    void SetThetaMax(double val) { 
      fThetaMax = val;
+     fNeedsRefreshed = true;
      if(varTheta) varTheta->SetVariableMaxima(val);
      else if (fPrimaryPS) {
         varTheta = fPrimaryPS->GetVariable("theta");
@@ -135,6 +134,7 @@ public:
    }
    void SetThetaMin(double val) { 
      fThetaMin = val;
+     fNeedsRefreshed = true;
      if(varTheta) varTheta->SetVariableMinima(val);
      else if (fPrimaryPS) {
         varTheta = fPrimaryPS->GetVariable("theta");
@@ -143,6 +143,7 @@ public:
    }
    void SetPhiMax(double val) { 
      fPhiMax = val;
+     fNeedsRefreshed = true;
      if(varPhi) varPhi->SetVariableMaxima(val);
      else if (fPrimaryPS) {
         varPhi = fPrimaryPS->GetVariable("phi");
@@ -151,6 +152,7 @@ public:
    }
    void SetPhiMin(double val) { 
      fPhiMin = val;
+     fNeedsRefreshed = true;
      if(varPhi) varPhi->SetVariableMinima(val);
      else if (fPrimaryPS) {
         varPhi = fPrimaryPS->GetVariable("phi");
@@ -160,6 +162,7 @@ public:
 
    void SetEnergyMax(double val) { 
      fEnergyMax = val;
+     fNeedsRefreshed = true;
      if(varEnergy) varEnergy->SetVariableMaxima(val);
      else if (fPrimaryPS) {
         varEnergy = fPrimaryPS->GetVariable("energy");
@@ -168,6 +171,7 @@ public:
    }
    void SetEnergyMin(double val) { 
      fEnergyMin = val;
+     fNeedsRefreshed = true;
      if(varEnergy) varEnergy->SetVariableMinima(val);
      else if (fPrimaryPS) {
         varEnergy = fPrimaryPS->GetVariable("energy");
@@ -176,6 +180,7 @@ public:
    }
    void SetMomentumMax(double val) { 
      fMomentumMax = val;
+     fNeedsRefreshed = true;
      if(varMomentum) varMomentum->SetVariableMaxima(val);
      else if (fPrimaryPS) {
         varMomentum = fPrimaryPS->GetVariable("momentum");
@@ -184,6 +189,7 @@ public:
    }
    void SetMomentumMin(double val) { 
      fMomentumMin = val;
+     fNeedsRefreshed = true;
      if(varMomentum) varMomentum->SetVariableMinima(val);
      else if (fPrimaryPS) {
         varMomentum = fPrimaryPS->GetVariable("momentum");

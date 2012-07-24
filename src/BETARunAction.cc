@@ -53,6 +53,9 @@ G4Run*  BETARunAction::GenerateRun()
    G4RunManager *   runManager = G4RunManager::GetRunManager();
    timer->Start();
 
+    SANERunManager::GetRunManager()->SetRun(fRunNumber);
+    fSimulationManager->fInSANERun  = SANERunManager::GetRunManager()->GetCurrentRun();// = new InSANERun(fRunNumber);
+
 /// Opens Root File With a name Depending on the Run number
    std::string fname;
    std::stringstream out;
@@ -63,10 +66,11 @@ G4Run*  BETARunAction::GenerateRun()
       fSimulationManager->fRootFile = new TFile ( rootName,"UPDATE" );
       fSimulationManager->fEvents = new SANEEvents("betaDetectors0");
    } else {
-      out << "data/rootfiles/InSANE" << fRunNumber << ".0.root"  ;
+      out << "data/rootfiles/InSANE" << fRunNumber << ".-1.root"  ;
       fname = out.str();
       const char * rootName = fname.c_str();
-      fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
+//      fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
+      fSimulationManager->fRootFile = SANERunManager::GetRunManager()->GetCurrentFile();
       fSimulationManager->fDetectorTree = new TTree("betaDetectors","Simulated BETA Detectors");
       fSimulationManager->fEvents = new SANEEvents("betaDetectors");
 
@@ -79,8 +83,7 @@ G4Run*  BETARunAction::GenerateRun()
      genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
 
 
-    SANERunManager::GetRunManager()->SetRun(fRunNumber);
-    fSimulationManager->fInSANERun  = SANERunManager::GetRunManager()->GetCurrentRun();// = new InSANERun(fRunNumber);
+
 
 
     fSimulationManager->AddDetectors(fRunNumber);

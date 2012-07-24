@@ -114,11 +114,13 @@ int main(int argc,char** argv)
 
    /// Physics List
    G4VUserPhysicsList* physics = new BETAPhysicsList;
+   physics->SetVerboseLevel(0);
    runManager-> SetUserInitialization(physics);
 
    /// visualization manager
    #ifdef G4VIS_USE
    G4VisManager* visManager = new G4VisExecutive;
+   visManager->SetVerboseLevel(0);
    visManager->Initialize();
    #endif
 
@@ -139,14 +141,13 @@ int main(int argc,char** argv)
    runManager->SetUserAction(stepping_action);
 
    int fnargs = 2;
-   char * fargs[2] = {"delayPlots","-l"};
-   TRint * fApp = new TRint("delayPlots", &fnargs,&fargs[0], NULL, -1);
-    
-   std::cout << " Initializing G4 kernel " << std::endl;
+   char * fargs[2] = {"BETAG4","-l"};
+   TRint * fApp = new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
 
+   std::cout << " o Initializing G4 kernel " << std::endl;
    /// Initialize G4 kernel
    runManager->Initialize();
-   std::cout << " DONE Initializing G4 kernel " << std::endl;
+   std::cout << " o Done initializing G4 kernel " << std::endl;
 
    /// Get the pointer to the User Interface manager
    G4UImanager* UI = G4UImanager::GetUIpointer(); 

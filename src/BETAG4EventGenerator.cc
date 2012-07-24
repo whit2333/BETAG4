@@ -6,13 +6,15 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
 //       fDiffXSec=0;
 //       fEventSampler=0;
 //       fPhaseSpace=0;
-
+   fNeedsRefreshed = false;
      	varTheta=0;
       varPhi=0;
       varEnergy=0;
       var=0;
       fPrimaryPS=0;
    fIsInitialized = false;
+     fBeamEnergy=5.9;
+
 //       fCentralTheta = 10.0;
 //       fCentralPhi = -20.0;
 //       fCentralEnergy = 0.30;

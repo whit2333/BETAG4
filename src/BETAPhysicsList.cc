@@ -277,7 +277,7 @@ void BETAPhysicsList::ConstructOp()
       }
       if ( particleName == "opticalphoton" )
       {
-         G4cout << " AddDiscreteProcess to OpticalPhoton " << G4endl;
+/*         G4cout << " AddDiscreteProcess to OpticalPhoton " << G4endl;*/
          pmanager->AddDiscreteProcess ( theAbsorptionProcess );
          pmanager->AddDiscreteProcess ( theRayleighScatteringProcess );
          pmanager->AddDiscreteProcess ( theBoundaryProcess );

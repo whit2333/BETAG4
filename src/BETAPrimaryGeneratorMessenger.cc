@@ -151,68 +151,76 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 
    if ( command == setThetaMax ) {
       anEventGen->SetThetaMax(setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setPhiMax ) {
       anEventGen->SetPhiMax(setPhiMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setEnergyMax ) {
       anEventGen->SetEnergyMax(setEnergyMax->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setThetaMin ) {
       anEventGen->SetThetaMin(setThetaMin->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setPhiMin ) {
       anEventGen->SetPhiMin(setPhiMin->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setEnergyMin) {
       anEventGen->SetEnergyMin(setEnergyMin->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setMomentumMax ) {
       anEventGen->SetMomentumMax(setMomentumMax->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setMomentumMin) {
       anEventGen->SetMomentumMin(setMomentumMin->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
    }
    if ( command == setType) {
       if(newValue == "flat") {
-/*         if(anEventGen) delete anEventGen;*/
          anEventGen = new BigcalCenterEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "cone") {
          anEventGen = new ConeEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "dis") {
          anEventGen = new DISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "mott") {
          anEventGen = new MottEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "wiser") {
          anEventGen = new WiserEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "electronPion") {
          anEventGen =  new InclusiveElectronPionGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "beamOnTarget") {
          anEventGen = new BeamOnTargetEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->fIsInitialized = false;
-/*         anEventGen->Initialize();*/
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else {
          std::cout << " Illegal parameter: " << newValue << " !\n";
       }
+      anEventGen->NeedsRefreshed();
    }
    if ( command == refreshGenerator) {
         if( !anEventGen->fIsInitialized ) {
@@ -222,7 +230,8 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
         else BETAAction->GetEventGenerator()->Refresh();
    }
    if ( command == listPSVariables) {
-      BETAAction->GetEventGenerator()->ListPhaseSpaceVariables();
+/*      BETAAction->GetEventGenerator()->ListPhaseSpaceVariables();*/
+      BETAAction->GetEventGenerator()->Print();
    }
 
 //    if ( command == polarCmd )
@@ -267,9 +276,9 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
       }
       else std::cout << " NO SAMPLERS YET\n"; 
-
       BETAAction->fParticleGun->SetParticleDefinition(particleTable->FindParticle ( newValue ));
-
+      
+      anEventGen->NeedsRefreshed();
    }
 }
 

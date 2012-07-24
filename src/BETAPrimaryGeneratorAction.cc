@@ -22,8 +22,9 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
    
    fBETAG4EventGen = new BETAG4EventGenerator();
-   //fBETAG4EventGen->Initialize();
-   
+   fBETAG4EventGen->Initialize();
+   fBETAG4EventGen->fIsInitialized = true;
+
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
    
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -42,6 +43,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    /// Electron by default. Use /beta/gun/setParticle
    fParticleGun->SetParticleDefinition(electron);
 
+   fParticlesSource=0;
    //fParticlesSource  = new G4GeneralParticleSource ( );
    //fParticlesSource->SetNumberOfParticles(1);
    // Using General Particle Source
@@ -59,8 +61,8 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 
 BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 {
-   delete fParticlesSource;
-   delete gunMessenger;
+   if(fParticlesSource) delete fParticlesSource;
+   if(gunMessenger) delete gunMessenger;
 }
 //________________________________________________________//
 
@@ -70,6 +72,8 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       fBETAG4EventGen->Initialize();
       fBETAG4EventGen->fIsInitialized = true;
    }
+   if(fBETAG4EventGen->IsModified()) fBETAG4EventGen->Refresh();
+
    if(fMonteCarloEvent) {
       fMonteCarloEvent->ClearEvent("C");
 /*      fMonteCarloEvent->Dump();*/
