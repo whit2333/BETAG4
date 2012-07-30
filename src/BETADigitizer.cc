@@ -254,7 +254,8 @@ void BETADigitizer::ReadOut() {
       aFThit->fLevel               = 1; // only tdc hits
       aFThit->fHitNumber           = ftEvent->fNumberOfHits;
       //aFThit->fTDC                 = tDigi->fTrueValue;
-      aFThit->fTDC                 = tDigi->fTDCValue + fSimulationManager->fTrackerDetector->fTypicalTDCPeak;
+      aFThit->fTDC                 = tDigi->fTDCValue + fSimulationManager->fTrackerDetector->fTypicalTDCPeak + 
+           fRandomNumberGenerator->Gaus(0,fSimulationManager->fTrackerDetector->fTypicalTDCPeakWidth/2.0);
       aFThit->fScintLayer          = ftgeocalc->GetLayerNumber(aFThit->fChannel);
       aFThit->fRow                 = ftgeocalc->GetScintNumber(aFThit->fChannel);
       if(aFThit->fScintLayer == 0) aFThit->fPositionCoordinate  = 1; // x coord
