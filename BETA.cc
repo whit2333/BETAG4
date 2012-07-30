@@ -20,7 +20,7 @@
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
-#include "G4GlobalFastSimulationManager.hh"
+
 
 /**
  * \mainpage 
@@ -101,6 +101,7 @@ int main(int argc,char** argv)
    rand->SetSeed(myseed);
 
 
+
    /// User Verbose output class
    G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
    G4VSteppingVerbose::SetInstance(verbosity);
@@ -151,6 +152,7 @@ int main(int argc,char** argv)
 
    /// Get the pointer to the User Interface manager
    G4UImanager* UI = G4UImanager::GetUIpointer(); 
+
 
    if (argc==1)   // Define UI session for interactive mode
    {
