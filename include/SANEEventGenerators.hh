@@ -137,7 +137,6 @@ public:
       InSANEInclusiveWiserXSec * fDiffXSec = new InSANEInclusiveWiserXSec();
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->SetProductionParticleType(111);
-      fDiffXSec->InitPhaseSpace();
       fDiffXSec->InitializeFinalStateParticles();
       fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
