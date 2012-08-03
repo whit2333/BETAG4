@@ -17,14 +17,16 @@ G4Allocator<BETAForwardTrackerHit> BETAForwardTrackerHitAllocator;
 
 BETAForwardTrackerHit::BETAForwardTrackerHit()
       :cellNumber ( -1 )
-      ,fPhotons ( 0 )
-{;
+{
+   fTiming = 0;
+   fEnergy = 0;
 }
 
 BETAForwardTrackerHit::BETAForwardTrackerHit ( G4int id )
       :cellNumber ( id )
-      ,fPhotons ( 0 )
-{;
+{
+   fTiming = 0;
+   fEnergy = 0;
 }
 
 BETAForwardTrackerHit::~BETAForwardTrackerHit() {
@@ -66,7 +68,7 @@ void BETAForwardTrackerHit::Draw()
 
 void BETAForwardTrackerHit::Print()
 {
-   G4cout << "  Cell[" << cellNumber << "] " << fPhotons  << G4endl;
+//   G4cout << "  Cell[" << cellNumber << "] " << fPhotons  << G4endl;
 }
 
 

@@ -32,8 +32,8 @@ public:
 
 //  void SetLocalPosition(G4ThreeVector*pos) {localPos
   // Add a Photon
-   void AddPhoton() {fPhotons++;}
-   G4int GetPhotons() const {return fPhotons;}
+//   void AddPhoton() {fPhotons++;}
+//   G4int GetPhotons() const {return fPhotons;}
 /* Eventually add wavelength.....
   // Position vector
   inline void SetPosition(G4ThreeVector position) {fPosition = position;}
@@ -50,12 +50,13 @@ public:
 
   G4int cellNumber;
   G4int layerNumber;
-  G4int mirrorNumber;
-  G4ThreeVector  localPos;
-  G4ThreeVector  worldPos;
-  G4ThreeVector  worldMom;
-  G4int fPhotons;
   G4double fTiming;
+  G4double fEnergy;
+//  G4int mirrorNumber;
+//  G4ThreeVector  localPos;
+//  G4ThreeVector  worldPos;
+//  G4ThreeVector  worldMom;
+//  G4int fPhotons;
 
 private:
   

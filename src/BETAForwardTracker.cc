@@ -21,12 +21,12 @@ BETAForwardTracker::BETAForwardTracker ( G4String  name )
    detname = name;
    collectionName.insert ( HCname="tracking" );
    HCID = -1;
-
+   fHitsCollection = 0;
 }
 //_____________________________________________________________________________
 
 BETAForwardTracker::~BETAForwardTracker() {
-   ;
+   if(fHitsCollection) delete fHitsCollection;
 }
 //_____________________________________________________________________________
 
@@ -72,18 +72,19 @@ G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
  theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" ))*/
 //trackerY1_phys
 
-      aName=theTrack->GetVolume()->GetMotherLogical()->GetName();
+//      aName=theTrack->GetVolume()->GetMotherLogical()->GetName();
 //      G4cout << " SHOULD REGISTER HIT in physical volume "<< aName << G4endl;
 
       BETAForwardTrackerHit* aHit = new BETAForwardTrackerHit();
       fHitsCollection->insert ( aHit );
       aHit->cellNumber = theTrack->GetNextVolume()->GetCopyNo();
 
-      if(aName=="trackerX1_log") aHit->layerNumber = 1;
-      else if(aName=="trackerY1_log") aHit->layerNumber = 2;
-      else if(aName=="trackerY2_log") aHit->layerNumber = 3;
+      //if(aName=="trackerX1_log") aHit->layerNumber = 1;
+      //else if(aName=="trackerY1_log") aHit->layerNumber = 2;
+      //else if(aName=="trackerY2_log") aHit->layerNumber = 3;
+      aHit->layerNumber = GetScintLayer(aHit->cellNumber);
 
-      G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+     /*G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
       G4TouchableHistory* theTouchable
            = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
       G4ThreeVector worldPosition = preStepPoint->GetPosition();
@@ -91,8 +92,9 @@ G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
       aHit->localPos = theTouchable->GetHistory()->GetTopTransform().TransformPoint ( worldPosition ) ;
       aHit->worldPos = worldPosition;
       aHit->worldMom = theTrack->GetMomentum();
+      */
       aHit->fTiming = theTrack->GetGlobalTime()/ns;
-	 
+      aHit->fEnergy = theTrack->GetTotalEnergy()/eV;	 
       // Kill the track since we have already counted it. 
       theTrack->SetTrackStatus(fStopAndKill);
    }
@@ -102,6 +104,6 @@ G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 
 void BETAForwardTracker::EndOfEvent ( G4HCofThisEvent* )
 {
-   ;
+	std::cout << "BETAForwardTracker Hits collection has " << fHitsCollection->entries() << " entries.\n" ;
 }
 

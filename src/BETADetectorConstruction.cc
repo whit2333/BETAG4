@@ -618,7 +618,7 @@ if(fSimulationManager->fSimulateTrackerOptics) {
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 /*   manager->ListTree();*/
    if(!frontTrackerSD) { 
-     frontTrackerSD =  new BETAFrontTracker ( "ForwardTracker" );
+      frontTrackerSD =  new BETAFrontTracker ( "ForwardTracker" );
    // Register detector with manager
       manager->AddNewDetector ( frontTrackerSD );
    }
