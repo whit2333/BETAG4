@@ -51,7 +51,10 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
 /*  if(fSimulationManager->fConstruction->usingLuciteHodoscope)*/
     fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-  fBigcalChannelThreshold = 5.0; //MeV
+   fBigcalChannelThreshold = 5.0; //MeV
+
+   fTrackerPhotonCounts = new int[132+132+72];
+   fTrackerTimings = new int[132+132+72];
 
 }
 //_______________________________________________________//
@@ -71,29 +74,29 @@ BETADigitizer::~BETADigitizer() {
 //_______________________________________________________//
 
 void BETADigitizer::Digitize() {
-  G4String colName;
+   G4String colName;
    if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
 
-  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
+   fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
 
-  G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4RunManager* fRM = G4RunManager::GetRunManager();
-  const G4Event* currentEvent = fRM->GetCurrentEvent();
-  G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
+   G4SDManager* SDman = G4SDManager::GetSDMpointer();
+   G4RunManager* fRM = G4RunManager::GetRunManager();
+   const G4Event* currentEvent = fRM->GetCurrentEvent();
+   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
+ 
+   BETAG4BigcalHit * bcHit;
+   BETAG4PMTHit * cerHit;
+   BETAHodoscopePMTHit * lucHit;
+   BETAFrontTrackerHit * ftHit;
 
-  BETAG4BigcalHit * bcHit;
-  BETAG4PMTHit * cerHit;
-  BETAHodoscopePMTHit * lucHit;
-  BETAFrontTrackerHit * ftHit;
+   BETAG4DigiADC * aDigi;
+   BETAG4DigiTDC * tDigi;
 
-  BETAG4DigiADC * aDigi;
-  BETAG4DigiTDC * tDigi;
-
-// Get Hits Collection pointers
-  if( fBigcalHCID != -1 ) 
-    fBigcalHC = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
-  if( fCherenkovHCID != -1 ) 
-     fGasCherenkovHC   = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+   // Get Hits Collection pointers
+   if( fBigcalHCID != -1 ) 
+      fBigcalHC = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
+   if( fCherenkovHCID != -1 ) 
+      fGasCherenkovHC   = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
 //   else  {
 //      fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
 //      fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
@@ -201,21 +204,28 @@ void BETADigitizer::Digitize() {
   }
   }
 
-
-   // Loop over Tracker Hits
-   for ( int i=0 ; i < fForwardTrackerHC->entries();i++ ) {
-     ftHit =  ( *fForwardTrackerHC )[i];
-//     aDigi = new BETAG4DigiADC(i);
-//     aDigi->fTrueValue = ftHit->GetNumberOfPhotons();
-//     aDigi->fADCValue = 90*cerHit->GetNumberOfPhotons();
-//     fCherenkovADCDC->insert ( aDigi );
-//     if(cerHit->fTimingHit) {
-       tDigi = new BETAG4DigiTDC(ftHit->cellNumber);
-       tDigi->fTrueValue = ftHit->fTiming; 
-       tDigi->fChannelNumber = ftHit->cellNumber ;
-       fTrackerTDCDC->insert ( tDigi );
-//     }
+   /// Tracker digitization 
+   for(int i = 0;i<132+132+72;i++){
+      fTrackerPhotonCounts[i] = 0;
+   } 
+   if( fTrackerHCID != -1 ) {
+      // Loop over Tracker Hit Collection 
+      for ( int i=0 ; i < fForwardTrackerHC->entries();i++ ) {
+         ftHit =  ( *fForwardTrackerHC )[i];
+	 fTrackerPhotonCounts[ftHit->cellNumber]++;
+	 if( fTrackerPhotonCounts[ftHit->cellNumber] == 2 ) {
+//       aDigi = new BETAG4DigiADC(i);
+//       aDigi->fTrueValue = ftHit->GetNumberOfPhotons();
+//       aDigi->fADCValue = 90*cerHit->GetNumberOfPhotons();
+//       fCherenkovADCDC->insert ( aDigi );
+//       if(cerHit->fTimingHit) {
+            tDigi = new BETAG4DigiTDC(ftHit->cellNumber);
+            tDigi->fTrueValue = ftHit->fTiming; 
+            tDigi->fChannelNumber = ftHit->cellNumber ;
+            fTrackerTDCDC->insert ( tDigi );
+	 }
    }
+  }
 
 }
 //__________________________________________________________________

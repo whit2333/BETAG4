@@ -109,6 +109,9 @@ private:
 
    TRandom * fRandomNumberGenerator;
 
+   int * fTrackerPhotonCounts;
+   int * fTrackerTimings;
+
 private:
    // Geant4 collections, hits, etc....
    BETAG4BigcalHitsCollection * fBigcalHC;

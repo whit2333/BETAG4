@@ -12,7 +12,8 @@
 #include "fstream"
 #include "G4OpticalPhoton.hh"
 
-// CONSTRUCTOR
+//____________________________________________________________________________
+
 BETAFrontTracker::BETAFrontTracker ( G4String  name )
       :G4VSensitiveDetector ( name )
 {
@@ -22,19 +23,16 @@ BETAFrontTracker::BETAFrontTracker ( G4String  name )
    HCID = -1;
 
 }
+//_____________________________________________________________________________
 
-// DESTRUCTOR
 BETAFrontTracker::~BETAFrontTracker() {
    ;
 }
+//_____________________________________________________________________________
 
-
-//////////////////////////////
 void BETAFrontTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 {
-   // HandsOn5: Creating hit collection
-   // Create a new collection
-   ////////////////////////////
+   
    fHitsCollection =
       new BETAFrontTrackerHitsCollection ( detname, collectionName[0] );
    if ( HCID < 0 )
@@ -61,8 +59,8 @@ void BETAFrontTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 G4bool BETAFrontTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 {
    G4Track * theTrack = aStep->GetTrack();
-///////////////////////////////////////////////////////////////////////////////
-/*theTrack->GetDefinition() == G4Electron::ElectronDefinition() */
+
+   /*theTrack->GetDefinition() == G4Electron::ElectronDefinition() */
     G4String aName;
     if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && 
           aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary    )
