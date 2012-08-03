@@ -6,7 +6,7 @@
 #include "BETAPMTHit.hh"
 #include "BETAHodoscopePMTHit.hh"
 #include "G4UserEventAction.hh"
-#include "BETAFrontTrackerHit.hh"
+#include "BETAForwardTrackerHit.hh"
 #include "BETASimulationManager.hh"
 
 #include "G4Event.hh"
@@ -23,7 +23,7 @@
 
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-#include "BETAFrontTrackerHit.hh"
+#include "BETAForwardTrackerHit.hh"
 #include "BETAG4BigcalSD.hh"
 #include "BETAG4BigcalHit.hh"
 #include "BETAHodoscopePMTHit.hh"
@@ -55,7 +55,7 @@ class BETAEventAction : public G4UserEventAction
    G4int fBigcalHCID;
 
    BETAProtvinoCalorimeterHitsCollection * BIGCALHC2;
-   BETAFrontTrackerHitsCollection * FTHC;
+   BETAForwardTrackerHitsCollection * FTHC;
    BETAMirrorHitsCollection * mirrorHC ;
    BETAFakePlaneHitsCollection * fakePlaneHC;
 

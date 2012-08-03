@@ -29,11 +29,11 @@
 #include "BETAMirror.hh"
 #include "BETARCSCellParameterisation.hh"
 #include "BETAProtvinoCellParameterisation.hh"
-#include "BETAFrontTrackerCellParameterisation.hh"
+#include "BETAForwardTrackerCellParameterisation.hh"
 #include "BETARCSCalorimeter.hh"
 #include "BETAProtvinoCalorimeter.hh"
 #include "BETAHodoscopeCellParameterisation.hh"
-#include "BETAFrontTracker.hh"
+#include "BETAForwardTracker.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETASimulationManager.hh"
 #include "BETAFakePlane.hh"
@@ -618,7 +618,7 @@ if(fSimulationManager->fSimulateTrackerOptics) {
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 /*   manager->ListTree();*/
    if(!frontTrackerSD) { 
-      frontTrackerSD =  new BETAFrontTracker ( "ForwardTracker" );
+      frontTrackerSD =  new BETAForwardTracker ( "ForwardTracker" );
    // Register detector with manager
       manager->AddNewDetector ( frontTrackerSD );
    }

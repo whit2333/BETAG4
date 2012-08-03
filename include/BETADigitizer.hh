@@ -16,7 +16,7 @@
 #include "BETASimulationManager.hh"
 #include "TRandom.h"
 #include "BETAFakePlaneHit.hh"
-#include "BETAFrontTrackerHit.hh"
+#include "BETAForwardTrackerHit.hh"
 #include "BETAProtvinoCalorimeterHit.hh"
 #include "BETARCSCalorimeterHit.hh"
 #include "BETAHodoscopePMTHit.hh"
@@ -117,7 +117,7 @@ private:
    BETAG4BigcalHitsCollection * fBigcalHC;
    BETAG4PMTHitsCollection * fGasCherenkovHC;
    BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
-   BETAFrontTrackerHitsCollection * fForwardTrackerHC;
+   BETAForwardTrackerHitsCollection * fForwardTrackerHC;
 
    G4double fBigcalChannelThreshold;
 

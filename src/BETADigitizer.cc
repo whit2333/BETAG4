@@ -87,7 +87,7 @@ void BETADigitizer::Digitize() {
    BETAG4BigcalHit * bcHit;
    BETAG4PMTHit * cerHit;
    BETAHodoscopePMTHit * lucHit;
-   BETAFrontTrackerHit * ftHit;
+   BETAForwardTrackerHit * ftHit;
 
    BETAG4DigiADC * aDigi;
    BETAG4DigiTDC * tDigi;
@@ -102,7 +102,7 @@ void BETADigitizer::Digitize() {
 //      fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
 //   }
 
-  if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAFrontTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
+  if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAForwardTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
 
   BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
 
@@ -241,7 +241,7 @@ void BETADigitizer::ReadOut() {
 //   if( fBigcal != -1 )    fBigcalHC          = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
 //   if( fCherenkovHCID != -1 ) fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
 //   if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
-//   if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAFrontTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
+//   if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAForwardTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
 // Loop over Bigcal ADC and TDC Digi collections
 // We now make it look like class AnalyzerToInSANE::Process()
 
@@ -537,7 +537,7 @@ void BETADigitizer::DigitizePedestals(){
   BETAG4BigcalHit     * bcHit;
   BETAG4PMTHit        * cerHit;
   BETAHodoscopePMTHit * lucHit;
-  BETAFrontTrackerHit * ftHit;
+  BETAForwardTrackerHit * ftHit;
 
   BETAG4DigiADC * aDigi;
   BETAG4DigiTDC * tDigi;

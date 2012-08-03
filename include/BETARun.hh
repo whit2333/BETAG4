@@ -50,7 +50,7 @@
 #include "BETADigitizer.hh"
 
 #include "BETAHodoscopePMTHit.hh"
-#include "BETAFrontTrackerHit.hh"
+#include "BETAForwardTrackerHit.hh"
 #include "BETAPMTHit.hh"
 #include "BETAFakePlaneHit.hh"
 #include "BETAG4BigcalSD.hh"
