@@ -26,7 +26,7 @@ BETAForwardTracker::BETAForwardTracker ( G4String  name )
 //_____________________________________________________________________________
 
 BETAForwardTracker::~BETAForwardTracker() {
-   if(fHitsCollection) delete fHitsCollection;
+   //if(fHitsCollection) delete fHitsCollection;
 }
 //_____________________________________________________________________________
 
