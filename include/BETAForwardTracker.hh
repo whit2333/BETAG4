@@ -10,10 +10,9 @@ class G4Step;
 
 /**  Forward tracker sensitive detector.
  *   The detector consists of (from front to back)
- *   - 72 X1 scintillators
- *   - 132 Y1 scintillators 
- *   - 132 Y2 scintillators 
- *   - A total of 336 scintillators.
+ *   - 64 X1 scintillators
+ *   - 128 Y1 scintillators 
+ *   - 128 Y2 scintillators 
  *
  * \ingroup Detectors
  */
@@ -39,9 +38,9 @@ public:
    virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
  
    int   GetScintLayer(int number){
-      if(number < 72 && number >= 0) return (0);
-      else if(number >= 72 && number < 72 + 132) return (1);
-      else if(number >= 72 + 132 && number < 72 + 2*132) return (2);
+      if(number < 64 && number >= 0) return (0);
+      else if(number >= 128 && number < 64 + 128) return (1);
+      else if(number >= 128 + 128 && number < 64 + 2*128) return (2);
       else return(-1);
    }
 
