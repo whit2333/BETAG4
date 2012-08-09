@@ -400,9 +400,10 @@ void BETADetectorConstruction::ConstructForwardTracker()
 
    G4double smallSeparation = 0.01*mm;
    G4RotationMatrix trackerRot;
-   trackerRot.rotateZ (-1.0*PI/2.0 ); 
+   trackerRot.rotateZ (1.0*PI/2.0 ); 
 
-   G4Box  *tracker_box = new G4Box ( "tracker_container_box",42.*cm/2., 24.*cm/2., 10.*mm/2. );
+   //G4Box  *tracker_box = new G4Box ( "tracker_container_box",42.*cm/2., 24.*cm/2., 10.*mm/2. );
+   G4Box  *tracker_box = new G4Box ( "tracker_container_box",24.*cm/2., 42.*cm/2., 10.*mm/2. );
    tracker_log         = new G4LogicalVolume ( tracker_box,Air,"tracker_container_box_log",0,0,0 );
 //   tracker_log->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 5.0*ns ) );
 /*
@@ -431,16 +432,16 @@ fMinRange;
    tracker_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    G4Box* trackerY1_box = new G4Box ("trackerY1_box", // Name
-                                      134.0*(3.*mm/2.0+smallSeparation),         // x half length
                                       22.*cm/2.0 + 4.0*smallSeparation,         // y half length
+                                      134.0*(3.*mm/2.0+smallSeparation),         // x half length
                                       1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
    G4Box* trackerY2_box = new G4Box ( "trackerY2_box", // Name
-                                      134.0*(3.*mm/2.0+smallSeparation),         // x half length
                                       22.*cm/2.0 + 4.0*smallSeparation,         // y half length
+                                      134.0*(3.*mm/2.0+smallSeparation),         // x half length
                                       1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
    G4Box* trackerX1_box = new G4Box ( "trackerY1_box", // Name
-                                      40.*cm/2.0 + 4.0*smallSeparation,         // x half length
                                       74.0*(3.*mm/2.0  +  smallSeparation),         // x half length
+                                      40.*cm/2.0 + 4.0*smallSeparation,         // x half length
                                       1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
 
    //----- Y Plane Scintillator and scoring surface (photon counter)
@@ -448,38 +449,38 @@ fMinRange;
    /// to approximate this, a tube of 1.4 mm diameter is created and pushed 0.2mm into the scint 
    /// box volume
    G4Box* vertBarbox = new G4Box ( "tracker_Y_plane_scint", // Name
-                                3.*mm/2.0,         // x half length
                                 22.*cm/2.0+smallSeparation,         // y half length
+                                3.*mm/2.0,         // x half length
                                 3.*mm/2.0 );     // z half length
    G4Tubs * tracker_fiber = new G4Tubs ( "tracker_fiber", 0,1.4*mm/2.0, 22.0*cm/2.0 ,0,2*pi );
    G4RotationMatrix * trackerYflip = new G4RotationMatrix();
-   trackerYflip->rotateX(pi/2.0); 
+   trackerYflip->rotateY(pi/2.0); 
    G4UnionSolid* vertBar1 =
       new G4UnionSolid ( "trackerScintAndFiber", vertBarbox, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
    G4UnionSolid* vertBar =
       new G4UnionSolid ( "trackerScintAndFiber", vertBar1, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
 
    G4Box* vertBarScore = new G4Box ( "tracker_Y_plane_scorer", // Name
-                         3.*mm/2.0,         // x half length
                          smallSeparation,         // y half length
+                         3.*mm/2.0,         // x half length
                          3.*mm/2.0 );     // z half length
 
    //----- X Plane Scintillator and scoring surface (photon counter)
    G4Box* horizBarbox = new G4Box ( "tracker_X_plane_scint", // Name
-                          40.*cm/2.0+smallSeparation,         // x half length
                           3.*mm/2.0,         // y half length
+                          40.*cm/2.0+smallSeparation,         // x half length
                           3.*mm/2.0 );     // z half length
    G4Tubs * tracker_fiber2 = new G4Tubs ( "tracker_fiber2", 0,1.4*mm/2.0, 40.0*cm/2.0 ,0,2*pi );
    G4RotationMatrix * trackerYflip2 = new G4RotationMatrix();
-   trackerYflip2->rotateY(pi/2.0); 
+   trackerYflip2->rotateX(pi/2.0); 
    G4UnionSolid* horizBar1 =
       new G4UnionSolid ( "trackerScintAndFiber2", horizBarbox, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
    G4UnionSolid* horizBar =
       new G4UnionSolid ( "trackerScintAndFiber2", horizBar1, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
 
    G4Box* horizBarScore = new G4Box ( "tracker_X_plane_scorer", // Name
-                          smallSeparation,         // x half length
                           3.*mm/2.0,         // y half length
+                          smallSeparation,         // x half length
                           3.*mm/2.0 );     // z half length
    
    if(fSimulationManager->fSimulateTrackerOptics) {
@@ -496,10 +497,11 @@ fMinRange;
   
    // check out http://www.colorschemer.com/online.html   
    G4VisAttributes* fTrackerHorizBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 128.0/255.0, 51.0/255.0, 0.5 ) );
+   fTrackerHorizBar_log_attr->SetForceSolid(true);
    //fTrackerHorizBar_log_attr->SetVisibility(false);
 //   fTrackerHorizBar_log_attr->SetDaughtersInvisible(false);
    fTrackerHorizBar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
-   //fTrackerHorizBar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
+   fTrackerHorizBar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
 
    G4VisAttributes* fTrackerVertBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
 //   fTrackerVertBar_log_attr->SetForceWireframe(true);
@@ -507,15 +509,17 @@ fMinRange;
    //fTrackerVertBar_log_attr->SetVisibility(false);
    //fTrackerVertBar_log_attr->SetDaughtersInvisible(false);
    fTrackerVertBar_log->SetVisAttributes ( fTrackerVertBar_log_attr );
-   //fTrackerVertBar_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   fTrackerVertBar_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    G4VisAttributes* barScore_log_attr = new G4VisAttributes ( G4Colour ( 51.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
    barScore_log_attr->SetForceSolid(true);
    fTrackerVertBarScore_log->SetVisAttributes ( barScore_log_attr );
    fTrackerHorizBarScore_log->SetVisAttributes ( barScore_log_attr );
 
+
    //----- Tracker Container Placement - placed at the front of the "BETA Detector" box 
-   tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
+   //tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
+   tracker_phys = new G4PVPlacement ( 0 , G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 ),tracker_log,"tracker_phys",BETADetector_log,false,0 );
 
    trackerY1_log = new G4LogicalVolume ( trackerY1_box,Air,"tracker_Y1_log",0,0,0 );
    trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"tracker_Y2_log",0,0,0 );
@@ -546,7 +550,7 @@ fMinRange;
    G4VPhysicalVolume * trackerY1_phys = 
       new G4PVPlacement ( 0,G4ThreeVector (0,0,0),trackerY1_log, "tracker_Y1_plane_phys", tracker_log,false,0 );
    G4VPhysicalVolume * trackerY2_phys =    
-      new G4PVPlacement ( 0,G4ThreeVector (0,0,1.4*2.0*mm + 3.0*mm+2.0*smallSeparation),trackerY2_log, "tracker_Y2_plane_phys", tracker_log,false,0 );
+      new G4PVPlacement ( 0,G4ThreeVector (0.0,-1.5*mm/*vertical offset*/,1.4*2.0*mm + 3.0*mm+2.0*smallSeparation),trackerY2_log, "tracker_Y2_plane_phys", tracker_log,false,0 );
 
 // VGM does not like the following replicas
 //    G4VPhysicalVolume* trackerY1_phys = 
@@ -559,22 +563,22 @@ fMinRange;
    // work around
    // Also sets the copy number used to get the correct scint
    for(int i0=0;i0<64;i0++) {
-      new G4PVPlacement(0,G4ThreeVector (0,(3.125*mm+smallSeparation/2.0)*(Double_t)(i0-64/2),0),fTrackerHorizBar_log,
+      new G4PVPlacement(0,G4ThreeVector ((3.125*mm+smallSeparation/2.0)*(Double_t)(i0-64/2),0,0),fTrackerHorizBar_log,
                         "TrackerHorizontalX1",trackerX1_log,true,i0);
    }
    for(int i0=0;i0<128;i0++) {
-      new G4PVPlacement(0,G4ThreeVector ((3.1250*mm+smallSeparation/2.0)*(Double_t)(i0-128/2),0,0),fTrackerVertBar_log,
+      new G4PVPlacement(0,G4ThreeVector (0,(3.1250*mm+smallSeparation/2.0)*(Double_t)(i0-128/2),0),fTrackerVertBar_log,
                         "TrackerHorizontalY1",trackerY1_log,true,i0+64);
    }
    for(int i0=0;i0<128;i0++) {
-      new G4PVPlacement(0,G4ThreeVector ((3.1250*mm+smallSeparation/2.0)*(Double_t)(i0-128/2),0,0),fTrackerVertBar_log,
+      new G4PVPlacement(0,G4ThreeVector (0, (3.1250*mm+smallSeparation/2.0)*(Double_t)(i0-128/2),0),fTrackerVertBar_log,
                         "TrackerHorizontalY2",trackerY2_log,true,i0+64+128);
    }
 
-   new G4PVPlacement( 0,G4ThreeVector (0,22.0*cm/2.-smallSeparation/2.0,0 ),fTrackerVertBarScore_log, "tracker_Y_scint_scorer_phys", fTrackerVertBar_log,true,0 );
+   new G4PVPlacement( 0,G4ThreeVector (22.0*cm/2.-smallSeparation/2.0,0,0 ),fTrackerVertBarScore_log, "tracker_Y_scint_scorer_phys", fTrackerVertBar_log,true,0 );
 // //    new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),fTrackerVertBarScore_log, "verttracker+leftBox+rightbox", fTrackerVertBar_log,true,0 );
 // 
-   new G4PVPlacement( 0,G4ThreeVector (40.0*cm/2.0-smallSeparation/2.0,0,0 ),fTrackerHorizBarScore_log, "tracker_X_scint_scorer_phys", fTrackerHorizBar_log,true,0 );
+   new G4PVPlacement( 0,G4ThreeVector (0.0, -40.0*cm/2.0+smallSeparation/2.0,0 ),fTrackerHorizBarScore_log, "tracker_X_scint_scorer_phys", fTrackerHorizBar_log,true,0 );
 // //    new G4PVPlacement ( 0,G4ThreeVector (-(40.0*cm/2.0+smallSeparation/2.0),0,0 ),fTrackerHorizBarScore_log, "horztracker+leftBox+rightbox", fTrackerHorizBar_log,true,0 );
 // 
 // 
