@@ -43,20 +43,20 @@ BETAForwardTrackerCellParameterisation::BETAForwardTrackerCellParameterisation(G
    // Initialise
    G4int i ( 0 );
 
-   for ( i=0; i<73; i++ )
+   for ( i=0; i<65; i++ )
    {
       xCell.push_back ( 0.*cm );
       yCell.push_back ( ( 36-i ) *(3.*mm+smallSeparation )+ 1.5*mm+smallSeparation/2.0);
       zCell.push_back (  -3.*mm-smallSeparation ); // move forward
    }
-   for ( i=0; i<133; i++ )
+   for ( i=0; i<129; i++ )
    {
       xCell.push_back ( ( 66-i ) *(3.*mm+smallSeparation ) + 1.5*mm+smallSeparation/2.0 );
       yCell.push_back ( 0.*cm );
       zCell.push_back ( 0.*cm );
    }
 
-   for ( i=0; i<133; i++ )
+   for ( i=0; i<129; i++ )
    {
       xCell.push_back ( ( 66-i ) *(3.*mm+smallSeparation )  );
       yCell.push_back ( 0.*cm );
