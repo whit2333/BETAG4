@@ -454,8 +454,10 @@ fMinRange;
    G4Tubs * tracker_fiber = new G4Tubs ( "tracker_fiber", 0,1.4*mm/2.0, 22.0*cm/2.0 ,0,2*pi );
    G4RotationMatrix * trackerYflip = new G4RotationMatrix();
    trackerYflip->rotateX(pi/2.0); 
-   G4UnionSolid* vertBar =
+   G4UnionSolid* vertBar1 =
       new G4UnionSolid ( "trackerScintAndFiber", vertBarbox, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
+   G4UnionSolid* vertBar =
+      new G4UnionSolid ( "trackerScintAndFiber", vertBar1, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
 
    G4Box* vertBarScore = new G4Box ( "tracker_Y_plane_scorer", // Name
                          3.*mm/2.0,         // x half length
@@ -470,8 +472,10 @@ fMinRange;
    G4Tubs * tracker_fiber2 = new G4Tubs ( "tracker_fiber2", 0,1.4*mm/2.0, 40.0*cm/2.0 ,0,2*pi );
    G4RotationMatrix * trackerYflip2 = new G4RotationMatrix();
    trackerYflip2->rotateY(pi/2.0); 
-   G4UnionSolid* horizBar =
+   G4UnionSolid* horizBar1 =
       new G4UnionSolid ( "trackerScintAndFiber2", horizBarbox, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
+   G4UnionSolid* horizBar =
+      new G4UnionSolid ( "trackerScintAndFiber2", horizBar1, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
 
    G4Box* horizBarScore = new G4Box ( "tracker_X_plane_scorer", // Name
                           smallSeparation,         // x half length
