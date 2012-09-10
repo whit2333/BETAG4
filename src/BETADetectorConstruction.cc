@@ -373,7 +373,11 @@ void BETADetectorConstruction::SetVisAtt(){
       if(logicBrace3)logicBrace3->SetVisAttributes(fBlackLineVisAtt);
       if(logicBrace4)logicBrace4->SetVisAttributes(fBlackLineVisAtt);
 
-   }
+   } else {
+
+   /// \todo put other vis here
+
+   } 
    /*calorimeterBottom_log->SetVisAttributes(fBlackLineVisAtt);
    calorimeterBottom_log->SetVisAttributes(fBlackLineVisAtt);*/
 
@@ -432,16 +436,16 @@ fMinRange;
    tracker_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    G4Box* trackerY1_box = new G4Box ("trackerY1_box", // Name
-                                      22.*cm/2.0 + 4.0*smallSeparation,         // y half length
+                                      24.*cm/2.0 + 4.0*smallSeparation,         // y half length
                                       134.0*(3.*mm/2.0+smallSeparation),         // x half length
                                       1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
    G4Box* trackerY2_box = new G4Box ( "trackerY2_box", // Name
-                                      22.*cm/2.0 + 4.0*smallSeparation,         // y half length
+                                      24.*cm/2.0 + 4.0*smallSeparation,         // y half length
                                       134.0*(3.*mm/2.0+smallSeparation),         // x half length
                                       1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
    G4Box* trackerX1_box = new G4Box ( "trackerY1_box", // Name
                                       74.0*(3.*mm/2.0  +  smallSeparation),         // x half length
-                                      40.*cm/2.0 + 4.0*smallSeparation,         // x half length
+                                      42.*cm/2.0 + 4.0*smallSeparation,         // x half length
                                       1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
 
    //----- Y Plane Scintillator and scoring surface (photon counter)
@@ -501,7 +505,7 @@ fMinRange;
    //fTrackerHorizBar_log_attr->SetVisibility(false);
 //   fTrackerHorizBar_log_attr->SetDaughtersInvisible(false);
    fTrackerHorizBar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
-   fTrackerHorizBar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
+//    fTrackerHorizBar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
 
    G4VisAttributes* fTrackerVertBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
 //   fTrackerVertBar_log_attr->SetForceWireframe(true);
@@ -509,7 +513,7 @@ fMinRange;
    //fTrackerVertBar_log_attr->SetVisibility(false);
    //fTrackerVertBar_log_attr->SetDaughtersInvisible(false);
    fTrackerVertBar_log->SetVisAttributes ( fTrackerVertBar_log_attr );
-   fTrackerVertBar_log->SetVisAttributes ( G4VisAttributes::Invisible );
+//    fTrackerVertBar_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    G4VisAttributes* barScore_log_attr = new G4VisAttributes ( G4Colour ( 51.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
    barScore_log_attr->SetForceSolid(true);
@@ -536,13 +540,13 @@ fMinRange;
    //tracker_X1plane_attr->SetForceSolid(true);
    tracker_X1plane_attr->SetDaughtersInvisible(false);
    /// Set these attributes to make the individual scints invisible
-   //trackerY1_log->SetVisAttributes ( tracker_Y1plane_attr );
-   //trackerY2_log->SetVisAttributes ( tracker_Y2plane_attr );
-   //trackerX1_log->SetVisAttributes ( tracker_X1plane_attr );
+   trackerY1_log->SetVisAttributes ( tracker_Y1plane_attr );
+   trackerY2_log->SetVisAttributes ( tracker_Y2plane_attr );
+   trackerX1_log->SetVisAttributes ( tracker_X1plane_attr );
    /// Set these attributes to make each scint visible.... 
-   trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
+//    trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
+//    trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
+//    trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
    //----- X1 Plane placed closest to the target
    G4VPhysicalVolume * trackerX1_phys =    

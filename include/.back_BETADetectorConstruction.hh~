@@ -180,7 +180,7 @@ public :
    G4LogicalVolume*   fLuciteHodoPMTphotocathode_log;
    G4LogicalVolume*   fLuciteHodoPMTinquotes_log;
    G4LogicalVolume*   fLuciteHodoBar_log;
-G4VSensitiveDetector* HodoscopePMTSD;
+   G4VSensitiveDetector* HodoscopePMTSD;
 
    //@}
 
@@ -525,6 +525,8 @@ public:
    G4VisAttributes*   fInvisibleVisAtt;
    G4VisAttributes*   fBlackLineVisAtt;
    G4bool             fIsBlackLineVis;
+
+
 
    void               ConstructVisAtt();
    void               SetVisAtt();

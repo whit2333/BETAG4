@@ -104,6 +104,6 @@ G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 
 void BETAForwardTracker::EndOfEvent ( G4HCofThisEvent* )
 {
-	std::cout << "BETAForwardTracker Hits collection has " << fHitsCollection->entries() << " entries.\n" ;
+//	std::cout << "BETAForwardTracker Hits collection has " << fHitsCollection->entries() << " entries.\n" ;
 }
 
