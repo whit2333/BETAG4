@@ -1,0 +1,67 @@
+# Step 1 : Open Driver and define parameters
+/vis/open DAWNFILE 900x800
+
+/beta/target/setPolarizationAngle 80
+
+/vis/viewer/reset
+
+### Variables / Alias ###
+/control/alias theta1 140
+/control/alias phi1 180
+/control/alias zoom1 2.8
+
+
+#/control/alias panx1 2.4
+#/control/alias pany1 0.90
+#/control/alias dolly1 5.0 m
+#/control/alias dolly1 34
+#/control/alias interval 0.4
+#/control/alias halfInterval 0.25
+#/control/alias dx -0.5 #cm
+#/control/alias perspectiveangle 23
+
+# Step 2 : Set up the viewer
+
+
+/vis/viewer/set/style wireframe
+#/vis/viewer/set/style s
+/vis/viewer/set/hiddenEdge 1
+#/vis/viewer/set/hiddenMarker 1
+/vis/viewer/set/culling global
+
+/vis/viewer/set/upVector -0.7660444 0 0.642787
+/vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
+/vis/viewer/zoomTo {zoom1}
+
+#/vis/viewer/set/projection p {perspectiveangle} 
+#/vis/viewer/dollyTo -1
+#/vis/viewer/dolly {dolly1}
+#/vis/viewer/set/projection o 
+#/vis/viewer/panTo 0 0
+#/vis/viewer/pan {panx1} {pany1} 
+#/vis/viwer/set/viewpointVector 7 3.8 -0.6
+
+# Step 3 : Create empty scene
+/vis/scene/create
+
+# Step 4 : Declare what 3D data should be added to the created scene
+/vis/scene/add/volume  
+#/vis/scene/add/axes  
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+
+# Step 5 : Attach scene to sceneHandler
+/vis/sceneHandler/attach
+
+# Step 6 : Run simulation with appropriate options to store trajectory information
+#/tracking/storeTrajectory 1
+#/run/beamOn 1
+
+# Step 7 : Execute Visualization
+/vis/viewer/flush
+
+#/run/beamOn 2
+
+
+
+
