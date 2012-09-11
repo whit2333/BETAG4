@@ -21,6 +21,9 @@
 #include "BETARCSCalorimeterHit.hh"
 #include "BETAHodoscopePMTHit.hh"
 #include "BETAG4PMTHit.hh"
+#include "BETAG4MonteCarloEvent.h"
+#include "TVector2.h"
+#include "HallCBeam.h"
 
 /**  Digitizer module for BETA.
  *
@@ -66,11 +69,14 @@ public:
 
    void SetTriggerEvent(InSANETriggerEvent* evt) { fTriggerEvent=evt; };
 
-   InSANETriggerEvent * fTriggerEvent;
-
-   BETAEvent * fBetaEvent;
+   InSANETriggerEvent *    fTriggerEvent;
+   BETAEvent *             fBetaEvent;
+   HallCBeamEvent *        fBeamEvent;
+   BETAG4MonteCarloEvent * fMCEvent;
 
 private: 
+
+   HallCRasteredBeam * fBeam;
 
    bool fIsTriggered;
 

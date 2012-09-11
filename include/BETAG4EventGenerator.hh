@@ -17,6 +17,8 @@
  *   \ingroup EventGen
  */ 
 class BETAG4EventGenerator : public InSANEEventGenerator {
+protected:
+   bool fIsSlowRasterOn;
 public:
    BETAG4EventGenerator();
    virtual ~BETAG4EventGenerator() { }
@@ -24,7 +26,9 @@ public:
    /** Generates the randomly distributed initial position(s)
     *  \todo modify to be able to generate more than a single primary particle
     */ 
-   virtual void ShootPositions(){ }
+   virtual void ShootPositions(){
+       
+   }
 
    /** Sets the cross section and creates the phase space sampler
     *
@@ -43,6 +47,8 @@ public:
      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
      AddSampler(fF1F2EventSampler);
      CalculateTotalCrossSection();
+     fIsSlowRasterOn = true;
+
    }
 
 protected :

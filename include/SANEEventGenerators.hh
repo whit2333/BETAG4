@@ -9,6 +9,7 @@
 #include "InSANEInclusiveDiffXSec.h"
 #include "InSANEXSections.h"
 #include "WiserXSection.h"
+#include "HallCBeam.h"
 
 /**  Flat Event generator centered on bigcal with small solid angle
  *   and near mono chromatic energies, hence a cone

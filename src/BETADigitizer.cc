@@ -11,11 +11,11 @@
 #include "ForwardTrackerGeometryCalculator.h"
 #include "InSANERunManager.h"
 
-
-
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
   fSimulationManager=0;
   fRandomNumberGenerator = InSANERunManager::GetRunManager()->GetRandom(); //new TRandom();
+
+  fBeam = new HallCRasteredBeam();
 
   fCherenkovADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );
@@ -78,6 +78,7 @@ void BETADigitizer::Digitize() {
    if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
 
    fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
+   fBeamEvent = BETASimulationManager::GetInstance()->fEvents->BEAM;
 
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4RunManager* fRM = G4RunManager::GetRunManager();
@@ -236,6 +237,8 @@ void BETADigitizer::ReadOut() {
   BETAG4DigiADC * aDigi;
   BETAG4DigiTDC * tDigi;
   fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
+  fBeamEvent = BETASimulationManager::GetInstance()->fEvents->BEAM;
+  fMCEvent   = BETASimulationManager::GetInstance()->fEvents->MC;
 
 // Get Digi Collection pointers
 //   if( fBigcal != -1 )    fBigcalHC          = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
@@ -526,6 +529,22 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
 // 
 //   }
 //   aBetaEvent->ClearEvent();
+
+/// _____ BEAM  ______
+   TClonesArray * fThrownParticles = fMCEvent->fThrownParticles;
+   if(fThrownParticles->GetEntries() > 0){
+   BETAG4MonteCarloThrownParticle * aPart = (BETAG4MonteCarloThrownParticle*)(*fThrownParticles)[0];
+   //fBeamEvent->fBeamEnergy
+   fBeamEvent->fXRaster = 0.0;
+   fBeamEvent->fYRaster = 0.0;
+   fBeamEvent->fXSlowRaster = aPart->Vx();
+   fBeamEvent->fYSlowRaster = aPart->Vy();
+   TVector2 xyadc = fBeam->GetSlowRasterADC(aPart->Vx(),aPart->Vy());
+   fBeamEvent->fXSlowRasterADC = xyadc.X();
+   fBeamEvent->fYSlowRasterADC = xyadc.Y();
+   fBeamEvent->fXRasterADC = 0.0;
+   fBeamEvent->fYRasterADC = 0.0;
+   }
 
 
 }
