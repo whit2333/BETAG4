@@ -40,14 +40,22 @@ public:
     *  requiring a different cross section should reimplement this method
     */
    virtual void Initialize(){
-     F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-     fDiffXSec->SetBeamEnergy(fBeamEnergy);
-     fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-     fPrimaryPS->ListVariables();
-     InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-     AddSampler(fF1F2EventSampler);
-     CalculateTotalCrossSection();
-     fIsSlowRasterOn = true;
+
+      /// Create the cross section
+      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+      fDiffXSec->SetBeamEnergy(fBeamEnergy);
+      /// Create the phase space
+      fDiffXSec->InitializePhaseSpaceVariables();
+//      fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+//      fPrimaryPS->ListVariables();
+
+      /// Create the sampler 
+      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+      /// Add sampler to event generator
+      AddSampler(fF1F2EventSampler);
+
+      CalculateTotalCrossSection();
+      fIsSlowRasterOn = true;
 
    }
 
