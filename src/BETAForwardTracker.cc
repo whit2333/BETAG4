@@ -11,6 +11,7 @@
 #include "Randomize.hh"
 #include "fstream"
 #include "G4OpticalPhoton.hh"
+#include "G4VTouchable.hh"
 
 //____________________________________________________________________________
 
@@ -60,25 +61,23 @@ G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 {
    G4Track * theTrack = aStep->GetTrack();
 
-   /*theTrack->GetDefinition() == G4Electron::ElectronDefinition() */
-    G4String aName;
-    if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && 
-          aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary    )
+   G4String aName;
+
+   if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && 
+          aStep->GetPreStepPoint()->GetStepStatus() == fGeomBoundary    )
     {
-//(theTrack->GetVolume()->GetLogicalVolume()->GetName() == "tracker_horizBarScore_log" ||
-//theTrack->GetVolume()->GetLogicalVolume()->GetName() == "tracker_vertBarScore_log" )
-/*&&(
- theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "horizBarScore_log" ||
- theTrack->GetNextVolume()->GetLogicalVolume()->GetName() == "vertBarScore_log" ))*/
-//trackerY1_phys
+
+      G4TouchableHandle touch1 = aStep->GetPreStepPoint()->GetTouchableHandle();
+
 
 //      aName=theTrack->GetVolume()->GetMotherLogical()->GetName();
 //      G4cout << " SHOULD REGISTER HIT in physical volume "<< aName << G4endl;
 
       BETAForwardTrackerHit* aHit = new BETAForwardTrackerHit();
       fHitsCollection->insert ( aHit );
-      aHit->cellNumber = theTrack->GetNextVolume()->GetCopyNo();
+      aHit->cellNumber = touch1->GetCopyNumber(1);
 
+/*      std::cout << "tracker number " << aHit->cellNumber << "\n";*/
       //if(aName=="trackerX1_log") aHit->layerNumber = 1;
       //else if(aName=="trackerY1_log") aHit->layerNumber = 2;
       //else if(aName=="trackerY2_log") aHit->layerNumber = 3;
