@@ -50,6 +50,9 @@
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4VPVParameterisation.hh"
+#include "ForwardTrackerGeometryCalculator.h"
+#include "TVector3.h"
+
 //___________________________________________________________________
 
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
@@ -74,9 +77,16 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    fTrackerVertBar_log=0;
    fTrackerHorizBarScore_log=0;
    fTrackerVertBarScore_log=0;
+   fTrackerX1BarScore_log=0;
+   fTrackerY1BarScore_log=0;
+   fTrackerY2BarScore_log=0;
+   fTrackerX1Bar_log=0;
+   fTrackerY1Bar_log=0;
+   fTrackerY2Bar_log=0;
    trackerY1_log=0;
    trackerY2_log=0;
    trackerX1_log=0;
+   fTrackerG10Frame_log = 0;
    frontTrackerSD=0;
 
    tank_log=0;
@@ -166,9 +176,10 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    DetectorWidth  = 75.*2.54*cm+0.5*m;
    rTarget = 50.*cm;
    rTracker= 55.*cm;
-   rCherenkov= 60.*cm;
+   rCherenkov= 62.5*cm;
    rHodoscope = 240.*cm;
    rBigcal = 345.*cm;
+   fBETADistance = rTarget + 1.0*cm;
 
 
 /// Copy of Justin Wrights Code:
@@ -389,10 +400,19 @@ void BETADetectorConstruction::ConstructForwardTracker()
    ////////////////////////////////////////////////////////////////
    // Front Tracker  //////////////////////////////////////////////
    ////////////////////////////////////////////////////////////////
+   /// For now we do not include the "frame" itself, just the G10 material between the layers
 
-   //Delete existing stuff
+   /// Delete existing stuff
    if(tracker_phys) delete tracker_phys;
    if(tracker_log) delete tracker_log;
+
+   if(fTrackerY1Bar_log) delete fTrackerY1Bar_log;
+   if(fTrackerY2Bar_log) delete fTrackerY2Bar_log;
+   if(fTrackerX1Bar_log) delete fTrackerX1Bar_log;
+   if(fTrackerY1BarScore_log) delete fTrackerY1BarScore_log;
+   if(fTrackerY2BarScore_log) delete fTrackerY2BarScore_log;
+   if(fTrackerX1BarScore_log) delete fTrackerX1BarScore_log;
+   if(fTrackerG10Frame_log) delete fTrackerG10Frame_log;
    if(fTrackerHorizBar_log) delete fTrackerHorizBar_log;
    if(fTrackerVertBar_log) delete fTrackerVertBar_log;
    if(fTrackerHorizBarScore_log) delete fTrackerHorizBarScore_log;
@@ -400,34 +420,59 @@ void BETADetectorConstruction::ConstructForwardTracker()
    if(trackerY1_log) delete trackerY1_log;
    if(trackerY2_log) delete trackerY2_log;
    if(trackerX1_log) delete trackerX1_log;
-//    if(frontTrackerSD) {frontTrackerSD->Activate(false);delete frontTrackerSD;}
+   //if(frontTrackerSD) {frontTrackerSD->Activate(false);delete frontTrackerSD;}
 
-   G4double smallSeparation = 0.01*mm;
+   ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
+
+   /// Construction parameters
+   TVector3   ftbbox              = ftgeocalc->GetBoundingBoxDimensions();
+   TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
+   TVector3   ftY1bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(1);
+   TVector3   ftY2bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(2);
+   TVector3   ftX1bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(0);
+   G4double   smallSeparation     = 0.01*mm;
+
+   /// Not sure why this is needed?
    G4RotationMatrix trackerRot;
-   trackerRot.rotateZ (1.0*PI/2.0 ); 
+   trackerRot.rotateZ(1.0*PI/2.0 ); 
 
-   //G4Box  *tracker_box = new G4Box ( "tracker_container_box",42.*cm/2., 24.*cm/2., 10.*mm/2. );
-   G4Box  *tracker_box = new G4Box ( "tracker_container_box",24.*cm/2., 42.*cm/2., 10.*mm/2. );
+   G4Box  *tracker_box = new G4Box ( "tracker_container_box",ftbbox.X()*cm/2.0, ftbbox.Y()*cm/2.0, ftbbox.Z()*cm/2.0 );
+   //G4Box  *tracker_box = new G4Box ( "tracker_container_box",24.*cm/2., 42.*cm/2., 10.*mm/2. );
    tracker_log         = new G4LogicalVolume ( tracker_box,Air,"tracker_container_box_log",0,0,0 );
-//   tracker_log->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 5.0*ns ) );
-/*
+
+   //----- Tracker Container Placement - placed at the front of the "BETA Detector" box 
+   //tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
+   tracker_phys = new G4PVPlacement ( 0 , 
+                                      G4ThreeVector(ftbbox_origin.X()*cm,
+                                                    ftbbox_origin.Y()*cm,
+                                                    ftbbox_origin.Z()*cm - DetectorLength/2.0 - fBETADistance),
+                                      tracker_log,
+                                      "tracker_phys",
+                                      BETADetector_log,
+                                      false,
+                                      0);
+   /// User limits
+   //tracker_log->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 5.0*ns ) );
+   /*
    G4UserLimits(G4double ustepMax = DBL_MAX,
 		G4double utrakMax = DBL_MAX,
 		G4double utimeMax = DBL_MAX,
 		G4double uekinMin = 0.,
 		G4double urangMin = 0. );
-fMaxStep;
-// max allowed Step size in this volume
-fMaxTrack;
-// max total track length
-fMaxTime;
-// max global time
-fMinEkine;
-// min kinetic energy remaining (only for charged particles)
-fMinRange;
-// min remaining range (only for charged particles)
-*/
+   fMaxStep;
+   // max allowed Step size in this volume
+   fMaxTrack;
+   // max total track length
+   fMaxTime;
+   // max global time
+   fMinEkine;
+   // min kinetic energy remaining (only for charged particles)
+   fMinRange;
+   // min remaining range (only for charged particles)
+   */
 
+   /// vis attributes
+   /// \todo move somewhere else.
    // check out http://www.colorschemer.com/online.html   
    G4VisAttributes* tracker_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 204.0/255.0, 51.0/255.0, 0.1 ) );
    //tracker_log_attr->SetVisibility(false);
@@ -435,99 +480,218 @@ fMinRange;
    tracker_log->SetVisAttributes ( tracker_log_attr );
    tracker_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
+
+   /// Layer Boxes
    G4Box* trackerY1_box = new G4Box ("trackerY1_box", // Name
-                                      24.*cm/2.0 + 4.0*smallSeparation,         // y half length
-                                      134.0*(3.*mm/2.0+smallSeparation),         // x half length
-                                      1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
+                                      ftY1bbox.X()*cm/2.0,     // y half length
+                                      ftY1bbox.Y()*cm/2.0,     // x half length
+                                      ftY1bbox.Z()*cm/2.0 );   // z half length
    G4Box* trackerY2_box = new G4Box ( "trackerY2_box", // Name
-                                      24.*cm/2.0 + 4.0*smallSeparation,         // y half length
-                                      134.0*(3.*mm/2.0+smallSeparation),         // x half length
-                                      1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
-   G4Box* trackerX1_box = new G4Box ( "trackerY1_box", // Name
-                                      74.0*(3.*mm/2.0  +  smallSeparation),         // x half length
-                                      42.*cm/2.0 + 4.0*smallSeparation,         // x half length
-                                      1.4*mm + 3.*mm/2.0 + smallSeparation/2.0 );     // z half length
+                                      ftY2bbox.X()*cm/2.0,     // y half length
+                                      ftY2bbox.Y()*cm/2.0,     // x half length
+                                      ftY2bbox.Z()*cm/2.0 );   // z half length
+   G4Box* trackerX1_box = new G4Box ( "trackerX1_box", // Name
+                                      ftX1bbox.X()*cm/2.0,     // y half length
+                                      ftX1bbox.Y()*cm/2.0,     // x half length
+                                      ftX1bbox.Z()*cm/2.0 );   // z half length
 
    //----- Y Plane Scintillator and scoring surface (photon counter)
    /// Tracker fiber is 1.2 mm in diameter and glued along the full length of the scint.
    /// to approximate this, a tube of 1.4 mm diameter is created and pushed 0.2mm into the scint 
    /// box volume
-   G4Box* vertBarbox = new G4Box ( "tracker_Y_plane_scint", // Name
-                                22.*cm/2.0+smallSeparation,         // y half length
-                                3.*mm/2.0,         // x half length
-                                3.*mm/2.0 );     // z half length
-   G4Tubs * tracker_fiber = new G4Tubs ( "tracker_fiber", 0,1.4*mm/2.0, 22.0*cm/2.0 ,0,2*pi );
-   G4RotationMatrix * trackerYflip = new G4RotationMatrix();
-   trackerYflip->rotateY(pi/2.0); 
-   G4UnionSolid* vertBar1 =
-      new G4UnionSolid ( "trackerScintAndFiber", vertBarbox, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
-   G4UnionSolid* vertBar =
-      new G4UnionSolid ( "trackerScintAndFiber", vertBar1, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
-
-   G4Box* vertBarScore = new G4Box ( "tracker_Y_plane_scorer", // Name
+   ///
+   /// First create the basic shapes needed
+   G4Box* Y1Barbox = new G4Box ( "tracker_Y1_scint", // Name
+                                ftgeocalc->GetY1ScintLength()*cm/2.0,   // x half length
+                                3.*mm/2.0,                              // y half length
+                                2.0*3.*mm/2.0 );                        // z half length
+   G4Box* Y2Barbox = new G4Box ( "tracker_Y2_scint", // Name
+                                ftgeocalc->GetY2ScintLength()*cm/2.0,   // x half length
+                                3.*mm/2.0,                              // y half length
+                                3.*mm/2.0 );                            // z half length
+   G4Tubs* Y1_tracker_fiber = new G4Tubs ( "Y1_tracker_fiber", 
+                                0,          // inner radius
+                                1.4*mm/2.0, // outer radius
+                                ftgeocalc->GetY1ScintLength()*cm/2.0, // z half length
+                                0,          // starting angle
+                                2*pi );     // ending angle
+   G4Tubs* Y2_tracker_fiber = new G4Tubs ( "Y2_tracker_fiber", 
+                                0,          // inner radius
+                                1.4*mm/2.0, // outer radius
+                                ftgeocalc->GetY2ScintLength()*cm/2.0, // z half length
+                                0,          // starting angle
+                                2*pi );     // ending angle
+   /// \todo Move from box scoring to two discs inside fibers
+   G4Box* Y1BarScoreBox = new G4Box ( "tracker_Y1_scorer_box", // Name
+                         smallSeparation,         // y half length
+                         3.*mm/2.0,         // x half length
+                         2.0*3.*mm/2.0 );     // z half length
+   G4Box* Y2BarScoreBox = new G4Box ( "tracker_Y2_scorer_box", // Name
                          smallSeparation,         // y half length
                          3.*mm/2.0,         // x half length
                          3.*mm/2.0 );     // z half length
 
-   //----- X Plane Scintillator and scoring surface (photon counter)
-   G4Box* horizBarbox = new G4Box ( "tracker_X_plane_scint", // Name
-                          3.*mm/2.0,         // y half length
-                          40.*cm/2.0+smallSeparation,         // x half length
-                          3.*mm/2.0 );     // z half length
-   G4Tubs * tracker_fiber2 = new G4Tubs ( "tracker_fiber2", 0,1.4*mm/2.0, 40.0*cm/2.0 ,0,2*pi );
-   G4RotationMatrix * trackerYflip2 = new G4RotationMatrix();
-   trackerYflip2->rotateX(pi/2.0); 
-   G4UnionSolid* horizBar1 =
-      new G4UnionSolid ( "trackerScintAndFiber2", horizBarbox, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
-   G4UnionSolid* horizBar =
-      new G4UnionSolid ( "trackerScintAndFiber2", horizBar1, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
+   G4Box* X1Barbox = new G4Box ( "tracker_X1_scint", // Name
+                                3.0*mm/2.0,                             // x half length
+                                ftgeocalc->GetX1ScintLength()*cm/2.0,   // y half length
+                                3.*mm/2.0 );                            // z half length
+   G4Tubs* X1_tracker_fiber = new G4Tubs ( "X1_tracker_fiber", 
+                                0,          // inner radius
+                                1.4*mm/2.0, // outer radius
+                                ftgeocalc->GetX1ScintLength()*cm/2.0, // z half length
+                                0,          // starting angle
+                                2*pi );     // ending angle
+   G4Box* X1BarScoreBox = new G4Box ( "tracker_X1_scorer_box", // Name
+                         3.*mm/2.0,         // x half length
+                         smallSeparation,         // y half length
+                         3.*mm/2.0 );     // z half length
 
-   G4Box* horizBarScore = new G4Box ( "tracker_X_plane_scorer", // Name
-                          3.*mm/2.0,         // y half length
-                          smallSeparation,         // x half length
-                          3.*mm/2.0 );     // z half length
+   /// Rotation for Y fiber's "tube" 
+   G4RotationMatrix * TrackerFiberY1flip = new G4RotationMatrix();
+   TrackerFiberY1flip->rotateY(pi/2.0); 
+
+   G4RotationMatrix * TrackerFiberY2flip = new G4RotationMatrix();
+   TrackerFiberY2flip->rotateY(pi/2.0);
+
+   G4RotationMatrix * TrackerFiberX1flip = new G4RotationMatrix();
+   TrackerFiberX1flip->rotateX(pi/2.0); 
+
+   /// Create Y1 solid
+   /// - Add fiber to back 
+   G4UnionSolid* Y1Bar_solid_1 = 
+             new G4UnionSolid ( "Y1Bar_solid_1", 
+                                Y1Barbox, 
+                                Y1_tracker_fiber,
+                                TrackerFiberY1flip , 
+                                G4ThreeVector(0.0,0.0,2.0*3.0/2.0*mm+1.2*mm/2.0  ) );
+   /// - Add fiber to front 
+   G4UnionSolid* Y1Bar_solid = 
+             new G4UnionSolid ( "Y1Bar_solid", 
+                                Y1Bar_solid_1, 
+                                Y1_tracker_fiber,
+                                TrackerFiberY1flip , 
+                                G4ThreeVector(0.0,0.0,-2.0*3.0/2.0*mm-1.2*mm/2.0  ) );
+
+   /// Create Y2 solid
+   /// - Add fiber to back 
+   G4UnionSolid* Y2Bar_solid_1 = 
+             new G4UnionSolid ( "Y2Bar_solid_1", 
+                                Y2Barbox, 
+                                Y2_tracker_fiber,
+                                TrackerFiberY2flip , 
+                                G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
+   /// - Add fiber to front 
+   G4UnionSolid* Y2Bar_solid = 
+             new G4UnionSolid ( "Y2Bar_solid", 
+                                Y2Bar_solid_1, 
+                                Y2_tracker_fiber,
+                                TrackerFiberY2flip , 
+                                G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
+
+   /// Create X1 solid
+   /// - Add fiber to back 
+   G4UnionSolid* X1Bar_solid_1 = 
+             new G4UnionSolid ( "X1Bar_solid_1", 
+                                X1Barbox, 
+                                X1_tracker_fiber,
+                                TrackerFiberX1flip , 
+                                G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
+   /// - Add fiber to front 
+   G4UnionSolid* X1Bar_solid = 
+             new G4UnionSolid ( "X1Bar_solid", 
+                                X1Bar_solid_1, 
+                                X1_tracker_fiber,
+                                TrackerFiberX1flip , 
+                                G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
+
+
+//    G4Box* vertBarbox = new G4Box ( "tracker_Y_plane_scint", // Name
+//                                 22.*cm/2.0+smallSeparation,         // y half length
+//                                 3.*mm/2.0,         // x half length
+//                                 3.*mm/2.0 );     // z half length
+//    G4Tubs * tracker_fiber = new G4Tubs ( "tracker_fiber", 0,1.4*mm/2.0, 22.0*cm/2.0 ,0,2*pi );
+//    G4RotationMatrix * trackerYflip = new G4RotationMatrix();
+//    trackerYflip->rotateY(pi/2.0); 
+//    G4UnionSolid* vertBar1 =
+//       new G4UnionSolid ( "trackerScintAndFiber", vertBarbox, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
+//    G4UnionSolid* vertBar =
+//       new G4UnionSolid ( "trackerScintAndFiber", vertBar1, tracker_fiber,trackerYflip , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
+
+//    G4Box* vertBarScore = new G4Box ( "tracker_Y_plane_scorer", // Name
+//                          smallSeparation,         // y half length
+//                          3.*mm/2.0,         // x half length
+//                          3.*mm/2.0 );     // z half length
+
+   //----- X Plane Scintillator and scoring surface (photon counter)
+//    G4Box* horizBarbox = new G4Box ( "tracker_X_plane_scint", // Name
+//                           3.*mm/2.0,         // y half length
+//                           40.*cm/2.0+smallSeparation,         // x half length
+//                           3.*mm/2.0 );     // z half length
+//    G4Tubs * tracker_fiber2 = new G4Tubs ( "tracker_fiber2", 0,1.4*mm/2.0, 40.0*cm/2.0 ,0,2*pi );
+//    G4RotationMatrix * trackerYflip2 = new G4RotationMatrix();
+//    trackerYflip2->rotateX(pi/2.0); 
+//    G4UnionSolid* horizBar1 =
+//       new G4UnionSolid ( "trackerScintAndFiber2", horizBarbox, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,3.0/2.0*mm+1.2*mm/2.0  ) );
+//    G4UnionSolid* horizBar =
+//       new G4UnionSolid ( "trackerScintAndFiber2", horizBar1, tracker_fiber2,trackerYflip2 , G4ThreeVector(0.0,0.0,-3.0/2.0*mm-1.2*mm/2.0  ) );
+
+//    G4Box* horizBarScore = new G4Box ( "tracker_X_plane_scorer", // Name
+//                           3.*mm/2.0,         // y half length
+//                           smallSeparation,         // x half length
+//                           3.*mm/2.0 );     // z half length
    
    if(fSimulationManager->fSimulateTrackerOptics) {
-     fTrackerHorizBar_log      = new G4LogicalVolume( horizBar,     TrackerScint,         "tracker_fTrackerHorizBar_log" );
-     fTrackerVertBar_log       = new G4LogicalVolume( vertBar,      TrackerScint,         "tracker_fTrackerVertBar_log" );
-     fTrackerHorizBarScore_log = new G4LogicalVolume( horizBarScore,TrackerScint,"tracker_fTrackerHorizBarScore_log" );
-     fTrackerVertBarScore_log  = new G4LogicalVolume( vertBarScore, TrackerScint,"tracker_fTrackerVertBarScore_log" );
+      fTrackerY1Bar_log        = new G4LogicalVolume( Y1Bar_solid,  TrackerScint, "fTrackerY1Bar_log" );
+      fTrackerY2Bar_log        = new G4LogicalVolume( Y2Bar_solid,  TrackerScint, "fTrackerY2Bar_log" );
+      fTrackerX1Bar_log        = new G4LogicalVolume( X1Bar_solid,  TrackerScint, "fTrackerX1Bar_log" );
+      fTrackerY1BarScore_log   = new G4LogicalVolume( Y1BarScoreBox,  TrackerScint, "fTrackerY1BarScore_log" );
+      fTrackerY2BarScore_log   = new G4LogicalVolume( Y2BarScoreBox,  TrackerScint, "fTrackerY2BarScore_log" );
+      fTrackerX1BarScore_log   = new G4LogicalVolume( X1BarScoreBox,  TrackerScint, "fTrackerX1BarScore_log" );
+
+//      fTrackerHorizBar_log      = new G4LogicalVolume( horizBar,     TrackerScint,         "tracker_fTrackerHorizBar_log" );
+//      fTrackerVertBar_log       = new G4LogicalVolume( vertBar,      TrackerScint,         "tracker_fTrackerVertBar_log" );
+//      fTrackerHorizBarScore_log = new G4LogicalVolume( horizBarScore,TrackerScint,"tracker_fTrackerHorizBarScore_log" );
+//      fTrackerVertBarScore_log  = new G4LogicalVolume( vertBarScore, TrackerScint,"tracker_fTrackerVertBarScore_log" );
    } else {
-     fTrackerHorizBar_log      = new G4LogicalVolume( horizBar,     TrackerScint_NoOptics,"tracker_fTrackerHorizBar_log" );
-     fTrackerVertBar_log       = new G4LogicalVolume( vertBar,      TrackerScint_NoOptics,"tracker_fTrackerVertBar_log" );
-     fTrackerHorizBarScore_log = new G4LogicalVolume( horizBarScore,TrackerScint_NoOptics,"tracker_fTrackerHorizBarScore_log" );
-     fTrackerVertBarScore_log  = new G4LogicalVolume( vertBarScore, TrackerScint_NoOptics,"tracker_fTrackerVertBarScore_log" );   
+      fTrackerY1Bar_log        = new G4LogicalVolume( Y1Bar_solid,  TrackerScint_NoOptics, "fTrackerY1Bar_log" );
+      fTrackerY2Bar_log        = new G4LogicalVolume( Y2Bar_solid,  TrackerScint_NoOptics, "fTrackerY2Bar_log" );
+      fTrackerX1Bar_log        = new G4LogicalVolume( X1Bar_solid,  TrackerScint_NoOptics, "fTrackerX1Bar_log" );
+      fTrackerY1BarScore_log   = new G4LogicalVolume( Y1BarScoreBox,  TrackerScint_NoOptics, "fTrackerY1BarScore_log" );
+      fTrackerY2BarScore_log   = new G4LogicalVolume( Y2BarScoreBox,  TrackerScint_NoOptics, "fTrackerY2BarScore_log" );
+      fTrackerX1BarScore_log   = new G4LogicalVolume( X1BarScoreBox,  TrackerScint_NoOptics, "fTrackerX1BarScore_log" );
+//      fTrackerHorizBar_log      = new G4LogicalVolume( horizBar,     TrackerScint_NoOptics,"tracker_fTrackerHorizBar_log" );
+//      fTrackerVertBar_log       = new G4LogicalVolume( vertBar,      TrackerScint_NoOptics,"tracker_fTrackerVertBar_log" );
+//      fTrackerHorizBarScore_log = new G4LogicalVolume( horizBarScore,TrackerScint_NoOptics,"tracker_fTrackerHorizBarScore_log" );
+//      fTrackerVertBarScore_log  = new G4LogicalVolume( vertBarScore, TrackerScint_NoOptics,"tracker_fTrackerVertBarScore_log" );
    }
-  
-   // check out http://www.colorschemer.com/online.html   
-   G4VisAttributes* fTrackerHorizBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 128.0/255.0, 51.0/255.0, 0.5 ) );
-   fTrackerHorizBar_log_attr->SetForceSolid(true);
-   //fTrackerHorizBar_log_attr->SetVisibility(false);
-//   fTrackerHorizBar_log_attr->SetDaughtersInvisible(false);
-   fTrackerHorizBar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
-//    fTrackerHorizBar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
-
-   G4VisAttributes* fTrackerVertBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
-//   fTrackerVertBar_log_attr->SetForceWireframe(true);
-   fTrackerVertBar_log_attr->SetForceSolid(true);
-   //fTrackerVertBar_log_attr->SetVisibility(false);
-   //fTrackerVertBar_log_attr->SetDaughtersInvisible(false);
-   fTrackerVertBar_log->SetVisAttributes ( fTrackerVertBar_log_attr );
-//    fTrackerVertBar_log->SetVisAttributes ( G4VisAttributes::Invisible );
-
-   G4VisAttributes* barScore_log_attr = new G4VisAttributes ( G4Colour ( 51.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
-   barScore_log_attr->SetForceSolid(true);
-   fTrackerVertBarScore_log->SetVisAttributes ( barScore_log_attr );
-   fTrackerHorizBarScore_log->SetVisAttributes ( barScore_log_attr );
-
-
-   //----- Tracker Container Placement - placed at the front of the "BETA Detector" box 
-   //tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
-   tracker_phys = new G4PVPlacement ( 0 , G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 ),tracker_log,"tracker_phys",BETADetector_log,false,0 );
 
    trackerY1_log = new G4LogicalVolume ( trackerY1_box,Air,"tracker_Y1_log",0,0,0 );
    trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"tracker_Y2_log",0,0,0 );
    trackerX1_log = new G4LogicalVolume ( trackerX1_box,Air,"tracker_X1_log",0,0,0 );
+
+   // check out http://www.colorschemer.com/online.html   
+   G4VisAttributes* fTrackerHorizBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 128.0/255.0, 51.0/255.0, 0.5 ) );
+   fTrackerHorizBar_log_attr->SetForceSolid(true);
+   //fTrackerHorizBar_log_attr->SetVisibility(false);
+   //fTrackerHorizBar_log_attr->SetDaughtersInvisible(false);
+   fTrackerY1Bar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
+   fTrackerY2Bar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
+   //fTrackerY1Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
+   //fTrackerY2Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
+
+   G4VisAttributes* fTrackerVertBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
+   //fTrackerVertBar_log_attr->SetForceWireframe(true);
+   fTrackerVertBar_log_attr->SetForceSolid(true);
+   //fTrackerVertBar_log_attr->SetVisibility(false);
+   //fTrackerVertBar_log_attr->SetDaughtersInvisible(false);
+   fTrackerX1Bar_log->SetVisAttributes ( fTrackerVertBar_log_attr );
+   //fTrackerX1Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );
+
+   G4VisAttributes* barScore_log_attr = new G4VisAttributes ( G4Colour ( 51.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
+   barScore_log_attr->SetForceSolid(true);
+   fTrackerY1BarScore_log->SetVisAttributes ( barScore_log_attr );
+   fTrackerY2BarScore_log->SetVisAttributes ( barScore_log_attr );
+   fTrackerX1BarScore_log->SetVisAttributes ( barScore_log_attr );
 
    // check out http://www.colorschemer.com/online.html   
    G4VisAttributes* tracker_Y1plane_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
@@ -548,14 +712,52 @@ fMinRange;
 //    trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
 //    trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
-   //----- X1 Plane placed closest to the target
-   G4VPhysicalVolume * trackerX1_phys =    
-      new G4PVPlacement ( 0,G4ThreeVector (0,0,-1.4*2.0*mm-3.0*mm-2.0*smallSeparation ),trackerX1_log, "tracker_X1_plane_phys", tracker_log,false,0 );
-   G4VPhysicalVolume * trackerY1_phys = 
-      new G4PVPlacement ( 0,G4ThreeVector (0,0,0),trackerY1_log, "tracker_Y1_plane_phys", tracker_log,false,0 );
-   G4VPhysicalVolume * trackerY2_phys =    
-      new G4PVPlacement ( 0,G4ThreeVector (0.0,-1.5*mm/*vertical offset*/,1.4*2.0*mm + 3.0*mm+2.0*smallSeparation),trackerY2_log, "tracker_Y2_plane_phys", tracker_log,false,0 );
 
+
+   /// Position the planes
+   G4VPhysicalVolume * trackerX1_phys =    
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetLayerZPlacement(0)*cm ),
+                          trackerX1_log, 
+                          "tracker_X1_plane_phys", 
+                          tracker_log,
+                          false,
+                          0 );
+   G4VPhysicalVolume * trackerY1_phys = 
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetLayerZPlacement(1)*cm ),
+                          trackerY1_log, 
+                          "tracker_Y1_plane_phys", tracker_log,false,0 );
+   G4VPhysicalVolume * trackerY2_phys =    
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetLayerZPlacement(2)*cm ),
+                          trackerY2_log, 
+                          "tracker_Y2_plane_phys", tracker_log,false,0 );
+
+
+   /// TEDLAR frame components
+   G4Box* fTrackerG10Frame_box = new G4Box ( "fTrackerG10Frame_box", // Name
+                                ftgeocalc->fFrameOpeningWidth*cm/2.0,  // x half length
+                                ftgeocalc->fFrameOpeningHeight*cm/2.0, // x half length
+                                3.2*mm/2.0 );                           // z half length
+   fTrackerG10Frame_log = new G4LogicalVolume( fTrackerG10Frame_box,  PVF, "fTrackerG10Frame_log" );
+   /// Place the tedar frames
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(0)*cm ),
+                          fTrackerG10Frame_log, 
+                          "fTrackerG10Frame_0_phys", tracker_log,false,0 );
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(1)*cm ),
+                          fTrackerG10Frame_log, 
+                          "fTrackerG10Frame_1_phys", tracker_log,false,1 );
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(2)*cm ),
+                          fTrackerG10Frame_log, 
+                          "fTrackerG10Frame_2_phys", tracker_log,false,2 );
+      new G4PVPlacement ( 0,
+                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(3)*cm ),
+                          fTrackerG10Frame_log, 
+                          "fTrackerG10Frame_3_phys", tracker_log,false,3 );
 // VGM does not like the following replicas
 //    G4VPhysicalVolume* trackerY1_phys = 
 //      new G4PVReplica("trackerY1_phys", fTrackerVertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
@@ -567,26 +769,57 @@ fMinRange;
    // work around
    // Also sets the copy number used to get the correct scint
    for(int i0=0;i0<64;i0++) {
-      new G4PVPlacement(0,G4ThreeVector ((3.125*mm+smallSeparation/2.0)*(Double_t)(i0-64/2),0,0),fTrackerHorizBar_log,
-                        "TrackerHorizontalX1",trackerX1_log,true,i0);
+      new G4PVPlacement(0,
+                        G4ThreeVector(ftgeocalc->GetX1Position(i0+1)*cm,0,0),
+                        fTrackerX1Bar_log,
+                        "TrackerHorizontalX1",
+                        trackerX1_log,
+                        true,
+                        i0);
    }
    for(int i0=0;i0<128;i0++) {
-      new G4PVPlacement(0,G4ThreeVector (0,(3.1250*mm+smallSeparation/2.0)*(Double_t)(i0-128/2),0),fTrackerVertBar_log,
-                        "TrackerHorizontalY1",trackerY1_log,true,i0+64);
+      new G4PVPlacement(0,
+                        G4ThreeVector (0,ftgeocalc->GetY1Position(i0+1)*cm,0),
+                        fTrackerY1Bar_log,
+                        "TrackerHorizontalY1",
+                        trackerY1_log,
+                        true,
+                        i0+64);
    }
    for(int i0=0;i0<128;i0++) {
-      new G4PVPlacement(0,G4ThreeVector (0, (3.1250*mm+smallSeparation/2.0)*(Double_t)(i0-128/2),0),fTrackerVertBar_log,
-                        "TrackerHorizontalY2",trackerY2_log,true,i0+64+128);
+      new G4PVPlacement(0,
+                        G4ThreeVector (0,ftgeocalc->GetY2Position(i0+1)*cm,0),
+                        fTrackerY2Bar_log,
+                        "TrackerHorizontalY2",
+                        trackerY2_log,
+                        true,
+                        i0+64+128);
    }
 
-   new G4PVPlacement( 0,G4ThreeVector (22.0*cm/2.-smallSeparation/2.0,0,0 ),fTrackerVertBarScore_log, "tracker_Y_scint_scorer_phys", fTrackerVertBar_log,true,0 );
-// //    new G4PVPlacement ( 0,G4ThreeVector (0,-(22.0*cm/2.0+smallSeparation/2.0),0 ),fTrackerVertBarScore_log, "verttracker+leftBox+rightbox", fTrackerVertBar_log,true,0 );
-// 
-   new G4PVPlacement( 0,G4ThreeVector (0.0, -40.0*cm/2.0+smallSeparation/2.0,0 ),fTrackerHorizBarScore_log, "tracker_X_scint_scorer_phys", fTrackerHorizBar_log,true,0 );
-// //    new G4PVPlacement ( 0,G4ThreeVector (-(40.0*cm/2.0+smallSeparation/2.0),0,0 ),fTrackerHorizBarScore_log, "horztracker+leftBox+rightbox", fTrackerHorizBar_log,true,0 );
-// 
-// 
-// 
+   /// Place the scoring surfaces in the bars 
+   /// For the Y scints they are at the positive x side. 
+   new G4PVPlacement(0,
+                     G4ThreeVector (ftgeocalc->GetY1ScintLength()*cm/2.0-smallSeparation,0,0 ),
+                     fTrackerY1BarScore_log, 
+                     "tracker_Y1_scint_scorer_phys", 
+                     fTrackerY1Bar_log,
+                     true,
+                     0 );
+   new G4PVPlacement(0,
+                     G4ThreeVector (ftgeocalc->GetY2ScintLength()*cm/2.0-smallSeparation,0,0 ),
+                     fTrackerY2BarScore_log, 
+                     "tracker_Y2_scint_scorer_phys", 
+                     fTrackerY2Bar_log,
+                     true,
+                     0 );
+   /// For the X scints they are at the negative y side (the bottom). 
+   new G4PVPlacement(0,
+                     G4ThreeVector (0,-ftgeocalc->GetX1ScintLength()*cm/2.0+smallSeparation,0 ),
+                     fTrackerX1BarScore_log, 
+                     "tracker_X1_scint_scorer_phys", 
+                     fTrackerX1Bar_log,
+                     true,
+                     0 );
 
    const G4int NUM = 2;
 
@@ -635,10 +868,13 @@ fMinRange;
      scoringSurface->SetMaterialPropertiesTable(SMPT);
    
 if(fSimulationManager->fSimulateTrackerOptics) {
-   new G4LogicalSkinSurface ( "vertTrackerBarSurf",  fTrackerVertBar_log, forwardTrackerSurface );
-   new G4LogicalSkinSurface ( "horizTrackerBarSurf", fTrackerHorizBar_log, forwardTrackerSurface );
-   new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", fTrackerVertBarScore_log, scoringSurface );
-   new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",fTrackerHorizBarScore_log, scoringSurface );
+   new G4LogicalSkinSurface ( "fTrackerY1Bar_surf",  fTrackerY1Bar_log, forwardTrackerSurface );
+   new G4LogicalSkinSurface ( "fTrackerY2Bar_surf",  fTrackerY2Bar_log, forwardTrackerSurface );
+   new G4LogicalSkinSurface ( "fTrackerX1Bar_surf",  fTrackerX1Bar_log, forwardTrackerSurface );
+
+   new G4LogicalSkinSurface ( "fTrackerY1BarScore_surf",fTrackerY1BarScore_log, scoringSurface );
+   new G4LogicalSkinSurface ( "fTrackerY2BarScore_surf",fTrackerY2BarScore_log, scoringSurface );
+   new G4LogicalSkinSurface ( "fTrackerX1BarScore_surf",fTrackerX1BarScore_log, scoringSurface );
 } else {
 //   new G4LogicalSkinSurface ( "vertTrackerBarSurf",  fTrackerVertBar_log, scoringSurface );
 //   new G4LogicalSkinSurface ( "horizTrackerBarSurf", fTrackerHorizBar_log, scoringSurface );
@@ -659,8 +895,9 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 //    fTrackerHorizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
 //    fTrackerVertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
    if(fSimulationManager->fSimulateTrackerOptics) {
-      fTrackerHorizBarScore_log->SetSensitiveDetector ( frontTrackerSD );
-      fTrackerVertBarScore_log->SetSensitiveDetector ( frontTrackerSD );
+      fTrackerY1BarScore_log->SetSensitiveDetector ( frontTrackerSD );
+      fTrackerY2BarScore_log->SetSensitiveDetector ( frontTrackerSD );
+      fTrackerX1BarScore_log->SetSensitiveDetector ( frontTrackerSD );
    }
 
 ////// end tracker
@@ -1539,8 +1776,8 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
 
 //////////////////////////////////////////////////////////////
 //             Physical Placements
-   G4double cherenkovFaceToCenter = zTank/2+zSnout+zTankFront;
-   G4double TankPositionInDetPackage = -1.0*DetectorLength/2.0+ 5.0*cm+cherenkovFaceToCenter;
+   G4double cherenkovFaceToCenter = zTank/2.0 + zSnout + zTankFront;
+   G4double TankPositionInDetPackage = -1.0*DetectorLength/2.0 + - fBETADistance + rCherenkov + cherenkovFaceToCenter;
 
 // Container Box 
    G4double cherenkovContainerZLength = zTank+zTankFront+zSnout+2.0*cm; // 2cm buffer
@@ -1560,6 +1797,7 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    } else {
      tank_log = new G4LogicalVolume ( TANK, NitrogenGas_NoOptics,"tank_log",0,0,0 );
    }
+   
    cherenkovTank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
    G4Box * tedlarFront = new  G4Box ( "tedlarFrontBox", xSnoutEnd/2, ySnoutEnd/2, frontWindowThickness );
@@ -2357,7 +2595,6 @@ void BETADetectorConstruction::ConstructHeliumBag() {
 
 void BETADetectorConstruction::ConstructBETA()
 {
-   G4double displacementBackwards = 1.0*cm;
    G4RotationMatrix detectorRot;
    detectorRot.rotateY ( DetectorAngle ); //
    //detectorRot.rotateZ ( PI ); //
@@ -2370,9 +2607,9 @@ void BETADetectorConstruction::ConstructBETA()
    BETADetector_log = new G4LogicalVolume ( BETADetector_box, Air, "BETAdetector",0,0,0 );
    G4VPhysicalVolume* BETADetector_phys = new G4PVPlacement(
      G4Transform3D(detectorRot, G4ThreeVector(
-                            (rTarget+DetectorLength/2.0+displacementBackwards)*std::sin(DetectorAngle),
+                            (fBETADistance + DetectorLength/2.0)*std::sin(DetectorAngle),
                             0.0*m,
-                            (rTarget+DetectorLength/2.0+displacementBackwards)*std::cos(DetectorAngle))), 
+                            (fBETADistance + DetectorLength/2.0)*std::cos(DetectorAngle))), 
                             BETADetector_log, "BETADetectorphys",expHall_log,false,0 );
 
 
@@ -2984,13 +3221,21 @@ void BETADetectorConstruction::DefineMaterials()
    G4double a, z, density,fractionmass;
    G4int nelements,ncomponents,natoms;
    G4String symbol;
-// define Elements
+   // define Elements
    G4Element* H  = new G4Element("Hydrogen",symbol="H",z= 1., a= 1.01*g/mole );
    G4Element* C  = new G4Element("Carbon" ,symbol="C",z= 6., a= 12.01*g/mole );
    G4Element* N  = new G4Element("Nitrogen",symbol="N",z= 7., a= 14.01*g/mole );
    G4Element* O  = new G4Element("Oxygen",symbol="O",z= 8., a= 16.00*g/mole );
    G4Element* Si = new G4Element("Silicon",symbol="Si",z= 14.,a= 28.09*g/mole );
+   G4Element* F = new G4Element("Fluorine",symbol="F",z= 9.,a= 18.99*g/mole );
 
+
+   //----- Nema grade G10 or FR4
+   G10 = new G4Material("NemaG10",1.70*g/cm3 , 4);
+   G10 -> AddElement(Si, natoms=1);
+   G10 -> AddElement(O , natoms=2);
+   G10 -> AddElement(C , natoms=3);
+   G10 -> AddElement(H , natoms=3);
 
    //----- Air
    Air = new G4Material ( "Air", density=1.29*mg/cm3, nelements=2 );
@@ -3043,9 +3288,12 @@ void BETADetectorConstruction::DefineMaterials()
    // overwrite computed meanExcitationEnergy with ICRU recommended value
    H2O->GetIonisation()->SetMeanExcitationEnergy ( 75.0*eV );
 
-
-   //----- G4_POLYVINYLIDENE_FLUORIDE (Plexiglass,Lucite,or whatever you want to call it)
-   PVF = nistman->FindOrBuildMaterial ( "G4_POLYVINYLIDENE_FLUORIDE" );
+   //----- TEDLAR or Polyvinylidene fluoride
+   //PVF = nistman->FindOrBuildMaterial ( "G4_POLYVINYLIDENE_FLUORIDE" ); // this is actually PVDF. not the same as PVF
+   PVF = new G4Material("PVF",1.70*g/cm3 , 3);
+   PVF -> AddElement(F, natoms=1);
+   PVF -> AddElement(C , natoms=2);
+   PVF -> AddElement(H , natoms=3);
 
    //----- Ammonia
    NH3 = nistman->FindOrBuildMaterial ( "G4_AMMONIA" );

@@ -103,9 +103,20 @@ public :
     *  Constructs the BETA Detector Package.
     *  We construct the BETADetectors in a box for which y is vertical and x is horizontal.
     *  These are the Bigcal Coordinates.
+    *  @{
     */
    void ConstructBETA();
    G4LogicalVolume* BETADetector_log;
+
+   G4double fBETADistance; /// Distance from origin to the front face of the BETA bounding box
+   G4double DetectorAngle ;
+   G4double DetectorLength ;
+   G4double DetectorWidth  ;
+   G4double rTarget; 
+   G4double rCherenkov;
+   G4double rTracker;
+   G4double rHodoscope;
+   G4double rBigcal;
 
    //@}
 
@@ -160,14 +171,25 @@ public :
    bool usingForwardTracker; 
    G4LogicalVolume*   tracker_log; 
    G4VPhysicalVolume* tracker_phys;
-   G4LogicalVolume*   fTrackerHorizBar_log  ;
-   G4LogicalVolume*   fTrackerVertBar_log ;
-   G4LogicalVolume*   fTrackerHorizBarScore_log  ;
-   G4LogicalVolume*   fTrackerVertBarScore_log ;
+
+   G4LogicalVolume*   fTrackerY1Bar_log  ;
+   G4LogicalVolume*   fTrackerY2Bar_log  ;
+   G4LogicalVolume*   fTrackerX1Bar_log  ;
+   G4LogicalVolume*   fTrackerY1BarScore_log  ;
+   G4LogicalVolume*   fTrackerY2BarScore_log  ;
+   G4LogicalVolume*   fTrackerX1BarScore_log  ;
+
+   G4LogicalVolume*   fTrackerG10Frame_log ;
+
    G4LogicalVolume*   trackerY1_log;
    G4LogicalVolume*   trackerY2_log;
    G4LogicalVolume*   trackerX1_log;
    G4VSensitiveDetector* frontTrackerSD;
+
+   G4LogicalVolume*   fTrackerHorizBar_log  ; /// \deprecated
+   G4LogicalVolume*   fTrackerVertBar_log ; /// \deprecated
+   G4LogicalVolume*   fTrackerHorizBarScore_log  ; /// \deprecated
+   G4LogicalVolume*   fTrackerVertBarScore_log ; /// \deprecated
    //@}
 
    /** @name Lucite Hodoscope Construction
@@ -532,14 +554,7 @@ public:
    //@}
 
 
-	G4double DetectorAngle ;
-	G4double DetectorLength ;
-	G4double DetectorWidth  ;
-	G4double rTarget; 
-	G4double rCherenkov;
-	G4double rTracker;
-	G4double rHodoscope;
-	G4double rBigcal;
+
 
     G4Material*        NitrogenGas_NoOptics;
     G4Material*        Lucite_NoOptics;
@@ -554,6 +569,7 @@ public:
     G4Material*        Aluminum;
     G4Material*        Al;
     G4Material*        H;
+    G4Material*        G10;
     G4Material*        Cu;
     G4Material*        Be;
     G4Material*        Water;
