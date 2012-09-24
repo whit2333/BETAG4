@@ -735,14 +735,14 @@ void BETADetectorConstruction::ConstructForwardTracker()
                           "tracker_Y2_plane_phys", tracker_log,false,0 );
 
 
-   /// TEDLAR frame components
+   /// TEDLAR frame components \todo cut out frame center and add extra material wrapping scints
    G4Box* fTrackerG10Frame_box = new G4Box ( "fTrackerG10Frame_box", // Name
                                 ftgeocalc->fFrameOpeningWidth*cm/2.0,  // x half length
                                 ftgeocalc->fFrameOpeningHeight*cm/2.0, // x half length
                                 3.2*mm/2.0 );                           // z half length
-   fTrackerG10Frame_log = new G4LogicalVolume( fTrackerG10Frame_box,  PVF, "fTrackerG10Frame_log" );
+   fTrackerG10Frame_log = new G4LogicalVolume( fTrackerG10Frame_box,  G10, "fTrackerG10Frame_log" );
    /// Place the tedar frames
-      new G4PVPlacement ( 0,
+/*      new G4PVPlacement ( 0,
                           G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(0)*cm ),
                           fTrackerG10Frame_log, 
                           "fTrackerG10Frame_0_phys", tracker_log,false,0 );
@@ -757,7 +757,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
       new G4PVPlacement ( 0,
                           G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(3)*cm ),
                           fTrackerG10Frame_log, 
-                          "fTrackerG10Frame_3_phys", tracker_log,false,3 );
+                          "fTrackerG10Frame_3_phys", tracker_log,false,3 );*/
 // VGM does not like the following replicas
 //    G4VPhysicalVolume* trackerY1_phys = 
 //      new G4PVReplica("trackerY1_phys", fTrackerVertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
