@@ -426,26 +426,27 @@ void BETADetectorConstruction::ConstructForwardTracker()
 
    /// Construction parameters
    TVector3   ftbbox              = ftgeocalc->GetBoundingBoxDimensions();
+   TVector3   ftdetbox            = ftgeocalc->GetDetectorBoxDimensions();
    TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
    TVector3   ftY1bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(1);
    TVector3   ftY2bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(2);
    TVector3   ftX1bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(0);
    G4double   smallSeparation     = 0.01*mm;
-
-   /// Not sure why this is needed?
    G4RotationMatrix trackerRot;
-   trackerRot.rotateZ(1.0*PI/2.0 ); 
+   trackerRot.rotateY(100.0*ftgeocalc->GetYaw() ); 
+   trackerRot.rotateX(-5.0*ftgeocalc->GetPitch() ); 
+   trackerRot.rotateZ(1000.0*ftgeocalc->GetRoll() ); 
 
-   G4Box  *tracker_box = new G4Box ( "tracker_container_box",ftbbox.X()*cm/2.0, ftbbox.Y()*cm/2.0, ftbbox.Z()*cm/2.0 );
+   G4Box  *tracker_box = new G4Box ( "tracker_container_box",ftdetbox.X()*cm/2.0, ftdetbox.Y()*cm/2.0, ftdetbox.Z()*cm/2.0 );
    //G4Box  *tracker_box = new G4Box ( "tracker_container_box",24.*cm/2., 42.*cm/2., 10.*mm/2. );
    tracker_log         = new G4LogicalVolume ( tracker_box,Air,"tracker_container_box_log",0,0,0 );
 
    //----- Tracker Container Placement - placed at the front of the "BETA Detector" box 
    //tracker_phys = new G4PVPlacement ( G4Transform3D(trackerRot,G4ThreeVector ( 0,0,-1.0* DetectorLength/2+11.*mm/2 )),tracker_log,"tracker_phys",BETADetector_log,false,0 );
-   tracker_phys = new G4PVPlacement ( 0 , 
+   tracker_phys = new G4PVPlacement(G4Transform3D(trackerRot,
                                       G4ThreeVector(ftbbox_origin.X()*cm,
                                                     ftbbox_origin.Y()*cm,
-                                                    ftbbox_origin.Z()*cm - DetectorLength/2.0 - fBETADistance),
+                                                    ftbbox_origin.Z()*cm - DetectorLength/2.0 - fBETADistance)),
                                       tracker_log,
                                       "tracker_phys",
                                       BETADetector_log,
@@ -735,7 +736,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
                           "tracker_Y2_plane_phys", tracker_log,false,0 );
 
 
-   /// TEDLAR frame components
+   /// TEDLAR frame components \todo cut out frame center and add extra material wrapping scints
    G4Box* fTrackerG10Frame_box = new G4Box ( "fTrackerG10Frame_box", // Name
                                 ftgeocalc->fFrameOpeningWidth*cm/2.0,  // x half length
                                 ftgeocalc->fFrameOpeningHeight*cm/2.0, // x half length
