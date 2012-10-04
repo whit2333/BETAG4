@@ -174,11 +174,11 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    DetectorAngle = 40.*pi/180.;
    DetectorLength = 5.0*m;
    DetectorWidth  = 75.*2.54*cm+0.5*m;
-   rTarget = 50.*cm;
-   rTracker= 55.*cm;
+   rTarget = 50.*cm;  /// \todo fix this
+   rTracker=  55.*cm;  /// \todo fix this
    rCherenkov= 62.5*cm;
    rHodoscope = 240.*cm;
-   rBigcal = 345.*cm;
+   rBigcal = BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
    fBETADistance = rTarget + 1.0*cm;
 
 
@@ -2406,8 +2406,8 @@ void BETADetectorConstruction::ConstructFakePlane()
            new G4LogicalVolume ( fakePlane_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
       BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
 //rTarget
-      G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
-      G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
+      G4double bigcalFace = rBigcal;  // from target
+      G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0 + fBETADistance ) ;
       G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
 //      SetupScoring(fakePlane_log);
    G4SDManager* manager = G4SDManager::GetSDMpointer();
