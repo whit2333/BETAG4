@@ -51,7 +51,7 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )  {
    G4StepPoint* point2 = aStep->GetPostStepPoint();
    double energy = theTrack->GetTotalEnergy();
 //G4cout << "Process Fake Plane Hit\n";
-   if(energy/MeV > 21.0) {     // 21 MeV is cherenkov threshold
+   if(energy/MeV > 0.50) {     // 0.5 MeV is cherenkov threshold
 
 // check that it is in the sensitive volme and is leaving the volume
       if( ( theTrack->GetVolume() == this->GetSensitiveVolume() ) && 
