@@ -15,7 +15,7 @@
 /beta/gun/setPhiMax 30
 /beta/gun/setPhiMin -30
 
-/beta/gun/setEnergyMin 0.021
+/beta/gun/setEnergyMin 0.621
 /beta/gun/setEnergyMax 5.9
 
 /beta/gun/setParticle gamma

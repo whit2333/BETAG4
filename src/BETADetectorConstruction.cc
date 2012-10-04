@@ -1277,8 +1277,8 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    BIGCALGeometryCalculator * BCgeo = BIGCALGeometryCalculator::GetCalculator();
 
-   G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
-   G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
+   G4double bigcalFace = rBigcal;//  from target
+   G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+ fBETADistance );
 
    // Sensitive detector (for all of bigcal)
    G4SDManager* manager = G4SDManager::GetSDMpointer();
@@ -2398,6 +2398,9 @@ G4double farMirrorAngle = 20* pi/180;
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructFakePlane()
 {
+
+   //BETAReadOutGeometry * fROGeo  = new BETAReadOutGeometry("FakePlanes");
+   //fROGeo->buildROGeometry();
    if(usingFakePlaneAtBigcal) {
 
       // The following is for a fake detector just before bigcal
@@ -2408,7 +2411,7 @@ void BETADetectorConstruction::ConstructFakePlane()
 //rTarget
       G4double bigcalFace = rBigcal;  // from target
       G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0 + fBETADistance ) ;
-      G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
+      G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-0.10*cm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
 //      SetupScoring(fakePlane_log);
    G4SDManager* manager = G4SDManager::GetSDMpointer();
    BETAFakePlane* fakePlane =
@@ -2419,7 +2422,7 @@ void BETADetectorConstruction::ConstructFakePlane()
    manager->AddNewDetector((G4VSensitiveDetector*)fakePlane);
    // Attach detector to scoring volume
    fBigCalFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)fakePlane);
-   fBigCalFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+   //fBigCalFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
 
 //      planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
    }
@@ -2430,7 +2433,14 @@ void BETADetectorConstruction::ConstructFakePlane()
       fTrackerFakePlane_log = 
            new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
    
-      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+//      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,
+	                                         G4ThreeVector ( 0,0,0.5*mm - ForwardTrackerGeometryCalculator::GetCalculator()->fTotalThickness*cm/2.0 ) ,
+						 fTrackerFakePlane_log,
+						 "trackerFakePlane_phys",
+						 tracker_log, 
+						 false,
+						 0 );
      SetupScoring(fTrackerFakePlane_log);
    G4SDManager* manager = G4SDManager::GetSDMpointer();
    BETAFakePlane* trackerFakePlaneDetector =

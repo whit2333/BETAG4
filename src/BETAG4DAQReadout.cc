@@ -32,11 +32,11 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    if(fCherenkovHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
 /*  if(fSimulationManager->fConstruction->usingFakePlaneAtBigcal)*/
-    fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
+    fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
    if(fBigcalFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
 /*  if(fSimulationManager->fConstruction->usingFakePlaneAtForwardTracker)*/
-    fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
+    fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
    if(fTrackerFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
    fBigcalTriggerThreshold    = 200.0; //MeV
