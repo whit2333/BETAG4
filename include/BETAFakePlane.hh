@@ -19,7 +19,7 @@ class G4Step;
  */
 class BETAFakePlane : public G4VSensitiveDetector {
 public:
-   BETAFakePlane( G4String name);
+   BETAFakePlane( G4String name ,G4String colname = "fakePlane");
    virtual ~BETAFakePlane();
 
    virtual void Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent);

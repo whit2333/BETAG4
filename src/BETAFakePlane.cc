@@ -18,12 +18,12 @@
 // #include <gsl/gsl_errno.h>
 // #include <gsl/gsl_spline.h>
 // CONSTRUCTOR
-BETAFakePlane::BETAFakePlane ( G4String  name )
+BETAFakePlane::BETAFakePlane ( G4String  name , G4String colname  )
       :G4VSensitiveDetector ( name )
 {
-   G4String HCname;
+   G4String HCname;// = name;
    detname = name;
-   collectionName.insert ( HCname="fakePlane" );
+   collectionName.insert ( HCname = colname );
    HCID = -1;
    fSensitiveVolume=0;
 
@@ -57,7 +57,7 @@ G4bool BETAFakePlane::ProcessHits ( G4Step* aStep, G4TouchableHistory* )  {
       if( ( theTrack->GetVolume() == this->GetSensitiveVolume() ) && 
            ( point2->GetStepStatus() == fGeomBoundary   ) )  { 
 
-/*    std::cout << " track at boundary " << this->GetSensitiveVolume()->GetName() << " with energy " << energy << "\n";*/
+//    std::cout << " track at boundary " << this->GetSensitiveVolume()->GetName() << " with energy " << energy << "\n";
 /*         pid = theTrack->GetDefinition()->GetPDGEncoding();*/
       BETAFakePlaneHit* aHit = new BETAFakePlaneHit ( theTrack->GetDefinition()->GetPDGEncoding() );
       fHitsCollection->insert ( aHit );

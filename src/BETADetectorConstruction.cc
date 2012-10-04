@@ -179,7 +179,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    rCherenkov= 62.5*cm;
    rHodoscope = 240.*cm;
    rBigcal = BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
-   fBETADistance = rTarget + 1.0*cm;
+   fBETADistance = rTarget + 0.10*cm;
 
 
 /// Copy of Justin Wrights Code:
@@ -709,9 +709,9 @@ void BETADetectorConstruction::ConstructForwardTracker()
    trackerY2_log->SetVisAttributes ( tracker_Y2plane_attr );
    trackerX1_log->SetVisAttributes ( tracker_X1plane_attr );
    /// Set these attributes to make each scint visible.... 
-//    trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
-//    trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
-//    trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   // trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   // trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   // trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
 
 
@@ -2429,28 +2429,38 @@ void BETADetectorConstruction::ConstructFakePlane()
 
 // Fake Plane at tracker
    if(usingFakePlaneAtForwardTracker) {
-      G4Box* trakerFakePlane_box = new G4Box ( "trackerFakePlane",0.5*m/2.0,0.35*m/2.0 , 0.10*mm );
+      ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
+      G4Box* trakerFakePlane_box = new G4Box ( "trackerFakePlane",27*cm/2.0,45.0*cm/2.0 , 0.10*mm );
       fTrackerFakePlane_log = 
            new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
-   
-//      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
-      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,
-	                                         G4ThreeVector ( 0,0,0.5*mm - ForwardTrackerGeometryCalculator::GetCalculator()->fTotalThickness*cm/2.0 ) ,
+  
+   TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
+   G4double fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm - ( ftgeocalc->fTotalThickness*cm/2.0 + 0.2*mm);
+   std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
+   std::cout << " old PLACEMENT = " << -1.0*DetectorLength/2.0+0.2*mm  << "\n";
+   //      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+/*      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,
+	                                         G4ThreeVector ( 0,0, -0.3*cm + ForwardTrackerGeometryCalculator::GetCalculator()->fTotalThickness*cm/2.0 ) ,
 						 fTrackerFakePlane_log,
 						 "trackerFakePlane_phys",
 						 tracker_log, 
 						 false,
 						 0 );
-     SetupScoring(fTrackerFakePlane_log);
+*/
+//  	 SetupScoring(fTrackerFakePlane_log);
    G4SDManager* manager = G4SDManager::GetSDMpointer();
    BETAFakePlane* trackerFakePlaneDetector =
       new BETAFakePlane("ForwardTrackerPlane");
    // Register detector with manager
    trackerFakePlaneDetector->SetSensitiveVolume(trackerFakePlane_phys);
    manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   // Attach detector to scoring volume
    fTrackerFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   fTrackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+   // Attach detector to scoring volume
+   G4VisAttributes* trackerPlaneAttrib = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
+   trackerPlaneAttrib->SetForceWireframe( true );
+   //fTrackerFakePlane_log->SetVisAttributes(trackerPlaneAttrib);
+   //fTrackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
 }
 
 }
@@ -2636,7 +2646,7 @@ void BETADetectorConstruction::ConstructBETA()
    if (usingBigcal)   ConstructBIGCAL();
 
    expHall_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
+//   BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
 }
 //___________________________________________________________________
