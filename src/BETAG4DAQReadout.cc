@@ -12,6 +12,7 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    fSimulationManager = BETASimulationManager::GetInstance();
 
    mcEvent= fSimulationManager->fEvents->MC;
+   fFT2PlaneHits=mcEvent->GetTrackerPlane2HitsArray();
    fFTPlaneHits=mcEvent->GetTrackerPlaneHitsArray();
    fBCPlaneHits=mcEvent->GetBigcalPlaneHitsArray();
 
@@ -35,9 +36,12 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
     fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
    if(fBigcalFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-/*  if(fSimulationManager->fConstruction->usingFakePlaneAtForwardTracker)*/
-    fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
+   fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
    if(fTrackerFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+
+   fTrackerFakePlane2HCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane2/fakePlane2" );
+   if(fTrackerFakePlane2HCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+
 
    fBigcalTriggerThreshold    = 200.0; //MeV
    fCherenkovTriggerThreshold = 3;//photons???
@@ -189,6 +193,30 @@ void BETAG4DAQReadout::ReadOut() {
    }
    }
 
+   // Second 
+   planeHits = fFT2PlaneHits;
+   if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
+   else {
+   if( fTrackerFakePlane2HCID!= -1 ) {
+     fTrackerFakePlane2HC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlane2HCID ) );
+/*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+      for ( int i=0;i<(fTrackerFakePlane2HC->entries());i++ ) {
+         aHit = ( *fTrackerFakePlane2HC ) [i];
+
+         bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+
+         bHit->fPID = aHit->fPID;
+         bHit->fEnergy = aHit->fEnergy;
+         bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+         bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV/(299792458.0*m/s)),aHit->fMomentum.y()/(MeV/(299792458.0*m/s)),aHit->fMomentum.z()/(MeV/(299792458.0*m/s)));
+         bHit->fTheta = aHit->fPosition.theta();
+         bHit->fPhi = aHit->fPosition.phi();
+
+// }
+      }
+   }
+   }
 ///////////////////////////////////////////////////////
 /// Bigcal Hit Fake plane readout
    planeHits = fBCPlaneHits;

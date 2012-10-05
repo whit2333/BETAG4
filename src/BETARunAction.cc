@@ -76,13 +76,14 @@ G4Run*  BETARunAction::GenerateRun()
 
    }
 
+      
       fSimulationManager->fScalerTree = new TTree("Scalers","The SANE Scaler Data");
       fSimulationManager->fSANEScalers = new SANEScalers("Scalers");
 
       BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-     genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
 
-
+      genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
+      genAction->InitOutput();
 
 
 

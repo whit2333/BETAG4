@@ -24,7 +24,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    fBETAG4EventGen = new BETAG4EventGenerator();
    fBETAG4EventGen->Initialize();
    fBETAG4EventGen->fIsInitialized = true;
-
+   fOutputTree = 0;
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
    
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -101,7 +101,8 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       /// Gather information about the event for simulated truth
       if(fMonteCarloEvent) {
          fMonteCarloEvent->fNumberOfParticlesThrown++;
-         aThrownParticle = new((*fThrownParticles)[ipart]) BETAG4MonteCarloThrownParticle();
+/// \todo Should Have a loop here 
+	 aThrownParticle = new((*fThrownParticles)[ipart]) BETAG4MonteCarloThrownParticle();
          (*(TParticle *)aThrownParticle) = (*aPart);
 //          aThrownParticle->fPosition.SetXYZ(
 //                 fParticleGun->GetParticlePosition().x()/cm,
@@ -111,11 +112,12 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 //                 fBETAG4EventGen->GetMomentumVector(aPart).x()*1000.0,
 //                 fBETAG4EventGen->GetMomentumVector(aPart).y()*1000.0,
 //                 fBETAG4EventGen->GetMomentumVector(aPart).z()*1000.0);
-//          aThrownParticle->fTheta = fCurrentTheta;
+          aThrownParticle->fMomentum4Vector.SetXYZT(aThrownParticle->Px(),aThrownParticle->Py(),aThrownParticle->Pz(),aThrownParticle->Pt());
 //          aThrownParticle->fPhi = fCurrentPhi;
 //          aThrownParticle->fEnergy = (fCurrentEnergy)*1000.0;
 //          aThrownParticle->fPID = aPart->GetPdgCode();
          //aThrownParticle->fMomentum.
+	  if(fOutputTree) fOutputTree->Fill();
       }
       else printf("NO MC EVENT!!!\n");
    fParticleGun->GeneratePrimaryVertex ( anEvent );

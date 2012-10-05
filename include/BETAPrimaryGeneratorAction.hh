@@ -91,6 +91,14 @@ public:
 //     G4double eventEnergy;
 //     G4double eventMomentum;
 
+    TTree * fOutputTree;
+
+    void InitOutput(){
+       fOutputTree = new TTree("thrownEvents","Thrown MC Events");
+       fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
+
+    }
+
    G4GeneralParticleSource  * fParticlesSource;
    G4ParticleGun  * fParticleGun;
 private:

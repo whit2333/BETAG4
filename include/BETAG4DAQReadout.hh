@@ -72,10 +72,12 @@ public:
   BETAG4MonteCarloEvent * mcEvent;
   TClonesArray * fBCPlaneHits;
   TClonesArray * fFTPlaneHits;
+  TClonesArray * fFT2PlaneHits;
 
   BETAG4BigcalHitsCollection * fBigcalHC;
   BETAG4PMTHitsCollection * fGasCherenkovHC;
   BETAFakePlaneHitsCollection * fTrackerFakePlaneHC;
+  BETAFakePlaneHitsCollection * fTrackerFakePlane2HC;
   BETAFakePlaneHitsCollection * fBigcalFakePlaneHC;
 
   G4int fNBigcalHits;
@@ -110,6 +112,7 @@ public:
   G4int fBigcalHCID;
   G4int fBigcalFakePlaneHCID;
   G4int fTrackerFakePlaneHCID;
+  G4int fTrackerFakePlane2HCID;
 
   G4double fBigcalTriggerThreshold;
   G4double fTriggerGroupEnergy[4];

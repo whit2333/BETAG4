@@ -2435,7 +2435,7 @@ void BETADetectorConstruction::ConstructFakePlane()
            new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
   
    TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
-   G4double fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm - ( ftgeocalc->fTotalThickness*cm/2.0 + 0.2*mm);
+   G4double fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm - ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
    std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
    std::cout << " old PLACEMENT = " << -1.0*DetectorLength/2.0+0.2*mm  << "\n";
    //      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
@@ -2449,7 +2449,9 @@ void BETADetectorConstruction::ConstructFakePlane()
 						 0 );
 */
 //  	 SetupScoring(fTrackerFakePlane_log);
+
    G4SDManager* manager = G4SDManager::GetSDMpointer();
+
    BETAFakePlane* trackerFakePlaneDetector =
       new BETAFakePlane("ForwardTrackerPlane");
    // Register detector with manager
@@ -2461,7 +2463,23 @@ void BETADetectorConstruction::ConstructFakePlane()
    trackerPlaneAttrib->SetForceWireframe( true );
    //fTrackerFakePlane_log->SetVisAttributes(trackerPlaneAttrib);
    //fTrackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
-}
+
+   /// Plane behind tracker
+   G4LogicalVolume * fTrackerFakePlane2_log = 
+           new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane2_log",0,0,0 );
+  
+   fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm + ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
+   std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
+   G4VPhysicalVolume* trackerFakePlane2_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane2_log,"trackerFakePlane2_phys",BETADetector_log,false,0 );
+
+   BETAFakePlane* trackerFakePlane2Detector =
+      new BETAFakePlane("ForwardTrackerPlane2","fakePlane2");
+   // Register detector with manager
+   trackerFakePlane2Detector->SetSensitiveVolume(trackerFakePlane2_phys);
+   manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
+   fTrackerFakePlane2_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
+   
+   }
 
 }
 //___________________________________________________________________
@@ -2646,7 +2664,7 @@ void BETADetectorConstruction::ConstructBETA()
    if (usingBigcal)   ConstructBIGCAL();
 
    expHall_log->SetVisAttributes ( G4VisAttributes::Invisible );
-//   BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
 }
 //___________________________________________________________________
