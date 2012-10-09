@@ -184,7 +184,7 @@ void BETAG4DAQReadout::ReadOut() {
          bHit->fEnergy = aHit->fEnergy;
          bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
          bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
-         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV/(299792458.0*m/s)),aHit->fMomentum.y()/(MeV/(299792458.0*m/s)),aHit->fMomentum.z()/(MeV/(299792458.0*m/s)));
+         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
          bHit->fTheta = aHit->fPosition.theta();
          bHit->fPhi = aHit->fPosition.phi();
 
@@ -209,7 +209,7 @@ void BETAG4DAQReadout::ReadOut() {
          bHit->fEnergy = aHit->fEnergy;
          bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
          bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
-         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV/(299792458.0*m/s)),aHit->fMomentum.y()/(MeV/(299792458.0*m/s)),aHit->fMomentum.z()/(MeV/(299792458.0*m/s)));
+         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
          bHit->fTheta = aHit->fPosition.theta();
          bHit->fPhi = aHit->fPosition.phi();
 
@@ -240,9 +240,9 @@ void BETAG4DAQReadout::ReadOut() {
                aHit->fPosition.y()/cm,
                aHit->fPosition.z()/cm  );
          bHit->fMomentum.SetXYZ(
-               aHit->fMomentum.x()/(MeV/(299792458.0*m/s)),
-               aHit->fMomentum.y()/(MeV/(299792458.0*m/s)),
-               aHit->fMomentum.z()/(MeV/(299792458.0*m/s)) );
+               aHit->fMomentum.x()/(MeV),
+               aHit->fMomentum.y()/(MeV),
+               aHit->fMomentum.z()/(MeV) );
          bHit->fTheta = aHit->fPosition.theta();
          bHit->fPhi = aHit->fPosition.phi();
       }
