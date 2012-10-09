@@ -210,6 +210,7 @@ void BETAG4DAQReadout::ReadOut() {
          bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
          bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
          bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
+         bHit->fMomentum4Vector.SetXYZT(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV),aHit->fEnergy);
          bHit->fTheta = aHit->fPosition.theta();
          bHit->fPhi = aHit->fPosition.phi();
 
