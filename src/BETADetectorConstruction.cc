@@ -53,10 +53,14 @@
 #include "ForwardTrackerGeometryCalculator.h"
 #include "TVector3.h"
 
+
+
 //___________________________________________________________________
 
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
+   
+
 
    fSimulationManager = BETASimulationManager::GetInstance();
    messenger = new BETADetectorMessenger ( this );
@@ -402,6 +406,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
    ////////////////////////////////////////////////////////////////
    /// For now we do not include the "frame" itself, just the G10 material between the layers
 
+   
    /// Delete existing stuff
    if(tracker_phys) delete tracker_phys;
    if(tracker_log) delete tracker_log;
@@ -942,6 +947,7 @@ fTrackerVertBar_log->SetVisAttributes(lightCollectionFTAttributes);
 */
 void BETADetectorConstruction::ConstructHodoscope()
 {
+   
 
    if(hodoscopeContainerBox_phys)delete hodoscopeContainerBox_phys;
    if(hodoscopeContainerBox_log)delete hodoscopeContainerBox_log;
@@ -1454,6 +1460,7 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructCherenkov()
 {
+   
 // THICKNESS
    G4double frontWindowThickness = 2.0*0.002*2.54*cm;
 // Target at is at (0,0,0)
@@ -2398,6 +2405,7 @@ G4double farMirrorAngle = 20* pi/180;
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructFakePlane()
 {
+   
 
    //BETAReadOutGeometry * fROGeo  = new BETAReadOutGeometry("FakePlanes");
    //fROGeo->buildROGeometry();
@@ -2485,6 +2493,7 @@ void BETADetectorConstruction::ConstructFakePlane()
 //___________________________________________________________________
 
 void BETADetectorConstruction::ConstructHeliumBag() {
+   
 
    G4double fHorizSize = 4.67*2.54*cm;
    G4double fVertSize  = 7.97*2.54*cm +0.13*2.54*cm;
@@ -2697,6 +2706,7 @@ void BETADetectorConstruction::ConstructTarget()
 G4VPhysicalVolume *
 BETADetectorConstruction::Construct()
 {
+   
    constructed = 1;
    
    DefineMaterials();
@@ -2996,6 +3006,7 @@ BETADetectorConstruction::Construct()
 //___________________________________________________________________
 
 void BETADetectorConstruction::ConstructMagneticField() {
+   
 
       if(!fMagneticField) fMagneticField = new BETAField();
       fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->fTargetAngle ); 
@@ -3039,6 +3050,7 @@ void BETADetectorConstruction::ConstructMagneticField() {
 
 void BETADetectorConstruction::SetMaterialPropertiesTables()
 {
+   
 // Lucite
    const int lucitedatapoints =  2;
    G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
@@ -3254,6 +3266,7 @@ void BETADetectorConstruction::SetMaterialPropertiesTables()
 
 void BETADetectorConstruction::DefineMaterials()
 {
+   
 
    G4NistManager* nistman = G4NistManager::Instance();
    //nistman->SetVerbose ( 1 );
@@ -3391,6 +3404,7 @@ void BETADetectorConstruction::DefineMaterials()
 
 //___________________________________________________________________
 void BETADetectorConstruction::lookAtField(G4String comp) {
+   
   if(!fMagneticField) fMagneticField = new BETAField();
   if( fMagneticField )  {
    G4cout << "Looking at the radial and z components\n";
@@ -3411,6 +3425,7 @@ void BETADetectorConstruction::lookAtField(G4String comp) {
 //___________________________________________________________________
 void BETADetectorConstruction::switchTargetField()
 {
+   
    if ( messenger->fTargetAngle == TMath::Pi() )
    {
       G4cout << "Target switching to TRANSVERSE field orientation." << G4endl;
@@ -3431,6 +3446,7 @@ void BETADetectorConstruction::switchTargetField()
 //___________________________________________________________________
 void BETADetectorConstruction::setTargetAngle ( G4double angle )
 {
+   
   messenger->fTargetAngle = angle;
   PrintTargetAngle();
   if(!fMagneticField) fMagneticField = new BETAField();
@@ -3450,11 +3466,13 @@ void BETADetectorConstruction::setTargetAngle ( G4double angle )
 //___________________________________________________________________
 
 double BETADetectorConstruction::getTargetAngle() {
+   
   if(!fMagneticField) fMagneticField = new BETAField();
   return( fMagneticField->fUVAMagnet->fPolarizationAngle );
 }
 
 void BETADetectorConstruction::PrintTargetAngle() {
+   
   if(!fMagneticField) fMagneticField = new BETAField();
   std::cout << " target angle is " << fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi() << " Degrees\n";
 }
@@ -3462,6 +3480,7 @@ void BETADetectorConstruction::PrintTargetAngle() {
 //___________________________________________________________________
 void BETADetectorConstruction::setMirrorAngles ( int mirrorNumber, G4double alpha, G4double beta )
 {
+   
    if ( mirrorNumber ==1 )
    {
       RM1.rotateX ( alpha );
@@ -3511,6 +3530,7 @@ void BETADetectorConstruction::setMirrorAngles ( int mirrorNumber, G4double alph
 //___________________________________________________________________
 void BETADetectorConstruction::rotateMirror ( int mirrorNumber, G4double alpha, G4double beta )
 {
+   
    G4RotationMatrix newRM;
    if ( mirrorNumber ==1 )
    {
@@ -3599,6 +3619,7 @@ void BETADetectorConstruction::rotateMirror ( int mirrorNumber, G4double alpha, 
 }
 
 void BETADetectorConstruction::ToggleTargetMaterial( int state) {
+   
    fTargetState = state;
    if(state == 1) {
       if(physiTCan)   delete physiTCan;
@@ -3623,6 +3644,7 @@ void BETADetectorConstruction::ToggleTargetMaterial( int state) {
 }
 
 void BETADetectorConstruction::ToggleTargetField( int state) {
+   
   if(state == 1) {
     if(!fMagneticField) fMagneticField = new BETAField();
     if(fMagneticField) {
@@ -3648,6 +3670,7 @@ void BETADetectorConstruction::ToggleTargetField( int state) {
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructTCan()
 {
+   
 // ADDED to transform coordinates from Justins ( APPEARS TWICE . SEE BELOW )
    G4RotationMatrix targRot;
    targRot.rotateX ( -pi/2. );
@@ -3821,6 +3844,7 @@ void BETADetectorConstruction::ConstructTCan()
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructN2Shield()
 {
+   
    //Similar to the target can itself, just a little smaller.
    //Updated June 1, 2006
    //Using 0.935 inch as the thickness of the wall. This is the same as the
@@ -3981,6 +4005,7 @@ void BETADetectorConstruction::ConstructN2Shield()
 // Constructs the nosepiece and everything in it
 void BETADetectorConstruction::ConstructNose()
 {
+   
    //The Nose piece as a whole (made of LHe)
    //Displaced by -1.8542 cm in z direction because the windows in the target
    // can are also slightly off center
@@ -4085,6 +4110,7 @@ void BETADetectorConstruction::ConstructNose()
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructMagnet()
 {
+   
 //messenger->fTargetAngle
    fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle);
 
@@ -4187,6 +4213,7 @@ void BETADetectorConstruction::ConstructMagnet()
 //"1" refers to the pipe section farthest from the Target Can (larger).
 void BETADetectorConstruction::ConstructBeamPipe()
 {
+   
 
    G4cout << "ConstructBeamPipe" << G4endl;
 

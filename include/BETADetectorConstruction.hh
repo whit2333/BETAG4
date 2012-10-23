@@ -63,6 +63,7 @@
 class BETADetectorMessenger;
 class BETASimulationManager;
 
+
 /** BETAG4 Detector construction class
  *
  *   Detector construction class which builds all geometries and returns the world volume 

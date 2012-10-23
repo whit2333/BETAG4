@@ -63,6 +63,8 @@
 class BETADetectorMessenger;
 class BETASimulationManager;
 
+using namespace InSANE;
+
 /** BETAG4 Detector construction class
  *
  *   Detector construction class which builds all geometries and returns the world volume 
@@ -108,7 +110,7 @@ public :
    void ConstructBETA();
    G4LogicalVolume* BETADetector_log;
 
-   G4double fBETADistance;
+   G4double fBETADistance; /// Distance from origin to the front face of the BETA bounding box
    G4double DetectorAngle ;
    G4double DetectorLength ;
    G4double DetectorWidth  ;

@@ -53,10 +53,14 @@
 #include "ForwardTrackerGeometryCalculator.h"
 #include "TVector3.h"
 
+using namespace InSANE;
+
 //___________________________________________________________________
 
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
+   using namespace InSANE;
+
 
    fSimulationManager = BETASimulationManager::GetInstance();
    messenger = new BETADetectorMessenger ( this );
@@ -174,12 +178,12 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    DetectorAngle = 40.*pi/180.;
    DetectorLength = 5.0*m;
    DetectorWidth  = 75.*2.54*cm+0.5*m;
-   rTarget = 50.*cm;
-   rTracker= 55.*cm;
+   rTarget = 50.*cm;  /// \todo fix this
+   rTracker=  55.*cm;  /// \todo fix this
    rCherenkov= 62.5*cm;
    rHodoscope = 240.*cm;
-   rBigcal = 345.*cm;
-   fBETADistance = rTarget + 1.0*cm;
+   rBigcal = BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
+   fBETADistance = rTarget + 0.10*cm;
 
 
 /// Copy of Justin Wrights Code:
@@ -402,6 +406,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
    ////////////////////////////////////////////////////////////////
    /// For now we do not include the "frame" itself, just the G10 material between the layers
 
+   using namespace InSANE;
    /// Delete existing stuff
    if(tracker_phys) delete tracker_phys;
    if(tracker_log) delete tracker_log;
@@ -433,9 +438,9 @@ void BETADetectorConstruction::ConstructForwardTracker()
    TVector3   ftX1bbox            = ftgeocalc->GetLayerBoundingBoxDimensions(0);
    G4double   smallSeparation     = 0.01*mm;
    G4RotationMatrix trackerRot;
-   trackerRot.rotateY(100.0*ftgeocalc->GetYaw() ); 
-   trackerRot.rotateX(-5.0*ftgeocalc->GetPitch() ); 
-   trackerRot.rotateZ(1000.0*ftgeocalc->GetRoll() ); 
+   trackerRot.rotateY(1.0*ftgeocalc->GetYaw() ); 
+   trackerRot.rotateX(-1.0*ftgeocalc->GetPitch() ); 
+   trackerRot.rotateZ(1.0*ftgeocalc->GetRoll() ); 
 
    G4Box  *tracker_box = new G4Box ( "tracker_container_box",ftdetbox.X()*cm/2.0, ftdetbox.Y()*cm/2.0, ftdetbox.Z()*cm/2.0 );
    //G4Box  *tracker_box = new G4Box ( "tracker_container_box",24.*cm/2., 42.*cm/2., 10.*mm/2. );
@@ -709,9 +714,9 @@ void BETADetectorConstruction::ConstructForwardTracker()
    trackerY2_log->SetVisAttributes ( tracker_Y2plane_attr );
    trackerX1_log->SetVisAttributes ( tracker_X1plane_attr );
    /// Set these attributes to make each scint visible.... 
-//    trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
-//    trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
-//    trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   // trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   // trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   // trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
 
 
@@ -942,6 +947,7 @@ fTrackerVertBar_log->SetVisAttributes(lightCollectionFTAttributes);
 */
 void BETADetectorConstruction::ConstructHodoscope()
 {
+   using namespace InSANE;
 
    if(hodoscopeContainerBox_phys)delete hodoscopeContainerBox_phys;
    if(hodoscopeContainerBox_log)delete hodoscopeContainerBox_log;
@@ -1277,8 +1283,8 @@ void BETADetectorConstruction::ConstructBIGCAL()
 
    BIGCALGeometryCalculator * BCgeo = BIGCALGeometryCalculator::GetCalculator();
 
-   G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
-   G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
+   G4double bigcalFace = rBigcal;//  from target
+   G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+ fBETADistance );
 
    // Sensitive detector (for all of bigcal)
    G4SDManager* manager = G4SDManager::GetSDMpointer();
@@ -1454,6 +1460,7 @@ if(fSimulationManager->fSimulateTrackerOptics) {
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructCherenkov()
 {
+   using namespace InSANE;
 // THICKNESS
    G4double frontWindowThickness = 2.0*0.002*2.54*cm;
 // Target at is at (0,0,0)
@@ -2398,6 +2405,10 @@ G4double farMirrorAngle = 20* pi/180;
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructFakePlane()
 {
+   using namespace InSANE;
+
+   //BETAReadOutGeometry * fROGeo  = new BETAReadOutGeometry("FakePlanes");
+   //fROGeo->buildROGeometry();
    if(usingFakePlaneAtBigcal) {
 
       // The following is for a fake detector just before bigcal
@@ -2406,9 +2417,9 @@ void BETADetectorConstruction::ConstructFakePlane()
            new G4LogicalVolume ( fakePlane_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
       BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
 //rTarget
-      G4double bigcalFace = BCgeo->bigcalFace*cm;// 3.45*m; // from target
-      G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+rTarget );
-      G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-1.0*mm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
+      G4double bigcalFace = rBigcal;  // from target
+      G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0 + fBETADistance ) ;
+      G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-0.10*cm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
 //      SetupScoring(fakePlane_log);
    G4SDManager* manager = G4SDManager::GetSDMpointer();
    BETAFakePlane* fakePlane =
@@ -2419,34 +2430,70 @@ void BETADetectorConstruction::ConstructFakePlane()
    manager->AddNewDetector((G4VSensitiveDetector*)fakePlane);
    // Attach detector to scoring volume
    fBigCalFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)fakePlane);
-   fBigCalFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+   //fBigCalFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
 
 //      planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
    }
 
 // Fake Plane at tracker
    if(usingFakePlaneAtForwardTracker) {
-      G4Box* trakerFakePlane_box = new G4Box ( "trackerFakePlane",0.5*m/2.0,0.35*m/2.0 , 0.10*mm );
+      ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
+      G4Box* trakerFakePlane_box = new G4Box ( "trackerFakePlane",27*cm/2.0,45.0*cm/2.0 , 0.10*mm );
       fTrackerFakePlane_log = 
            new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
-   
-      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
-     SetupScoring(fTrackerFakePlane_log);
+  
+   TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
+   G4double fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm - ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
+   std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
+   std::cout << " old PLACEMENT = " << -1.0*DetectorLength/2.0+0.2*mm  << "\n";
+   //      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+/*      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,
+	                                         G4ThreeVector ( 0,0, -0.3*cm + ForwardTrackerGeometryCalculator::GetCalculator()->fTotalThickness*cm/2.0 ) ,
+						 fTrackerFakePlane_log,
+						 "trackerFakePlane_phys",
+						 tracker_log, 
+						 false,
+						 0 );
+*/
+//  	 SetupScoring(fTrackerFakePlane_log);
+
    G4SDManager* manager = G4SDManager::GetSDMpointer();
+
    BETAFakePlane* trackerFakePlaneDetector =
       new BETAFakePlane("ForwardTrackerPlane");
    // Register detector with manager
    trackerFakePlaneDetector->SetSensitiveVolume(trackerFakePlane_phys);
    manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   // Attach detector to scoring volume
    fTrackerFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   fTrackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
-}
+   // Attach detector to scoring volume
+   G4VisAttributes* trackerPlaneAttrib = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
+   trackerPlaneAttrib->SetForceWireframe( true );
+   //fTrackerFakePlane_log->SetVisAttributes(trackerPlaneAttrib);
+   //fTrackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+
+   /// Plane behind tracker
+   G4LogicalVolume * fTrackerFakePlane2_log = 
+           new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane2_log",0,0,0 );
+  
+   fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm + ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
+   std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
+   G4VPhysicalVolume* trackerFakePlane2_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane2_log,"trackerFakePlane2_phys",BETADetector_log,false,0 );
+
+   BETAFakePlane* trackerFakePlane2Detector =
+      new BETAFakePlane("ForwardTrackerPlane2","fakePlane2");
+   // Register detector with manager
+   trackerFakePlane2Detector->SetSensitiveVolume(trackerFakePlane2_phys);
+   manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
+   fTrackerFakePlane2_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
+   
+   }
 
 }
 //___________________________________________________________________
 
 void BETADetectorConstruction::ConstructHeliumBag() {
+   using namespace InSANE;
 
    G4double fHorizSize = 4.67*2.54*cm;
    G4double fVertSize  = 7.97*2.54*cm +0.13*2.54*cm;
@@ -2659,6 +2706,7 @@ void BETADetectorConstruction::ConstructTarget()
 G4VPhysicalVolume *
 BETADetectorConstruction::Construct()
 {
+   using namespace InSANE;
    constructed = 1;
    
    DefineMaterials();
@@ -2958,6 +3006,7 @@ BETADetectorConstruction::Construct()
 //___________________________________________________________________
 
 void BETADetectorConstruction::ConstructMagneticField() {
+   using namespace InSANE;
 
       if(!fMagneticField) fMagneticField = new BETAField();
       fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->fTargetAngle ); 
@@ -3001,6 +3050,7 @@ void BETADetectorConstruction::ConstructMagneticField() {
 
 void BETADetectorConstruction::SetMaterialPropertiesTables()
 {
+   using namespace InSANE;
 // Lucite
    const int lucitedatapoints =  2;
    G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
@@ -3216,6 +3266,7 @@ void BETADetectorConstruction::SetMaterialPropertiesTables()
 
 void BETADetectorConstruction::DefineMaterials()
 {
+   using namespace InSANE;
 
    G4NistManager* nistman = G4NistManager::Instance();
    //nistman->SetVerbose ( 1 );
@@ -3353,6 +3404,7 @@ void BETADetectorConstruction::DefineMaterials()
 
 //___________________________________________________________________
 void BETADetectorConstruction::lookAtField(G4String comp) {
+   using namespace InSANE;
   if(!fMagneticField) fMagneticField = new BETAField();
   if( fMagneticField )  {
    G4cout << "Looking at the radial and z components\n";
@@ -3373,6 +3425,7 @@ void BETADetectorConstruction::lookAtField(G4String comp) {
 //___________________________________________________________________
 void BETADetectorConstruction::switchTargetField()
 {
+   using namespace InSANE;
    if ( messenger->fTargetAngle == TMath::Pi() )
    {
       G4cout << "Target switching to TRANSVERSE field orientation." << G4endl;
@@ -3393,6 +3446,7 @@ void BETADetectorConstruction::switchTargetField()
 //___________________________________________________________________
 void BETADetectorConstruction::setTargetAngle ( G4double angle )
 {
+   using namespace InSANE;
   messenger->fTargetAngle = angle;
   PrintTargetAngle();
   if(!fMagneticField) fMagneticField = new BETAField();
@@ -3412,11 +3466,13 @@ void BETADetectorConstruction::setTargetAngle ( G4double angle )
 //___________________________________________________________________
 
 double BETADetectorConstruction::getTargetAngle() {
+   using namespace InSANE;
   if(!fMagneticField) fMagneticField = new BETAField();
   return( fMagneticField->fUVAMagnet->fPolarizationAngle );
 }
 
 void BETADetectorConstruction::PrintTargetAngle() {
+   using namespace InSANE;
   if(!fMagneticField) fMagneticField = new BETAField();
   std::cout << " target angle is " << fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi() << " Degrees\n";
 }
@@ -3424,6 +3480,7 @@ void BETADetectorConstruction::PrintTargetAngle() {
 //___________________________________________________________________
 void BETADetectorConstruction::setMirrorAngles ( int mirrorNumber, G4double alpha, G4double beta )
 {
+   using namespace InSANE;
    if ( mirrorNumber ==1 )
    {
       RM1.rotateX ( alpha );
@@ -3473,6 +3530,7 @@ void BETADetectorConstruction::setMirrorAngles ( int mirrorNumber, G4double alph
 //___________________________________________________________________
 void BETADetectorConstruction::rotateMirror ( int mirrorNumber, G4double alpha, G4double beta )
 {
+   using namespace InSANE;
    G4RotationMatrix newRM;
    if ( mirrorNumber ==1 )
    {
@@ -3561,6 +3619,7 @@ void BETADetectorConstruction::rotateMirror ( int mirrorNumber, G4double alpha, 
 }
 
 void BETADetectorConstruction::ToggleTargetMaterial( int state) {
+   using namespace InSANE;
    fTargetState = state;
    if(state == 1) {
       if(physiTCan)   delete physiTCan;
@@ -3585,6 +3644,7 @@ void BETADetectorConstruction::ToggleTargetMaterial( int state) {
 }
 
 void BETADetectorConstruction::ToggleTargetField( int state) {
+   using namespace InSANE;
   if(state == 1) {
     if(!fMagneticField) fMagneticField = new BETAField();
     if(fMagneticField) {
@@ -3610,6 +3670,7 @@ void BETADetectorConstruction::ToggleTargetField( int state) {
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructTCan()
 {
+   using namespace InSANE;
 // ADDED to transform coordinates from Justins ( APPEARS TWICE . SEE BELOW )
    G4RotationMatrix targRot;
    targRot.rotateX ( -pi/2. );
@@ -3783,6 +3844,7 @@ void BETADetectorConstruction::ConstructTCan()
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructN2Shield()
 {
+   using namespace InSANE;
    //Similar to the target can itself, just a little smaller.
    //Updated June 1, 2006
    //Using 0.935 inch as the thickness of the wall. This is the same as the
@@ -3943,6 +4005,7 @@ void BETADetectorConstruction::ConstructN2Shield()
 // Constructs the nosepiece and everything in it
 void BETADetectorConstruction::ConstructNose()
 {
+   using namespace InSANE;
    //The Nose piece as a whole (made of LHe)
    //Displaced by -1.8542 cm in z direction because the windows in the target
    // can are also slightly off center
@@ -4047,6 +4110,7 @@ void BETADetectorConstruction::ConstructNose()
 //___________________________________________________________________
 void BETADetectorConstruction::ConstructMagnet()
 {
+   using namespace InSANE;
 //messenger->fTargetAngle
    fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle);
 
@@ -4149,6 +4213,7 @@ void BETADetectorConstruction::ConstructMagnet()
 //"1" refers to the pipe section farthest from the Target Can (larger).
 void BETADetectorConstruction::ConstructBeamPipe()
 {
+   using namespace InSANE;
 
    G4cout << "ConstructBeamPipe" << G4endl;
 
