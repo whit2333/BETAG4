@@ -73,7 +73,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingFakePlaneAtBigcal  = true;
    usingFakePlaneAtForwardTracker = true;
 
-   fIsBlackLineVis = false;
+   fIsBlackLineVis = true;
 
    tracker_log=0;
    tracker_phys=0;
@@ -1490,8 +1490,8 @@ void BETADetectorConstruction::ConstructCherenkov()
 // approx tank snout and front  volume...
    tankVolume = ( xTankFrontBase+xTankFrontEnd ) /2 * ( yTankFrontBase+yTankFrontEnd ) /2 *zTankFront+tankVolume;
 // Snout
-   G4double ySnoutEnd = 12.5*2.54*cm;
-   G4double xSnoutEnd =9.0*2.54*cm;
+   G4double ySnoutEnd = 20.5*2.54*cm;
+   G4double xSnoutEnd =12.0*2.54*cm;
 // angle between snout-top plane and verticle (spherical coordinate theta)
    G4double snoutTheta = 120 *pi/180;
 // angle between snout-side and z axis
