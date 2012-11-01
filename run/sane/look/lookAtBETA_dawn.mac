@@ -2,6 +2,15 @@
 /vis/open DAWNFILE 900x800
 #/vis/open OGLIX 900x800
 
+/beta/gun/setEventType flat
+/beta/gun/setThetaMax 50
+/beta/gun/setThetaMin 44
+/beta/gun/setPhiMax 30
+/beta/gun/setPhiMin 20
+/beta/gun/setEnergyMin 1.0
+/beta/gun/setEnergyMax 1.2
+/beta/gun/setParticle e-
+/beta/gun/refresh
 /beta/target/setPolarizationAngle 80
 
 /vis/viewer/reset
@@ -60,7 +69,7 @@
 # Step 7 : Execute Visualization
 /vis/viewer/flush
 
-/run/beamOn 4
+/run/beamOn 9
 
 
 

@@ -42,15 +42,20 @@
 #define MAGROT PI*-0./180. 
 //Rotate the whole target magnet by some angle
 #include "G4PVReplica.hh"
-#include "BIGCALGeometryCalculator.h"
-#include "UVAOxfordMagneticField.h"
 #include "BETAField.hh"
 #include "BETAG4PMTArray.hh"
 #include "BETASimulationManager.hh"
 #include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4VPVParameterisation.hh"
+
 #include "ForwardTrackerGeometryCalculator.h"
+#include "LuciteGeometryCalculator.h"
+#include "GasCherenkovGeometryCalculator.h"
+#include "BIGCALGeometryCalculator.h"
+
+#include "UVAOxfordMagneticField.h"
+
 #include "TVector3.h"
 
 
@@ -178,11 +183,11 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    DetectorAngle = 40.*pi/180.;
    DetectorLength = 5.0*m;
    DetectorWidth  = 75.*2.54*cm+0.5*m;
-   rTarget = 50.*cm;  /// \todo fix this
-   rTracker=  55.*cm;  /// \todo fix this
-   rCherenkov= 62.5*cm;
-   rHodoscope = 240.*cm;
-   rBigcal = BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
+   rTarget    = 50.*cm;  /// \todo fix this
+   rTracker   =  ForwardTrackerGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//55.*cm;
+   rCherenkov =  GasCherenkovGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;// 62.5*cm;
+   rHodoscope =  LuciteGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//240.*cm;
+   rBigcal    =  BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
    fBETADistance = rTarget + 0.10*cm;
 
 
@@ -332,6 +337,13 @@ void BETADetectorConstruction::SetVisAtt(){
       /// Forward Tracker - 
       if(tracker_log)tracker_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerHorizBar_log)fTrackerHorizBar_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerX1Bar_log)fTrackerX1Bar_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerY1Bar_log)fTrackerY1Bar_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerY2Bar_log)fTrackerY2Bar_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerX1BarScore_log)fTrackerX1BarScore_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerY1BarScore_log)fTrackerY1BarScore_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerY2BarScore_log)fTrackerY2BarScore_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fTrackerVertBar_log)fTrackerVertBar_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerVertBar_log)fTrackerVertBar_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerHorizBarScore_log)fTrackerHorizBarScore_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerVertBarScore_log)fTrackerVertBarScore_log->SetVisAttributes(fInvisibleVisAtt);
