@@ -78,7 +78,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingFakePlaneAtBigcal  = true;
    usingFakePlaneAtForwardTracker = true;
 
-   fIsBlackLineVis = true;
+   fIsBlackLineVis = false;
 
    tracker_log=0;
    tracker_phys=0;

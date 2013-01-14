@@ -1,5 +1,6 @@
 # Step 1 : Open Driver and define parameters
 /vis/open OIX 900x800
+#/vis/open OGLIX 900x800
 
 /beta/target/setPolarizationAngle 80
 
@@ -29,6 +30,7 @@
 /vis/viewer/set/viewpointThetaPhi {theta1} {phi1}
 /vis/viewer/zoomTo {zoom1}
 
+
 #/vis/viewer/set/projection p {perspectiveangle} 
 #/vis/viewer/dollyTo -1
 #/vis/viewer/dolly {dolly1}
@@ -45,6 +47,7 @@
 #/vis/scene/add/axes  
 #/vis/scene/add/trajectories
 #/vis/scene/add/hits
+/vis/scene/add/axes 2.15 0 2.56 1 m
 
 # Step 5 : Attach scene to sceneHandler
 /vis/sceneHandler/attach

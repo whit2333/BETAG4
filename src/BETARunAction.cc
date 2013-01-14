@@ -20,6 +20,7 @@
 BETARunAction::BETARunAction() :showThePlots ( 0 ) {
    fSimulationManager = BETASimulationManager::GetInstance();
    fRunNumber = fSimulationManager->InitializeNewRun();
+   fRunNumber = fSimulationManager->IncrementRunNumber();
    messenger = new BETARunActionMessenger ( this );
    timer = new G4Timer;
    fCurrentRun=0;
@@ -45,7 +46,7 @@ void BETARunAction::BeginOfRunAction ( const G4Run* aRun )
  */
 G4Run*  BETARunAction::GenerateRun() 
 {
-   fRunNumber = fSimulationManager->IncrementRunNumber();
+   //fRunNumber = fSimulationManager->IncrementRunNumber();
 
    G4cout << " = BETARunAction - GenerateRun   " << G4endl;
    G4cout << "  - Creating Run Number " << fRunNumber << "   " << G4endl;
