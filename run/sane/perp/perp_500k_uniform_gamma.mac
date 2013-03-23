@@ -1,0 +1,14 @@
+/beta/target/setPolarizationAngle 80
+/beta/gun/setEventType flat
+/beta/gun/setEnergyMin 0.40
+/beta/gun/setEnergyMax  5.0
+/beta/gun/setThetaMin 28.0
+/beta/gun/setThetaMax 52.0
+/beta/gun/setPhiMin   -60.0
+/beta/gun/setPhiMax   60.0
+/beta/gun/refresh
+/beta/gun/setParticle gamma 
+/beta/gun/refresh
+/beta/gun/listPSVariables 
+
+/run/beamOn 500000
