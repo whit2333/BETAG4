@@ -58,6 +58,7 @@ class BETAPrimaryGeneratorMessenger: public G4UImessenger
     G4UIcmdWithADoubleAndUnit*   polarCmd;
     G4UIcmdWithAnInteger*   isotropic;
     G4UIcmdWithADouble*   momentum;
+    G4UIcmdWithADouble*   setBeamEnergy;
     G4UIcmdWithADouble*   sigmaMomentum;
     G4UIcmdWithADouble*   sete_piRatio;
     G4UIcmdWithADouble*   setpi0Ratio;

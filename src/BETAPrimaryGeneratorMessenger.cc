@@ -42,6 +42,12 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
    momentum->SetDefaultValue ( 0 );
    momentum->AvailableForStates ( G4State_Idle );
 
+
+   setBeamEnergy = new G4UIcmdWithADouble("/beta/setBeamEnergy",this);
+   setBeamEnergy->SetGuidance(" Set the electron beam energy in units of GeV.");
+   setBeamEnergy->SetDefaultValue(5.9);
+   setBeamEnergy->AvailableForStates(G4State_Idle);
+
    setThetaMin = new G4UIcmdWithADouble ( "/beta/gun/setThetaMin",this );
    setThetaMin->SetGuidance ( " Set the (first) primary particle theta minimum in degrees " );
    setThetaMin->SetDefaultValue ( 35.0 );
@@ -251,11 +257,11 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 //       BETAAction->SetIsotropic ( isotropic->GetNewIntValue ( newValue ) );
 //    }
 // 
-//    if ( command == momentum )
-//    {
-//       BETAAction->SetMomentum ( momentum->GetNewDoubleValue ( newValue ) );
-//    }
-// 
+   if ( command == setBeamEnergy )
+   {
+      BETAAction->GetEventGenerator()->fBeamEnergy = setBeamEnergy->GetNewDoubleValue(newValue);
+   }
+
 //    if ( command == sigmaMomentum )
 //    {
 //       BETAAction->SetSigmaMomentum ( sigmaMomentum->GetNewDoubleValue ( newValue ) );

@@ -53,11 +53,11 @@ void BETASimulationMessenger::SetNewValue (
 void BETASimulationMessenger::AddDetectorUICommands() {
 
 	 simType->AvailableForStates ( G4State_Idle );
-
+/*
    setBeamEnergy = new G4UIcmdWithADouble("/beta/setBeamEnergy",this);
    setBeamEnergy->SetGuidance(" Set the electron beam energy in units of GeV.");
    setBeamEnergy->SetDefaultValue(5.9);
-   setBeamEnergy->AvailableForStates(G4State_Idle);
+   setBeamEnergy->AvailableForStates(G4State_Idle);*/
 
 //    fieldDir = new G4UIdirectory ( "/BETAG4/targetField" );
 //    fieldDir->SetGuidance ( "Magnetic Detector control" );
