@@ -76,7 +76,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingLuciteHodoscope    = true;
    usingForwardTracker     = true;
    usingFakePlaneAtBigcal  = true;
-   usingFakePlaneAtForwardTracker = true;
+   usingFakePlaneAtForwardTracker = false;
 
    fIsBlackLineVis = true;
 
