@@ -32,7 +32,7 @@ include $(G4INSTALL)/config/binmake.gmk
 
 # InSANE 
    LDLIBS += -L$(InSANEDIR)/lib
-   LDLIBS += -lInSANE  
+   LDLIBS += -lInSANE -lsqlite3 
    CPPFLAGS += -I$(InSANEDIR)/include
 
 # ROOT and  GNU Scientific Librarires and 
