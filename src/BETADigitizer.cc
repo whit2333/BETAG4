@@ -539,6 +539,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
    fBeamEvent->fYRaster = 0.0;
    fBeamEvent->fXSlowRaster = aPart->Vx();
    fBeamEvent->fYSlowRaster = aPart->Vy();
+   fBeamEvent->fRasterPosition.SetXYZ(aPart->Vx(),aPart->Vy(),0.0);
    TVector2 xyadc = fBeam->GetSlowRasterADC(aPart->Vx(),aPart->Vy());
    fBeamEvent->fXSlowRasterADC = xyadc.X();
    fBeamEvent->fYSlowRasterADC = xyadc.Y();
