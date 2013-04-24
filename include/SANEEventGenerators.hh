@@ -54,12 +54,15 @@ public:
  */
 class DISEventGenerator : public BETAG4EventGenerator {
 public:
-   DISEventGenerator(){}
+   DISEventGenerator(){
+      fBeamEnergy=5.9;
+   }
    ~DISEventGenerator(){}
 
    /** */
    virtual void Initialize(){
       F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+      std::cout << " Beam Energy: " << fBeamEnergy << std::endl;
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->InitializePhaseSpaceVariables();
       fDiffXSec->InitializeFinalStateParticles();
