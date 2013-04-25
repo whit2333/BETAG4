@@ -22,11 +22,14 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
    
    fBETAG4EventGen = new BETAG4EventGenerator();
-   fBETAG4EventGen->Initialize();
-   fBETAG4EventGen->fIsInitialized = true;
+   //fBETAG4EventGen->Initialize();
+   //fBETAG4EventGen->fIsInitialized = true;
    fOutputTree = 0;
+
    gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
-   
+  
+   // ---- setup particles 
+
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
    fParticleGun = new G4ParticleGun(1);
 
@@ -53,8 +56,8 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    //   fParticlesSource->GetCurrentSource()->GetAngDist()->SetAngDisType("iso");
    //   fParticlesSource->GetCurrentSource()->GetPosDist()->SetEneDisType("Volume");
    /*   fSimulationManager = ;*/
-//   if(BETASimulationManager::GetInstance()->fEvents) std::cout << "fEvents Found !\n";
-//   fMonteCarloEvent = BETASimulationManager::GetInstance()->fEvents->MC;
+   //   if(BETASimulationManager::GetInstance()->fEvents) std::cout << "fEvents Found !\n";
+   //   fMonteCarloEvent = BETASimulationManager::GetInstance()->fEvents->MC;
    fMonteCarloEvent=0;
 }
 //________________________________________________________//
@@ -63,11 +66,12 @@ BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 {
    if(fParticlesSource) delete fParticlesSource;
    if(gunMessenger) delete gunMessenger;
+   if(fBETAG4EventGen) delete fBETAG4EventGen;
 }
 //________________________________________________________//
 
-void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
-{
+void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
+
    if(!fBETAG4EventGen->fIsInitialized) {
       fBETAG4EventGen->Initialize();
       fBETAG4EventGen->fIsInitialized = true;
@@ -76,16 +80,18 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
 
    if(fMonteCarloEvent) {
       fMonteCarloEvent->ClearEvent("C");
-/*      fMonteCarloEvent->Dump();*/
    } else { std::cout << " NO MC EVENT!!!\n"; }
+
    Double_t * MCvect ;
    TParticle * aPart=0;
-   /// Generate the event and get the list of particles
+
+   // Generate the event and get the list of particles
    TList * parts = fBETAG4EventGen->GenerateEvent();
-   /// Loop over all particles to create. (usually just a single electron)
+   // Loop over all particles to create. (usually just a single electron)
+
    for(int ipart = 0;ipart<parts->GetEntries();ipart++) {
       aPart = (TParticle*) parts->At(ipart);
-/*      aPart->Print();*/
+      /*      aPart->Print();*/
       if( aPart->GetPdgCode() == 11) fParticleGun->SetParticleDefinition(electron);
       else if( aPart->GetPdgCode() == -11) fParticleGun->SetParticleDefinition(positron);
       else if( aPart->GetPdgCode() == 111) fParticleGun->SetParticleDefinition(pionzero);
@@ -93,7 +99,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       else if( aPart->GetPdgCode() == -211) fParticleGun->SetParticleDefinition(pionminus);
       else if( aPart->GetPdgCode() == 22) fParticleGun->SetParticleDefinition(gamma);
       else fParticleGun->SetParticleDefinition(electron);
-      
+
       fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition(aPart) );
       fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection(aPart) );
       fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy(aPart))*1000.0*MeV );
@@ -101,95 +107,84 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent )
       /// Gather information about the event for simulated truth
       if(fMonteCarloEvent) {
          fMonteCarloEvent->fNumberOfParticlesThrown++;
-/// \todo Should Have a loop here 
-	 aThrownParticle = new((*fThrownParticles)[ipart]) BETAG4MonteCarloThrownParticle();
+         /// \todo Should Have a loop here 
+         aThrownParticle = new((*fThrownParticles)[ipart]) BETAG4MonteCarloThrownParticle();
          (*(TParticle *)aThrownParticle) = (*aPart);
-//          aThrownParticle->fPosition.SetXYZ(
-//                 fParticleGun->GetParticlePosition().x()/cm,
-//                 fParticleGun->GetParticlePosition().y()/cm,
-//                 fParticleGun->GetParticlePosition().z()/cm);
-//          aThrownParticle->fMomentum.SetXYZ(
-//                 fBETAG4EventGen->GetMomentumVector(aPart).x()*1000.0,
-//                 fBETAG4EventGen->GetMomentumVector(aPart).y()*1000.0,
-//                 fBETAG4EventGen->GetMomentumVector(aPart).z()*1000.0);
-          aThrownParticle->fMomentum4Vector.SetXYZT(aThrownParticle->Px(),aThrownParticle->Py(),aThrownParticle->Pz(),aThrownParticle->Pt());
-//          aThrownParticle->fPhi = fCurrentPhi;
-//          aThrownParticle->fEnergy = (fCurrentEnergy)*1000.0;
-//          aThrownParticle->fPID = aPart->GetPdgCode();
-         //aThrownParticle->fMomentum.
-	  if(fOutputTree) fOutputTree->Fill();
+         // 
+         aThrownParticle->fMomentum4Vector.SetXYZT(aThrownParticle->Px(),aThrownParticle->Py(),aThrownParticle->Pz(),aThrownParticle->Energy());
+         if(fOutputTree) fOutputTree->Fill();
       }
       else printf("NO MC EVENT!!!\n");
-   fParticleGun->GeneratePrimaryVertex ( anEvent );
+      fParticleGun->GeneratePrimaryVertex ( anEvent );
    } // end of loop over particles to throw for this event. 
 
-/*   MCvect            = fBETAG4EventGen->GenerateEvent();*/
-//    fCurrentEnergy    = MCvect[0];
-//    fCurrentTheta     = MCvect[1];
-//    fCurrentPhi       = MCvect[2];
-/*   G4ThreeVector aDirection(1,0,0);
-      aDirection.setRThetaPhi(1,fCurrentTheta,fCurrentPhi);*/
-//    G4ThreeVector aPosition( 2.*(G4UniformRand()-0.5)*1.0*cm,
-//                             2.*(G4UniformRand()-0.5)*1.0*cm,
-//                             2.*(G4UniformRand()-0.5)*1.0*cm );
-/*  fParticleGun->SetParticlePosition( aPosition );*/
-//   fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition() );
+   /*   MCvect            = fBETAG4EventGen->GenerateEvent();*/
+   //    fCurrentEnergy    = MCvect[0];
+   //    fCurrentTheta     = MCvect[1];
+   //    fCurrentPhi       = MCvect[2];
+   /*   G4ThreeVector aDirection(1,0,0);
+        aDirection.setRThetaPhi(1,fCurrentTheta,fCurrentPhi);*/
+   //    G4ThreeVector aPosition( 2.*(G4UniformRand()-0.5)*1.0*cm,
+   //                             2.*(G4UniformRand()-0.5)*1.0*cm,
+   //                             2.*(G4UniformRand()-0.5)*1.0*cm );
+   /*  fParticleGun->SetParticlePosition( aPosition );*/
+   //   fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition() );
 
-/*
-         G4ThreeVector aDirection(
-            std::sin ( fCurrentTheta) *std::cos ( fCurrentPhi ) *m,
-            std::sin ( fCurrentTheta ) *std::sin ( fCurrentPhi ) *m ,
-            std::cos ( fCurrentTheta ) *m ); */
+   /*
+      G4ThreeVector aDirection(
+      std::sin ( fCurrentTheta) *std::cos ( fCurrentPhi ) *m,
+      std::sin ( fCurrentTheta ) *std::sin ( fCurrentPhi ) *m ,
+      std::cos ( fCurrentTheta ) *m ); */
 
-//   fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection() );s
-//   fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
-
-
+   //   fParticleGun->SetParticleMomentumDirection(  fBETAG4EventGen->GetInitialDirection() );s
+   //   fParticleGun->SetParticleEnergy( (fBETAG4EventGen->GetParticleEnergy())*1000.0*MeV );
 
 
-//       for(int i=0;i<fBETAG4EventGen->fNumberOfParticlesThrown;i++) {
-//          
-//       }
 
-//   fParticleGun->GeneratePrimaryVertex ( anEvent );
+
+   //       for(int i=0;i<fBETAG4EventGen->fNumberOfParticlesThrown;i++) {
+   //          
+   //       }
+
+   //   fParticleGun->GeneratePrimaryVertex ( anEvent );
 
 }
 //________________________________________________________
 /*
-void BETAPrimaryGeneratorAction::SetOptPhotonPolar()
-{
+   void BETAPrimaryGeneratorAction::SetOptPhotonPolar()
+   {
    G4double angle = G4UniformRand() * 360.0*deg;
    SetOptPhotonPolar ( angle );
-}
+   }
 //________________________________________________________//
 
 void BETAPrimaryGeneratorAction::SetOptPhotonPolar ( G4double angle )
 {
-   if ( fParticleGun->GetParticleDefinition()->GetParticleName() != "opticalphoton" )
-   {
-      G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
-      "the particleGun is not an opticalphoton" << G4endl;
-      return;
-   }
+if ( fParticleGun->GetParticleDefinition()->GetParticleName() != "opticalphoton" )
+{
+G4cout << "--> warning from PrimaryGeneratorAction::SetOptPhotonPolar() :"
+"the particleGun is not an opticalphoton" << G4endl;
+return;
+}
 
-   G4ThreeVector normal ( 1., 0., 0. );
-   G4ThreeVector kphoton = fParticleGun->GetParticleMomentumDirection();
-   G4ThreeVector product = normal.cross ( kphoton );
-   G4double modul2       = product*product;
+G4ThreeVector normal ( 1., 0., 0. );
+G4ThreeVector kphoton = fParticleGun->GetParticleMomentumDirection();
+G4ThreeVector product = normal.cross ( kphoton );
+G4double modul2       = product*product;
 
-   G4ThreeVector e_perpend ( 0., 0., 1. );
-   if ( modul2 > 0. ) e_perpend = ( 1./std::sqrt ( modul2 ) ) *product;
-   G4ThreeVector e_paralle    = e_perpend.cross ( kphoton );
+G4ThreeVector e_perpend ( 0., 0., 1. );
+if ( modul2 > 0. ) e_perpend = ( 1./std::sqrt ( modul2 ) ) *product;
+G4ThreeVector e_paralle    = e_perpend.cross ( kphoton );
 
-   G4ThreeVector polar = std::cos ( angle ) *e_paralle + std::sin ( angle ) *e_perpend;
-   fParticleGun->SetParticlePolarization ( polar );
+G4ThreeVector polar = std::cos ( angle ) *e_paralle + std::sin ( angle ) *e_perpend;
+fParticleGun->SetParticlePolarization ( polar );
 }
 //________________________________________________________//
 
 void BETAPrimaryGeneratorAction::SetIsotropic ( G4int set )
 {
 
-   iso = set;
+iso = set;
 //else particleGun->SetParticleMomentumDirection( getBETASolidAngle() );
 }
 //________________________________________________________//
@@ -197,7 +192,7 @@ void BETAPrimaryGeneratorAction::SetIsotropic ( G4int set )
 void BETAPrimaryGeneratorAction::SetMomentum ( G4double P )
 {
 
-   momentum = P;
+momentum = P;
 
 }
 //________________________________________________________//
@@ -205,28 +200,28 @@ void BETAPrimaryGeneratorAction::SetMomentum ( G4double P )
 void BETAPrimaryGeneratorAction::SetSigmaMomentum ( G4double P )
 {
 
-   sigmaMomentum = P;
+sigmaMomentum = P;
 }
 //________________________________________________________//
 
 void BETAPrimaryGeneratorAction::SetPartTheta ( G4double P )
 {
 
-   theta_particle = P;
+theta_particle = P;
 }
 //________________________________________________________//
 
 G4double BETAPrimaryGeneratorAction::GetPartTheta (  )
 {
 
-   return( theta_particle );
+return( theta_particle );
 }
 //________________________________________________________//
 
 void BETAPrimaryGeneratorAction::SetPartPhi ( G4double P )
 {
-   
-   phi_particle = P;
+
+phi_particle = P;
 }
 //________________________________________________________//
 
@@ -252,15 +247,15 @@ void BETAPrimaryGeneratorAction::SetPiZeroRatio ( G4double Ratio )
 //________________________________________________________//*/
 
 double mottCrossSection(double p, double theta) {
-// MeV and degrees
+   // MeV and degrees
    double alphaSquared =(1.0/137.0)*(1.0/137.0);
    double hbarSquared = 6.5822e-22*6.5822e-22;
    double mass = 0.938;
    double E = std::sqrt(p*p+mass*mass);
 
    double res = (alphaSquared*E*E/(4.0*p*p*p*p*std::pow(std::sin(theta/2.0),4)) )*(1.0-std::pow(p*std::sin(theta/2.0)/E,2));
-//double res1 = alphaSquared *hbarSquared /((2* p*p*std::sin(theta*pi/360.)*std::sin(theta*pi/360.))*(2* p*p* std::sin(theta*pi/360.)*std::sin(theta*pi/360.))) ;
-//double res2 = 938.28*938.28+ p*p*std::cos(theta*pi/360.)*std::cos(theta*pi/360.);
+   //double res1 = alphaSquared *hbarSquared /((2* p*p*std::sin(theta*pi/360.)*std::sin(theta*pi/360.))*(2* p*p* std::sin(theta*pi/360.)*std::sin(theta*pi/360.))) ;
+   //double res2 = 938.28*938.28+ p*p*std::cos(theta*pi/360.)*std::cos(theta*pi/360.);
 
    return(res);
 }

@@ -23,8 +23,6 @@
 
   See class documentation for BETAG4EventGenerator and InSANEEventGenerator.
 
-
-
  */
 
 
@@ -170,11 +168,11 @@ public:
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->SetProductionParticleType(111);
       fDiffXSec->InitializeFinalStateParticles();
-      fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
+      InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fEventSampler);
       CalculateTotalCrossSection();
-      fPrimaryPS->Print();
+      ps->Print();
    }
 
 };
@@ -225,11 +223,11 @@ public:
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->SetParticleType(11);
       fDiffXSec->InitializePhaseSpaceVariables();
-      fPrimaryPS = fDiffXSec->GetPhaseSpace(); 
+      InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fEventSampler);
       CalculateTotalCrossSection();
-      fPrimaryPS->Print();
+      ps->Print();
 
    }
 

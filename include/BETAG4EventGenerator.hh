@@ -16,41 +16,6 @@
  *   \ingroup EventGen
  */ 
 class BETAG4EventGenerator : public InSANEEventGenerator {
-   protected:
-
-   public:
-      BETAG4EventGenerator();
-      virtual ~BETAG4EventGenerator() { }
-
-      /** Sets the cross section and creates the phase space sampler. 
-       *  Must be called before using event generator
-       *  and should first call InitializePhaseSpace() or take care of
-       *  phase space definition.
-       *  This is called from the constructor and each implementation
-       *  requiring a different cross section should reimplement this method
-       */
-      virtual void Initialize(){
-
-         /// Create the cross section
-         F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-         fDiffXSec->SetBeamEnergy(fBeamEnergy);
-         /// Create the phase space
-         fDiffXSec->InitializePhaseSpaceVariables();
-         //      fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-         //      fPrimaryPS->ListVariables();
-
-         /// Create the sampler 
-         InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-         /// Add sampler to event generator
-         AddSampler(fF1F2EventSampler);
-
-         CalculateTotalCrossSection();
-
-      }
-
-   protected :
-      InSANEPhaseSpace * fPrimaryPS;
-
    public :
       int   fNumberOfGeneratedParticles;
       bool  fIsInitialized;
@@ -59,12 +24,6 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
       G4ThreeVector * fInitialPosition ;
       G4ThreeVector * fInitialDirection ;
       G4ThreeVector * fMomentumVector ;
-
-      InSANEPhaseSpaceVariable * varTheta;
-      InSANEPhaseSpaceVariable * varPhi;
-      InSANEPhaseSpaceVariable * varEnergy;
-      InSANEPhaseSpaceVariable * var;
-      InSANEPhaseSpaceVariable * varMomentum;
 
       double fBeamEnergy;
       double fEnergyMax;
@@ -85,6 +44,19 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
       double fCentralPhi;
 
       double * fEventArray;
+
+   public:
+      BETAG4EventGenerator();
+      virtual ~BETAG4EventGenerator(); 
+
+      /** Sets the cross section and creates the phase space sampler. 
+       *  Must be called before using event generator
+       *  and should first call InitializePhaseSpace() or take care of
+       *  phase space definition.
+       *  This is called from the constructor and each implementation
+       *  requiring a different cross section should reimplement this method
+       */
+      virtual void Initialize();
 
 
    public:
@@ -121,7 +93,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
       }
 
       virtual double GetParticleEnergy(TParticle * p) {
-         return(p->Pt());
+         return(p->Energy());
       }
 
       void SetThetaMax(double val) { 
@@ -210,11 +182,6 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
             aVar->SetVariableMinima(val);
          }
          if( vars->GetEntries() == 0) Error("SetMomentumMax","\"momentum\" variable does not exist.");
-         if(varMomentum) varMomentum->SetVariableMinima(val);
-         else if (fPrimaryPS) {
-            varMomentum = fPrimaryPS->GetVariable("momentum");
-            if(varMomentum) varMomentum->SetVariableMinima(val);
-         }
       }
 
 };
