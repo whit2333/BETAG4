@@ -95,6 +95,7 @@ public :
       fDiffXSec1->SetBeamEnergy(fBeamEnergy);
       fDiffXSec1->SetProductionParticleType(111);
       fDiffXSec1->InitializePhaseSpaceVariables();
+      fDiffXSec1->InitializeFinalStateParticles();
       InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
       AddSampler(pi0EventSampler);
 
@@ -103,6 +104,7 @@ public :
       fDiffXSec2->SetBeamEnergy(fBeamEnergy);
       fDiffXSec2->SetProductionParticleType(211);
       fDiffXSec2->InitializePhaseSpaceVariables();
+      fDiffXSec2->InitializeFinalStateParticles();
       InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
       AddSampler(pi0EventSampler2);
 
@@ -111,6 +113,7 @@ public :
       fDiffXSec3->SetBeamEnergy(fBeamEnergy);
       fDiffXSec3->SetProductionParticleType(-211);
       fDiffXSec3->InitializePhaseSpaceVariables();
+      fDiffXSec3->InitializeFinalStateParticles();
       InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
       AddSampler(pi0EventSampler3);
 
@@ -118,6 +121,7 @@ public :
       F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->InitializePhaseSpaceVariables();
+      fDiffXSec->InitializeFinalStateParticles();
 //      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
 //     ps->ListVariables();
       InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
