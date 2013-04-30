@@ -121,8 +121,8 @@ public :
       F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->InitializePhaseSpaceVariables();
-      fDiffXSec->GetVariable("energy")->SetVariableMinima(0.5);
-      fDiffXSec->GetVariable("energy")->SetVariableMaxima(4.0);
+      fDiffXSec->GetPhaseSpace()->GetVariable("energy")->SetVariableMinima(0.5);
+      fDiffXSec->GetPhaseSpace()->GetVariable("energy")->SetVariableMaxima(4.0);
       fDiffXSec->InitializeFinalStateParticles();
 //      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
 //     ps->ListVariables();
