@@ -67,6 +67,7 @@ public:
       InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fF1F2EventSampler);
       
+      SetBeamEnergy(fBeamEnergy);
       InSANEEventGenerator::Initialize();
 
       CalculateTotalCrossSection();
@@ -96,6 +97,7 @@ public :
       fDiffXSec1->SetProductionParticleType(111);
       fDiffXSec1->InitializePhaseSpaceVariables();
       fDiffXSec1->InitializeFinalStateParticles();
+      fDiffXSec1->SetRadiationLength(8.0);
       InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
       AddSampler(pi0EventSampler);
 
@@ -105,6 +107,7 @@ public :
       fDiffXSec2->SetProductionParticleType(211);
       fDiffXSec2->InitializePhaseSpaceVariables();
       fDiffXSec2->InitializeFinalStateParticles();
+      fDiffXSec2->SetRadiationLength(8.0);
       InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
       AddSampler(pi0EventSampler2);
 
@@ -114,6 +117,7 @@ public :
       fDiffXSec3->SetProductionParticleType(-211);
       fDiffXSec3->InitializePhaseSpaceVariables();
       fDiffXSec3->InitializeFinalStateParticles();
+      fDiffXSec3->SetRadiationLength(8.0);
       InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
       AddSampler(pi0EventSampler3);
 
@@ -128,6 +132,9 @@ public :
 //     ps->ListVariables();
       InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fF1F2EventSampler);
+
+      SetBeamEnergy(fBeamEnergy);
+      InSANEEventGenerator::Initialize();
 
       CalculateTotalCrossSection();
    }
@@ -177,6 +184,8 @@ public:
       InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fEventSampler);
+      SetBeamEnergy(fBeamEnergy);
+      InSANEEventGenerator::Initialize();
       CalculateTotalCrossSection();
       ps->Print();
    }
@@ -232,6 +241,8 @@ public:
       InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
       InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
       AddSampler(fEventSampler);
+      SetBeamEnergy(fBeamEnergy);
+      InSANEEventGenerator::Initialize();
       CalculateTotalCrossSection();
       ps->Print();
 

@@ -25,7 +25,6 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
       G4ThreeVector * fInitialDirection ;
       G4ThreeVector * fMomentumVector ;
 
-      double fBeamEnergy;
       double fEnergyMax;
       double fEnergyMin;
       double fMomentumMax;

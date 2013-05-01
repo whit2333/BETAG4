@@ -259,7 +259,7 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 // 
    if ( command == setBeamEnergy )
    {
-      BETAAction->GetEventGenerator()->fBeamEnergy = setBeamEnergy->GetNewDoubleValue(newValue);
+      BETAAction->GetEventGenerator()->SetBeamEnergy( setBeamEnergy->GetNewDoubleValue(newValue) );
    }
 
 //    if ( command == sigmaMomentum )
