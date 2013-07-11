@@ -125,8 +125,8 @@ public :
       F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
       fDiffXSec->SetBeamEnergy(fBeamEnergy);
       fDiffXSec->InitializePhaseSpaceVariables();
-      fDiffXSec->GetPhaseSpace()->GetVariable("energy")->SetVariableMinima(0.5);
-      fDiffXSec->GetPhaseSpace()->GetVariable("energy")->SetVariableMaxima(4.0);
+      fDiffXSec->GetPhaseSpace()->GetVariable("energy")->SetMinimum(0.5);
+      fDiffXSec->GetPhaseSpace()->GetVariable("energy")->SetMaximum(4.0);
       fDiffXSec->InitializeFinalStateParticles();
 //      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
 //     ps->ListVariables();
@@ -338,7 +338,7 @@ public:
 //       fVarHelicity->fVariableName="helicity"; 
 //       fVarHelicity->fVariable="#lambda";
 //       ((InSANEDiscretePhaseSpaceVariable*)fVarHelicity)->SetNumberOfValues(3); // ROOT string latex
-// /*      varHelicity->SetVariableMaxima(1.0); //*/
+// /*      varHelicity->SetMaximum(1.0); //*/
 //       fPhaseSpace->AddVariable(fVarHelicity);
 //    }
 

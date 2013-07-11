@@ -80,24 +80,26 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
 
    if(fMonteCarloEvent) {
       fMonteCarloEvent->ClearEvent("C");
-   } else { std::cout << " NO MC EVENT!!!\n"; }
+   } //else { std::cout << " NO MC EVENT!!!\n"; }
 
-   Double_t * MCvect ;
-   TParticle * aPart=0;
+   Double_t  * MCvect = 0;
+   TParticle * aPart  = 0;
 
    // Generate the event and get the list of particles
    TList * parts = fBETAG4EventGen->GenerateEvent();
-   // Loop over all particles to create. (usually just a single electron)
 
+   // Loop over all particles to create. (usually just a single electron)
    for(int ipart = 0;ipart<parts->GetEntries();ipart++) {
+
       aPart = (TParticle*) parts->At(ipart);
-      /*      aPart->Print();*/
-      if( aPart->GetPdgCode() == 11) fParticleGun->SetParticleDefinition(electron);
-      else if( aPart->GetPdgCode() == -11) fParticleGun->SetParticleDefinition(positron);
-      else if( aPart->GetPdgCode() == 111) fParticleGun->SetParticleDefinition(pionzero);
-      else if( aPart->GetPdgCode() == 211) fParticleGun->SetParticleDefinition(pionplus);
+      //aPart->Print();
+      
+      if(      aPart->GetPdgCode() == 11 )  fParticleGun->SetParticleDefinition(electron);
+      else if( aPart->GetPdgCode() == -11)  fParticleGun->SetParticleDefinition(positron);
+      else if( aPart->GetPdgCode() == 111)  fParticleGun->SetParticleDefinition(pionzero);
+      else if( aPart->GetPdgCode() == 211)  fParticleGun->SetParticleDefinition(pionplus);
       else if( aPart->GetPdgCode() == -211) fParticleGun->SetParticleDefinition(pionminus);
-      else if( aPart->GetPdgCode() == 22) fParticleGun->SetParticleDefinition(gamma);
+      else if( aPart->GetPdgCode() == 22)   fParticleGun->SetParticleDefinition(gamma);
       else fParticleGun->SetParticleDefinition(electron);
 
       fParticleGun->SetParticlePosition( fBETAG4EventGen->GetInitialPosition(aPart) );

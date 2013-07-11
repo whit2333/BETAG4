@@ -101,7 +101,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("theta");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMaxima(val);
+            aVar->SetMaximum(val);
          }
          if( vars->GetEntries() == 0) Error("SetThetaMax","\"theta\" variable does not exist.");
       }
@@ -112,7 +112,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("theta");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMinima(val);
+            aVar->SetMinimum(val);
          }
          if( vars->GetEntries() == 0) Error("SetThetaMin","\"theta\" variable does not exist.");
       }
@@ -123,7 +123,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("phi");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMaxima(val);
+            aVar->SetMaximum(val);
          }
          if( vars->GetEntries() == 0) Error("SetPhiMax","\"phi\" variable does not exist.");
       }
@@ -134,7 +134,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("phi");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMinima(val);
+            aVar->SetMinimum(val);
          }
          if( vars->GetEntries() == 0) Error("SetPhiMin","\"phi\" variable does not exist.");
       }
@@ -145,7 +145,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("energy");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMaxima(val);
+            aVar->SetMaximum(val);
          }
          if( vars->GetEntries() == 0) Error("SetEnergyMax","\"energy\" variable does not exist.");
       }
@@ -156,7 +156,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("energy");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMinima(val);
+            aVar->SetMinimum(val);
          }
          if( vars->GetEntries() == 0) Error("SetEnergyMax","\"energy\" variable does not exist.");
       }
@@ -167,7 +167,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("momentum");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMaxima(val);
+            aVar->SetMaximum(val);
          }
          if( vars->GetEntries() == 0) Error("SetMomentumMax","\"momentum\" variable does not exist.");
       }
@@ -178,7 +178,7 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
          TList * vars = GetPSVariables("momentum");
          for(int i = 0; i< vars->GetEntries() ; i++){
             InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetVariableMinima(val);
+            aVar->SetMinimum(val);
          }
          if( vars->GetEntries() == 0) Error("SetMomentumMax","\"momentum\" variable does not exist.");
       }
