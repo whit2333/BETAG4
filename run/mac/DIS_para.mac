@@ -1,7 +1,7 @@
 /beta/target/setPolarizationAngle 180
 
-/beta/gun/setEventType dis 
-/beta/gun/refresh
+/beta/gun/setEventType poldis 
+#/beta/gun/refresh
 /beta/gun/setEnergyMin 0.500
 /beta/gun/setEnergyMax 4.0 
 /beta/gun/setThetaMin 30.0 
@@ -13,5 +13,5 @@
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 10000
+/run/beamOn 1000
 

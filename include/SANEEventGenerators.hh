@@ -8,8 +8,10 @@
 #include "F1F209eInclusiveDiffXSec.h"
 #include "InSANEInclusiveDiffXSec.h"
 #include "InSANEXSections.h"
+#include "InSANEPhaseSpace.h"
 #include "WiserXSection.h"
 #include "HallCBeam.h"
+#include "PolarizedDISXSec.h"
 
 /*! \page EventGeneratorHowTo How to make an event generator
 
@@ -46,8 +48,9 @@ public:
    double fUpstreamPosition;
 };
 
+
+
 /** Event generator for inclusive electron DIS.  Uses F1F209 Code. 
- *
  *   \ingroup EventGen
  */
 class DISEventGenerator : public BETAG4EventGenerator {
@@ -75,6 +78,100 @@ public:
 
 };
 
+
+/** Polarized DIS cross section (born).
+ *   \ingroup EventGen
+ */
+class PolarizedDISEventGenerator : public BETAG4EventGenerator {
+   public:
+      PolarizedDISEventGenerator(){
+         fBeamEnergy=5.9;
+      }
+      ~PolarizedDISEventGenerator(){}
+
+      virtual void Initialize(){
+         double Emin = 0.5;
+         double Emax = 3.5;
+         //----------------------------------
+         // Electron Phase Space
+         //----------------------------------
+         InSANEPhaseSpace * fPolarizedPhaseSpace = new InSANEPhaseSpace();
+         InSANEPhaseSpace * fPhaseSpace          = new InSANEPhaseSpace();
+
+         InSANEPhaseSpaceVariable * varEnergy = new InSANEPhaseSpaceVariable("Energy","E#prime"); 
+         varEnergy->SetMinimum(Emin);         //GeV
+         varEnergy->SetMaximum(Emax); //GeV
+         varEnergy->SetVariableUnits("GeV");        //GeV
+         fPolarizedPhaseSpace->AddVariable(varEnergy);
+         fPhaseSpace->AddVariable(varEnergy);
+
+         InSANEPhaseSpaceVariable *   varTheta = new InSANEPhaseSpaceVariable("theta","#theta");
+         varTheta->SetMinimum(10.0*TMath::Pi()/180.0); //
+         varTheta->SetMaximum(50.0*TMath::Pi()/180.0); //
+         varTheta->SetVariableUnits("rads"); //
+         fPolarizedPhaseSpace->AddVariable(varTheta);
+         fPhaseSpace->AddVariable(varTheta);
+
+         InSANEPhaseSpaceVariable *   varPhi = new InSANEPhaseSpaceVariable("phi","#phi");
+         varPhi->SetMinimum(-90.0*TMath::Pi()/180.0); //
+         varPhi->SetMaximum(90.0*TMath::Pi()/180.0); //
+         varPhi->SetVariableUnits("rads"); //
+         fPolarizedPhaseSpace->AddVariable(varPhi);
+         fPhaseSpace->AddVariable(varPhi);
+
+         InSANEDiscretePhaseSpaceVariable *   varHelicity = new InSANEDiscretePhaseSpaceVariable("helicity","#lambda");
+         varHelicity->SetNumberOfValues(3); 
+         fPolarizedPhaseSpace->AddVariable(varHelicity);
+
+         //---------------------
+         // Cross-sections
+         //---------------------
+
+         // - Build up electron DIS x-sec
+         //  - unpolarized 
+         F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+         fDiffXSec->SetBeamEnergy(fBeamEnergy);
+         fDiffXSec->SetA(1);
+         fDiffXSec->SetZ(1);
+         fDiffXSec->SetPhaseSpace(fPhaseSpace);
+         fDiffXSec->Refresh();
+         //  - polarized 
+         PolarizedDISXSecParallelHelicity * fDiffXSec1 = new  PolarizedDISXSecParallelHelicity();
+         fDiffXSec1->SetBeamEnergy(fBeamEnergy);
+         fDiffXSec1->SetPhaseSpace(fPolarizedPhaseSpace);
+         fDiffXSec1->Refresh();
+         PolarizedDISXSecAntiParallelHelicity * fDiffXSec2 = new  PolarizedDISXSecAntiParallelHelicity();
+         fDiffXSec2->SetBeamEnergy(fBeamEnergy);
+         fDiffXSec2->SetPhaseSpace(fPolarizedPhaseSpace);
+         fDiffXSec2->Refresh();
+         //  - Add cross sections to total cross section
+         InSANEPolarizedDiffXSec * fPolXSec = new InSANEPolarizedDiffXSec();
+         fPolXSec->SetUnpolarizedCrossSection(fDiffXSec);
+         fPolXSec->SetPolarizedPositiveCrossSection(fDiffXSec1);
+         fPolXSec->SetPolarizedNegativeCrossSection(fDiffXSec2);
+         fPolXSec->SetPhaseSpace(fPolarizedPhaseSpace);
+         fPolXSec->SetBeamEnergy(fBeamEnergy);
+         fPolXSec->SetChargeAsymmetry(-0.002);
+         fPolXSec->SetBeamPolarization(0.66);
+         fPolXSec->SetTargetPolarization(0.6);
+         fPolXSec->Refresh();
+
+
+         InSANEPhaseSpaceSampler *  sampler = new InSANEPhaseSpaceSampler(fPolXSec);
+         sampler->SetFoamSample(10);
+         AddSampler(sampler);
+         SetBeamEnergy(fBeamEnergy);
+
+         //InSANEEventGenerator::Initialize();
+         CalculateTotalCrossSection();
+
+         fDiffXSec->Print();
+         fDiffXSec1->Print();
+         fDiffXSec2->Print();
+         fPolXSec->Print();
+      }
+
+};
 
 
 /** Electrons and pi0s thrown.
@@ -316,52 +413,6 @@ public :
    PolarizedInclusiveDISEventGenerator(){}
 
    virtual ~PolarizedInclusiveDISEventGenerator() { }
-
-};
-
-/** Event generator for inclusive electron DIS
- *
- *   \ingroup EventGen
- */
-class PolarizedDISEventGenerator : public BETAG4EventGenerator {
-public:
-   PolarizedDISEventGenerator() {
-      fVarHelicity=0;
-   }
-
-   /**  Add the helicity variable to the normal 
-    *   BETAG4EventGenerator::InitializePhaseSpace()
-    */
-//    virtual void InitializePhaseSpace() {
-//       BETAG4EventGenerator::InitializePhaseSpace();
-//       fVarHelicity = new InSANEDiscretePhaseSpaceVariable();
-//       fVarHelicity->fVariableName="helicity"; 
-//       fVarHelicity->fVariable="#lambda";
-//       ((InSANEDiscretePhaseSpaceVariable*)fVarHelicity)->SetNumberOfValues(3); // ROOT string latex
-// /*      varHelicity->SetMaximum(1.0); //*/
-//       fPhaseSpace->AddVariable(fVarHelicity);
-//    }
-
-
-   /** Initialize the event generator
-    */
-//    virtual void Initialize() {
-//       // InitializePhaseSpace() must be called
-//       InitializePhaseSpace();
-// 
-//       // Create the differential cross section to be used
-//       fDiffXSec = new F1F209eInclusiveDiffXSec();
-//       // Set the cross section's phase space
-//       fDiffXSec->SetPhaseSpace(fPhaseSpace);
-//       // Create event sampler
-//       fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-//       // Set the seed 
-//       fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
-//    }
-
-   InSANEPhaseSpaceVariable * fVarHelicity;
-
-   Int_t fHelicity;
 
 };
 
