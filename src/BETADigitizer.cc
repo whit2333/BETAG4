@@ -533,7 +533,7 @@ for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
 /// _____ BEAM  ______
    TClonesArray * fThrownParticles = fMCEvent->fThrownParticles;
    if(fThrownParticles->GetEntries() > 0){
-   BETAG4MonteCarloThrownParticle * aPart = (BETAG4MonteCarloThrownParticle*)(*fThrownParticles)[0];
+   InSANEParticle * aPart = (InSANEParticle*)(*fThrownParticles)[0];
    //fBeamEvent->fBeamEnergy
    fBeamEvent->fXRaster = 0.0;
    fBeamEvent->fYRaster = 0.0;

@@ -142,8 +142,14 @@ int main(int argc,char** argv)
    runManager->SetUserAction(stepping_action);
 
    int fnargs = 2;
-   char * fargs[2] = {"BETAG4","-l"};
-   TRint * fApp = new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
+   char arg0[10];  
+   char arg1[10];  
+   strcpy(arg0,"BETAG4");
+   strcpy(arg1,"-l");
+   char * fargs[2] = {arg0,arg1};
+   //char * fargs[2] = {"BETAG4","-l"};
+   //TRint * fApp = 
+      new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
 
    std::cout << " o Initializing G4 kernel " << std::endl;
    /// Initialize G4 kernel

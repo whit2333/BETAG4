@@ -44,7 +44,7 @@ protected:
 
 
 private:
-   BETAG4MonteCarloThrownParticle * aThrownParticle;
+   InSANEParticle * aThrownParticle;
 
 public:
    /** C'tor :

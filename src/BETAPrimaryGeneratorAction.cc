@@ -83,7 +83,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
    } //else { std::cout << " NO MC EVENT!!!\n"; }
 
    Double_t  * MCvect = 0;
-   TParticle * aPart  = 0;
+   InSANEParticle * aPart  = 0;
 
    // Generate the event and get the list of particles
    TList * parts = fBETAG4EventGen->GenerateEvent();
@@ -91,7 +91,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
    // Loop over all particles to create. (usually just a single electron)
    for(int ipart = 0;ipart<parts->GetEntries();ipart++) {
 
-      aPart = (TParticle*) parts->At(ipart);
+      aPart = (InSANEParticle*) parts->At(ipart);
       //aPart->Print();
       
       if(      aPart->GetPdgCode() == 11 )  fParticleGun->SetParticleDefinition(electron);
@@ -109,11 +109,9 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
       /// Gather information about the event for simulated truth
       if(fMonteCarloEvent) {
          fMonteCarloEvent->fNumberOfParticlesThrown++;
-         /// \todo Should Have a loop here 
-         aThrownParticle = new((*fThrownParticles)[ipart]) BETAG4MonteCarloThrownParticle();
-         (*(TParticle *)aThrownParticle) = (*aPart);
-         // 
-         aThrownParticle->fMomentum4Vector.SetXYZT(aThrownParticle->Px(),aThrownParticle->Py(),aThrownParticle->Pz(),aThrownParticle->Energy());
+         aThrownParticle = new((*fThrownParticles)[ipart]) InSANEParticle(*aPart);
+         //(*(TParticle *)aThrownParticle) = (*aPart);
+         //aThrownParticle->fMomentum4Vector.SetXYZT(aThrownParticle->Px(),aThrownParticle->Py(),aThrownParticle->Pz(),aThrownParticle->Energy());
          if(fOutputTree) fOutputTree->Fill();
       }
       else printf("NO MC EVENT!!!\n");

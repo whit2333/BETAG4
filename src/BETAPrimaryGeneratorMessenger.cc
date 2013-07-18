@@ -203,6 +203,11 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
          BETAAction->SetEventGenerator(anEventGen);
          anEventGen->Initialize();
          anEventGen->fIsInitialized = true;
+      } else if(newValue == "poldis") {
+         anEventGen = new PolarizedDISEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
       } else if(newValue == "mott") {
          anEventGen = new MottEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
