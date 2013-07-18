@@ -34,18 +34,16 @@
  *   \ingroup EventGen
  */
 class ConeEventGenerator : public BETAG4EventGenerator   {
-public:
-   ConeEventGenerator();
-   virtual ~ConeEventGenerator();
-
-   virtual  G4ThreeVector &  GetInitialPosition(){
-      fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
-      fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm);
-      fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
-      return(*fInitialPosition);
-   }
-
-   double fUpstreamPosition;
+   public:
+      ConeEventGenerator();
+      virtual ~ConeEventGenerator();
+      virtual  G4ThreeVector &  GetInitialPosition(){
+         fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
+         fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm);
+         fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
+         return(*fInitialPosition);
+      }
+      double fUpstreamPosition;
 };
 
 
@@ -54,28 +52,10 @@ public:
  *   \ingroup EventGen
  */
 class DISEventGenerator : public BETAG4EventGenerator {
-public:
-   DISEventGenerator(){
-      fBeamEnergy=5.9;
-   }
-   ~DISEventGenerator(){}
-
-   /** */
-   virtual void Initialize(){
-      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-      std::cout << " Beam Energy: " << fBeamEnergy << std::endl;
-      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec->InitializePhaseSpaceVariables();
-      fDiffXSec->InitializeFinalStateParticles();
-      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      AddSampler(fF1F2EventSampler);
-      
-      SetBeamEnergy(fBeamEnergy);
-      InSANEEventGenerator::Initialize();
-
-      CalculateTotalCrossSection();
-   }
-
+   public:
+      DISEventGenerator(){ }
+      ~DISEventGenerator(){}
+      virtual void Initialize();
 };
 
 
@@ -84,93 +64,9 @@ public:
  */
 class PolarizedDISEventGenerator : public BETAG4EventGenerator {
    public:
-      PolarizedDISEventGenerator(){
-         fBeamEnergy=5.9;
-      }
-      ~PolarizedDISEventGenerator(){}
-
-      virtual void Initialize(){
-         double Emin = 0.5;
-         double Emax = 3.5;
-         //----------------------------------
-         // Electron Phase Space
-         //----------------------------------
-         InSANEPhaseSpace * fPolarizedPhaseSpace = new InSANEPhaseSpace();
-         InSANEPhaseSpace * fPhaseSpace          = new InSANEPhaseSpace();
-
-         InSANEPhaseSpaceVariable * varEnergy = new InSANEPhaseSpaceVariable("Energy","E#prime"); 
-         varEnergy->SetMinimum(Emin);         //GeV
-         varEnergy->SetMaximum(Emax); //GeV
-         varEnergy->SetVariableUnits("GeV");        //GeV
-         fPolarizedPhaseSpace->AddVariable(varEnergy);
-         fPhaseSpace->AddVariable(varEnergy);
-
-         InSANEPhaseSpaceVariable *   varTheta = new InSANEPhaseSpaceVariable("theta","#theta");
-         varTheta->SetMinimum(10.0*TMath::Pi()/180.0); //
-         varTheta->SetMaximum(50.0*TMath::Pi()/180.0); //
-         varTheta->SetVariableUnits("rads"); //
-         fPolarizedPhaseSpace->AddVariable(varTheta);
-         fPhaseSpace->AddVariable(varTheta);
-
-         InSANEPhaseSpaceVariable *   varPhi = new InSANEPhaseSpaceVariable("phi","#phi");
-         varPhi->SetMinimum(-90.0*TMath::Pi()/180.0); //
-         varPhi->SetMaximum(90.0*TMath::Pi()/180.0); //
-         varPhi->SetVariableUnits("rads"); //
-         fPolarizedPhaseSpace->AddVariable(varPhi);
-         fPhaseSpace->AddVariable(varPhi);
-
-         InSANEDiscretePhaseSpaceVariable *   varHelicity = new InSANEDiscretePhaseSpaceVariable("helicity","#lambda");
-         varHelicity->SetNumberOfValues(3); 
-         fPolarizedPhaseSpace->AddVariable(varHelicity);
-
-         //---------------------
-         // Cross-sections
-         //---------------------
-
-         // - Build up electron DIS x-sec
-         //  - unpolarized 
-         F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-         fDiffXSec->SetBeamEnergy(fBeamEnergy);
-         fDiffXSec->SetA(1);
-         fDiffXSec->SetZ(1);
-         fDiffXSec->SetPhaseSpace(fPhaseSpace);
-         fDiffXSec->Refresh();
-         //  - polarized 
-         PolarizedDISXSecParallelHelicity * fDiffXSec1 = new  PolarizedDISXSecParallelHelicity();
-         fDiffXSec1->SetBeamEnergy(fBeamEnergy);
-         fDiffXSec1->SetPhaseSpace(fPolarizedPhaseSpace);
-         fDiffXSec1->Refresh();
-         PolarizedDISXSecAntiParallelHelicity * fDiffXSec2 = new  PolarizedDISXSecAntiParallelHelicity();
-         fDiffXSec2->SetBeamEnergy(fBeamEnergy);
-         fDiffXSec2->SetPhaseSpace(fPolarizedPhaseSpace);
-         fDiffXSec2->Refresh();
-         //  - Add cross sections to total cross section
-         InSANEPolarizedDiffXSec * fPolXSec = new InSANEPolarizedDiffXSec();
-         fPolXSec->SetUnpolarizedCrossSection(fDiffXSec);
-         fPolXSec->SetPolarizedPositiveCrossSection(fDiffXSec1);
-         fPolXSec->SetPolarizedNegativeCrossSection(fDiffXSec2);
-         fPolXSec->SetPhaseSpace(fPolarizedPhaseSpace);
-         fPolXSec->SetBeamEnergy(fBeamEnergy);
-         fPolXSec->SetChargeAsymmetry(-0.002);
-         fPolXSec->SetBeamPolarization(0.66);
-         fPolXSec->SetTargetPolarization(0.6);
-         fPolXSec->Refresh();
-
-
-         InSANEPhaseSpaceSampler *  sampler = new InSANEPhaseSpaceSampler(fPolXSec);
-         sampler->SetFoamSample(10);
-         AddSampler(sampler);
-         SetBeamEnergy(fBeamEnergy);
-
-         //InSANEEventGenerator::Initialize();
-         CalculateTotalCrossSection();
-
-         fDiffXSec->Print();
-         fDiffXSec1->Print();
-         fDiffXSec2->Print();
-         fPolXSec->Print();
-      }
-
+      PolarizedDISEventGenerator(){ }
+      virtual ~PolarizedDISEventGenerator(){}
+      virtual void Initialize();
 };
 
 
@@ -179,63 +75,9 @@ class PolarizedDISEventGenerator : public BETAG4EventGenerator {
  */
 class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
 public :
-   InclusiveElectronPionGenerator(){
-      fBeamEnergy=5.9;
-   }
-
+   InclusiveElectronPionGenerator(){ }
    virtual ~InclusiveElectronPionGenerator() { }
-
-   virtual void Initialize(){
-
-      std::cout << " InclusiveElectronPionGenerator::Initialize() \n";
-      /// Neutral Pion
-      InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
-      fDiffXSec1->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec1->SetProductionParticleType(111);
-      fDiffXSec1->InitializePhaseSpaceVariables();
-      fDiffXSec1->InitializeFinalStateParticles();
-      fDiffXSec1->SetRadiationLength(8.0);
-      InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
-      AddSampler(pi0EventSampler);
-
-      /// Positive Pion
-      InSANEInclusiveWiserXSec * fDiffXSec2 = new InSANEInclusiveWiserXSec();
-      fDiffXSec2->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec2->SetProductionParticleType(211);
-      fDiffXSec2->InitializePhaseSpaceVariables();
-      fDiffXSec2->InitializeFinalStateParticles();
-      fDiffXSec2->SetRadiationLength(8.0);
-      InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
-      AddSampler(pi0EventSampler2);
-
-      /// Negative Pion
-      InSANEInclusiveWiserXSec * fDiffXSec3 = new InSANEInclusiveWiserXSec();
-      fDiffXSec3->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec3->SetProductionParticleType(-211);
-      fDiffXSec3->InitializePhaseSpaceVariables();
-      fDiffXSec3->InitializeFinalStateParticles();
-      fDiffXSec3->SetRadiationLength(8.0);
-      InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
-      AddSampler(pi0EventSampler3);
-
-      /// DIS
-      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec->InitializePhaseSpaceVariables();
-      fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-      fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
-      fDiffXSec->InitializeFinalStateParticles();
-//      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-//     ps->ListVariables();
-      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      AddSampler(fF1F2EventSampler);
-
-      SetBeamEnergy(fBeamEnergy);
-      InSANEEventGenerator::Initialize();
-
-      CalculateTotalCrossSection();
-   }
-
+   virtual void Initialize();
 };
 
 
@@ -247,20 +89,8 @@ public :
 class MottEventGenerator : public BETAG4EventGenerator   {
 public:
    MottEventGenerator(){}
-   ~MottEventGenerator(){}
-   /** */
-   virtual void Initialize(){
-      fBeamEnergy=5.9;
-      F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec->InitializePhaseSpaceVariables();
-
-      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-      ps->ListVariables();
-      InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      AddSampler(fF1F2EventSampler);
-      CalculateTotalCrossSection();
-   }
+   virtual ~MottEventGenerator(){}
+   virtual void Initialize();
 };
 
 /**  Wiser  Event generator spread over bigcal
@@ -271,22 +101,7 @@ class WiserEventGenerator : public BETAG4EventGenerator   {
 public:
    WiserEventGenerator(){ }
    virtual ~WiserEventGenerator() { }
-
-   virtual void Initialize() {
-      fBeamEnergy=5.9;
-      InSANEInclusiveWiserXSec * fDiffXSec = new InSANEInclusiveWiserXSec();
-      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec->SetProductionParticleType(111);
-      fDiffXSec->InitializeFinalStateParticles();
-      InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
-      InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      AddSampler(fEventSampler);
-      SetBeamEnergy(fBeamEnergy);
-      InSANEEventGenerator::Initialize();
-      CalculateTotalCrossSection();
-      ps->Print();
-   }
-
+   virtual void Initialize();
 };
 
 
@@ -295,24 +110,9 @@ public:
  *   \ingroup EventGen
  */
 class BigcalSimpleEventGenerator : public BETAG4EventGenerator   {
-public:
-   BigcalSimpleEventGenerator(){
-     
-   };
-   virtual ~BigcalSimpleEventGenerator() {
-   }
-//    virtual void Initialize() {
-//       InitializePhaseSpace();
-// 
-//       // Create the differential cross section to be used
-//       fDiffXSec = new InSANEFlatInclusiveDiffXSec();
-//       // Set the cross section's phase space
-//       fDiffXSec->SetPhaseSpace(fPhaseSpace);
-//       // Create event sampler
-//       fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-//       // Set the seed 
-//       fEventSampler->fRandomNumberGenerator->SetSeed((int)(G4UniformRand()*999999));
-//    }
+   public:
+      BigcalSimpleEventGenerator(){ }
+      virtual ~BigcalSimpleEventGenerator() { }
 };
 
 
@@ -323,28 +123,10 @@ public:
  *   \ingroup EventGen
  */
 class BigcalCenterEventGenerator : public BETAG4EventGenerator   {
-public:
-   BigcalCenterEventGenerator(){ };
-
-   virtual ~BigcalCenterEventGenerator() {
-   }
-
-   virtual void Initialize() {
-      fBeamEnergy=5.9;
-      InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
-      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec->SetParticleType(11);
-      fDiffXSec->InitializePhaseSpaceVariables();
-      InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
-      InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      AddSampler(fEventSampler);
-      SetBeamEnergy(fBeamEnergy);
-      InSANEEventGenerator::Initialize();
-      CalculateTotalCrossSection();
-      ps->Print();
-
-   }
-
+   public:
+      BigcalCenterEventGenerator(){ }
+      virtual ~BigcalCenterEventGenerator(){ }
+      virtual void Initialize();
 };
 
 /** Beam on target event generator that simply puts an electron beam upstream towards the target.
@@ -353,43 +135,42 @@ public:
  *   \ingroup EventGen
  */
 class BeamOnTargetEventGenerator : public BETAG4EventGenerator   {
-public:
-   BeamOnTargetEventGenerator(){
-      fUpstreamPosition = 150.0;//cm
-      fYPosition = -1.0*(100.0-99.944)*100.0/*-0.43*/;//cm
-      fBeamEnergy= 5.9;//GeV
-      fChicaneBendAngle = 2.214*TMath::Pi()/180.0;
-   }
-   virtual ~BeamOnTargetEventGenerator() {
-   }
+   public:
+      BeamOnTargetEventGenerator(){
+         fUpstreamPosition = 150.0;//cm
+         fYPosition = -1.0*(100.0-99.944)*100.0/*-0.43*/;//cm
+         fBeamEnergy= 5.9;//GeV
+         fChicaneBendAngle = 2.214*TMath::Pi()/180.0;
+      }
+      virtual ~BeamOnTargetEventGenerator() { }
 
-   double fYPosition;
-   double fChicaneBendAngle;
-   double fUpstreamPosition;
-   double fBeamEnergy;
+      double fYPosition;
+      double fChicaneBendAngle;
+      double fUpstreamPosition;
+      double fBeamEnergy;
 
-   virtual  G4ThreeVector &  GetInitialPosition(){
-      fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
-      fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm + fYPosition*cm);
-      fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*0.0*cm  - fUpstreamPosition*cm);
-      return(*fInitialPosition);
-   }
+      virtual  G4ThreeVector &  GetInitialPosition(){
+         fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
+         fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm + fYPosition*cm);
+         fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*0.0*cm  - fUpstreamPosition*cm);
+         return(*fInitialPosition);
+      }
 
-   virtual  G4ThreeVector &  GetInitialDirection(){
-      fInitialDirection->setX(0.0);
-      fInitialDirection->setY(1.0*TMath::Sin(fChicaneBendAngle));
-      fInitialDirection->setZ(1.0*TMath::Cos(fChicaneBendAngle));
-      return(*fInitialDirection);
-   }
-   virtual  G4ThreeVector &  GetMomentumVector(){
-      fMomentumVector->setX(fInitialDirection->x() *fEventArray[0]*1000.0);
-      fMomentumVector->setY(fInitialDirection->y()*fEventArray[0]*1000.0);
-      fMomentumVector->setZ(fInitialDirection->z()*fEventArray[0]*1000.0);
-      return(*fMomentumVector);
-   }
-   virtual double GetParticleEnergy() {
-      return(fBeamEnergy);
-   }
+      virtual  G4ThreeVector &  GetInitialDirection(){
+         fInitialDirection->setX(0.0);
+         fInitialDirection->setY(1.0*TMath::Sin(fChicaneBendAngle));
+         fInitialDirection->setZ(1.0*TMath::Cos(fChicaneBendAngle));
+         return(*fInitialDirection);
+      }
+      virtual  G4ThreeVector &  GetMomentumVector(){
+         fMomentumVector->setX(fInitialDirection->x() *fEventArray[0]*1000.0);
+         fMomentumVector->setY(fInitialDirection->y()*fEventArray[0]*1000.0);
+         fMomentumVector->setZ(fInitialDirection->z()*fEventArray[0]*1000.0);
+         return(*fMomentumVector);
+      }
+      virtual double GetParticleEnergy() {
+         return(fBeamEnergy);
+      }
 };
 
 /** Uses QFS
@@ -397,11 +178,9 @@ public:
  *   \ingroup EventGen
  */
 class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
-public :
-   SANEInclusiveDISEventGenerator(){}
-
-   virtual ~SANEInclusiveDISEventGenerator() { }
-
+   public :
+      SANEInclusiveDISEventGenerator(){}
+      virtual ~SANEInclusiveDISEventGenerator() { }
 };
 
 /** Uses A1,A2 models
@@ -409,11 +188,9 @@ public :
  *   \ingroup EventGen
  */
 class PolarizedInclusiveDISEventGenerator : public BETAG4EventGenerator  {
-public :
-   PolarizedInclusiveDISEventGenerator(){}
-
-   virtual ~PolarizedInclusiveDISEventGenerator() { }
-
+   public :
+      PolarizedInclusiveDISEventGenerator(){}
+      virtual ~PolarizedInclusiveDISEventGenerator() { }
 };
 
 /** NH3 Event Generator for getting the dilution factor
@@ -425,18 +202,18 @@ public :
  *   \ingroup EventGen
  */
 class NH3TargetEventGenerator : public PolarizedDISEventGenerator  {
-public :
-   NH3TargetEventGenerator(){
-      fNH3PackingFraction = 0.5;
-      fN14Density;
-      fH3Density;
-   }
+   public :
+      NH3TargetEventGenerator(){
+         fNH3PackingFraction = 0.5;
+         fN14Density;
+         fH3Density;
+      }
 
-   virtual ~NH3TargetEventGenerator() { }
+      virtual ~NH3TargetEventGenerator() { }
 
-   Double_t fNH3PackingFraction;
-   Double_t fN14Density;
-   Double_t fH3Density;
+      Double_t fNH3PackingFraction;
+      Double_t fN14Density;
+      Double_t fH3Density;
 
 };
 
