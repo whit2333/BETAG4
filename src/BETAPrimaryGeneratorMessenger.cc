@@ -287,7 +287,7 @@ void BETAPrimaryGeneratorMessenger::SetNewValue (
 	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
       }
       else std::cout << " NO SAMPLERS YET\n"; 
-      BETAAction->fParticleGun->SetParticleDefinition(particleTable->FindParticle ( newValue ));
+      BETAAction->GetParticleGun()->SetParticleDefinition(particleTable->FindParticle ( newValue ));
       
       anEventGen->NeedsRefreshed();
    }

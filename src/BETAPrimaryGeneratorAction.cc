@@ -46,7 +46,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    /// Electron by default. Use /beta/gun/setParticle
    fParticleGun->SetParticleDefinition(electron);
 
-   fParticlesSource=0;
+   //fParticlesSource=0;
    //fParticlesSource  = new G4GeneralParticleSource ( );
    //fParticlesSource->SetNumberOfParticles(1);
    // Using General Particle Source
@@ -64,7 +64,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 
 BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 {
-   if(fParticlesSource) delete fParticlesSource;
+   //if(fParticlesSource) delete fParticlesSource;
    if(gunMessenger) delete gunMessenger;
    if(fBETAG4EventGen) delete fBETAG4EventGen;
 }

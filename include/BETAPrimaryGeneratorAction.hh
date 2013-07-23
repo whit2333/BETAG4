@@ -26,13 +26,30 @@ class G4ParticleDefinition;
  */
 class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
    private:
-      InSANEParticle * aThrownParticle;
+      Int_t fNumberOfParticles;
+      bool background;
+      bool goodElectron;
+      bool backgroundAndElectron;
+
+      BETAPrimaryGeneratorMessenger * gunMessenger;
+      G4ParticleDefinition          * electron;
+      G4ParticleDefinition          * positron;
+      G4ParticleDefinition          * pionminus;
+      G4ParticleDefinition          * pionplus;
+      G4ParticleDefinition          * pionzero;
+      G4ParticleDefinition          * kaon;
+      G4ParticleDefinition          * proton;
+      G4ParticleDefinition          * gamma;
+      InSANEParticle                * aThrownParticle;
 
    protected:
       BETAG4EventGenerator  * fBETAG4EventGen;
       bool                    fInitialized;      ///< flag telling event-generator to be initialized
       BETAG4MonteCarloEvent * fMonteCarloEvent;
       TClonesArray          * fThrownParticles;
+
+      //G4GeneralParticleSource  * fParticlesSource;
+      G4ParticleGun  * fParticleGun;
 
    public:
 
@@ -61,46 +78,17 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
          //        }
       }
 
-
+      G4ParticleGun * GetParticleGun(){ return  fParticleGun; }
       TTree * fOutputTree;
       void InitOutput(){
          fOutputTree = new TTree("thrownEvents","Thrown MC Events");
          fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
 
       }
+      //G4GeneralParticleSource* Gun() {return fParticlesSource;}
 
-      G4GeneralParticleSource  * fParticlesSource;
-      G4ParticleGun  * fParticleGun;
-   private:
-      Int_t fNumberOfParticles;
-      bool background;
-      bool goodElectron;
-      bool backgroundAndElectron;
-
-      //G4double sigmaTheta, sigmaPhi;
-
-      BETAPrimaryGeneratorMessenger* gunMessenger;
-      G4ParticleDefinition* electron;
-      G4ParticleDefinition* positron;
-      G4ParticleDefinition* pionminus;
-      G4ParticleDefinition* pionplus;
-      G4ParticleDefinition* pionzero;
-      G4ParticleDefinition* kaon;
-      G4ParticleDefinition* proton;
-      G4ParticleDefinition* gamma;
-
-      //     G4double sigmaAngle;
-      // 	G4double ElectronPionRatio;
-      // 	G4double Pi0Ratio;
-      //     G4bool randomizePrimary;
-      //      G4int iso; 
-
-
-   public:
-
-      G4GeneralParticleSource* Gun() {return fParticlesSource;}
 };
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#endif /*BETAPrimaryGeneratorAction_h*/
+#endif 
+
