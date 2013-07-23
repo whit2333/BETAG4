@@ -24,41 +24,34 @@ class BETASimulationManager;
  * appropriate data members or methods. \todo{Consildate the messengers. Should we have one 
  * messenger per class or just on messenger?}
  */
-class BETASimulationMessenger: public G4UImessenger
-{
-  public:
-    BETASimulationMessenger(BETASimulationManager* );
-   ~BETASimulationMessenger();
+class BETASimulationMessenger: public G4UImessenger {
+   private:
+      BETADetectorConstruction * construction;
+      BETASimulationManager    * manager;
 
-    void AddDetectorUICommands();
+      G4UIdirectory            * analysis;
+      G4UIdirectory            * simulation;
+      G4UIcmdWithAString       * simType;
+      G4UIcmdWithoutParameter  * writeTree;
+      G4UIcmdWithAnInteger     * showPlot;
 
-    void SetNewValue(G4UIcommand*, G4String);
-    
-  private:
-//    BETAAnalysisAction* BETAAction;
-    BETASimulationManager* manager;
-    G4UIdirectory*               analysis;
-    G4UIdirectory*               simulation; 
-    G4UIcmdWithAString*       simType;
-    G4UIcmdWithoutParameter*   writeTree;
-    G4UIcmdWithAnInteger*	showPlot;
+      G4UIdirectory            * fieldDir;
 
-// Detector  Construction
-    BETADetectorConstruction * construction;
-    G4UIdirectory*               fieldDir; 
+      G4UIcmdWithoutParameter  * polSwitch;
+      G4UIcmdWithAString       * lookAtField;
 
+      G4UIcmdWithADouble       * setBeamEnergy;
 
+      G4UIcmdWithADouble       * polSet;
+      G4UIcmdWithADouble       * rotateToroidalMirrors;
+      G4UIcmdWithAString       * rotateMirror;
 
-    G4UIcmdWithoutParameter*   polSwitch;
-    G4UIcmdWithAString*   lookAtField;
+   public:
+      BETASimulationMessenger(BETASimulationManager* );
+      ~BETASimulationMessenger();
 
-    G4UIcmdWithADouble*   setBeamEnergy;
-
-    G4UIcmdWithADouble*        polSet;
-    G4UIcmdWithADouble*        rotateToroidalMirrors;
-    G4UIcmdWithAString*        rotateMirror;
-
-
+      void AddDetectorUICommands();
+      void SetNewValue(G4UIcommand*, G4String);
 
 };
 

@@ -48,7 +48,6 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
       BETAG4MonteCarloEvent * fMonteCarloEvent;
       TClonesArray          * fThrownParticles;
 
-      //G4GeneralParticleSource  * fParticlesSource;
       G4ParticleGun  * fParticleGun;
 
    public:
@@ -78,14 +77,15 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
          //        }
       }
 
-      G4ParticleGun * GetParticleGun(){ return  fParticleGun; }
       TTree * fOutputTree;
       void InitOutput(){
          fOutputTree = new TTree("thrownEvents","Thrown MC Events");
          fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
 
       }
+
       //G4GeneralParticleSource* Gun() {return fParticlesSource;}
+      G4ParticleGun * GetParticleGun(){ return  fParticleGun; }
 
 };
 

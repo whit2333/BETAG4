@@ -33,20 +33,15 @@ class BETARunAction;
 class G4Track;
 class BETASimulationMessenger;
 class BETARun;
-/**
- * \ingroup Simulation
- */
-/**
- * \ingroup Manager
- */
-/**
- * \brief The simulation manager singleton class
- */
-/**
+
+/** The simulation manager singleton class.
  * The BETAG4 simulation manager class. The "Analysis" in the class name is a 
  * bit of an artifact. \todo{Rename BETASimulationManager. Not sure what the best name would be... BETAG4Manager?}
  * 
  * The Manager holds all configuration information such as run number, verbosity levels, primary vertex type, target configuration, geometries to construct. 
+ *
+ * \ingroup Simulation
+ * \ingroup Manager
  */
 class BETASimulationManager {
    private: 
@@ -65,7 +60,6 @@ class BETASimulationManager {
 
       TFile       * fRootFile;
       TTree       * fDetectorTree;
-      SANEScalers * fSANEScalers;
       TTree       * fScalerTree;
 
       G4double      fBeamEnergy;  
@@ -82,9 +76,11 @@ class BETASimulationManager {
       G4SDKineticEnergyFilter * bigcalEnergyFilter;
       G4SDChargedFilter       * chargeFilter;
 
-   public:
       BETASimulationMessenger * fSimulationMessenger;
 
+   public:
+      SANEScalers * fSANEScalers;
+      SANEEvents  * fEvents;
       bool                        fSimulateCherenkovOptics;
       bool                        fSimulateTrackerOptics;
       bool                        fSimulateHodoscopeOptics;
@@ -108,10 +104,6 @@ class BETASimulationManager {
       G4PSTrackLength           * electronTracklength;
       G4PSEnergyDeposit         * calEnergyDeposit;
       G4PSPassageCellCurrent    * chargeSurfFlux;
-
-
-   public:
-      SANEEvents * fEvents;
 
    public:
       ~BETASimulationManager();
