@@ -64,9 +64,11 @@ class DISEventGenerator : public BETAG4EventGenerator {
  */
 class PolarizedDISEventGenerator : public BETAG4EventGenerator {
    public:
-      PolarizedDISEventGenerator(){ }
+      PolarizedDISEventGenerator(){
+      }
       virtual ~PolarizedDISEventGenerator(){}
       virtual void Initialize();
+
 };
 
 

@@ -16,6 +16,9 @@
  *   \ingroup EventGen
  */ 
 class BETAG4EventGenerator : public InSANEEventGenerator {
+   protected:
+      double fThetaTarget;
+
    public :
       int   fNumberOfGeneratedParticles;
       bool  fIsInitialized;
@@ -57,6 +60,9 @@ class BETAG4EventGenerator : public InSANEEventGenerator {
        */
       virtual void Initialize();
 
+      virtual bool HasPolarizedTarget(){ return false; }
+      double       GetThetaTarget(){ return fThetaTarget; }
+      void         SetThetaTarget(double angle) { fThetaTarget = angle; }
 
    public:
 

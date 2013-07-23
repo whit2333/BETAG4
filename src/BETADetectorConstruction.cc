@@ -53,9 +53,7 @@
 #include "LuciteGeometryCalculator.h"
 #include "GasCherenkovGeometryCalculator.h"
 #include "BIGCALGeometryCalculator.h"
-
 #include "UVAOxfordMagneticField.h"
-
 #include "TVector3.h"
 
 
@@ -64,9 +62,6 @@
 
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
-   
-
-
    fSimulationManager = BETASimulationManager::GetInstance();
    messenger = new BETADetectorMessenger ( this );
    fMagneticField = 0;
@@ -3021,7 +3016,7 @@ void BETADetectorConstruction::ConstructMagneticField() {
    
 
       if(!fMagneticField) fMagneticField = new BETAField();
-      fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->fTargetAngle ); 
+      fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->GetTargetAngle() ); 
       G4FieldManager* fieldMgr
          = G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
@@ -3435,54 +3430,53 @@ void BETADetectorConstruction::lookAtField(G4String comp) {
 }
 
 //___________________________________________________________________
-void BETADetectorConstruction::switchTargetField()
-{
-   
-   if ( messenger->fTargetAngle == TMath::Pi() )
+void BETADetectorConstruction::SwitchTargetField() {
+
+   if ( messenger->GetTargetAngle() == TMath::Pi() )
    {
       G4cout << "Target switching to TRANSVERSE field orientation." << G4endl;
-      messenger->fTargetAngle = 80.0*TMath::Pi()/180.0;
+      messenger->SetTargetAngle(80.0*TMath::Pi()/180.0);
    }
    else
    {
       G4cout << "Target switching to ANTIPARALLEL field orientation." << G4endl;
-      messenger->fTargetAngle = TMath::Pi();
+      messenger->SetTargetAngle(TMath::Pi());
    }
-  if(!fMagneticField) fMagneticField = new BETAField();
 
-  if(fMagneticField) setTargetAngle (messenger->fTargetAngle );
+   if(!fMagneticField) fMagneticField = new BETAField();
+   if(fMagneticField) SetTargetAngle(messenger->GetTargetAngle() );
    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
 }
 
 //___________________________________________________________________
-void BETADetectorConstruction::setTargetAngle ( G4double angle )
-{
+void BETADetectorConstruction::SetTargetAngle ( G4double angle ) {
    
-  messenger->fTargetAngle = angle;
+  messenger->SetTargetAngle(angle);
   PrintTargetAngle();
   if(!fMagneticField) fMagneticField = new BETAField();
   fMagnetRotationMatirx = G4RotationMatrix::IDENTITY;
-  fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle );
+  fMagnetRotationMatirx.rotateZ( messenger->GetTargetAngle() );
   if(fMagneticField) {
     fMagneticField->fUVAMagnet->SetPolarizationAngle (angle );
-    fCerSphericalMirror_log->RemoveDaughter ( MirrorGlass_phys1 );
+     
+    fCerSphericalMirror_log->RemoveDaughter ( MirrorGlass_phys1 ); // huh?
     delete physiMagnet;
+
     physiMagnet = new G4PVPlacement (G4Transform3D(fMagnetRotationMatirx, G4ThreeVector ( 0.,0.,-LN2dis )),
                                      logicMagnet, "Magnet", logicLN2Shield,
                                      false, 0 );
+
   }
    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
 }
 //___________________________________________________________________
-
-double BETADetectorConstruction::getTargetAngle() {
-   
+double BETADetectorConstruction::GetTargetAngle() {
   if(!fMagneticField) fMagneticField = new BETAField();
   return( fMagneticField->fUVAMagnet->fPolarizationAngle );
 }
-
+//___________________________________________________________________
 void BETADetectorConstruction::PrintTargetAngle() {
    
   if(!fMagneticField) fMagneticField = new BETAField();
@@ -4124,7 +4118,7 @@ void BETADetectorConstruction::ConstructMagnet()
 {
    
 //messenger->fTargetAngle
-   fMagnetRotationMatirx.rotateZ( messenger->fTargetAngle);
+   fMagnetRotationMatirx.rotateZ( messenger->GetTargetAngle());
 
    //The Magnet as a whole (made of vacuum)
    G4VSolid* StarterMagnet =

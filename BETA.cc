@@ -101,7 +101,6 @@ int main(int argc,char** argv)
    rand->SetSeed(myseed);
 
 
-
    /// User Verbose output class
    G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
    G4VSteppingVerbose::SetInstance(verbosity);

@@ -25,110 +25,80 @@ class G4ParticleDefinition;
  *   \ingroup EventGen
  */
 class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
-public:
-   bool fInitialized;
-   BETAG4MonteCarloEvent * fMonteCarloEvent;
-   TClonesArray * fThrownParticles;
-   
-   
-   BETAG4EventGenerator * GetEventGenerator(){ return fBETAG4EventGen; }
+   private:
+      InSANEParticle * aThrownParticle;
 
-   void  SetEventGenerator(BETAG4EventGenerator * gen){
-      if(fBETAG4EventGen) delete fBETAG4EventGen;
-      fBETAG4EventGen = 0;
-      fBETAG4EventGen = gen;
-   }
+   protected:
+      BETAG4EventGenerator  * fBETAG4EventGen;
+      bool                    fInitialized;      ///< flag telling event-generator to be initialized
+      BETAG4MonteCarloEvent * fMonteCarloEvent;
+      TClonesArray          * fThrownParticles;
 
-protected:
-   BETAG4EventGenerator * fBETAG4EventGen;
+   public:
 
+      /** C'tor :
+       *   - defines some particles 
+       *   - Creates particle gun
+       *   - Creates the event generator
+       */
+      BETAPrimaryGeneratorAction();
+      ~BETAPrimaryGeneratorAction();
+      void GeneratePrimaries(G4Event*);
 
-private:
-   InSANEParticle * aThrownParticle;
+      BETAG4EventGenerator  * GetEventGenerator(){ return fBETAG4EventGen; }
+      void                    SetEventGenerator(BETAG4EventGenerator * gen){
+         if(fBETAG4EventGen) delete fBETAG4EventGen;
+         fBETAG4EventGen = gen;
+      }
 
-public:
-   /** C'tor :
-    *   - defines some particles 
-    *   - Creates particle gun
-    *   - Creates the event generator
-    */
-    BETAPrimaryGeneratorAction();
-   ~BETAPrimaryGeneratorAction();
-
-  public:
-    void SetMCEventAddress(BETAG4MonteCarloEvent * mcevent) {
-       std::cout << "BETAPrimaryGeneratorAction::SetMCEventAddress()\n";
-/*       if(mcevent) {*/
-          fMonteCarloEvent = mcevent;
-          fThrownParticles = fMonteCarloEvent->GetThrownParticlesArray();
-          std::cout << " tracker " << fMonteCarloEvent->GetTrackerPlaneHitsArray() << "\n";
-          std::cout << " bigcal " << fMonteCarloEvent->GetBigcalPlaneHitsArray() << "\n";
-//        }
-    }
-
-    void GeneratePrimaries(G4Event*);
-
-//     void SetOptPhotonPolar();
-//     void SetOptPhotonPolar(G4double);
-//     void SetIsotropic(G4int);
-//     void SetSigmaMomentum(G4double);
-//     void SetMomentum(G4double);
-//     void SetElectronPionRatio(G4double);
-//     void SetPiZeroRatio(G4double);
-//     void SetPartTheta ( G4double P );
-//     G4double GetPartTheta ();
-//     void SetPartPhi ( G4double P );
-//     G4double GetPartPhi ();
-
-/// most recent values for event generation
-    G4double fCurrentEnergy,fCurrentTheta,fCurrentPhi;
-
-//     G4double theta_particle,phi_particle;
-//     G4double momentum;
-//     G4double sigmaMomentum;
-//     G4double eventTheta;
-//     G4double eventPhi;
-//     G4double eventEnergy;
-//     G4double eventMomentum;
-
-    TTree * fOutputTree;
-
-    void InitOutput(){
-       fOutputTree = new TTree("thrownEvents","Thrown MC Events");
-       fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
-
-    }
-
-   G4GeneralParticleSource  * fParticlesSource;
-   G4ParticleGun  * fParticleGun;
-private:
-        Int_t fNumberOfParticles;
-   bool background;
-   bool goodElectron;
-   bool backgroundAndElectron;
-
-   //G4double sigmaTheta, sigmaPhi;
-
-    BETAPrimaryGeneratorMessenger* gunMessenger;
-    G4ParticleDefinition* electron;
-    G4ParticleDefinition* positron;
-    G4ParticleDefinition* pionminus;
-    G4ParticleDefinition* pionplus;
-    G4ParticleDefinition* pionzero;
-    G4ParticleDefinition* kaon;
-    G4ParticleDefinition* proton;
-    G4ParticleDefinition* gamma;
-
-//     G4double sigmaAngle;
-// 	G4double ElectronPionRatio;
-// 	G4double Pi0Ratio;
-//     G4bool randomizePrimary;
-//      G4int iso; 
+      void SetMCEventAddress(BETAG4MonteCarloEvent * mcevent) {
+         std::cout << "BETAPrimaryGeneratorAction::SetMCEventAddress()\n";
+         /*       if(mcevent) {*/
+         fMonteCarloEvent = mcevent;
+         fThrownParticles = fMonteCarloEvent->GetThrownParticlesArray();
+         std::cout << " tracker " << fMonteCarloEvent->GetTrackerPlaneHitsArray() << "\n";
+         std::cout << " bigcal " << fMonteCarloEvent->GetBigcalPlaneHitsArray() << "\n";
+         //        }
+      }
 
 
-  public:
+      TTree * fOutputTree;
+      void InitOutput(){
+         fOutputTree = new TTree("thrownEvents","Thrown MC Events");
+         fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
 
-    G4GeneralParticleSource* Gun() {return fParticlesSource;}
+      }
+
+      G4GeneralParticleSource  * fParticlesSource;
+      G4ParticleGun  * fParticleGun;
+   private:
+      Int_t fNumberOfParticles;
+      bool background;
+      bool goodElectron;
+      bool backgroundAndElectron;
+
+      //G4double sigmaTheta, sigmaPhi;
+
+      BETAPrimaryGeneratorMessenger* gunMessenger;
+      G4ParticleDefinition* electron;
+      G4ParticleDefinition* positron;
+      G4ParticleDefinition* pionminus;
+      G4ParticleDefinition* pionplus;
+      G4ParticleDefinition* pionzero;
+      G4ParticleDefinition* kaon;
+      G4ParticleDefinition* proton;
+      G4ParticleDefinition* gamma;
+
+      //     G4double sigmaAngle;
+      // 	G4double ElectronPionRatio;
+      // 	G4double Pi0Ratio;
+      //     G4bool randomizePrimary;
+      //      G4int iso; 
+
+
+   public:
+
+      G4GeneralParticleSource* Gun() {return fParticlesSource;}
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

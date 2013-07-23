@@ -109,13 +109,13 @@ e
    if ( command == polSwitch )
    {
       G4cout << " Switching target field " <<  G4endl;
-      construction->switchTargetField();
+      construction->SwitchTargetField();
       G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
    }
    if ( command == polSet )
    {
-      construction->setTargetAngle( ( polSet->GetNewDoubleValue ( newValue ) ) *TMath::Pi()/180. );
+      construction->SetTargetAngle( ( polSet->GetNewDoubleValue ( newValue ) ) *TMath::Pi()/180. );
       G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
    }

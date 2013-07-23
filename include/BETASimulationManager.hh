@@ -49,178 +49,172 @@ class BETARun;
  * The Manager holds all configuration information such as run number, verbosity levels, primary vertex type, target configuration, geometries to construct. 
  */
 class BETASimulationManager {
-public:
-  ~BETASimulationManager();
+   private: 
+      BETASimulationManager( );
+      static BETASimulationManager* fgBETASimulationManager;
 
-   /**
-    *  Get the simulation manager singleton
-    */
-   static BETASimulationManager* GetInstance();
+      friend class BETARunAction;
+      friend class BETARun;
 
-   /**
-    *  dispose (delete?)
-    */
-   static void Dispose();
+   protected: 
+      InSANERun   * fInSANERun;
+      int           instanceNumber;
+      bool          fIsAppendMode;
+      int           fRunNumber;
+      int           fEventNumber;
 
-   /**
-    * Set detector's verbosity for debugging purposes
-    */
-   void SetDetectorVerbosity( char * detName, int level);
+      TFile       * fRootFile;
+      TTree       * fDetectorTree;
+      SANEScalers * fSANEScalers;
+      TTree       * fScalerTree;
 
-   /**
-    * Get detector's verbosity for debugging purposes
-    */
-   int GetDetectorVerbosity( char * detName);
+      G4double      fBeamEnergy;  
+      G4double      fTargetAngle;  
 
-   /**
-    * Sets whether plots are shown or not.
-    * Not yet implemented.
-    */
-   void showPlot(int );
+      int           fGasCherenkovVerbosity;
+      int           fBigcalVerbosity;
+      int           fLuciteHodoscopeVerbosity;
+      int           fForwardTrackerVerbosity;
 
-   /**
-    * Not yet implemented.
-    */
-   void write();
+      G4SDParticleFilter      * protonFilter;
+      G4SDParticleFilter      * electronFilter;
+      G4SDParticleFilter      * opticalPhotonFilter;
+      G4SDKineticEnergyFilter * bigcalEnergyFilter;
+      G4SDChargedFilter       * chargeFilter;
 
-   /**
-    * Prints a general statement about the current run configuration
-    * Not yet implemented.
-    */ 
-   void GetRunInfo(){ ; };
+   public:
+      BETASimulationMessenger * fSimulationMessenger;
 
-   /**
-    * If true, data is to be appeneded to the root file with current run number, which is not incremented
-    * If false, the run number is incremented and a new root file is created.
-    */ 
-   void SetAppendMode(bool mode){ fIsAppendMode=mode; };
+      bool                        fSimulateCherenkovOptics;
+      bool                        fSimulateTrackerOptics;
+      bool                        fSimulateHodoscopeOptics;
+      bool                        fSimulateBigcalOptics;
+      bool                        fSimulateTrigger;
+      int                         fDebugLevel;
 
-   /**
-    * If true, data is to be appeneded to the root file with current run number, which is not incremented
-    * If false, the run number is incremented and a new root file is created.
-    */ 
-   bool IsAppendMode(){ return fIsAppendMode; };
+      G4MultiFunctionalDetector * fTrackerScoring;
+      G4MultiFunctionalDetector * fCherenkovScoring;
+      G4MultiFunctionalDetector * fBigcalScoring;
+      G4MultiFunctionalDetector * fHodoscopeScoring;
 
-   /**
-    * Returns the run number 
-    * \todo Make the source of run number a database, not a text file. 
-    */ 
-   int GetRunNumber(){ return fRunNumber; };
+      ForwardTrackerDetector    * fTrackerDetector;
+      GasCherenkovDetector      * fCherenkovDetector;
+      BigcalDetector            * fBigcalDetector;
+      LuciteHodoscopeDetector   * fHodoscopeDetector;
 
-   /**
-    * Increments the run number in memory and in file/database
-    * returns the run number
-    * \todo Make the source of run number a database, not a text file. 
-    */
-   int IncrementRunNumber();
-
-   /**
-    * Gets the run number from a file/database
-    * \todo Make the source of run number a database, not a text file. 
-    */
-   int RetrieveRunNumber();
-
-   /**
-    * Allocate Event and Hit memory
-    */
-   int AllocateTreeMemory();
-
-   /**
-    * Free Event and Hit memory
-    */
-   int Reset();
-
-   /** Creates the InSANEDetector Base classes and sets event addresses
-    *  used in pedestal and noise simulation
-    */
-   int AddDetectors(int runNumber = 0) ;
-
-   /**
-    * Sets up detector's scoring
-    * This defines what should be detected but not which volume it is associated with
-    * this should be done within the det const class
-    */
-   int InitScoring();
-
-   /**
-    *  Defines the scoring filters
-    *  This must come during detector construction...??
-    */ 
-   int DefineScoringFilters();
-
-   /**
-    *  
-    */
-   int InitializeNewRun();
-
-public:
-   /// Pointer to the BETASimulationMessenger 
-   BETASimulationMessenger * fSimulationMessenger;
-
-   bool fSimulateCherenkovOptics;
-   bool fSimulateTrackerOptics;
-   bool fSimulateHodoscopeOptics;
-   bool fSimulateBigcalOptics;
-   bool fSimulateTrigger;
-   int  fDebugLevel;
-
-   G4MultiFunctionalDetector* fTrackerScoring;
-   G4MultiFunctionalDetector* fCherenkovScoring;
-   G4MultiFunctionalDetector* fBigcalScoring;
-   G4MultiFunctionalDetector* fHodoscopeScoring;
-
-   ForwardTrackerDetector * fTrackerDetector;
-   GasCherenkovDetector * fCherenkovDetector;
-   BigcalDetector* fBigcalDetector;
-   LuciteHodoscopeDetector* fHodoscopeDetector;
-
-   G4PSFlatSurfaceFlux * protonSurfFlux;
-   G4PSPassageCellCurrent * electronSurfFlux;
-   G4PSPassageCellCurrent * photonSurfFlux;
-   G4PSTrackLength* electronTracklength;
-   G4PSEnergyDeposit * calEnergyDeposit;
-   G4PSPassageCellCurrent * chargeSurfFlux;
-
-   SANEScalers * fSANEScalers;
-   TTree * fScalerTree;
-
-private: 
-  int fGasCherenkovVerbosity;
-  int fBigcalVerbosity;
-  int fLuciteHodoscopeVerbosity;
-  int fForwardTrackerVerbosity;
-
-  G4SDParticleFilter* protonFilter;
-  G4SDParticleFilter* electronFilter;
-  G4SDParticleFilter* opticalPhotonFilter;
-  G4SDKineticEnergyFilter* bigcalEnergyFilter;
-  G4SDChargedFilter* chargeFilter;
-
-   G4double GetBeamEnergy(){return(fBeamEnergy);}
-   void     SetBeamEnergy(G4double en){fBeamEnergy=en;}
-protected: 
-   G4double fBeamEnergy;  
-  
-public:
-   SANEEvents * fEvents;
-   int GetEventNumber() { return(fEventNumber); };
-
-private: 
-  BETASimulationManager( );
-  static BETASimulationManager* fgBETASimulationManager;
+      G4PSFlatSurfaceFlux       * protonSurfFlux;
+      G4PSPassageCellCurrent    * electronSurfFlux;
+      G4PSPassageCellCurrent    * photonSurfFlux;
+      G4PSTrackLength           * electronTracklength;
+      G4PSEnergyDeposit         * calEnergyDeposit;
+      G4PSPassageCellCurrent    * chargeSurfFlux;
 
 
-  InSANERun * fInSANERun;
-  int instanceNumber;
-  bool fIsAppendMode;
-  int fRunNumber;
-  int fEventNumber;
+   public:
+      SANEEvents * fEvents;
 
-  TFile * fRootFile;
-  TTree * fDetectorTree;
+   public:
+      ~BETASimulationManager();
 
-  friend class BETARunAction;
-  friend class BETARun;
+      static BETASimulationManager* GetInstance();
+
+      /**  dispose (delete?) */
+      static void Dispose();
+
+      /** Set detector's verbosity for debugging purposes. */
+      void SetDetectorVerbosity( char * detName, int level);
+
+      /** Get detector's verbosity for debugging purposes. */
+      int GetDetectorVerbosity( char * detName);
+
+      /**
+       * Sets whether plots are shown or not.
+       * Not yet implemented.
+       */
+      void showPlot(int );
+
+      /**
+       * Not yet implemented.
+       */
+      void write();
+
+      /**
+       * Prints a general statement about the current run configuration
+       * Not yet implemented.
+       */ 
+      void GetRunInfo(){ ; };
+
+      /**
+       * If true, data is to be appeneded to the root file with current run number, which is not incremented
+       * If false, the run number is incremented and a new root file is created.
+       */ 
+      void SetAppendMode(bool mode){ fIsAppendMode=mode; };
+
+      /**
+       * If true, data is to be appeneded to the root file with current run number, which is not incremented
+       * If false, the run number is incremented and a new root file is created.
+       */ 
+      bool IsAppendMode(){ return fIsAppendMode; };
+
+      /**
+       * Returns the run number 
+       * \todo Make the source of run number a database, not a text file. 
+       */ 
+      int GetRunNumber(){ return fRunNumber; };
+
+      /**
+       * Increments the run number in memory and in file/database
+       * returns the run number
+       * \todo Make the source of run number a database, not a text file. 
+       */
+      int IncrementRunNumber();
+
+      /**
+       * Gets the run number from a file/database
+       * \todo Make the source of run number a database, not a text file. 
+       */
+      int RetrieveRunNumber();
+
+      /**
+       * Allocate Event and Hit memory
+       */
+      int AllocateTreeMemory();
+
+      /**
+       * Free Event and Hit memory
+       */
+      int Reset();
+
+      /** Creates the InSANEDetector Base classes and sets event addresses
+       *  used in pedestal and noise simulation
+       */
+      int AddDetectors(int runNumber = 0) ;
+
+      /**
+       * Sets up detector's scoring
+       * This defines what should be detected but not which volume it is associated with
+       * this should be done within the det const class
+       */
+      int InitScoring();
+
+      /**
+       *  Defines the scoring filters
+       *  This must come during detector construction...??
+       */ 
+      int DefineScoringFilters();
+
+      /**
+       *  
+       */
+      int InitializeNewRun();
+
+      G4double GetBeamEnergy(){return(fBeamEnergy);}
+      void     SetBeamEnergy(G4double en){fBeamEnergy=en;}
+      G4double GetTargetAngle(){   return(fTargetAngle);}
+      void     SetTargetAngle(G4double a){fTargetAngle=a;}
+
+      int GetEventNumber() { return(fEventNumber); };
+
 };
 
 #endif
