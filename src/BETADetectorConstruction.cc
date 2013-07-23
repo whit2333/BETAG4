@@ -34,7 +34,6 @@
 #include "BETAProtvinoCalorimeter.hh"
 #include "BETAHodoscopeCellParameterisation.hh"
 #include "BETAForwardTracker.hh"
-#include "BETADetectorMessenger.hh"
 #include "BETASimulationManager.hh"
 #include "BETAFakePlane.hh"
 #include "BETAFakePlaneHit.hh"
@@ -45,7 +44,6 @@
 #include "BETAField.hh"
 #include "BETAG4PMTArray.hh"
 #include "BETASimulationManager.hh"
-#include "BETADetectorMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4VPVParameterisation.hh"
 
@@ -63,7 +61,7 @@
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
    fSimulationManager = BETASimulationManager::GetInstance();
-   messenger = new BETADetectorMessenger ( this );
+   //messenger = new BETADetectorMessenger ( this );
    fMagneticField = 0;
 
    usingGasCherenkov       = true;
@@ -233,7 +231,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 //___________________________________________________________________
 BETADetectorConstruction::~BETADetectorConstruction()
 {
-   delete messenger;
+   //delete messenger;
 }
 
 void BETADetectorConstruction::ConstructVisAtt(){
@@ -3011,47 +3009,45 @@ BETADetectorConstruction::Construct()
    return expHall_phys;
 }
 //___________________________________________________________________
-
 void BETADetectorConstruction::ConstructMagneticField() {
-   
 
-      if(!fMagneticField) fMagneticField = new BETAField();
-      fMagneticField->fUVAMagnet->SetPolarizationAngle (messenger->GetTargetAngle() ); 
-      G4FieldManager* fieldMgr
-         = G4TransportationManager::GetTransportationManager()->GetFieldManager();
+   if(!fMagneticField) fMagneticField = new BETAField();
+   fMagneticField->fUVAMagnet->SetPolarizationAngle (fSimulationManager->GetTargetAngle() ); 
+   G4FieldManager* fieldMgr
+      = G4TransportationManager::GetTransportationManager()->GetFieldManager();
 
-      fieldMgr->SetDetectorField ( fMagneticField );
-      fieldMgr->CreateChordFinder ( fMagneticField );
+   fieldMgr->SetDetectorField ( fMagneticField );
+   fieldMgr->CreateChordFinder ( fMagneticField );
 
-      G4double miss_distance = 0.00010*mm;
-      G4double delta_intersection = 0.5e-3 * mm;
-      G4double delta_one_step = 0.5e-3 * mm;
-      G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
-      G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
+   G4double miss_distance = 0.00010*mm;
+   G4double delta_intersection = 0.5e-3 * mm;
+   G4double delta_one_step = 0.5e-3 * mm;
+   G4double minEps= 1.0e-5;  //   Minimum & value for smallest steps
+   G4double maxEps= 1.0e-4;  //   Maximum & value for largest steps
 
-// the “miss distance”
-// It is a measure of the error in whether the approximate track intersects a volume.
-// It is quite expensive in CPU performance to set too small “miss distance”.
-      fieldMgr->GetChordFinder()->SetDeltaChord ( miss_distance ); // miss distance
+   // the “miss distance”
+   // It is a measure of the error in whether the approximate track intersects a volume.
+   // It is quite expensive in CPU performance to set too small “miss distance”.
+   fieldMgr->GetChordFinder()->SetDeltaChord ( miss_distance ); // miss distance
 
-// The “delta intersection” parameter is the accuracy to which an intersection with a volume boundary is calculated. This parameter is especially important because it is used to limit a bias that our algorithm (for boundary crossing in a field) exhibits. The intersection point is always on the 'inside' of the curve. By setting a value for this parameter that is much smaller than some acceptable error, the user can limit the effect of this bias.
-
-
-      fieldMgr->SetDeltaIntersection(delta_intersection);
-
-// The “delta one step” parameter is the accuracy for the endpoint of 'ordinary' integration steps, those which do not intersect a volume boundary. This parameter is a limit on the estimation error of the endpoint of each physics step.
-      fieldMgr->SetDeltaOneStep( delta_one_step );  // 0.5 micrometer
+   // The “delta intersection” parameter is the accuracy to which an intersection with a volume boundary is calculated. This parameter is especially important because it is used to limit a bias that our algorithm (for boundary crossing in a field) exhibits. The intersection point is always on the 'inside' of the curve. By setting a value for this parameter that is much smaller than some acceptable error, the user can limit the effect of this bias.
 
 
-      fieldMgr->SetMinimumEpsilonStep( minEps );
-      fieldMgr->SetMaximumEpsilonStep( maxEps );
+   fieldMgr->SetDeltaIntersection(delta_intersection);
 
-      G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
-//       tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
+   // The “delta one step” parameter is the accuracy for the endpoint of 'ordinary' integration steps, those which do not intersect a volume boundary. This parameter is a limit on the estimation error of the endpoint of each physics step.
+   fieldMgr->SetDeltaOneStep( delta_one_step );  // 0.5 micrometer
 
-      expHall_log ->SetFieldManager ( fieldMgr, true );
-//    localFieldMgr->CreateChordFinder(fMagneticField);
-/*      fieldIsInitialized = true;*/
+
+   fieldMgr->SetMinimumEpsilonStep( minEps );
+   fieldMgr->SetMaximumEpsilonStep( maxEps );
+
+   G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
+   //       tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
+
+   expHall_log ->SetFieldManager ( fieldMgr, true );
+   //    localFieldMgr->CreateChordFinder(fMagneticField);
+   /*      fieldIsInitialized = true;*/
 }
 //______________________________________________________________________________
 
@@ -3432,19 +3428,19 @@ void BETADetectorConstruction::lookAtField(G4String comp) {
 //___________________________________________________________________
 void BETADetectorConstruction::SwitchTargetField() {
 
-   if ( messenger->GetTargetAngle() == TMath::Pi() )
+   if ( fSimulationManager->GetTargetAngle() == TMath::Pi() )
    {
       G4cout << "Target switching to TRANSVERSE field orientation." << G4endl;
-      messenger->SetTargetAngle(80.0*TMath::Pi()/180.0);
+      fSimulationManager->SetTargetAngle(80.0*TMath::Pi()/180.0);
    }
    else
    {
       G4cout << "Target switching to ANTIPARALLEL field orientation." << G4endl;
-      messenger->SetTargetAngle(TMath::Pi());
+      fSimulationManager->SetTargetAngle(TMath::Pi());
    }
 
    if(!fMagneticField) fMagneticField = new BETAField();
-   if(fMagneticField) SetTargetAngle(messenger->GetTargetAngle() );
+   if(fMagneticField) SetTargetAngle(fSimulationManager->GetTargetAngle() );
    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
 }
@@ -3452,11 +3448,11 @@ void BETADetectorConstruction::SwitchTargetField() {
 //___________________________________________________________________
 void BETADetectorConstruction::SetTargetAngle ( G4double angle ) {
    
-  messenger->SetTargetAngle(angle);
+  fSimulationManager->SetTargetAngle(angle);
   PrintTargetAngle();
   if(!fMagneticField) fMagneticField = new BETAField();
   fMagnetRotationMatirx = G4RotationMatrix::IDENTITY;
-  fMagnetRotationMatirx.rotateZ( messenger->GetTargetAngle() );
+  fMagnetRotationMatirx.rotateZ( fSimulationManager->GetTargetAngle() );
   if(fMagneticField) {
     fMagneticField->fUVAMagnet->SetPolarizationAngle (angle );
      
@@ -4117,8 +4113,8 @@ void BETADetectorConstruction::ConstructNose()
 void BETADetectorConstruction::ConstructMagnet()
 {
    
-//messenger->fTargetAngle
-   fMagnetRotationMatirx.rotateZ( messenger->GetTargetAngle());
+   //messenger->fTargetAngle
+   fMagnetRotationMatirx.rotateZ( fSimulationManager->GetTargetAngle());
 
    //The Magnet as a whole (made of vacuum)
    G4VSolid* StarterMagnet =

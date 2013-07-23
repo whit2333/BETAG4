@@ -59,8 +59,8 @@
 #include "G4Trd.hh"
 #include "BETAField.hh"
 #include "BETASimulationManager.hh"
+#include "BETASimulationMessenger.hh"
 
-class BETADetectorMessenger;
 class BETASimulationManager;
 
 
@@ -87,10 +87,14 @@ class BETASimulationManager;
  * \ingroup Detectors
  */
 class BETADetectorConstruction : public G4VUserDetectorConstruction {
+   private:
+
    protected:
 
    public:
       friend class BETASimulationManager;
+   public:
+      BETAField * fMagneticField;
 
    public :
       BETADetectorConstruction();
@@ -110,7 +114,7 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
       void ConstructBETA();
       G4LogicalVolume* BETADetector_log;
 
-      G4double fBETADistance; /// Distance from origin to the front face of the BETA bounding box
+      G4double fBETADistance; ///< Distance from origin to the front face of the BETA bounding box
       G4double DetectorAngle ;
       G4double DetectorLength ;
       G4double DetectorWidth  ;
@@ -633,15 +637,6 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
 
 
 
-
-
-
-
-
-   public:
-      BETAField * fMagneticField;
-   private:
-      BETADetectorMessenger* messenger;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

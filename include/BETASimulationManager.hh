@@ -79,6 +79,8 @@ class BETASimulationManager {
       BETASimulationMessenger * fSimulationMessenger;
 
    public:
+      BETASimulationMessenger * GetMessenger(){ return(fSimulationMessenger) ;}
+
       SANEScalers * fSANEScalers;
       SANEEvents  * fEvents;
       bool                        fSimulateCherenkovOptics;

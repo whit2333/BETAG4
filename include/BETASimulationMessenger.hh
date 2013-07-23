@@ -7,7 +7,6 @@
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
 
-#include "BETADetectorMessenger.hh"
 #include "BETAPhysicsListMessenger.hh"
 #include "BETAPrimaryGeneratorMessenger.hh"
 #include "BETARunActionMessenger.hh"
@@ -26,16 +25,15 @@ class BETASimulationManager;
  */
 class BETASimulationMessenger: public G4UImessenger {
    private:
-      BETADetectorConstruction * construction;
-      BETASimulationManager    * manager;
+      BETADetectorConstruction * fDetConstruction;
+      BETASimulationManager    * fSimManager;
 
       G4UIdirectory            * fDir_analysis;
       G4UIdirectory            * fDir_simulation;
+      G4UIdirectory            * fDir_beta;
       G4UIdirectory            * fDir_fieldDir;
 
       G4UIcmdWithAString       * fCmd_simType;
-      G4UIcmdWithoutParameter  * fCmd_writeTree;
-      G4UIcmdWithAnInteger     * fCmd_showPlot;
 
       G4UIcmdWithoutParameter  * fCmd_polSwitch;
       G4UIcmdWithAString       * fCmd_lookAtField;
@@ -46,15 +44,8 @@ class BETASimulationMessenger: public G4UImessenger {
       G4UIcmdWithADouble       * fCmd_rotateToroidalMirrors;
       G4UIcmdWithAString       * fCmd_rotateMirror;
 
-      G4UIcmdWithoutParameter  * fCmd_polSwitch;
-      G4UIcmdWithoutParameter  * fCmd_lookAtField;
-
       G4UIcmdWithAString       * fCmd_toggleTargetField;
       G4UIcmdWithAString       * fCmd_toggleTargetMaterial;
-
-      G4UIcmdWithADouble       * fCmd_polSet;
-      G4UIcmdWithADouble       * fCmd_rotateToroidalMirrors;
-      G4UIcmdWithAString       * fCmd_rotateMirror;
 
       G4UIcmdWithAString       * fCmd_toggleForwardTracker;
       G4UIcmdWithAString       * fCmd_toggleGasCherenkov;
