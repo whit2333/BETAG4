@@ -20,22 +20,22 @@ class BETADetectorMessenger: public G4UImessenger {
    private:
       //    BETAAnalysisAction* BETAAction;
       BETADetectorConstruction * construction;
-      G4UIdirectory*               fieldDir; 
-      G4UIcmdWithoutParameter*   polSwitch;
-      G4UIcmdWithoutParameter*      lookAtField;
+      G4UIdirectory            * fieldDir;
+      G4UIcmdWithoutParameter  * polSwitch;
+      G4UIcmdWithoutParameter  * lookAtField;
 
-      G4UIcmdWithAString*      toggleTargetField;
-      G4UIcmdWithAString*      toggleTargetMaterial;
+      G4UIcmdWithAString       * toggleTargetField;
+      G4UIcmdWithAString       * toggleTargetMaterial;
 
 
-      G4UIcmdWithADouble*        polSet;
-      G4UIcmdWithADouble*        rotateToroidalMirrors;
-      G4UIcmdWithAString*        rotateMirror;
+      G4UIcmdWithADouble       * polSet;
+      G4UIcmdWithADouble       * rotateToroidalMirrors;
+      G4UIcmdWithAString       * rotateMirror;
 
-      G4UIcmdWithAString*   toggleForwardTracker;
-      G4UIcmdWithAString*   toggleGasCherenkov;
-      G4UIcmdWithAString*   toggleLuciteHodoscope;
-      G4UIcmdWithAString*   toggleBigcal;
+      G4UIcmdWithAString       * toggleForwardTracker;
+      G4UIcmdWithAString       * toggleGasCherenkov;
+      G4UIcmdWithAString       * toggleLuciteHodoscope;
+      G4UIcmdWithAString       * toggleBigcal;
 
    protected:
       G4double fTargetAngle;  /// Target angle in radians

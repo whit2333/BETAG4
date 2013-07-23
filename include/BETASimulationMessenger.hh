@@ -29,22 +29,37 @@ class BETASimulationMessenger: public G4UImessenger {
       BETADetectorConstruction * construction;
       BETASimulationManager    * manager;
 
-      G4UIdirectory            * analysis;
-      G4UIdirectory            * simulation;
-      G4UIcmdWithAString       * simType;
-      G4UIcmdWithoutParameter  * writeTree;
-      G4UIcmdWithAnInteger     * showPlot;
+      G4UIdirectory            * fDir_analysis;
+      G4UIdirectory            * fDir_simulation;
+      G4UIdirectory            * fDir_fieldDir;
 
-      G4UIdirectory            * fieldDir;
+      G4UIcmdWithAString       * fCmd_simType;
+      G4UIcmdWithoutParameter  * fCmd_writeTree;
+      G4UIcmdWithAnInteger     * fCmd_showPlot;
 
-      G4UIcmdWithoutParameter  * polSwitch;
-      G4UIcmdWithAString       * lookAtField;
+      G4UIcmdWithoutParameter  * fCmd_polSwitch;
+      G4UIcmdWithAString       * fCmd_lookAtField;
 
-      G4UIcmdWithADouble       * setBeamEnergy;
+      G4UIcmdWithADouble       * fCmd_setBeamEnergy;
 
-      G4UIcmdWithADouble       * polSet;
-      G4UIcmdWithADouble       * rotateToroidalMirrors;
-      G4UIcmdWithAString       * rotateMirror;
+      G4UIcmdWithADouble       * fCmd_polSet;
+      G4UIcmdWithADouble       * fCmd_rotateToroidalMirrors;
+      G4UIcmdWithAString       * fCmd_rotateMirror;
+
+      G4UIcmdWithoutParameter  * fCmd_polSwitch;
+      G4UIcmdWithoutParameter  * fCmd_lookAtField;
+
+      G4UIcmdWithAString       * fCmd_toggleTargetField;
+      G4UIcmdWithAString       * fCmd_toggleTargetMaterial;
+
+      G4UIcmdWithADouble       * fCmd_polSet;
+      G4UIcmdWithADouble       * fCmd_rotateToroidalMirrors;
+      G4UIcmdWithAString       * fCmd_rotateMirror;
+
+      G4UIcmdWithAString       * fCmd_toggleForwardTracker;
+      G4UIcmdWithAString       * fCmd_toggleGasCherenkov;
+      G4UIcmdWithAString       * fCmd_toggleLuciteHodoscope;
+      G4UIcmdWithAString       * fCmd_toggleBigcal;
 
    public:
       BETASimulationMessenger(BETASimulationManager* );
