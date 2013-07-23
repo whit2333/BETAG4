@@ -112,6 +112,7 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
        *  @{
        */
       void ConstructBETA();
+
       G4LogicalVolume* BETADetector_log;
 
       G4double fBETADistance; ///< Distance from origin to the front face of the BETA bounding box
