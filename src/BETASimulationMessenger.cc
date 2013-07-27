@@ -109,10 +109,10 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_momentum->SetDefaultValue ( 0 );
    fCmd_momentum->AvailableForStates ( G4State_Idle );
 
-   //setBeamEnergy = new G4UIcmdWithADouble("/beta/setBeamEnergy",this);
-   //setBeamEnergy->SetGuidance(" Set the electron beam energy in units of GeV.");
-   //setBeamEnergy->SetDefaultValue(5.9);
-   //setBeamEnergy->AvailableForStates(G4State_Idle);
+   fCmd_setBeamEnergy = new G4UIcmdWithADouble("/beta/setBeamEnergy",this);
+   fCmd_setBeamEnergy->SetGuidance(" Set the electron beam energy in units of GeV.");
+   fCmd_setBeamEnergy->SetDefaultValue(fSimManager->GetBeamEnergy());
+   fCmd_setBeamEnergy->AvailableForStates(G4State_Idle);
 
    fCmd_setThetaMin = new G4UIcmdWithADouble ( "/beta/gun/setThetaMin",this );
    fCmd_setThetaMin->SetGuidance ( " Set the (first) primary particle theta minimum in degrees " );
@@ -426,10 +426,10 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
 //       BETAAction->SetIsotropic ( isotropic->GetNewIntValue ( newValue ) );
 //    }
 // 
-   //if ( command == fCmd_setBeamEnergy )
-   //{
-   //   BETAAction->GetEventGenerator()->SetBeamEnergy( setBeamEnergy->GetNewDoubleValue(newValue) );
-   //}
+   if ( command == fCmd_setBeamEnergy ) {
+      BETAAction->GetEventGenerator()->SetBeamEnergy( fCmd_setBeamEnergy->GetNewDoubleValue(newValue) );
+      fSimManager->SetBeamEnergy(fCmd_setBeamEnergy->GetNewDoubleValue(newValue)); 
+   }
 
 //    if ( command == sigmaMomentum )
 //    {
