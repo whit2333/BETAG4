@@ -59,7 +59,6 @@
 #include "G4Trd.hh"
 #include "BETAField.hh"
 #include "BETASimulationManager.hh"
-#include "BETASimulationMessenger.hh"
 
 class BETASimulationManager;
 

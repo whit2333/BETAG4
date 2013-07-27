@@ -1,5 +1,6 @@
 #include "BETADigitizer.hh"
 #include "G4SDManager.hh"
+#include "G4RunManager.hh"
 #include "BETAG4BigcalHit.hh"
 #include "BETAG4PMTHit.hh"
 #include "BigcalHit.h"

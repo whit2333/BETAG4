@@ -1,5 +1,4 @@
 #include "BETAG4DAQReadout.hh"
-#include "BIGCALGeometryCalculator.h"
 
 BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modName) {
 

@@ -2,12 +2,15 @@
 #define BETAG4DAQReadout_HH 1
 
 #include "globals.hh"
+#include "G4RunManager.hh"
 #include "G4VDigitizerModule.hh"
 #include "G4VDigiCollection.hh"
 #include "G4DigiManager.hh"
 #include "G4VDigi.hh"
-#include "BETAG4DigiADC.hh"
+#include "G4SDManager.hh"
 #include "InSANETriggerEvent.h"
+#include "BIGCALGeometryCalculator.h"
+#include "BETAG4DigiADC.hh"
 #include "BETASimulationManager.hh"
 #include "BETAG4PMTArray.hh"
 #include "BETAG4BigcalHit.hh"

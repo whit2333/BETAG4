@@ -2,7 +2,6 @@
 #define BETASimulationManager_h 1
 #include "G4UserEventAction.hh"
 #include "globals.hh"
-#include "BETASimulationMessenger.hh"
 #include <fstream>
 #include "G4PSFlatSurfaceFlux.hh"
 #include "G4PSPassageCellCurrent.hh"
@@ -28,6 +27,8 @@
 #include "G4ScoringManager.hh"
 #include "SANEEvents.h"
 #include "SANEScalers.h"
+#include "G4SDParticleFilter.hh"
+
 
 class BETARunAction;
 class G4Track;

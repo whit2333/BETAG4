@@ -9,6 +9,7 @@
 #include "BETAForwardTrackerHit.hh"
 #include "BETASimulationManager.hh"
 
+#include "G4RunManager.hh"
 #include "G4Event.hh"
 #include "G4EventManager.hh"
 #include "G4HCofThisEvent.hh"
@@ -21,6 +22,8 @@
 #include "G4ios.hh"
 #include "G4THitsMap.hh"
 
+#include "BETAProtvinoCalorimeterHit.hh"
+#include "BETARCSCalorimeterHit.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
 #include "BETAForwardTrackerHit.hh"
@@ -29,6 +32,7 @@
 #include "BETAHodoscopePMTHit.hh"
 #include "BETAPMTHit.hh"
 #include "BETAFakePlaneHit.hh"
+#include "BETAMirrorHit.hh"
 
 
 class G4Event;

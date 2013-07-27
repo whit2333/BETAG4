@@ -42,7 +42,6 @@ BETAPrimaryGeneratorMessenger::BETAPrimaryGeneratorMessenger (
    momentum->SetDefaultValue ( 0 );
    momentum->AvailableForStates ( G4State_Idle );
 
-
    setBeamEnergy = new G4UIcmdWithADouble("/beta/setBeamEnergy",this);
    setBeamEnergy->SetGuidance(" Set the electron beam energy in units of GeV.");
    setBeamEnergy->SetDefaultValue(5.9);

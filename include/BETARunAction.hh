@@ -1,7 +1,6 @@
 #ifndef BETARunAction_h
 #define BETARunAction_h 1
 
-#include "BETARunActionMessenger.hh"
 #include "TSQLServer.h"
 #include "TSQLResult.h"
 #include "globals.hh"
@@ -16,7 +15,6 @@ class BETASimulationManager;
 class G4Timer;
 class G4Run;
 class BETARun;
-class BETARunActionMessenger;
 class BETARunAction : public G4UserRunAction
 {
   public:
@@ -67,7 +65,6 @@ class BETARunAction : public G4UserRunAction
     BETARun* fCurrentRun;
     int fRunNumber;
     int showThePlots;
-    BETARunActionMessenger* messenger;
  
 };
 

@@ -6,17 +6,18 @@
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4UIcmdWithAString.hh"
+#include "G4RunManager.hh"
 
 #include "BETAPhysicsListMessenger.hh"
 #include "BETAPrimaryGeneratorMessenger.hh"
-#include "BETARunActionMessenger.hh"
 #include "BETAEventActionMessenger.hh"
+
 #include "BETADetectorConstruction.hh"
+
 #include "BETASimulationManager.hh"
 
 class G4UIdirectory;
 class G4UIcmdWithoutParameter;
-class BETASimulationManager;
 
 /**
  * Concrete implementation of G4UImessenger which creates/connects geant4 command lines to 

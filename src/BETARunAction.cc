@@ -6,7 +6,6 @@
 #include "G4Run.hh"
 #include "BETARun.hh"
 #include "BETASimulationManager.hh"
-#include "BETARunActionMessenger.hh"
 #include "BETADetectorConstruction.hh"
 #include "G4RunManager.hh"
 #include "TTimeStamp.h"
@@ -21,7 +20,6 @@ BETARunAction::BETARunAction() :showThePlots ( 0 ) {
    fSimulationManager = BETASimulationManager::GetInstance();
    fRunNumber = fSimulationManager->InitializeNewRun();
    fRunNumber = fSimulationManager->IncrementRunNumber();
-   messenger = new BETARunActionMessenger ( this );
    timer = new G4Timer;
    fCurrentRun=0;
 }
@@ -31,7 +29,6 @@ BETARunAction::~BETARunAction()
 {
 
    delete timer;
-   delete messenger;
 }
 //_________________________________________________________________//
 
