@@ -11,10 +11,10 @@
 #include "SANEEventGenerators.hh"
 #include "BETAG4MonteCarloEvent.h"
 #include "TClonesArray.h"
-
-class G4ParticleGun;
+#include "G4ParticleGun.hh"
+//class G4ParticleGun;
 class G4Event;
-class BETAPrimaryGeneratorMessenger;
+//class BETAPrimaryGeneratorMessenger;
 class G4ParticleDefinition;
 // class BETASimulationManager;
 
@@ -31,7 +31,7 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
       bool goodElectron;
       bool backgroundAndElectron;
 
-      BETAPrimaryGeneratorMessenger * gunMessenger;
+      //BETAPrimaryGeneratorMessenger * gunMessenger;
       G4ParticleDefinition          * electron;
       G4ParticleDefinition          * positron;
       G4ParticleDefinition          * pionminus;

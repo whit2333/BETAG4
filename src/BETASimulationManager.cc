@@ -1,3 +1,5 @@
+#include "BETASimulationManager.hh"
+#include "BETASimulationMessenger.hh"
 #include <fstream>
 #include "G4ios.hh"
 #include "G4Run.hh"
@@ -6,10 +8,8 @@
 #include "G4VVisManager.hh"
 #include "G4TrajectoryContainer.hh"
 #include "G4Trajectory.hh"
-#include "BETASimulationManager.hh"
 #include <string>  //For the string functions
 #include <sstream>
-#include "BETASimulationMessenger.hh"
 #include "G4MultiFunctionalDetector.hh"
 #include "G4VPrimitiveScorer.hh"
 #include "G4ScoringManager.hh"

@@ -1,5 +1,5 @@
 #include "BETAPrimaryGeneratorAction.hh"
-#include "BETAPrimaryGeneratorMessenger.hh"
+//#include "BETAPrimaryGeneratorMessenger.hh"
 #include "G4Gamma.hh"
 #include "Randomize.hh"
 #include "G4Event.hh"
@@ -20,13 +20,15 @@ double mottCrossSection(double p, double theta) ;
 BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
+   BETASimulationManager * simMan = BETASimulationManager::GetInstance();
+   simMan->SetPrimaryGeneratorAction(this);
    
    fBETAG4EventGen = new BETAG4EventGenerator();
    //fBETAG4EventGen->Initialize();
    //fBETAG4EventGen->fIsInitialized = true;
    fOutputTree = 0;
 
-   gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
+   //gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
   
    // ---- setup particles 
 
@@ -65,7 +67,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
 {
    //if(fParticlesSource) delete fParticlesSource;
-   if(gunMessenger) delete gunMessenger;
+   //if(gunMessenger) delete gunMessenger;
    if(fBETAG4EventGen) delete fBETAG4EventGen;
 }
 //________________________________________________________//

@@ -61,6 +61,7 @@
 BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
 {
    fSimulationManager = BETASimulationManager::GetInstance();
+   fSimulationManager->SetDetectorConstruction(this);
    //messenger = new BETADetectorMessenger ( this );
    fMagneticField = 0;
 

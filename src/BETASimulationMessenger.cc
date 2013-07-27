@@ -1,12 +1,10 @@
-#include "BETASimulationManager.hh"
+#include "BETASimulationMessenger.hh"
 #include <iostream>
 #include "G4UIdirectory.hh"
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4Tokenizer.hh"
 
-#include "BETASimulationMessenger.hh"
-#include "BETADetectorConstruction.hh"
 
 //___________________________________________________________________
 BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
@@ -86,6 +84,124 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    //rotateToroidalMirrors->SetGuidance("Rotate all toroidal mirros by given angle (degrees) along horz");
    //rotateToroidalMirrors->AvailableForStates(G4State_Idle);
 
+   //gunDir = new G4UIdirectory ( "/beta/" );
+   //gunDir = new G4UIdirectory ( "/beta/gun/" );
+   //gunDir->SetGuidance ( "PrimaryGenerator control" );
+
+   //polarCmd = new G4UIcmdWithADoubleAndUnit ( "/beta/gun/optPhotonPolar",this );
+   //polarCmd->SetGuidance ( "Set linear polarization" );
+   //polarCmd->SetGuidance ( "  angle w.r.t. (k,n) plane" );
+   //polarCmd->SetParameterName ( "angle",true );
+   //polarCmd->SetUnitCategory ( "Angle" );
+   //polarCmd->SetDefaultValue ( -360.0 );
+   //polarCmd->SetDefaultUnit ( "deg" );
+   //polarCmd->AvailableForStates ( G4State_Idle );
+
+   fCmd_isotropic = new G4UIcmdWithAnInteger ( "/beta/gun/isotropic",this );
+   fCmd_isotropic->SetGuidance ( " Random isotropic direction  " );
+   fCmd_isotropic->SetGuidance ( " Set to non-zero to turn on. " );
+   fCmd_isotropic->SetDefaultValue ( 0 );
+   fCmd_isotropic->AvailableForStates ( G4State_Idle );
+
+   fCmd_momentum = new G4UIcmdWithADouble ( "/beta/gun/momentum",this );
+   fCmd_momentum->SetGuidance ( " Set momentum of particle " );
+   fCmd_momentum->SetGuidance ( " " );
+   fCmd_momentum->SetDefaultValue ( 0 );
+   fCmd_momentum->AvailableForStates ( G4State_Idle );
+
+   //setBeamEnergy = new G4UIcmdWithADouble("/beta/setBeamEnergy",this);
+   //setBeamEnergy->SetGuidance(" Set the electron beam energy in units of GeV.");
+   //setBeamEnergy->SetDefaultValue(5.9);
+   //setBeamEnergy->AvailableForStates(G4State_Idle);
+
+   fCmd_setThetaMin = new G4UIcmdWithADouble ( "/beta/gun/setThetaMin",this );
+   fCmd_setThetaMin->SetGuidance ( " Set the (first) primary particle theta minimum in degrees " );
+   fCmd_setThetaMin->SetDefaultValue ( 35.0 );
+   fCmd_setThetaMin->AvailableForStates ( G4State_Idle );
+
+   fCmd_setThetaMax = new G4UIcmdWithADouble ( "/beta/gun/setThetaMax",this );
+   fCmd_setThetaMax->SetGuidance ( " Set the (first) primary particle theta maximum in degrees " );
+   fCmd_setThetaMax->SetDefaultValue ( 45.0 );
+   fCmd_setThetaMax->AvailableForStates ( G4State_Idle );
+
+   fCmd_setPhiMin = new G4UIcmdWithADouble ( "/beta/gun/setPhiMin",this );
+   fCmd_setPhiMin->SetGuidance ( " Set the (first) primary particle phi minimum in degrees " );
+   fCmd_setPhiMin->SetDefaultValue ( -15.0 );
+   fCmd_setPhiMin->AvailableForStates ( G4State_Idle );
+
+   fCmd_setPhiMax = new G4UIcmdWithADouble ( "/beta/gun/setPhiMax",this );
+   fCmd_setPhiMax->SetGuidance ( " Set the (first) primary particle phi maximum in degrees " );
+   fCmd_setPhiMax->SetDefaultValue ( 15.0 );
+   fCmd_setPhiMax->AvailableForStates ( G4State_Idle );
+
+   fCmd_setEnergyMin = new G4UIcmdWithADouble ( "/beta/gun/setEnergyMin",this );
+   fCmd_setEnergyMin->SetGuidance ( " Set the (first) primary particle minimum energy in GeV " );
+   fCmd_setEnergyMin->SetDefaultValue ( 1.0 );
+   fCmd_setEnergyMin->AvailableForStates ( G4State_Idle );
+
+   fCmd_setEnergyMax = new G4UIcmdWithADouble ( "/beta/gun/setEnergyMax",this );
+   fCmd_setEnergyMax->SetGuidance ( " Set the (first) primary particle maximum energy in GeV" );
+   fCmd_setEnergyMax->SetDefaultValue ( 5.7 );
+   fCmd_setEnergyMax->AvailableForStates ( G4State_Idle );
+
+   fCmd_setMomentumMin = new G4UIcmdWithADouble ( "/beta/gun/setMomentumMin",this );
+   fCmd_setMomentumMin->SetGuidance ( " Set the (first) primary particle minimum momentum in GeV/c " );
+   fCmd_setMomentumMin->SetDefaultValue ( 1.0 );
+   fCmd_setMomentumMin->AvailableForStates ( G4State_Idle );
+
+   fCmd_setMomentumMax = new G4UIcmdWithADouble ( "/beta/gun/setMomentumMax",this );
+   fCmd_setMomentumMax->SetGuidance ( " Set the (first) primary particle maximum momentum in GeV/c" );
+   fCmd_setMomentumMax->SetDefaultValue ( 5.7 );
+   fCmd_setMomentumMax->AvailableForStates ( G4State_Idle );
+
+   fCmd_refreshGenerator = new G4UIcmdWithoutParameter("/beta/gun/refresh",this);
+   fCmd_refreshGenerator->SetGuidance ( " Refresh the event generator after modifying settings " );
+   fCmd_refreshGenerator->AvailableForStates ( G4State_Idle );
+
+   fCmd_setType = new G4UIcmdWithAString("/beta/gun/setEventType",this);
+   fCmd_setType->SetGuidance ( " Set the type of event generated. Note that this resets all the set values to their defaults." );
+   fCmd_setType->SetGuidance ( " Possible arguments are :" );
+   fCmd_setType->SetGuidance ( " flat - uniformly populate events" );
+   fCmd_setType->SetGuidance ( " mott - mott cross section" );
+   fCmd_setType->SetGuidance ( " cone - a small cone near with a small energy range " );
+   fCmd_setType->SetGuidance ( " dis - inclusive electron DIS(F1p and F2p)" );
+   fCmd_setType->SetGuidance ( " beamOnTarget - electron beam shot from up stream on the target (GEANT4 physics)" );
+   fCmd_setType->SetDefaultValue ( "flat" );
+   fCmd_setType->AvailableForStates ( G4State_Idle );
+
+
+   fCmd_setPSVariable = new G4UIcmdWithAString ( "/beta/gun/setPSVariable",this );
+   fCmd_setPSVariable->SetGuidance ( " Set a phase space variable to a value"  );
+   fCmd_setPSVariable->SetGuidance ( " Note the units should be in the correct units for the variable"  );
+   fCmd_setPSVariable->SetGuidance ( " "  );
+   fCmd_setPSVariable->AvailableForStates ( G4State_Idle );
+
+
+   fCmd_listPSVariables = new G4UIcmdWithoutParameter("/beta/gun/listPSVariables",this);
+   fCmd_listPSVariables->SetGuidance ( " List the phase space variables " );
+   fCmd_listPSVariables->AvailableForStates ( G4State_Idle );
+
+
+   fCmd_setParticle = new G4UIcmdWithAString ( "/beta/gun/setParticle",this );
+   fCmd_setParticle->SetGuidance ( "  Set the particle thrown (if event generator is applicable) \n use the simple particle name... e-,e+,pi+,proton,kaon- " );
+   fCmd_setParticle->SetDefaultValue ( "e-" );
+   fCmd_setParticle->AvailableForStates ( G4State_Idle );
+
+   fCmd_sigmaMomentum = new G4UIcmdWithADouble ( "/beta/gun/sigmaMomentum",this );
+   fCmd_sigmaMomentum->SetGuidance ( " Set relative error of particle momentum" );
+   fCmd_sigmaMomentum->SetDefaultValue ( 0 );
+   fCmd_sigmaMomentum->AvailableForStates ( G4State_Idle );
+
+   fCmd_sete_piRatio = new G4UIcmdWithADouble ( "/beta/gun/SetElectronPionRatio",this );
+   fCmd_sete_piRatio->SetGuidance ( " Set the electron - pion ratio \nSetting to one is all electrons " );
+   fCmd_sete_piRatio->SetDefaultValue ( 1.0/100.0 );
+   fCmd_sete_piRatio->AvailableForStates ( G4State_Idle );
+
+   fCmd_setpi0Ratio = new G4UIcmdWithADouble ( "/beta/gun/SetPiZeroRatio",this );
+   fCmd_setpi0Ratio->SetGuidance ( "  Set the pi0 - charged pion ratio \n Setting >= 1 makes all pions neutral " );
+   fCmd_setpi0Ratio->SetDefaultValue ( 0.0 );
+   fCmd_setpi0Ratio->AvailableForStates ( G4State_Idle );
+
 }
 //___________________________________________________________________
 
@@ -96,6 +212,10 @@ BETASimulationMessenger::~BETASimulationMessenger()
 
 void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newValue )
 {
+   BETADetectorConstruction * fDetConstruction = GetDetectorConstruction();
+   BETAPrimaryGeneratorAction * BETAAction = GetPrimaryGeneratorAction();
+   BETAG4EventGenerator * anEventGen = BETAAction->GetEventGenerator();
+
    if ( command == fCmd_simType ) {
 
    }
@@ -198,6 +318,142 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
 /*         if(constructi*/
       }
          G4RunManager::GetRunManager()->GeometryHasBeenModified();
+   }
+   if ( command == fCmd_setThetaMax ) {
+      anEventGen->SetThetaMax(fCmd_setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setPhiMax ) {
+      anEventGen->SetPhiMax(fCmd_setPhiMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setEnergyMax ) {
+      anEventGen->SetEnergyMax(fCmd_setEnergyMax->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setThetaMin ) {
+      anEventGen->SetThetaMin(fCmd_setThetaMin->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setPhiMin ) {
+      anEventGen->SetPhiMin(fCmd_setPhiMin->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setEnergyMin) {
+      anEventGen->SetEnergyMin(fCmd_setEnergyMin->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setMomentumMax ) {
+      anEventGen->SetMomentumMax(fCmd_setMomentumMax->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setMomentumMin) {
+      anEventGen->SetMomentumMin(fCmd_setMomentumMin->GetNewDoubleValue(newValue));
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_setType) {
+      if(newValue == "flat") {
+         anEventGen = new BigcalCenterEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "cone") {
+         anEventGen = new ConeEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "dis") {
+         anEventGen = new DISEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "poldis") {
+         anEventGen = new PolarizedDISEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "mott") {
+         anEventGen = new MottEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "wiser") {
+         anEventGen = new WiserEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "electronPion") {
+         anEventGen =  new InclusiveElectronPionGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "beamOnTarget") {
+         anEventGen = new BeamOnTargetEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else {
+         std::cout << " Illegal parameter: " << newValue << " !\n";
+      }
+      anEventGen->NeedsRefreshed();
+   }
+   if ( command == fCmd_refreshGenerator) {
+        if( !anEventGen->fIsInitialized ) {
+           anEventGen->Initialize();
+           anEventGen->fIsInitialized = true;
+        }
+        else BETAAction->GetEventGenerator()->Refresh();
+   }
+   if ( command == fCmd_listPSVariables) {
+/*      BETAAction->GetEventGenerator()->ListPhaseSpaceVariables();*/
+      BETAAction->GetEventGenerator()->Print();
+   }
+
+//    if ( command == polarCmd )
+//    {
+//       G4double angle = polarCmd->GetNewDoubleValue ( newValue );
+//       if ( angle == -360.0*deg )
+//       {
+//          BETAAction->SetOptPhotonPolar();
+//       }
+//       else
+//       {
+//          BETAAction->SetOptPhotonPolar ( angle );
+//       }
+//    }
+//    if ( command == isotropic )
+//    {
+//       BETAAction->SetIsotropic ( isotropic->GetNewIntValue ( newValue ) );
+//    }
+// 
+   //if ( command == fCmd_setBeamEnergy )
+   //{
+   //   BETAAction->GetEventGenerator()->SetBeamEnergy( setBeamEnergy->GetNewDoubleValue(newValue) );
+   //}
+
+//    if ( command == sigmaMomentum )
+//    {
+//       BETAAction->SetSigmaMomentum ( sigmaMomentum->GetNewDoubleValue ( newValue ) );
+//    }
+//    if ( command == sete_piRatio )
+//    {
+//       BETAAction->SetElectronPionRatio ( sete_piRatio->GetNewDoubleValue ( newValue ) );
+//    }
+   if ( command == fCmd_setParticle )
+   {
+      G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
+      TList * samplers = anEventGen->GetSamplers();
+      if(samplers->GetEntries() > 0 ) {
+	 int partnum =  TDatabasePDG::Instance()->GetParticle(newValue.data())->PdgCode(); 
+         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->SetParticleType(partnum );
+         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->InitializeFinalStateParticles( );
+         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->Print( );
+	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
+      }
+      else std::cout << " NO SAMPLERS YET\n"; 
+      BETAAction->GetParticleGun()->SetParticleDefinition(particleTable->FindParticle ( newValue ));
+      
+      anEventGen->NeedsRefreshed();
    }
 
 }

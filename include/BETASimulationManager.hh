@@ -28,8 +28,15 @@
 #include "SANEEvents.h"
 #include "SANEScalers.h"
 #include "G4SDParticleFilter.hh"
+#include "G4SDManager.hh"
+#include "BETAG4EventGenerator.hh"
+#include "SANEEventGenerators.hh"
 
+//#include "BETADetectorConstruction.hh"
+//#include "BETAPrimaryGeneratorAction.hh"
 
+class BETADetectorConstruction;
+class BETAPrimaryGeneratorAction;
 class BETARunAction;
 class G4Track;
 class BETASimulationMessenger;
@@ -53,6 +60,9 @@ class BETASimulationManager {
       friend class BETARun;
 
    protected: 
+      BETADetectorConstruction    * fDetConstruction;
+      BETAPrimaryGeneratorAction  * fPrimaryGenAction;
+
       InSANERun   * fInSANERun;
       int           instanceNumber;
       bool          fIsAppendMode;
@@ -209,6 +219,13 @@ class BETASimulationManager {
       void     SetTargetAngle(G4double a){fTargetAngle=a;}
 
       int GetEventNumber() { return(fEventNumber); };
+
+      BETADetectorConstruction   * GetDetectorConstruction(){ return fDetConstruction ; }
+      BETAPrimaryGeneratorAction * GetPrimaryGeneratorAction(){ return fPrimaryGenAction ; }
+
+      void SetDetectorConstruction(BETADetectorConstruction * detcon){ fDetConstruction = detcon; }
+      void SetPrimaryGeneratorAction(BETAPrimaryGeneratorAction * gen){ fPrimaryGenAction = gen; }
+
 
 };
 

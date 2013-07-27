@@ -5,16 +5,16 @@
 #include "globals.hh"
 #include "G4UIcmdWithAnInteger.hh"
 #include "G4UIcmdWithADouble.hh"
+#include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithAString.hh"
 #include "G4RunManager.hh"
 
 #include "BETAPhysicsListMessenger.hh"
-#include "BETAPrimaryGeneratorMessenger.hh"
-//#include "BETAEventActionMessenger.hh"
+#include "BETASimulationManager.hh"
 
 #include "BETADetectorConstruction.hh"
+#include "BETAPrimaryGeneratorAction.hh"
 
-#include "BETASimulationManager.hh"
 
 class G4UIdirectory;
 class G4UIcmdWithoutParameter;
@@ -26,10 +26,38 @@ class G4UIcmdWithoutParameter;
  */
 class BETASimulationMessenger: public G4UImessenger {
    private:
-      BETADetectorConstruction * fDetConstruction;
-      BETASimulationManager    * fSimManager;
+      BETASimulationManager       * fSimManager;
 
-      G4UIdirectory            * fDir_analysis;
+      /** @name Commands for setting phase space
+       *  These commands are used just to set the first particle's phase space. 
+       *  There are no commands for a second particle ( if it is not an inclusive event generator).
+       * @{
+       */
+      G4UIcmdWithADouble        * fCmd_setPhiMax;
+      G4UIcmdWithADouble        * fCmd_setPhiMin;
+      G4UIcmdWithADouble        * fCmd_setThetaMin;
+      G4UIcmdWithADouble        * fCmd_setThetaMax;
+      G4UIcmdWithADouble        * fCmd_setEnergyMax;
+      G4UIcmdWithADouble        * fCmd_setEnergyMin;
+      G4UIcmdWithADouble        * fCmd_setMomentumMax;
+      G4UIcmdWithADouble        * fCmd_setMomentumMin;
+      ///@}
+
+      G4UIcmdWithAString        * fCmd_setType;
+      G4UIcmdWithoutParameter   * fCmd_refreshGenerator;
+      G4UIcmdWithoutParameter   * fCmd_listPSVariables;
+      G4UIcmdWithAString        * fCmd_setParticle;
+      G4UIcmdWithAString        * fCmd_setPSVariable;
+      G4UIcmdWithADoubleAndUnit * fCmd_polarCmd;
+      G4UIcmdWithAnInteger      * fCmd_isotropic;
+      G4UIcmdWithADouble        * fCmd_momentum;
+      G4UIcmdWithADouble        * fCmd_setBeamEnergy;
+      G4UIcmdWithADouble        * fCmd_sigmaMomentum;
+      G4UIcmdWithADouble        * fCmd_sete_piRatio;
+      G4UIcmdWithADouble        * fCmd_setpi0Ratio;
+
+      G4UIdirectory             * fDir_gunDir;
+      G4UIdirectory             * fDir_analysis;
       G4UIdirectory            * fDir_simulation;
       G4UIdirectory            * fDir_beta;
       G4UIdirectory            * fDir_fieldDir;
@@ -38,8 +66,6 @@ class BETASimulationMessenger: public G4UImessenger {
 
       G4UIcmdWithoutParameter  * fCmd_polSwitch;
       G4UIcmdWithAString       * fCmd_lookAtField;
-
-      G4UIcmdWithADouble       * fCmd_setBeamEnergy;
 
       G4UIcmdWithADouble       * fCmd_polSet;
       G4UIcmdWithADouble       * fCmd_rotateToroidalMirrors;
@@ -56,6 +82,9 @@ class BETASimulationMessenger: public G4UImessenger {
    public:
       BETASimulationMessenger(BETASimulationManager* );
       ~BETASimulationMessenger();
+
+      BETADetectorConstruction   * GetDetectorConstruction(){  return fSimManager->GetDetectorConstruction(); }
+      BETAPrimaryGeneratorAction * GetPrimaryGeneratorAction(){ return fSimManager->GetPrimaryGeneratorAction(); }
 
       void AddDetectorUICommands();
       void SetNewValue(G4UIcommand*, G4String);
