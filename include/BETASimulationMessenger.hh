@@ -10,7 +10,7 @@
 
 #include "BETAPhysicsListMessenger.hh"
 #include "BETAPrimaryGeneratorMessenger.hh"
-#include "BETAEventActionMessenger.hh"
+//#include "BETAEventActionMessenger.hh"
 
 #include "BETADetectorConstruction.hh"
 

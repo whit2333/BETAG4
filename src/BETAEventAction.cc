@@ -4,7 +4,7 @@
 #include "BETAProtvinoCalorimeterHit.hh"
 #include "BETARCSCalorimeterHit.hh"
 #include "BETAEventAction.hh"
-#include "BETAEventActionMessenger.hh"
+//#include "BETAEventActionMessenger.hh"
 #include "G4Event.hh"
 #include "G4EventManager.hh"
 #include "G4TrajectoryContainer.hh"
@@ -23,7 +23,7 @@
 BETAEventAction::BETAEventAction()
 {
    verboseLevel = 0;
-   messenger = new BETAEventActionMessenger ( this );
+   //messenger = new BETAEventActionMessenger ( this );
 
    //moved junk to RunAction :  BeginOfRunAction
    G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();

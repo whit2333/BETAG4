@@ -2,7 +2,7 @@
 #define BETAEventAction_h 1
 
 #include "BETAEventAction.hh"
-#include "BETAEventActionMessenger.hh"
+//#include "BETAEventActionMessenger.hh"
 #include "BETAPMTHit.hh"
 #include "BETAHodoscopePMTHit.hh"
 #include "G4UserEventAction.hh"
@@ -87,7 +87,7 @@ class BETAEventAction : public G4UserEventAction
     G4int BIGCALID2;
     G4int FTID;
 
-    BETAEventActionMessenger* messenger;
+    //BETAEventActionMessenger* messenger;
     G4int verboseLevel;
 
     std::map<G4int, G4THitsMap<G4double>* > fMap;
