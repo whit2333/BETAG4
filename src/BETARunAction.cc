@@ -172,10 +172,8 @@ G4Run*  BETARunAction::GenerateRun() {
  *
  *
  */
-void BETARunAction::EndOfRunAction ( const G4Run* aRun )
-{
-   //theRun->getRunAnalysisManager()->getTree()->commit();
-   // BETASimulationManager::dispose();
+void BETARunAction::EndOfRunAction ( const G4Run* aRun ) {
+
    timer->Stop();
    //         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
    //    TSQLResult * res;
@@ -210,24 +208,23 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun )
 2d:%2d:%2d\", '%H %e %s') where run_number=%d ",
 dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->GetSecond(), runNumber) );
 */
+
    // Print interesting data
    G4cout <<"=================== END RUN #" << fRunNumber << "===================" << G4endl;
    G4cout <<"Number of Events Processed:" << aRun->GetNumberOfEvent() << " events. " <<G4endl;
    //    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
+   
    G4cout << "Writing ROOT File\n";
-
    SANERunManager::GetRunManager()->WriteRun();
 
    // do these do anything anymore?
-   fSimulationManager->fEvents->fTree->Write();
-
-   fSimulationManager->fEvents->fTree->FlushBaskets();
-
-   fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
+   //fSimulationManager->fEvents->fTree->Write();
+   //fSimulationManager->fEvents->fTree->FlushBaskets();
+   //fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
 
    // Save all objects in this file
    //   fSimulationManager->fDetectorTree->Write();
-   fSimulationManager->fRootFile->Write();
+   //fSimulationManager->fRootFile->Write();
    // Close the file. Note that this is automatically done when you leave
    // the application.
 
@@ -237,7 +234,7 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    // fOutputTree->FlushBaskets();
    // fAnalysisFile->Write();
    // fAnalysisFile->Flush();
-   fSimulationManager->fRootFile->Close();
+   //fSimulationManager->fRootFile->Close();
    assert ( 0 != fCurrentRun );
    //   currentRun->DumpData();
 }
