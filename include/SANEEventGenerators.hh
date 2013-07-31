@@ -207,8 +207,8 @@ class NH3TargetEventGenerator : public PolarizedDISEventGenerator  {
    public :
       NH3TargetEventGenerator(){
          fNH3PackingFraction = 0.5;
-         fN14Density;
-         fH3Density;
+         //fN14Density;
+         //fH3Density;
       }
 
       virtual ~NH3TargetEventGenerator() { }

@@ -4070,8 +4070,8 @@ void BETADetectorConstruction::ConstructNose()
    //   particles over the entire Cell. I would only need to break it up if I were
    //   also going to propagate the particles into the cell...
    //Break it up into 15 thin cylinders sitting side by side.
-  int i;
-  double x,y,z;
+  //int i;
+  //double x,y,z;
 
   solidCell = new G4Tubs("Cell", 0.*cm, 1.25*cm, 0.15*cm, 0., 7.);
     logicCell = new G4LogicalVolume(solidCell, TargetNH3, "Cell");

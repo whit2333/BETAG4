@@ -209,9 +209,31 @@ class BETASimulationManager {
       int DefineScoringFilters();
 
       /**
-       *  
+       *  Only increments some counter in text file.
        */
       int InitializeNewRun();
+
+      void UpdateRun(){
+         if(fInSANERun){
+            // Beam
+            fInSANERun->SetBeamEnergy(  GetBeamEnergy() );
+            fInSANERun->fBeamPolarization = 0.6;
+            fInSANERun->fAverageBeamCurrent = 90.0;
+            fInSANERun->fAverageBeamPolarization = 0.6;
+            fInSANERun->fBCM1ChargeAsymmetry = 0.0;
+            fInSANERun->fBCM2ChargeAsymmetry = 0.0;
+            // Target
+            fInSANERun->SetTargetAngle( GetTargetAngle() );
+            fInSANERun->fTargetOfflinePolarization = 0.6;
+            fInSANERun->fTargetOnlinePolarization = 0.6;
+            fInSANERun->fAverageTargetPolarization = 0.6;
+            fInSANERun->fTarget = InSANERun::kNH3;
+            fInSANERun->fTargetPolarizationSign = InSANERun::kPOSITIVE;
+            fInSANERun->fTargetCup = InSANERun::kTOP;
+            fInSANERun->fTargetOrientation = InSANERun::kANTIPARALLEL;
+            fInSANERun->fTargetField = 5.1;
+         }
+      }
 
       G4double GetBeamEnergy(){return(fBeamEnergy);}
       void     SetBeamEnergy(G4double en){fBeamEnergy=en;}
