@@ -1,16 +1,14 @@
 /beta/target/setPolarizationAngle 180
 /beta/gun/setEventType poldis 
-#/beta/gun/refresh
-#/beta/gun/setEnergyMin 0.500
-#/beta/gun/setEnergyMax 4.0 
-#/beta/gun/setThetaMin 30.0 
-#/beta/gun/setThetaMax 50.0
-#/beta/gun/setPhiMin   -40.0
-#/beta/gun/setPhiMax   40.0
-#/beta/gun/refresh
-#/beta/gun/setParticle pi0 
+/beta/gun/refresh
+/beta/gun/setEnergyMin 0.500
+/beta/gun/setEnergyMax 4.0 
+/beta/gun/setThetaMin 30.0 
+/beta/gun/setThetaMax 50.0
+/beta/gun/setPhiMin   -40.0
+/beta/gun/setPhiMax   40.0
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 1000
+/run/beamOn 10000
 
