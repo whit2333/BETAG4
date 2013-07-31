@@ -216,6 +216,9 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    //    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
    G4cout << "Writing ROOT File\n";
 
+   SANERunManager::GetRunManager()->WriteRun();
+
+   // do these do anything anymore?
    fSimulationManager->fEvents->fTree->Write();
 
    fSimulationManager->fEvents->fTree->FlushBaskets();
