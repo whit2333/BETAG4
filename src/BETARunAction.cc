@@ -223,8 +223,10 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    fSimulationManager->fEvents->fTree->FlushBaskets();
    fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
 
+   SANERunManager::GetRunManager()->GetScalerFile()->cd();
    fSimulationManager->fScalerTree->Write();
    fSimulationManager->fScalerTree->FlushBaskets();
+   SANERunManager::GetRunManager()->GetCurrentFile()->cd();
 
    // Save all objects in this file
    //   fSimulationManager->fDetectorTree->Write();
