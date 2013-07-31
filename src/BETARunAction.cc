@@ -68,12 +68,13 @@ G4Run*  BETARunAction::GenerateRun() {
 
    }
 
-
+   SANERunManager::GetRunManager()->GetScalerFile()->cd();
    fSimulationManager->fScalerTree = new TTree("Scalers","The SANE Scaler Data");
    fSimulationManager->fSANEScalers = new SANEScalers("Scalers");
+   SANERunManager::GetRunManager()->GetCurrentFile()->cd();
 
+   // 
    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-
    genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
    genAction->InitOutput();
 
@@ -221,6 +222,9 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    fSimulationManager->fEvents->fTree->Write();
    fSimulationManager->fEvents->fTree->FlushBaskets();
    fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
+
+   fSimulationManager->fScalerTree->Write();
+   fSimulationManager->fScalerTree->FlushBaskets();
 
    // Save all objects in this file
    //   fSimulationManager->fDetectorTree->Write();
