@@ -10,5 +10,5 @@
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 10000
+/run/beamOn 1000
 
