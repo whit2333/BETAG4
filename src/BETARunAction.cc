@@ -218,9 +218,9 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    SANERunManager::GetRunManager()->WriteRun();
 
    // do these do anything anymore?
-   //fSimulationManager->fEvents->fTree->Write();
-   //fSimulationManager->fEvents->fTree->FlushBaskets();
-   //fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
+   fSimulationManager->fEvents->fTree->Write();
+   fSimulationManager->fEvents->fTree->FlushBaskets();
+   fSimulationManager->fEvents->fTree->BuildIndex("fRunNumber","fEventNumber");
 
    // Save all objects in this file
    //   fSimulationManager->fDetectorTree->Write();
@@ -234,7 +234,7 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    // fOutputTree->FlushBaskets();
    // fAnalysisFile->Write();
    // fAnalysisFile->Flush();
-   //fSimulationManager->fRootFile->Close();
+   fSimulationManager->fRootFile->Close();
    assert ( 0 != fCurrentRun );
    //   currentRun->DumpData();
 }
