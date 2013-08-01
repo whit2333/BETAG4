@@ -255,7 +255,8 @@ void BETARun::Print ( const std::vector<G4String>& title,
 
 void BETARun::GeneratePedestals() {
    // emulate pedestals
-
+   TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
+   
    for(int k = 0 ;k<1000;k++ ) {
      fSimulationManager->fEvents->Clear();
      fSimulationManager->fEvents->fEventNumber = numberOfEvent;
@@ -268,10 +269,14 @@ void BETARun::GeneratePedestals() {
      fSimulationManager->fEvents->TRIG->fRunNumber = fSimulationManager->GetRunNumber();
      fSimulationManager->fEvents->HMS->fEventNumber = numberOfEvent;
      fSimulationManager->fEvents->HMS->fRunNumber = fSimulationManager->GetRunNumber();
-
      fSimulationManager->fEvents->TRIG->fTriggerBits[7] = true;//ped bit
      fSimulationManager->fEvents->TRIG->fCodaType = 4; // ped coda type
 
+     TClonesArray * fThrownParticles = fSimulationManager->fEvents->MC->fThrownParticles;
+     if(fThrownParticles->GetEntries() > 0){
+        InSANEParticle * aPart = (InSANEParticle*)(*fThrownParticles)[0];
+        aPart->fHelicity = rand->Uniform(-1.0,1.0);
+     }
      fBETADigitizer->DigitizePedestals();
 
      fBETADigitizer->ReadOut();
