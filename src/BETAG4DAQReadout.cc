@@ -58,44 +58,43 @@ BETAG4DAQReadout::~BETAG4DAQReadout() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::Digitize() {
-// Reset all event level values
-// Get pointers
-  G4String colName;
-  G4SDManager* SDman = G4SDManager::GetSDMpointer();
-  G4RunManager* fRM = G4RunManager::GetRunManager();
-  const G4Event* currentEvent = fRM->GetCurrentEvent();
-  G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
+   // Reset all event level values
+   // Get pointers
+   G4String colName;
+   G4SDManager* SDman = G4SDManager::GetSDMpointer();
+   G4RunManager* fRM = G4RunManager::GetRunManager();
+   const G4Event* currentEvent = fRM->GetCurrentEvent();
+   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
 
-  if( fBigcalHCID != -1 ) {
-    fBigcalHC = ( BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
-  }
+   if( fBigcalHCID != -1 ) {
+      fBigcalHC = ( BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
+   }
 
-  if( fCherenkovHCID != -1 ) {
-    fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-  } else {
-     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
-     fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-  }
+   if( fCherenkovHCID != -1 ) {
+      fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+   } else {
+      fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+      fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
+   }
+   //std::cout << " fBigcalHCID " << fBigcalHCID << "  fCherenkovHCID " << fCherenkovHCID << "\n";
 
-//   std::cout << " fBigcalHCID " << fBigcalHCID << "  fCherenkovHCID " << fCherenkovHCID << "\n";
+   /// Loop over bigcal and add up the energy for each trigger group
+   BETAG4BigcalHit * bcHit;
+   BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
+   G4double energyTemp;
+   fNBigcalHits=0;
+   for ( int gg =0;gg<1744;gg++ )
+   {
+      bcHit      = (*fBigcalHC)[gg];
+      energyTemp = bcHit->GetDepositedEnergy()/ (bigcalGeoCalc->GetCalibrationCoefficient(bcHit->fCellID));;
 
-  /// Loop over bigcal and add up the energy for each trigger group
-  BETAG4BigcalHit * bcHit;
-  BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
-  G4double energyTemp;
-  fNBigcalHits=0;
-  for ( int gg =0;gg<1744;gg++ )
-  {
-    bcHit      = (*fBigcalHC)[gg];
-    energyTemp = bcHit->GetDepositedEnergy()/ (bigcalGeoCalc->GetCalibrationCoefficient(bcHit->fCellID));;
+      if(energyTemp > 0.01) { ///10 MeV Block Threshold?
+         fNBigcalHits++;
+         fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
+      }
+   }
 
-    if(energyTemp > 0.01) { ///10 MeV Block Threshold?
-      fNBigcalHits++;
-      fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
-    }
-  }
-
-  fNCherenkovHits = 0;
+   fNCherenkovHits = 0;
    /// Loop over gas cherenkov
    BETAG4PMTHit * cerHit;
    for ( int i1=0 ; i1 < fGasCherenkovHC->entries();i1++ ) {
@@ -108,34 +107,34 @@ void BETAG4DAQReadout::Digitize() {
    fCherenkovFired=false;
    if( fCherenkovTotal > fCherenkovTriggerThreshold ) {
       fCherenkovFired=true;
-/*      std::cout << "Cherenkov Total " << fCherenkovTotal << " \n";*/
+      /*      std::cout << "Cherenkov Total " << fCherenkovTotal << " \n";*/
    }
 
    /// Determine if Bigcal would have fired
    fNumberOfTriggeredGroups=0;
    fBigcalFired=false;
    for(int i=0;i<4;i++) {
-//      std::cout << "Bigcal trigger group " << i+1 << " has energy "  << fTriggerGroupEnergy[i] << " MeV \n";
+      //      std::cout << "Bigcal trigger group " << i+1 << " has energy "  << fTriggerGroupEnergy[i] << " MeV \n";
       if( fTriggerGroupEnergy[i] > fBigcalTriggerThreshold ) {
          fBigcalFired=true;
          fNumberOfTriggeredGroups++;
-//         std::cout << "Bigcal Total " << fNumberOfTriggeredGroups << " \n";
+         //         std::cout << "Bigcal Total " << fNumberOfTriggeredGroups << " \n";
       }
    }
 
 
    if(fBigcalFired) {
       /// pi0 trigger bits
-         fSimulationManager->fEvents->TRIG->fCodaType = 5; // bigcal types
+      fSimulationManager->fEvents->TRIG->fCodaType = 5; // bigcal types
       if( fNumberOfTriggeredGroups > 1) {
          fSimulationManager->fEvents->TRIG->fTriggerBits[2] = true;
-/*       fTriggerEvent->fTriggerBits[3] = true;*/
+         /*       fTriggerEvent->fTriggerBits[3] = true;*/
          fIsTriggered=true;
       }
       /// Beta trigger bits
       if(fCherenkovFired && fBigcalFired ) {
          fSimulationManager->fEvents->TRIG->fCodaType = 5; // bigcal types
-/*         fSimulationManager->fEvents->TRIG->fTriggerBits[1] = true;//b1trig*/
+         /*         fSimulationManager->fEvents->TRIG->fTriggerBits[1] = true;//b1trig*/
          fSimulationManager->fEvents->TRIG->fTriggerBits[3] = true;//b2trig
          fIsTriggered=true;
       }
@@ -145,111 +144,110 @@ void BETAG4DAQReadout::Digitize() {
 //__________________________________________________________________
 
 void BETAG4DAQReadout::ReadOut() {
-// Get pointers
+   // Get pointers
    G4String colName;
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4RunManager* fRM = G4RunManager::GetRunManager();
    const G4Event* currentEvent = fRM->GetCurrentEvent();
    G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
 
-//   BETAG4MonteCarloEvent * mcEvent = fSimulationManager->fEvents->MC;
+   //   BETAG4MonteCarloEvent * mcEvent = fSimulationManager->fEvents->MC;
 
    BETAFakePlaneHit* aHit;
    TClonesArray * planeHits;
    InSANEFakePlaneHit * bHit;
-///////////////////////////////////////////////////////
-// // Monte Carlo Thrown Event
-//     fSimulationManager->fEvents->MC->fEnergyThrown = fSimulationManager->generator->fCurrentEnergy;
-//     fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
-//     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
-//     fSimulationManager->fEvents->MC->fParticleThrown = 1;
-//     fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
-///////////////////////////////////////////////////////
-/// Forward Tracker Fake plane readout
-//   std::cout << " tracker " << mcEvent->GetTrackerPlaneHitsArray() << "\n";
+   ///////////////////////////////////////////////////////
+   // // Monte Carlo Thrown Event
+   //     fSimulationManager->fEvents->MC->fEnergyThrown = fSimulationManager->generator->fCurrentEnergy;
+   //     fSimulationManager->fEvents->MC->fThetaThrown = generator->fCurrentTheta;
+   //     fSimulationManager->fEvents->MC->fPhiThrown = generator->fCurrentPhi;
+   //     fSimulationManager->fEvents->MC->fParticleThrown = 1;
+   //     fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
+   ///////////////////////////////////////////////////////
+   /// Forward Tracker Fake plane readout
+   //   std::cout << " tracker " << mcEvent->GetTrackerPlaneHitsArray() << "\n";
 
    planeHits = fFTPlaneHits;
    if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
    else {
-   if( fTrackerFakePlaneHCID!= -1 ) {
-     fTrackerFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlaneHCID ) );
-/*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
-      for ( int i=0;i<(fTrackerFakePlaneHC->entries());i++ ) {
-         aHit = ( *fTrackerFakePlaneHC ) [i];
+      if( fTrackerFakePlaneHCID!= -1 ) {
+         fTrackerFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlaneHCID ) );
+         /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+         for ( int i=0;i<(fTrackerFakePlaneHC->entries());i++ ) {
+            aHit = ( *fTrackerFakePlaneHC ) [i];
 
-         bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+            bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
 
-         bHit->fPID = aHit->fPID;
-         bHit->fEnergy = aHit->fEnergy;
-         bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
-         bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
-         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
-         bHit->fTheta = aHit->fPosition.theta();
-         bHit->fPhi = aHit->fPosition.phi();
+            bHit->fPID = aHit->fPID;
+            bHit->fEnergy = aHit->fEnergy;
+            bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+            bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+            bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
+            bHit->fTheta = aHit->fPosition.theta();
+            bHit->fPhi = aHit->fPosition.phi();
 
-// }
+         }
       }
-   }
    }
 
    // Second 
    planeHits = fFT2PlaneHits;
    if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
    else {
-   if( fTrackerFakePlane2HCID!= -1 ) {
-     fTrackerFakePlane2HC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlane2HCID ) );
-/*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
-      for ( int i=0;i<(fTrackerFakePlane2HC->entries());i++ ) {
-         aHit = ( *fTrackerFakePlane2HC ) [i];
+      if( fTrackerFakePlane2HCID!= -1 ) {
+         fTrackerFakePlane2HC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlane2HCID ) );
+         /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+         for ( int i=0;i<(fTrackerFakePlane2HC->entries());i++ ) {
+            aHit = ( *fTrackerFakePlane2HC ) [i];
 
-         bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+            bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
 
-         bHit->fPID = aHit->fPID;
-         bHit->fEnergy = aHit->fEnergy;
-         bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
-         bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
-         bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
-         bHit->fMomentum4Vector.SetXYZT(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV),aHit->fEnergy);
-         bHit->fTheta = aHit->fPosition.theta();
-         bHit->fPhi = aHit->fPosition.phi();
+            bHit->fPID = aHit->fPID;
+            bHit->fEnergy = aHit->fEnergy;
+            bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+            bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+            bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
+            bHit->fMomentum4Vector.SetXYZT(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV),aHit->fEnergy);
+            bHit->fTheta = aHit->fPosition.theta();
+            bHit->fPhi = aHit->fPosition.phi();
 
-// }
+         }
       }
    }
-   }
-///////////////////////////////////////////////////////
-/// Bigcal Hit Fake plane readout
+   ///////////////////////////////////////////////////////
+   /// Bigcal Hit Fake plane readout
    planeHits = fBCPlaneHits;
    if(!planeHits) printf(" ERROR NULL mcEvent->fBigcalPlaneHits!\n");
    else{
-   if( fBigcalFakePlaneHCID != -1 ) {
-      fBigcalFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fBigcalFakePlaneHCID ) );
-/*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
-      for ( int i=0;i<(fBigcalFakePlaneHC->entries());i++ ) {
-         aHit = ( *fBigcalFakePlaneHC ) [i];
+      if( fBigcalFakePlaneHCID != -1 ) {
+         fBigcalFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fBigcalFakePlaneHCID ) );
+         /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+         for ( int i=0;i<(fBigcalFakePlaneHC->entries());i++ ) {
+            aHit = ( *fBigcalFakePlaneHC ) [i];
 
-         bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
-         bHit->fPID = aHit->fPID;
-         bHit->fEnergy = aHit->fEnergy;
-         bHit->fLocalPosition.SetXYZ(
-               aHit->fLocalPosition.x()/cm,
-               aHit->fLocalPosition.y()/cm,
-               aHit->fLocalPosition.z()/cm );
-         bHit->fPosition.SetXYZ(
-               aHit->fPosition.x()/cm,
-               aHit->fPosition.y()/cm,
-               aHit->fPosition.z()/cm  );
-         bHit->fMomentum.SetXYZ(
-               aHit->fMomentum.x()/(MeV),
-               aHit->fMomentum.y()/(MeV),
-               aHit->fMomentum.z()/(MeV) );
-         bHit->fTheta = aHit->fPosition.theta();
-         bHit->fPhi = aHit->fPosition.phi();
+            bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+            bHit->fPID = aHit->fPID;
+            bHit->fEnergy = aHit->fEnergy;
+            bHit->fLocalPosition.SetXYZ(
+                  aHit->fLocalPosition.x()/cm,
+                  aHit->fLocalPosition.y()/cm,
+                  aHit->fLocalPosition.z()/cm );
+            bHit->fPosition.SetXYZ(
+                  aHit->fPosition.x()/cm,
+                  aHit->fPosition.y()/cm,
+                  aHit->fPosition.z()/cm  );
+            bHit->fMomentum.SetXYZ(
+                  aHit->fMomentum.x()/(MeV),
+                  aHit->fMomentum.y()/(MeV),
+                  aHit->fMomentum.z()/(MeV) );
+            bHit->fTheta = aHit->fPosition.theta();
+            bHit->fPhi = aHit->fPosition.phi();
+         }
       }
-  }
-  }
+   }
 
 
 }
+//__________________________________________________________________
 
 

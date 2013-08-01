@@ -70,62 +70,6 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
    fBETADigitizer = new BETADigitizer("/DAQ/BETA");
 
-// Fills events with realisitic data from Geant4 Hit collections
-//     eventRecorder = 
-//        new BETAG4EventRecorder( );
- 
-// For debugging cherenkov timing emulator
-/*   waveforms = new TH1F(Form("waveform%d",numberOfEvent),"waveform",200,0,20);*/
-//    G4double averageTime[12];
-//   PMTG4HCID         =-1;
-//   PMTHCID           =-1;
-//   MirrorHCID        =-1;
-//   hodoscopePMTHCID  =-1;
-//   BIGCALID          =-1;
-//   BIGCALID2         =-1;
-//   FTID              =-1;
-//   fakePlaneID       =-1;
-/// TODO Implement a print to screen for run info... 
-//    G4SDManager* SDman = G4SDManager::GetSDMpointer();
-//    if (construction->usingGasCherenkov) 
-//      PMTG4HCID = SDman->GetCollectionID( colName="myCellScorer/eTrackLength" );
-//    if (construction->usingGasCherenkov) 
-//      PMTHCID = SDman->GetCollectionID ( colName="PMT/pmt" );
-//    if (construction->usingGasCherenkov) 
-//      MirrorHCID = SDman->GetCollectionID ( colName="Mirrors/mirrors" );
-//    if (construction->usingLuciteHodoscope) 
-//      hodoscopePMTHCID = SDman->GetCollectionID ( colName="hodoscopePMT/pmt" );
-//    if (construction->usingBigcal) 
-//      BIGCALID  = SDman->GetCollectionID ( colName="BIGCALRCS/RCSCalorimeterCollection" );
-//    if (construction->usingBigcal) 
-//      BIGCALID2 = SDman->GetCollectionID ( colName="BIGCALBottom/BottomCalorimeterCollection" );
-//    if (construction->usingForwardTracker)  
-//      FTID = SDman->GetCollectionID ( colName="FrontTracker/FrontTracker" );
-//    if (construction->usingFakePlaneAtBigcal) 
-//      fakePlaneID = SDman->GetCollectionID ( colName="FakePlaneAtBigcal/FakePlane" );
-//    if (construction->usingBigcal)
-//      fBigcalHCID  = SDman->GetCollectionID ( colName="BIGCAL/bigcal" );
-
-/*  G4String detName[4] = {"tracker","cherenkov","hodoscope","bigcal"};
-  G4String primNameSum[4] = {"chargeHit","photonSurf","chargeHit","pSurfFlux"/*,"trackLength","nStep};*/
-  //G4String primNameMin[3] = {"minEkinGamma","minEkinElectron","minEkinPositron"};
-
-
-/*  G4String fullName;*/
-//   for(size_t i=0;i<4;i++)
-//   {
-//     //for(size_t j=0;j<4;j++)
-//     //{
-//       fullName = detName[i]+"/"+primNameSum[i];
-//       colIDSum[i] = SDman->GetCollectionID(fullName);
-// std::cout << "HC ID " << i << " " <<  colIDSum[i] << " \n";
-//     //}
-// //    for(size_t k=0;k<3;k++)
-// //    {
-// //      fullName = detName[i]+"/"+primNameMin[k];
-// //      colIDMin[i][k] = SDMan->GetCollectionID(fullName);
-// //    }
-//   }
 }
 //____________________________________________________________________//
 
@@ -138,21 +82,21 @@ if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
 //____________________________________________________________________//
 
 void BETARun::RecordEvent ( const G4Event* anEvent ) {
+
 #ifdef BETAG4_DEBUG
-  if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
+   if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
 #endif
 
-  fSimulationManager->fEventNumber = numberOfEvent; /// numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
+   fSimulationManager->fEventNumber = numberOfEvent; /// numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
 
-// Simulates the trigger supervisor
+   // Simulates the trigger supervisor
    fDAQReadout->Digitize();
-/*   fDAQReadout->Print();*/
-//  fBETAScalers->Digitize();
+   //fDAQReadout->Print();
+   //fBETAScalers->Digitize();
    if( fDAQReadout->IsGoodEvent() || !(fSimulationManager->fSimulateTrigger) ) {
 
-/*    std::cout << " Above Readout Triggered DAQ! \n";*/
+      /*    std::cout << " Above Readout Triggered DAQ! \n";*/
       fBETADigitizer->Digitize();
-
 
       fSimulationManager->fEvents->fEventNumber = numberOfEvent;
       fSimulationManager->fEvents->fRunNumber = fSimulationManager->GetRunNumber();
@@ -167,7 +111,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       fSimulationManager->fEvents->HMS->fEventNumber = numberOfEvent;
       fSimulationManager->fEvents->HMS->fRunNumber = fSimulationManager->GetRunNumber();
 
-//      fBETADigitizer->Print();
+      //fBETADigitizer->Print();
 
       fBETADigitizer->ReadOut();
       fDAQReadout->ReadOut();
@@ -176,31 +120,31 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
       fBETADigitizer->Clear();
 
-    }
+   }
 
-    fDAQReadout->Clear();
+   fDAQReadout->Clear();
 
+   numberOfEvent++;
+   /// Initiate "scaler event"
+   if ( ( numberOfEvent%100 ) == 0 ) {
+      G4cout << " Event " << numberOfEvent << G4endl;
+      fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
+      fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
+      fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
       numberOfEvent++;
-      /// Initiate "scaler event"
-      if ( ( numberOfEvent%100 ) == 0 ) {
-        G4cout << " Event " << numberOfEvent << G4endl;
-        fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
-        fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
-        fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
-        numberOfEvent++;
-        fSimulationManager->fScalerTree->Fill();
+      fSimulationManager->fScalerTree->Fill();
 
 
-      }
+   }
 
-//   } //triggered
 #ifdef BETAG4_DEBUG
-  if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
-    std::cout << "end of BETARun::RecordEvent() \n";
-  }
+   if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
+      std::cout << "end of BETARun::RecordEvent() \n";
+   }
 #endif
+
 }
-//____________________________________________________________________//
+//____________________________________________________________________
 
 void BETARun::DumpHallCMC() {
    MCOutput.open ( "MC_BIGCAL.dat" );
@@ -208,7 +152,7 @@ void BETARun::DumpHallCMC() {
    int k;
    for (k=0;k<(720+1024);k++)
    {
-//MCOutput << recordedEvent->BigCalEnergyDeposit[k] << "\n";
+      //MCOutput << recordedEvent->BigCalEnergyDeposit[k] << "\n";
    }
    MCOutput.close();
 }
@@ -333,109 +277,7 @@ void BETARun::GeneratePedestals() {
    }
 
 }
-
-//________________________________________________________________________//
-//int BETARun::FillGasCherenkovEvent() {
-/*  betaEvent->fGasCherenkovEvent->fHits->Clear("C");
-  TClonesArray &cherenkovHits = *(betaEvent->fGasCherenkovEvent->fHits);
-  GasCherenkovHit * aCERhit;
-  BETAPMTHit * aHit;
-  int lastHitIndex[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
-  G4int totalHits = 0;
-
-  G4int indTotalHits[12] = {0,0,0,0,0,0,0,0,0,0,0,0};
-  G4double earliestHitTime[12] =  {9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0,9990.0};
-  G4double averageTime[12] = {-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,
-                              -200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0 };
-  G4double lastHitTime[12] = {-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0,
-                              -200000.0,-200000.0,-200000.0,-200000.0,-200000.0,-200000.0 };
-
-vector<BETAPMTHit*> * hitPointers = pmtHC->GetVector();
-vector<BETAPMTHit*>::iterator it;
-//std::sort (hitPointers->begin(), hitPointers->end(),cmp);
-  // print out content:
-
-  for (it=hitPointers->begin(); it!=hitPointers->end(); ++it)
-    {
-       std::cout << "hitPointers " << (*it) << " contains:";
-       std::cout << " " << (*it)->Gtime << "\n";
-    }
-
-  std::cout << endl;
-// end of attempt
-
-// Loop loop through the Hit container once to find the earliest time
-    for ( int i1=0 ; i1 < pmtHC->entries();i1++ )
-      { 
-      aHit = ( *pmtHC )[i1];
-        //
-        if ( aHit->tubeNumber == -1 )
-          {
-//        numPMTHitsAtFace++;
-          }
-        else
-          {// normal pmt hit
-
-  if(fSimulationManager->GetDetectorVerbosity("GasCherenkov") > 0) 
-  { 
-  std::cout << "Tube " <<  aHit->tubeNumber
-            << " hit with global time " << aHit->Gtime/ns
-            <<  "ns where the earliest time was " << earliestHitTime[aHit->tubeNumber]
-            <<  "\n";
-  }
-
-          if( (aHit->Gtime/ns - lastHitTime[aHit->tubeNumber]) > 20.0 )
-            {
-            lastHitIndex[aHit->tubeNumber] = totalHits ;
-            aCERhit = new(cherenkovHits[totalHits]) GasCherenkovHit();
-            indTotalHits[aHit->tubeNumber]++;
-            aCERhit->fMirrorNumber = aHit->tubeNumber;
-            aCERhit->fADC = 0;
-            averageTime[aHit->tubeNumber] = 0.0;
-            totalHits++;
-
-  if(  fSimulationManager->GetDetectorVerbosity("GasCherenkov") > 0) 
-    std::cout << "new hit number " << totalHits << "\n";
-
-            } // end of 
-          waveforms->Fill(aHit->Gtime/ns);
-
-          if( aHit->Gtime/ns < earliestHitTime[aHit->tubeNumber] ) earliestHitTime[aHit->tubeNumber]=aHit->Gtime/ns;
-
-          aCERhit = (GasCherenkovHit*)(cherenkovHits)[lastHitIndex[aHit->tubeNumber]];
-
-          (aCERhit[lastHitIndex[aHit->tubeNumber]]).fADC++;
-          averageTime[aHit->tubeNumber] += aHit->Gtime/ns;
-          aCERhit[lastHitIndex[aHit->tubeNumber]].fTDC =
-            averageTime[lastHitIndex[aHit->tubeNumber]]/(aCERhit[lastHitIndex[aHit->tubeNumber]].fADC) ;
-          lastHitTime[aHit->tubeNumber] = aHit->Gtime/ns;
-
-          }
-      }
-//for(int jj =0;jj<totalHits;jj++) waveforms[jj]->Draw();
-//  for (int k=0;k<8;k++) numPMTHits+=CherenkovPMTCount[k];
-//   triggered = true;
-//   if (triggered) //numPMTHits > 1 )   // 1 P.E.
-//   {
-//  Trigger=1; // Record  event
-//      recordedEvent->cer_hit = tdc_count;
-//      for (int k=0;k<8;k++) {
-//         recordedEvent->cer_adc[k] = CherenkovPMTCount[k];
-//         recordedEvent->ceradc_num[k]=k+1;
-//      }
-// RUN TOTALED VALUES
-//      pmtTotalCount += numPMTHitsAtFace;
-//      mirrorTotalCount += numMirrorHits;
-return(totalHits);
-*/
-//}
-
-
-//________________________________________________________________________//
-// int BETARun::FillBigcalEvent() {
-
-// return(0);
-// }
+//________________________________________________________________________
 
 
 
