@@ -178,6 +178,17 @@ G4Run*  BETARunAction::GenerateRun() {
  */
 void BETARunAction::EndOfRunAction ( const G4Run* aRun ) {
 
+      if(fSimulationManager->fSANEScalers->fTriggerEvent){
+         fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
+         fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = aRun->GetNumberOfEvent()+1;
+         std::cout << " LAST EVENT : " << aRun->GetNumberOfEvent()+1 << std::endl;
+         fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
+      }
+
+      fSimulationManager->fScalerTree->Fill();
+      fSimulationManager->fSANEScalers->ClearEvent();
+      fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
+
    timer->Stop();
    //         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
    //    TSQLResult * res;
