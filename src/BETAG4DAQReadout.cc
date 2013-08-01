@@ -152,10 +152,10 @@ void BETAG4DAQReadout::ReadOut() {
    G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
 
    //   BETAG4MonteCarloEvent * mcEvent = fSimulationManager->fEvents->MC;
-
    BETAFakePlaneHit* aHit;
    TClonesArray * planeHits;
    InSANEFakePlaneHit * bHit;
+
    ///////////////////////////////////////////////////////
    // // Monte Carlo Thrown Event
    //     fSimulationManager->fEvents->MC->fEnergyThrown = fSimulationManager->generator->fCurrentEnergy;
@@ -164,6 +164,15 @@ void BETAG4DAQReadout::ReadOut() {
    //     fSimulationManager->fEvents->MC->fParticleThrown = 1;
    //     fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
    ///////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
    /// Forward Tracker Fake plane readout
    //   std::cout << " tracker " << mcEvent->GetTrackerPlaneHitsArray() << "\n";
 
