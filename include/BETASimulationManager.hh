@@ -92,8 +92,8 @@ class BETASimulationManager {
    public:
       BETASimulationMessenger * GetMessenger(){ return(fSimulationMessenger) ;}
 
-      SANEScalers * fSANEScalers;
-      SANEEvents  * fEvents;
+      SANEScalers               * fSANEScalers;
+      SANEEvents                * fEvents;
       bool                        fSimulateCherenkovOptics;
       bool                        fSimulateTrackerOptics;
       bool                        fSimulateHodoscopeOptics;

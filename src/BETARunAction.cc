@@ -71,6 +71,7 @@ G4Run*  BETARunAction::GenerateRun() {
    SANERunManager::GetRunManager()->GetScalerFile()->cd();
    fSimulationManager->fScalerTree = new TTree("Scalers","The SANE Scaler Data");
    fSimulationManager->fSANEScalers = new SANEScalers("Scalers");
+
    SANERunManager::GetRunManager()->GetCurrentFile()->cd();
 
    // 
@@ -160,6 +161,8 @@ G4Run*  BETARunAction::GenerateRun() {
    //   if(fCurrentRun) delete fCurrentRun;
    fCurrentRun = new BETARun ( fRunNumber );
    // Simulate Pedestals before entering actual simulation
+   fSimulationManager->UpdateRun();
+
    fCurrentRun->GeneratePedestals();
 
    fSimulationManager->UpdateRun();

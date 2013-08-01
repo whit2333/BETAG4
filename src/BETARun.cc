@@ -93,12 +93,15 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    //---------------------------
    if ( ( numberOfEvent%100 ) == 0 ) {
       G4cout << " Event " << numberOfEvent << G4endl;
-      fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
-      fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
-      fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
+      if(fSimulationManager->fSANEScalers->fTriggerEvent){
+         fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
+         fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
+         fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
+      }
 
       fSimulationManager->fScalerTree->Fill();
-      fSimulationManager->fSANEScalers->Clear();
+      fSimulationManager->fSANEScalers->ClearEvent();
+      fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
       numberOfEvent++;
    }
    //---------------------------
