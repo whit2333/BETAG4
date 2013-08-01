@@ -87,6 +87,26 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
 #endif
 
+   //---------------------------
+   // "scaler event"
+   // Every 100 events a scaler event is read. 
+   //---------------------------
+   if ( ( numberOfEvent%100 ) == 0 ) {
+      G4cout << " Event " << numberOfEvent << G4endl;
+      if(fSimulationManager->fSANEScalers->fTriggerEvent){
+         fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
+         fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
+         fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
+      }
+
+      fSimulationManager->fScalerTree->Fill();
+      fSimulationManager->fSANEScalers->ClearEvent();
+      fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
+      numberOfEvent++;
+   }
+   //---------------------------
+  
+
    fSimulationManager->fEventNumber = numberOfEvent; /// numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
 
    // Simulates the trigger supervisor
@@ -125,17 +145,6 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    fDAQReadout->Clear();
    numberOfEvent++;
 
-   /// Initiate "scaler event"
-   if ( ( numberOfEvent%100 ) == 0 ) {
-      G4cout << " Event " << numberOfEvent << G4endl;
-      fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
-      fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
-      fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
-
-      fSimulationManager->fScalerTree->Fill();
-      fSimulationManager->fSANEScalers->Clear();
-      numberOfEvent++;
-   }
 
 #ifdef BETAG4_DEBUG
    if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
