@@ -99,6 +99,9 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
          fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
       }
 
+      fSimulationManager->fSANEScalers->fScalerEvent->fEventNumber = numberOfEvent;
+      fSimulationManager->fSANEScalers->fScalerEvent->fRunNumber   = fSimulationManager->fRunNumber;
+
       fSimulationManager->fScalerTree->Fill();
       fSimulationManager->fSANEScalers->ClearEvent();
       fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
