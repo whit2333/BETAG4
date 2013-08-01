@@ -123,18 +123,18 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    }
 
    fDAQReadout->Clear();
-
    numberOfEvent++;
+
    /// Initiate "scaler event"
    if ( ( numberOfEvent%100 ) == 0 ) {
       G4cout << " Event " << numberOfEvent << G4endl;
       fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
       fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
       fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
-      numberOfEvent++;
+
       fSimulationManager->fScalerTree->Fill();
-
-
+      fSimulationManager->fSANEScalers->Clear();
+      numberOfEvent++;
    }
 
 #ifdef BETAG4_DEBUG
