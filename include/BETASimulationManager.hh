@@ -219,14 +219,14 @@ class BETASimulationManager {
             fInSANERun->SetBeamEnergy(  GetBeamEnergy() );
             fInSANERun->fBeamPolarization = 0.6;
             fInSANERun->fAverageBeamCurrent = 90.0;
-            fInSANERun->fAverageBeamPolarization = 0.6;
+            fInSANERun->fAverageBeamPolarization = 60.0;
             fInSANERun->fBCM1ChargeAsymmetry = 0.0;
             fInSANERun->fBCM2ChargeAsymmetry = 0.0;
             // Target
             fInSANERun->SetTargetAngle( GetTargetAngle() );
-            fInSANERun->fTargetOfflinePolarization = 0.6;
-            fInSANERun->fTargetOnlinePolarization = 0.6;
-            fInSANERun->fAverageTargetPolarization = 0.6;
+            fInSANERun->fTargetOfflinePolarization = 60.0;
+            fInSANERun->fTargetOnlinePolarization = 60.0;
+            fInSANERun->fAverageTargetPolarization = 60.0;
             fInSANERun->fTarget = InSANERun::kNH3;
             fInSANERun->fTargetPolarizationSign = InSANERun::kPOSITIVE;
             fInSANERun->fTargetCup = InSANERun::kTOP;
