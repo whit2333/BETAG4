@@ -215,6 +215,7 @@ class BETASimulationManager {
 
       void UpdateRun(){
          if(fInSANERun){
+            std::cout << "Updating run info... " << std::cout;
             // Beam
             fInSANERun->SetBeamEnergy(  GetBeamEnergy() );
             fInSANERun->fBeamPolarization = 60.0;
