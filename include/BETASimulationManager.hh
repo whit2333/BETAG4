@@ -215,9 +215,10 @@ class BETASimulationManager {
 
       void UpdateRun(){
          if(fInSANERun){
+            std::cout << "Updating run info... " << std::cout;
             // Beam
             fInSANERun->SetBeamEnergy(  GetBeamEnergy() );
-            fInSANERun->fBeamPolarization = 0.6;
+            fInSANERun->fBeamPolarization = 60.0;
             fInSANERun->fAverageBeamCurrent = 90.0;
             fInSANERun->fAverageBeamPolarization = 60.0;
             fInSANERun->fBCM1ChargeAsymmetry = 0.0;
