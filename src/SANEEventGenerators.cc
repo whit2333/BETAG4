@@ -43,7 +43,7 @@ void PolarizedDISEventGenerator::Initialize(){
    InSANEPhaseSpace * fPolarizedPhaseSpace = new InSANEPhaseSpace();
    InSANEPhaseSpace * fPhaseSpace          = new InSANEPhaseSpace();
 
-   InSANEPhaseSpaceVariable * varEnergy = new InSANEPhaseSpaceVariable("Energy","E#prime"); 
+   InSANEPhaseSpaceVariable * varEnergy = new InSANEPhaseSpaceVariable("energy","E#prime"); 
    varEnergy->SetMinimum(Emin);         //GeV
    varEnergy->SetMaximum(Emax); //GeV
    varEnergy->SetVariableUnits("GeV");        //GeV
