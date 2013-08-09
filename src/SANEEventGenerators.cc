@@ -96,8 +96,8 @@ void PolarizedDISEventGenerator::Initialize(){
    fPolXSec->SetPolarizedNegativeCrossSection(fDiffXSec2);
    fPolXSec->SetPhaseSpace(fPolarizedPhaseSpace);
    fPolXSec->SetBeamEnergy(fBeamEnergy);
-   fPolXSec->SetChargeAsymmetry(-0.002);
-   fPolXSec->SetBeamPolarization(0.66);
+   fPolXSec->SetChargeAsymmetry(-0.0001);
+   fPolXSec->SetBeamPolarization(0.6);
    fPolXSec->SetTargetPolarization(0.6);
    fPolXSec->Refresh();
 
