@@ -26,7 +26,8 @@ void DISEventGenerator::Initialize(){
    AddSampler(fF1F2EventSampler);
 
    SetBeamEnergy(fBeamEnergy);
-   InSANEEventGenerator::Initialize();
+   
+   //InSANEEventGenerator::Initialize();
 
    CalculateTotalCrossSection();
 }
