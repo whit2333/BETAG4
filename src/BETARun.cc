@@ -99,9 +99,24 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
          fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
          fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
       }
+      SANEScalerEvent * scalerEvent = fSimulationManager->fSANEScalers->fScalerEvent;
 
-      fSimulationManager->fSANEScalers->fScalerEvent->fEventNumber = numberOfEvent;
-      fSimulationManager->fSANEScalers->fScalerEvent->fRunNumber   = fSimulationManager->fRunNumber;
+
+      scalerEvent->fEventNumber = numberOfEvent;
+      scalerEvent->fRunNumber   = fSimulationManager->fRunNumber;
+
+      scalerEvent->f1MHzClockScaler2 = 1000000;
+      scalerEvent->f1MHzClockScaler  = 1000000;
+      scalerEvent->f1MHzClockPositiveHelicityScaler = 500000; 
+      scalerEvent->f1MHzClockNegativeHelicityScaler = 500000; 
+      double current = 90.0;
+      scalerEvent->fBCM1Scaler = scalerEvent->GetScalerBCM1(current); 
+      scalerEvent->fBCM2Scaler = scalerEvent->GetScalerBCM2(current); 
+      scalerEvent->fBCM1PositiveHelicityScaler = scalerEvent->GetPositiveScalerBCM1(current); 
+      scalerEvent->fBCM2PositiveHelicityScaler = scalerEvent->GetPositiveScalerBCM2(current); 
+      scalerEvent->fBCM1NegativeHelicityScaler = scalerEvent->GetNegativeScalerBCM1(current); 
+      scalerEvent->fBCM2NegativeHelicityScaler = scalerEvent->GetNegativeScalerBCM2(current); 
+
 
       fSimulationManager->fScalerTree->Fill();
       fSimulationManager->fSANEScalers->ClearEvent();
