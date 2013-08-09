@@ -533,9 +533,12 @@ void BETADigitizer::ReadOut() {
    // Scalers 
    SANEScalerEvent * scalerEvent = fSimulationManager->fSANEScalers->fScalerEvent;
    if(scalerEvent){
-      scalerEvent->fBETA2Counter.fScaler++;
-      if(fBeamEvent->fHelicity == 1)  scalerEvent->fBETA2Counter.fPositiveHelicityScaler++;
-      if(fBeamEvent->fHelicity == -1) scalerEvent->fBETA2Counter.fNegativeHelicityScaler++;
+      if(IsTriggered()) {
+         // only count scalers if it is a good event
+         scalerEvent->fBETA2Counter.fScaler++;
+         if(fBeamEvent->fHelicity == 1)  scalerEvent->fBETA2Counter.fPositiveHelicityScaler++;
+         if(fBeamEvent->fHelicity == -1) scalerEvent->fBETA2Counter.fNegativeHelicityScaler++;
+      }
    }
 
 

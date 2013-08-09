@@ -36,96 +36,98 @@
  * \ingroup Detectors
  */
 class BETADigitizer : public G4VDigitizerModule {
-public:
+   private: 
+      HallCRasteredBeam *        fBeam;
+      bool                       fIsTriggered;
 
-   BETADigitizer(G4String modName);
-   ~BETADigitizer();
+      BETAG4DigiADCCollection *  fCherenkovADCDC;
+      G4int                      fCherenkovADCDCID;
 
-   /** Simulate pedestal event.
-    *
-    *  Here we "gate" all adcs by making a digi for every channel
-    *  The digi has nominal zero. 
-    *  
-    *  \todo Add pedestal random number for width... 
-    *  possibly correlate with real rates (configuration)
-    */
-   void DigitizePedestals();
+      BETAG4DigiTDCCollection *  fCherenkovTDCDC;
+      G4int                      fCherenkovTDCDCID;
 
-   /** Loop over Detector Hit Collections and creates the ADC and TDC Digi collections.
-    */
-   void Digitize();
+      BETAG4DigiADCCollection *  fBigcalADCDC;
+      G4int                      fBigcalADCDCID;
 
-   /** Loops over the Digi Collection and creates the InSANEDetectorHits and fills out 
-    *  InSANEDetectorEvent data. 
-    *  These are the event structures which are emulating real data.
-    */
-   void ReadOut();
+      BETAG4DigiTDCCollection *  fBigcalTDCDC;
+      G4int                      fBigcalTDCDCID;
 
-   /** Clears Digi collections
-    */
-   void Clear();
+      BETAG4DigiADCCollection *  fHodoscopeADCDC;
+      G4int                      fHodoscopeADCDCID;
 
-   virtual void Print();
+      BETAG4DigiTDCCollection *  fHodoscopeTDCDC;
+      G4int                      fHodoscopeTDCDCID;
 
-   void SetTriggerEvent(InSANETriggerEvent* evt) { fTriggerEvent=evt; };
+      BETAG4DigiADCCollection *  fTrackerADCDC;
+      G4int                      fTrackerADCDCID;
 
-   InSANETriggerEvent *    fTriggerEvent;
-   BETAEvent *             fBetaEvent;
-   HallCBeamEvent *        fBeamEvent;
-   BETAG4MonteCarloEvent * fMCEvent;
+      BETAG4DigiTDCCollection *  fTrackerTDCDC;
+      G4int                      fTrackerTDCDCID;
 
-private: 
+      BETASimulationManager *    fSimulationManager;
 
-   HallCRasteredBeam * fBeam;
+      G4int                      fCherenkovHCID;
+      G4int                      fBigcalHCID;
+      G4int                      fTrackerHCID;
+      G4int                      fHodoscopeHCID;
 
-   bool fIsTriggered;
+      TRandom *                  fRandomNumberGenerator;
 
-   void Reset() { fIsTriggered=false;};
+      int * fTrackerPhotonCounts;
+      int * fTrackerTimings;
 
-   BETAG4DigiADCCollection * fCherenkovADCDC;
-   G4int fCherenkovADCDCID;
+      // Geant4 collections, hits, etc....
+      BETAG4BigcalHitsCollection * fBigcalHC;
+      BETAG4PMTHitsCollection * fGasCherenkovHC;
+      BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
+      BETAForwardTrackerHitsCollection * fForwardTrackerHC;
 
-   BETAG4DigiTDCCollection * fCherenkovTDCDC;
-   G4int fCherenkovTDCDCID;
+      G4double fBigcalChannelThreshold;
+   protected:
 
-   BETAG4DigiADCCollection * fBigcalADCDC;
-   G4int fBigcalADCDCID;
+      InSANETriggerEvent *    fTriggerEvent;
+      BETAEvent *             fBetaEvent;
+      HallCBeamEvent *        fBeamEvent;
+      BETAG4MonteCarloEvent * fMCEvent;
 
-   BETAG4DigiTDCCollection * fBigcalTDCDC;
-   G4int fBigcalTDCDCID;
 
-   BETAG4DigiADCCollection * fHodoscopeADCDC;
-   G4int fHodoscopeADCDCID;
+   public:
 
-   BETAG4DigiTDCCollection * fHodoscopeTDCDC;
-   G4int fHodoscopeTDCDCID;
-  
-   BETAG4DigiADCCollection * fTrackerADCDC;
-   G4int fTrackerADCDCID;
+      BETADigitizer(G4String modName);
+      ~BETADigitizer();
 
-   BETAG4DigiTDCCollection * fTrackerTDCDC;
-   G4int fTrackerTDCDCID;
+      void Reset() { fIsTriggered=false;};
+      bool IsTriggered(){ return fIsTriggered; }
+      void SetTriggered(bool t = true) { fIsTriggered = t; }
 
-   BETASimulationManager * fSimulationManager;
+      void SetTriggerEvent(InSANETriggerEvent* evt) { fTriggerEvent=evt; };
 
-   G4int fCherenkovHCID;
-   G4int fBigcalHCID;
-   G4int fTrackerHCID;
-   G4int fHodoscopeHCID;
+      /** Simulate pedestal event.
+       *
+       *  Here we "gate" all adcs by making a digi for every channel
+       *  The digi has nominal zero. 
+       *  
+       *  \todo Add pedestal random number for width... 
+       *  possibly correlate with real rates (configuration)
+       */
+      void DigitizePedestals();
 
-   TRandom * fRandomNumberGenerator;
+      /** Loop over Detector Hit Collections and creates the ADC and TDC Digi collections.
+      */
+      void Digitize();
 
-   int * fTrackerPhotonCounts;
-   int * fTrackerTimings;
+      /** Loops over the Digi Collection and creates the InSANEDetectorHits and fills out 
+       *  InSANEDetectorEvent data. 
+       *  These are the event structures which are emulating real data.
+       */
+      void ReadOut();
 
-private:
-   // Geant4 collections, hits, etc....
-   BETAG4BigcalHitsCollection * fBigcalHC;
-   BETAG4PMTHitsCollection * fGasCherenkovHC;
-   BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
-   BETAForwardTrackerHitsCollection * fForwardTrackerHC;
+      /** Clears Digi collections
+      */
+      void Clear();
 
-   G4double fBigcalChannelThreshold;
+      virtual void Print();
+
 
 };
 
