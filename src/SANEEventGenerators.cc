@@ -169,6 +169,50 @@ void InclusiveElectronPionGenerator::Initialize(){
 //____________________________________________________________________
 
 //____________________________________________________________________
+void InclusivePionEventGenerator::Initialize(){
+   std::cout << " InclusivePionEventGenerator::Initialize() \n";
+   /// Neutral Pion
+   InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
+   //InSANEInclusiveEPCVXSec * fDiffXSec1 = new InSANEInclusiveEPCVXSec();
+   fDiffXSec1->SetBeamEnergy(fBeamEnergy);
+   fDiffXSec1->SetProductionParticleType(111);
+   fDiffXSec1->InitializePhaseSpaceVariables();
+   fDiffXSec1->InitializeFinalStateParticles();
+   fDiffXSec1->SetRadiationLength(8.0);
+   InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
+   AddSampler(pi0EventSampler);
+
+   /// Positive Pion
+   InSANEInclusiveWiserXSec * fDiffXSec2 = new InSANEInclusiveWiserXSec();
+   //InSANEInclusiveEPCVXSec * fDiffXSec2 = new InSANEInclusiveEPCVXSec();
+   fDiffXSec2->SetBeamEnergy(fBeamEnergy);
+   fDiffXSec2->SetProductionParticleType(211);
+   fDiffXSec2->InitializePhaseSpaceVariables();
+   fDiffXSec2->InitializeFinalStateParticles();
+   fDiffXSec2->SetRadiationLength(8.0);
+   InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
+   AddSampler(pi0EventSampler2);
+
+   /// Negative Pion
+   InSANEInclusiveWiserXSec * fDiffXSec3 = new InSANEInclusiveWiserXSec();
+   //InSANEInclusiveEPCVXSec * fDiffXSec3 = new InSANEInclusiveEPCVXSec();
+   fDiffXSec3->SetBeamEnergy(fBeamEnergy);
+   fDiffXSec3->SetProductionParticleType(-211);
+   fDiffXSec3->InitializePhaseSpaceVariables();
+   fDiffXSec3->InitializeFinalStateParticles();
+   fDiffXSec3->SetRadiationLength(8.0);
+   InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
+   AddSampler(pi0EventSampler3);
+
+   SetBeamEnergy(fBeamEnergy);
+
+   InSANEEventGenerator::Initialize();
+
+   CalculateTotalCrossSection();
+}
+//____________________________________________________________________
+
+//____________________________________________________________________
 void MottEventGenerator::Initialize(){
    F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
    fDiffXSec->SetBeamEnergy(fBeamEnergy);

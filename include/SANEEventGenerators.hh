@@ -12,6 +12,7 @@
 #include "WiserXSection.h"
 #include "HallCBeam.h"
 #include "PolarizedDISXSec.h"
+#include "EPCVXSection.h"
 
 /*! \page EventGeneratorHowTo How to make an event generator
 
@@ -47,7 +48,6 @@ class ConeEventGenerator : public BETAG4EventGenerator   {
 };
 
 
-
 /** Event generator for inclusive electron DIS.  Uses F1F209 Code. 
  *   \ingroup EventGen
  */
@@ -71,6 +71,15 @@ class PolarizedDISEventGenerator : public BETAG4EventGenerator {
 
 };
 
+/** Throws pi0, pi+ and pi- pions.
+ *   \ingroup EventGen
+ */
+class InclusivePionEventGenerator : public BETAG4EventGenerator  {
+   public :
+      InclusivePionEventGenerator(){ }
+      virtual ~InclusivePionEventGenerator() { }
+   virtual void Initialize();
+};
 
 /** Electrons and pi0s thrown.
  *   \ingroup EventGen

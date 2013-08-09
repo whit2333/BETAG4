@@ -69,6 +69,7 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    fDAQReadout->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
    fBETADigitizer = new BETADigitizer("/DAQ/BETA");
+   fBETADigitizer->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
 }
 //____________________________________________________________________//
@@ -109,14 +110,17 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    }
    //---------------------------
   
-
    fSimulationManager->fEventNumber = numberOfEvent; /// numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
 
+   fBETADigitizer->Reset();
    // Simulates the trigger supervisor
    fDAQReadout->Digitize();
    //fDAQReadout->Print();
    //fBETAScalers->Digitize();
+   
    if( fDAQReadout->IsGoodEvent() || !(fSimulationManager->fSimulateTrigger) ) {
+
+      if( fDAQReadout->IsGoodEvent() ) fBETADigitizer->SetTriggered(true);
 
       /*    std::cout << " Above Readout Triggered DAQ! \n";*/
       fBETADigitizer->Digitize();
@@ -135,6 +139,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       fSimulationManager->fEvents->HMS->fRunNumber = fSimulationManager->GetRunNumber();
 
       //fBETADigitizer->Print();
+      
 
       fBETADigitizer->ReadOut();
       fDAQReadout->ReadOut();
