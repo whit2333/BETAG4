@@ -13,6 +13,7 @@
 #include "HallCBeam.h"
 #include "PolarizedDISXSec.h"
 #include "EPCVXSection.h"
+#include "InSANETarget.h"
 
 /*! \page EventGeneratorHowTo How to make an event generator
 
@@ -212,19 +213,21 @@ class PolarizedInclusiveDISEventGenerator : public BETAG4EventGenerator  {
  *
  *   \ingroup EventGen
  */
-class NH3TargetEventGenerator : public PolarizedDISEventGenerator  {
+class NH3TargetEventGenerator : public BETAG4EventGenerator  {
    public :
       NH3TargetEventGenerator(){
-         fNH3PackingFraction = 0.5;
-         //fN14Density;
-         //fH3Density;
+         fNH3PackingFraction = 0.6;
+         UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
+         SetTarget(targ);
       }
 
       virtual ~NH3TargetEventGenerator() { }
 
       Double_t fNH3PackingFraction;
-      Double_t fN14Density;
-      Double_t fH3Density;
+
+      virtual void Initialize() {
+         InSANETargetEventGenerator::Initialize();
+      }
 
 };
 

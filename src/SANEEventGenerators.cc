@@ -76,8 +76,6 @@ void PolarizedDISEventGenerator::Initialize(){
    //  - unpolarized 
    F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
    fDiffXSec->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec->SetA(1);
-   fDiffXSec->SetZ(1);
    fDiffXSec->SetPhaseSpace(fPhaseSpace);
    fDiffXSec->Refresh();
    //  - polarized 

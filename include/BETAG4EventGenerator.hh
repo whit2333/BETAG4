@@ -6,16 +6,17 @@
 #include "InSANEInclusiveDiffXSec.h"
 #include "G4ThreeVector.hh"
 #include "TMath.h"
-#include "InSANEEventGenerator.h"
+#include "InSANETargetEventGenerator.h"
 #include "F1F209eInclusiveDiffXSec.h"
 #include "TParticle.h"
+#include "InSANEFunctionManager.h"
 
 /** Base class for InSANE -> BETAG4.
  *  By default it assumes there is only one particle and thus 3 random variables
  *
  *   \ingroup EventGen
  */ 
-class BETAG4EventGenerator : public InSANEEventGenerator {
+class BETAG4EventGenerator : public InSANETargetEventGenerator {
    protected:
       double fThetaTarget;
 

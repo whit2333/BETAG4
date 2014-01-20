@@ -25,6 +25,9 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
    fInitialDirection = new G4ThreeVector(0,0,0);
    fMomentumVector = new G4ThreeVector(0,0,0);
 
+   InSANEFunctionManager * fm = InSANEFunctionManager::GetInstance();
+   fm->CreateSFs(6);
+   fm->CreatePolSFs(6);
 
 }
 //________________________________________________________________________________
