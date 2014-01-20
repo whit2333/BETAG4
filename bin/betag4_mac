@@ -1,0 +1,18 @@
+#!/bin/bash
+
+macfile=${1}
+
+
+cd $HOME/sane08/BETAG4/run
+pwd
+
+runnum=`cat run.txt`
+runnum=`expr $runnum + 1`
+mkdir log/$runnum
+
+cat $macfile > log/$runnum/betag4.mac
+time BETA $macfile 1> log/$runnum/betag4.out 2> log/$runnum/betag4.err
+
+wait
+
+
