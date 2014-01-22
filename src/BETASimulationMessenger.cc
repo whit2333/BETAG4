@@ -290,7 +290,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
          if(fDetConstruction->constructed == true) fDetConstruction->ConstructHodoscope();
 
       }
-         G4RunManager::GetRunManager()->GeometryHasBeenModified();
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
    }
    if ( command == fCmd_toggleForwardTracker )
    {

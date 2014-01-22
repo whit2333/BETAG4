@@ -40,16 +40,16 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
 
   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
-/*  if(fSimulationManager->fConstruction->usingBigcal)*/
+    //if(fSimulationManager->fConstruction->usingBigcal)
     fBigcalHCID  = SDman->GetCollectionID ( "BIGCAL/bigcal" );
 
-/*  if(fSimulationManager->fConstruction->usingGasCherenkov)*/
+    //if(fSimulationManager->fConstruction->usingGasCherenkov)
     fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
 
-/*  if(fSimulationManager->fConstruction->usingForwardTracker)*/
+    //if(fSimulationManager->fConstruction->usingForwardTracker)
     fTrackerHCID  = SDman->GetCollectionID ( "ForwardTracker/tracking" );
 
-    /*  if(fSimulationManager->fConstruction->usingLuciteHodoscope)*/
+    //if(fSimulationManager->fConstruction->usingLuciteHodoscope)
     fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
     fBigcalChannelThreshold = 5.0; //MeV
@@ -186,7 +186,7 @@ void BETADigitizer::Digitize() {
    }
 
 
-   if( fTrackerHCID != -1 ) {
+   if( fHodoscopeHCID != -1 ) {
       fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
       // Loop over Hodoscope Hits
       for ( int i=0 ; i < fLuciteHodoscopeHC->entries();i++ ) {

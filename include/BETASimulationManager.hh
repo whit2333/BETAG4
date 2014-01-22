@@ -249,7 +249,6 @@ class BETASimulationManager {
       void SetDetectorConstruction(BETADetectorConstruction * detcon){ fDetConstruction = detcon; }
       void SetPrimaryGeneratorAction(BETAPrimaryGeneratorAction * gen){ fPrimaryGenAction = gen; }
 
-
 };
 
 #endif

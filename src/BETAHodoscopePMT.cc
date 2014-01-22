@@ -10,7 +10,6 @@
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 
-
 #include <gsl/gsl_interp.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_spline.h>
@@ -18,16 +17,14 @@
 #include <iostream>
 #include <fstream>
 using namespace std;
-// CONSTRUCTOR
-BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
-      :G4VSensitiveDetector ( name )
-{
+
+//______________________________________________________________________________
+BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name ):G4VSensitiveDetector ( name ) {
    G4String HCname;
    detname = name;
    collectionName.insert ( HCname="lpmt" );
    HCID = -1;
    fDiscriminatorThreshold = 2;
-
 //    std::ifstream input_file ;
 //    input_file.open ( "cathodeSensitivity.dat" );
 //    for ( int i = 0;i < 15;i++ )
@@ -37,17 +34,13 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name )
 //    input_file.close();
 }
 
-// DESTRUCTOR
-BETAHodoscopePMT::~BETAHodoscopePMT() {}
-//_______________________________________________________//
-
-void BETAHodoscopePMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
-{
-
-  fHitsCollection =
-      new BETAHodoscopePMTHitsCollection ( detname, collectionName[0] );
-   if ( HCID < 0 )
-   {
+//______________________________________________________________________________
+BETAHodoscopePMT::~BETAHodoscopePMT(){
+}
+//______________________________________________________________________________
+void BETAHodoscopePMT::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent ) {
+   fHitsCollection = new BETAHodoscopePMTHitsCollection(detname, collectionName[0] );
+   if ( HCID < 0 ) {
       HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
    }
 
@@ -55,35 +48,31 @@ void BETAHodoscopePMT::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
 
    // Initialise hits
-
-  for (int i=0; i<56; i++) {
-       BETAHodoscopePMTHit* aHit = new BETAHodoscopePMTHit(i+1);
-       fHitsCollection->insert(aHit);
-     }
-///////////////////////////
-
+   for (int i=0; i<56; i++) {
+      BETAHodoscopePMTHit* aHit = new BETAHodoscopePMTHit(i+1);
+      fHitsCollection->insert(aHit);
+   }
 }
 //_______________________________________________________//
 
-G4bool BETAHodoscopePMT::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
-{
+G4bool BETAHodoscopePMT::ProcessHits(G4Step* aStep, G4TouchableHistory* ) {
+
    G4Track * theTrack = aStep->GetTrack();
 
-/// check that it is an optical photon and going to make it to the quartz/photocathode interface
-
+   // check that it is an optical photon and going to make it to the quartz/photocathode interface
    if ( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() 
-   && aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary )
-   {
+        && aStep->GetPreStepPoint()->GetStepStatus()== fGeomBoundary ) {
 
       barNumber  = theTrack->GetNextVolume()->GetCopyNo() ;
       pmtNumber = theTrack->GetVolume()->GetCopyNo() ;
-// G4cout << "       test    "<< pmt << G4endl;
+      //G4cout << "       test    "<< pmt << G4endl;
+
       BETAHodoscopePMTHit* aHit = ( *fHitsCollection ) [barNumber*2+pmtNumber-1];
 
       aHit->AddPhoton();
       if( aHit->GetNumberOfPhotons() > fDiscriminatorThreshold  && aHit->fTimingHit == false) {
-        aHit->fTiming = theTrack->GetGlobalTime()/ns;
-        aHit->fTimingHit = true;
+         aHit->fTiming = theTrack->GetGlobalTime()/ns;
+         aHit->fTimingHit = true;
       }
 
          // Get position

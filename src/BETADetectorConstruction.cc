@@ -951,29 +951,26 @@ fTrackerVertBar_log->SetVisAttributes(lightCollectionFTAttributes);
  * 
  *
 */
-void BETADetectorConstruction::ConstructHodoscope()
-{
+void BETADetectorConstruction::ConstructHodoscope() {
    
 
-   if(hodoscopeContainerBox_phys)delete hodoscopeContainerBox_phys;
-   if(hodoscopeContainerBox_log)delete hodoscopeContainerBox_log;
-   if(fLuciteHodoPMTphotocathode_log)delete fLuciteHodoPMTphotocathode_log;
-   if(fLuciteHodoPMTinquotes_log)delete fLuciteHodoPMTinquotes_log;
-   if(fLuciteHodoBar_log)delete fLuciteHodoBar_log;
+   if(hodoscopeContainerBox_phys)     delete hodoscopeContainerBox_phys;
+   if(hodoscopeContainerBox_log)      delete hodoscopeContainerBox_log;
+   if(fLuciteHodoPMTphotocathode_log) delete fLuciteHodoPMTphotocathode_log;
+   if(fLuciteHodoPMTinquotes_log)     delete fLuciteHodoPMTinquotes_log;
+   if(fLuciteHodoBar_log)             delete fLuciteHodoBar_log;
 
    G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope",75.0*cm ,28.0*6.4*cm/2.0,30.0*cm );
    hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
 
-
-
    G4double hodocenter = -DetectorLength/2 -50.*cm+ 240.*cm;
    G4RotationMatrix rotOldCoords;
-//   rotOldCoords.rotateX ( pi/2. );
+   //rotOldCoords.rotateX ( pi/2. );
 
    hodoscopeContainerBox_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,hodocenter+5.0*cm+25*cm  ), hodoscopeContainerBox_log,  "hodoscope_Physical",  BETADetector_log, false, 0 );
 
-//G4Box * hodoscopePMT = new G4Box("hodoscopePMTinquotes", 6.*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.);
-//G4LogicalVolume * hodoscopePMT_log = new G4LogicalVolume(hodoscopePMT, Lucite ,"hodoscopefLuciteHodoPMTinquotes_log");
+   //G4Box * hodoscopePMT = new G4Box("hodoscopePMTinquotes", 6.*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.,std::sqrt(2.*3.5*3.5)*cm/2.);
+   //G4LogicalVolume * hodoscopePMT_log = new G4LogicalVolume(hodoscopePMT, Lucite ,"hodoscopefLuciteHodoPMTinquotes_log");
 
 
    G4RotationMatrix hodBarRotate;
@@ -1087,9 +1084,14 @@ void BETADetectorConstruction::ConstructHodoscope()
               G4Transform3D ( hodBarRotateRemove2, 
               G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
                               -1.0*( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ) );
+   
+   // Use material with index of refraction defined or not.
+   G4Material * luciteMaterial = Lucite;
+   if( !(fSimulationManager->fSimulateHodoscopeOptics) ) luciteMaterial = Lucite_NoOptics;
+
   fLuciteHodoBar_log =
       new G4LogicalVolume ( hodoscopeBar,     // Solid
-                            Lucite,                    // Material
+                            luciteMaterial,                    // Material
                             "fLuciteHodoBar_log" ); // Name
 
 
@@ -1097,7 +1099,7 @@ void BETADetectorConstruction::ConstructHodoscope()
 
    fLuciteHodoPMTphotocathode_log =
       new G4LogicalVolume ( PMTphotocathode,     // Solid
-                            Lucite,                    // Material
+                            luciteMaterial,                    // Material
                             "fLuciteHodoPMTphotocathode_log" ); // Name
 
 
@@ -1161,25 +1163,26 @@ for(int k = 0;k<28;k++) {
 
 
 
-// LUCITE                                   TOTAL INTERNAL REFLECTION
-//    G4double LRefrac[num] = {1.49,1.49};
-/// \note A 5eV photon has a wavelength of about 27nm
-/// 1/(5.0 * 1.602*10^(-19)/(6.626*10^-34))/(3*10^-17)
-
-/// \note formula From energy (eV) to wavelength (nm) is lambda=137.86/E
-/// 
-/// \note we hardly need to go up to 10 eV in photon energy. We should gust do ~680nm t0 ~100nm
-/// which correspons to about 0.2 to 1.4
-// Lucite
-//
-//    G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
-//    myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
-//    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
-//    Lucite->SetMaterialPropertiesTable ( myMPTL );
+   // LUCITE TOTAL INTERNAL REFLECTION
+   //
+   // Note: 1.8eV -> 688nm
+   //       3.1eV -> 400nm
+   // formula From energy (eV) to wavelength (nm) is 
+   // lambda = 1239.8418/E
+   // where E is in eV and lambda is in nm
+   // 
+   // \note we hardly need to go up to 10 eV in photon energy. We should gust do ~680nm t0 ~100nm
+   // which correspons to about 0.2 to 1.4
+   // Lucite
+   //
+   //    G4MaterialPropertiesTable* myMPTL = new G4MaterialPropertiesTable();
+   //    myMPTL->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
+   //    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
+   //    Lucite->SetMaterialPropertiesTable ( myMPTL );
 
 // OPTICS
    const G4int num = 2;
-   G4double Ephoton[num] = {0.2*eV, 1.4*eV};
+   G4double Ephoton[num] = {1.7*eV, 3.2*eV};
 
    G4double RefractiveIndex[num] = {1.49, 1.49};
    G4double SpecularLobe[num]    = {0.3, 0.3};
@@ -1188,7 +1191,7 @@ for(int k = 0;k<28;k++) {
    G4double Reflectivity[num] = {0.3, 0.5};
    G4double Efficiency[num]   = {1.0, 1.0};
 
-   G4double EphotonLucite[2] = {0.2*eV, 1.4*eV};
+   G4double EphotonLucite[2] = {1.7*eV, 3.2*eV};
    G4double LReflectivity[2] = {0.99, 0.99};
    G4double luciteRefractiveIndex[2] = {1.49, 1.49};
 
@@ -1234,7 +1237,7 @@ for(int k = 0;k<28;k++) {
    }
    // Attach detector to scoring volume
    // fLuciteHodoBar_log->SetSensitiveDetector(fhodoscopeDet);//fSimulationManager->fHodoscopeDetector);
-   if(fSimulationManager->fSimulateHodoscopeOptics)fLuciteHodoPMTphotocathode_log->SetSensitiveDetector ( HodoscopePMTSD );
+   if(fSimulationManager->fSimulateHodoscopeOptics) fLuciteHodoPMTphotocathode_log->SetSensitiveDetector ( HodoscopePMTSD );
 
 
    ///////////////////////////////////////////////////
@@ -3052,32 +3055,33 @@ void BETADetectorConstruction::ConstructMagneticField() {
 }
 //______________________________________________________________________________
 
-void BETADetectorConstruction::SetMaterialPropertiesTables()
-{
+void BETADetectorConstruction::SetMaterialPropertiesTables() {
    
-// Lucite
-   const int lucitedatapoints =  2;
+   // Note: 1.8eV -> 688nm
+   //       3.1eV -> 400nm
+   // Lucite
+   const int lucitedatapoints =  4;
    G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
-      {0.2*eV,1.4*eV
-/*,2.27*eV,2.89*eV,3.48013631*eV,
+      {1.7*eV,1.8*eV,3.1*eV,3.2*eV
+       /*,2.27*eV,2.89*eV,3.48013631*eV,
        3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
        3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV,10.0*eV*/
       };
 
    G4double LuciteRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
-      {1.49,1.49/*,1.49,1.49,1.49,1.49,1.49
+      {1.49,1.49,1.49,1.49/*,1.49,1.49,1.49
        ,1.49,1.49,1.49,1.49,1.49,1.49,1.49*/
       };
 
    G4double LuciteAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
-      {0.2611*m, 0.2791*m/*, 0.2791*m, 0.26115*m,
+      {0.01*cm,0.2611*m, 0.2791*m, 0.01*cm/*, 0.2791*m, 0.26115*m,
        0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
        0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
        0.021193*m,0.021193*m*/
       };
     G4MaterialPropertiesTable* luciteMPT = new G4MaterialPropertiesTable();
-    luciteMPT->AddProperty ( "RINDEX", LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
-    luciteMPT->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
+    luciteMPT->AddProperty ( "RINDEX",       LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
+    luciteMPT->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,       lucitedatapoints );
     Lucite->SetMaterialPropertiesTable ( luciteMPT );
 
 // LeadGlass
@@ -3154,7 +3158,7 @@ void BETADetectorConstruction::SetMaterialPropertiesTables()
    waterMPT->AddConstProperty ( "SLOWTIMECONSTANT",10.*ns );
    waterMPT->AddConstProperty ( "YIELDRATIO",0.8 );
 
-   Water->SetMaterialPropertiesTable ( waterMPT );
+   //Water->SetMaterialPropertiesTable ( waterMPT );
 
 // Air
    G4double airIndexOfRefraction=1.000293;
@@ -3268,8 +3272,7 @@ void BETADetectorConstruction::SetMaterialPropertiesTables()
 }
 //___________________________________________________________________
 
-void BETADetectorConstruction::DefineMaterials()
-{
+void BETADetectorConstruction::DefineMaterials() {
    
 
    G4NistManager* nistman = G4NistManager::Instance();

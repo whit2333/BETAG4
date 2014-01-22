@@ -161,11 +161,11 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
       fSimulationManager->fDetectorTree->Fill();
 
-      fBETADigitizer->Clear();
+   fBETADigitizer->Clear();
 
    }
-
    fDAQReadout->Clear();
+
    numberOfEvent++;
 
 
