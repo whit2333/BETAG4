@@ -253,7 +253,7 @@ void BETAPhysicsList::ConstructOp()
    theScintillationProcess->SetTrackSecondariesFirst ( true );
 
    G4OpticalSurfaceModel themodel = unified;
-   theBoundaryProcess->SetModel ( themodel );
+   //theBoundaryProcess->SetModel ( themodel );
 
    theParticleIterator->reset();
    while ( ( *theParticleIterator ) () )

@@ -24,6 +24,8 @@ include $(G4INSTALL)/config/binmake.gmk
    LDLIBS += $(shell root-config --glibs --libs ) 
    LDLIBS += -lTreePlayer -lGed -lRGL -lEve -lEG
    LDLIBS += $(shell mysql_config --libs)
+   LDLIBS += -L$(QTHOME)/lib -lQtGui -lQtCore -lQtTest -lQtXml
+#   LDLIBS += $(shell lhapdf-config --ldflags)
 
 #LHAPDF
   LDLIBS += $(shell lhapdf-config --ldflags ) 

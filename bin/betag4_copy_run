@@ -1,7 +1,7 @@
 #!/bin/bash
 
 runNumber=${1}
-
-scp $HOME/data/rootfiles/InSANE${runNumber}.-1.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
-scp $HOME/data/rootfiles/scalers${runNumber}.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
+cd $HOME/sane08/BETAG4/run
+scp data/rootfiles/InSANE${runNumber}.-1.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
+scp data/rootfiles/scalers${runNumber}.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
 
