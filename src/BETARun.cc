@@ -2,7 +2,7 @@
 #include "G4SDManager.hh"
 #include "G4VPrimitiveScorer.hh"
 #include <assert.h>
-#include "BETAPMT.hh"
+//#include "BETAPMT.hh"
 #include "BETAFakePlane.hh"
 #include <string>  //For the string functions
 #include <sstream>

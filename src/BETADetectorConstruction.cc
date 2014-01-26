@@ -25,7 +25,7 @@
 #include "fstream"
 #include "math.h"
 #define PI 3.141592654
-#include "BETAPMT.hh"
+//#include "BETAPMT.hh"
 #include "BETAMirror.hh"
 #include "BETARCSCellParameterisation.hh"
 #include "BETAProtvinoCellParameterisation.hh"
