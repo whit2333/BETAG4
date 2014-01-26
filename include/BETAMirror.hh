@@ -1,9 +1,9 @@
 #ifndef BETAMirror_HH
 #define BETAMirror_HH
 #include "fstream"
-#include <gsl/gsl_interp.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
+//#include <gsl/gsl_interp.h>
+//#include <gsl/gsl_errno.h>
+//#include <gsl/gsl_spline.h>
 
 #include "G4VSensitiveDetector.hh"
 #include "BETAMirrorHit.hh"

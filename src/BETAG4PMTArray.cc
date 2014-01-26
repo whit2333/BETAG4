@@ -13,9 +13,9 @@
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 #include "fstream"
-#include <gsl/gsl_interp.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
+//#include <gsl/gsl_interp.h>
+//#include <gsl/gsl_errno.h>
+//#include <gsl/gsl_spline.h>
 
 class BETADetectorConstruction;
 using namespace std;
@@ -116,17 +116,15 @@ void BETAG4PMTArray::EndOfEvent ( G4HCofThisEvent* )
    ;
 }
 
-G4double BETAG4PMTArray::QE ( G4double photonEnergy )
-{
+G4double BETAG4PMTArray::QE ( G4double photonEnergy ) {
 
 
-   alloc = gsl_interp_alloc ( gsl_interp_linear, 15 );
-   gsl_interp_init ( alloc, lambda, sensitivity, 15 );
-//double gsl_interp_eval (const gsl_interp * interp, const double xa[], const double ya[], double x, gsl_interp_accel * acc)
-   G4double wlINnm = ( 0.000001240824/ ( photonEnergy ) ) /1.0e-9;
+   //alloc = gsl_interp_alloc ( gsl_interp_linear, 15 );
+   //gsl_interp_init ( alloc, lambda, sensitivity, 15 );
+   //G4double wlINnm = ( 0.000001240824/ ( photonEnergy ) ) /1.0e-9;
+   //G4double res = gsl_interp_eval ( alloc, lambda, sensitivity, wlINnm, 0 ) *1240.824/wlINnm/1000.0;
 
-   G4double res = gsl_interp_eval ( alloc, lambda, sensitivity, wlINnm, 0 ) *1240.824/wlINnm/1000.0;
-
+   G4double res = 0.0;
 // sensitivity[gsl_interp_bsearch (lambda,wlINnm, 0, 14)]*1240.824/wlINnm/1000.0;
 //G4cout << "photon E = " << photonEnergy <<"l nm = " <<  wlINnm << " eff : " << res<< " eff test: " << sensitivity[gsl_interp_bsearch (lambda,400, 0, 14)]*1240.824/400/1000<<G4endl;
 

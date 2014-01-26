@@ -21,8 +21,8 @@
 #include "TCanvas.h"
 #include "UVAOxfordMagneticField.h"
 #include "TMath.h"
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
+//#include <gsl/gsl_errno.h>
+//#include <gsl/gsl_spline.h>
 #include <vector>
 #include "G4RotationMatrix.hh"
 #include "G4ThreeVector.hh"

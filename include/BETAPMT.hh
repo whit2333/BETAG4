@@ -1,9 +1,9 @@
 #ifndef BETAPMT_HH
 #define BETAPMT_HH
 #include "fstream"
-#include <gsl/gsl_interp.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
+//#include <gsl/gsl_interp.h>
+//#include <gsl/gsl_errno.h>
+//#include <gsl/gsl_spline.h>
 
 #include "G4VSensitiveDetector.hh"
 #include "BETAPMTHit.hh"
@@ -43,7 +43,7 @@ private:
   BETAPMTHitsCollection* fHitsCollection;
   G4String  detname;
   G4int pmt;
-gsl_interp * alloc;
+//gsl_interp * alloc;
 
 };
 

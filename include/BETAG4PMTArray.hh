@@ -1,9 +1,9 @@
 #ifndef BETAG4PMTArray_HH
 #define BETAG4PMTArray_HH
 #include "fstream"
-#include <gsl/gsl_interp.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
+//#include <gsl/gsl_interp.h>
+//#include <gsl/gsl_errno.h>
+//#include <gsl/gsl_spline.h>
 
 #include "G4VSensitiveDetector.hh"
 #include "BETAG4PMTHit.hh"
@@ -53,7 +53,7 @@ private:
   BETAG4PMTHitsCollection* fHitsCollection;
   G4String  detname;
   G4int pmt;
-gsl_interp * alloc;
+  //gsl_interp * alloc;
 
 };
 

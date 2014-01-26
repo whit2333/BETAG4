@@ -11,10 +11,10 @@
 #include "G4RandomDirection.hh"
 #include "Randomize.hh"
 #include "fstream"
-#include <gsl/gsl_interp.h>
-#include <gsl/gsl_errno.h>
-#include <gsl/gsl_spline.h>
-// CONSTRUCTOR
+//#include <gsl/gsl_interp.h>
+//#include <gsl/gsl_errno.h>
+//#include <gsl/gsl_spline.h>
+
 BETAMirror::BETAMirror ( G4String  name )
       :G4VSensitiveDetector ( name )
 {
