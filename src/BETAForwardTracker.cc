@@ -15,9 +15,7 @@
 
 //____________________________________________________________________________
 
-BETAForwardTracker::BETAForwardTracker ( G4String  name )
-      :G4VSensitiveDetector ( name )
-{
+BETAForwardTracker::BETAForwardTracker(G4String  name):G4VSensitiveDetector(name) {
    G4String HCname;
    detname = name;
    collectionName.insert ( HCname="tracking" );
@@ -46,29 +44,16 @@ void BETAForwardTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent
 
    // Initialise hits
    G4int i ( 0 );
-
-// 8 PMTs
-   /*  for (i=0; i<8; i++) {
-       BETAPMTHit* aHit = new BETAPMTHit(i);
-       fHitsCollection->insert(aHit);
-     }*/
-///////////////////////////
-
 }
-//////////////////////
-
-G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
-{
+//______________________________________________________________________________
+G4bool BETAForwardTracker::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
    G4Track * theTrack = aStep->GetTrack();
-
-   G4String aName;
 
    if( theTrack->GetDefinition() == G4OpticalPhoton::OpticalPhotonDefinition() && 
           aStep->GetPreStepPoint()->GetStepStatus() == fGeomBoundary    )
     {
 
       G4TouchableHandle touch1 = aStep->GetPreStepPoint()->GetTouchableHandle();
-
 
 //      aName=theTrack->GetVolume()->GetMotherLogical()->GetName();
 //      G4cout << " SHOULD REGISTER HIT in physical volume "<< aName << G4endl;

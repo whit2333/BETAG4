@@ -48,8 +48,8 @@ public:
   inline const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
   */
 
-  G4int cellNumber;
-  G4int layerNumber;
+  G4int    cellNumber;
+  G4int    layerNumber;
   G4double fTiming;
   G4double fEnergy;
 //  G4int mirrorNumber;
