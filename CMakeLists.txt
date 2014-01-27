@@ -47,7 +47,7 @@ endif(useROOT)
 #---------------------------------------------------------------------------
 # InSANE compile flags
 if(useInSANE)
-   EXECUTE_PROCESS(COMMAND insane-config --cflags OUTPUT_VARIABLE InSANE_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   EXECUTE_PROCESS(COMMAND insane-config --cflags --inc OUTPUT_VARIABLE InSANE_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${InSANE_CXX_FLAGS}")
 endif(useInSANE)
 
@@ -69,18 +69,26 @@ add_executable(BETA BETA.cc ${sources} ${headers})
 if(useROOT)
    EXECUTE_PROCESS(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ROOT_LD_FLAGS}")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam ")
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}  -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam ")
+   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS}")
 endif(useROOT)
 
 #---------------------------------------------------------------------------
 # InSANE linking flags 
 if(useInSANE)
-   EXECUTE_PROCESS(COMMAND "insane-config --libs" OUTPUT_VARIABLE InSANE_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   EXECUTE_PROCESS(COMMAND insane-config --ldflags --libs OUTPUT_VARIABLE InSANE_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
+   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
+
+   EXECUTE_PROCESS(COMMAND lhapdf-config --ldflags --libs OUTPUT_VARIABLE
+      LHAPDF_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
+   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
+
    #EXECUTE_PROCESS(COMMAND "gsl-config --libs" OUTPUT_VARIABLE GSL_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GSL_LD_FLAGS}")
-   add_library( InSANE SHARED IMPORTED )
-   set_target_properties( InSANE PROPERTIES IMPORTED_LOCATION "/home/whit/sane08/InSANE/lib/libInSANE.so" )
+   #add_library( InSANE SHARED IMPORTED )
+   #set_target_properties(InSANE PROPERTIES IMPORTED_LOCATION "/home/whit/sane08/InSANE/lib/libInSANE.so" )
 endif(useInSANE)
 
 
