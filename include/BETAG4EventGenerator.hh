@@ -67,128 +67,31 @@ class BETAG4EventGenerator : public InSANETargetEventGenerator {
 
    public:
 
-      /** Returns the starting postiong of the primary particle
-       */
-      virtual  G4ThreeVector &  GetInitialPosition(TParticle * p){
-         fInitialPosition->setX(p->Vx());
-         fInitialPosition->setY(p->Vy());
-         fInitialPosition->setZ(p->Vz());
-         return(*fInitialPosition);
-      }
+      /** Returns the starting postiong of the primary particle. */
+      virtual  G4ThreeVector &  GetInitialPosition(TParticle * p);
 
-      /** Returns the starting direction of the primary particle
+      /** Returns the starting direction of the primary particle.
        * \deprecated
        */
-      virtual  G4ThreeVector &  GetInitialDirection(TParticle * p){
-         fInitialDirection->setX(p->Px());
-         fInitialDirection->setY(p->Py());
-         fInitialDirection->setZ(p->Pz());
-         return(*fInitialDirection);
-      }
+      virtual  G4ThreeVector &  GetInitialDirection(TParticle * p);
 
       /// \todo assuming particle is electron (eg E=P))
 
       /** Returns the starting postiong of the primary particle
        * \deprecated
        */
-      virtual  G4ThreeVector &  GetMomentumVector(TParticle * p){
-         fInitialDirection->setX(p->Px());
-         fInitialDirection->setY(p->Py());
-         fInitialDirection->setZ(p->Pz());
-         return(*fMomentumVector);
-      }
+      virtual  G4ThreeVector &  GetMomentumVector(TParticle * p);
 
-      virtual double GetParticleEnergy(TParticle * p) {
-         return(p->Energy());
-      }
+      virtual double GetParticleEnergy(TParticle * p);
 
-      void SetThetaMax(double val) { 
-         fThetaMax = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("theta");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMaximum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetThetaMax","\"theta\" variable does not exist.");
-      }
-
-      void SetThetaMin(double val) { 
-         fThetaMin = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("theta");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMinimum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetThetaMin","\"theta\" variable does not exist.");
-      }
-
-      void SetPhiMax(double val) { 
-         fPhiMax = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("phi");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMaximum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetPhiMax","\"phi\" variable does not exist.");
-      }
-
-      void SetPhiMin(double val) { 
-         fPhiMin = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("phi");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMinimum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetPhiMin","\"phi\" variable does not exist.");
-      }
-
-      void SetEnergyMax(double val) { 
-         fEnergyMax = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("energy");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMaximum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetEnergyMax","\"energy\" variable does not exist.");
-      }
-
-      void SetEnergyMin(double val) { 
-         fEnergyMin = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("energy");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMinimum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetEnergyMax","\"energy\" variable does not exist.");
-      }
-
-      void SetMomentumMax(double val) { 
-         fMomentumMax = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("momentum");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMaximum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetMomentumMax","\"momentum\" variable does not exist.");
-      }
-
-      void SetMomentumMin(double val) { 
-         fMomentumMin = val;
-         fNeedsRefreshed = true;
-         TList * vars = GetPSVariables("momentum");
-         for(int i = 0; i< vars->GetEntries() ; i++){
-            InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
-            aVar->SetMinimum(val);
-         }
-         if( vars->GetEntries() == 0) Error("SetMomentumMax","\"momentum\" variable does not exist.");
-      }
+      void SetThetaMax    ( double val);
+      void SetThetaMin    ( double val);
+      void SetPhiMax      ( double val);
+      void SetPhiMin      ( double val);
+      void SetEnergyMax   ( double val);
+      void SetEnergyMin   ( double val);
+      void SetMomentumMax ( double val);
+      void SetMomentumMin ( double val);
 
 };
 

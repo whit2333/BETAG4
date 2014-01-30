@@ -11,6 +11,7 @@ You will need [InSANE](http://whit2333.github.com/InSANE "InSANE").
 Installation
 ------------
 
-Note the GNUmake build is obsolete. Use cmake instead. 
+Note the GNU make build is obsolete. Use cmake instead.
+
 
 

@@ -32,7 +32,7 @@
 #include "BETAForwardTrackerCellParameterisation.hh"
 #include "BETARCSCalorimeter.hh"
 #include "BETAProtvinoCalorimeter.hh"
-#include "BETAHodoscopeCellParameterisation.hh"
+//#include "BETAHodoscopeCellParameterisation.hh"
 #include "BETAForwardTracker.hh"
 #include "BETASimulationManager.hh"
 #include "BETAFakePlane.hh"
