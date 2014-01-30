@@ -49,7 +49,8 @@ class ConeEventGenerator : public BETAG4EventGenerator   {
 };
 
 
-/** Event generator for inclusive electron DIS.  Uses F1F209 Code. 
+//______________________________________________________________________________
+/** Event generator for inclusive electron DIS.   
  *   \ingroup EventGen
  */
 class DISEventGenerator : public BETAG4EventGenerator {
@@ -60,6 +61,7 @@ class DISEventGenerator : public BETAG4EventGenerator {
 };
 
 
+//______________________________________________________________________________
 /** Polarized DIS cross section (born).
  *   \ingroup EventGen
  */
@@ -72,6 +74,8 @@ class PolarizedDISEventGenerator : public BETAG4EventGenerator {
 
 };
 
+
+//______________________________________________________________________________
 /** Throws pi0, pi+ and pi- pions.
  *   \ingroup EventGen
  */
@@ -82,6 +86,8 @@ class InclusivePionEventGenerator : public BETAG4EventGenerator  {
    virtual void Initialize();
 };
 
+
+//______________________________________________________________________________
 /** Electrons and pi0s thrown.
  *   \ingroup EventGen
  */
@@ -93,7 +99,7 @@ public :
 };
 
 
-
+//______________________________________________________________________________
 /**  Mott Cross section event generator
  *
  *   \ingroup EventGen
@@ -105,6 +111,8 @@ public:
    virtual void Initialize();
 };
 
+
+//______________________________________________________________________________
 /**  Wiser  Event generator spread over bigcal
  *
  *   \ingroup EventGen
@@ -117,6 +125,7 @@ public:
 };
 
 
+//______________________________________________________________________________
 /**  Bigcal Simple Event generator spread over bigcal
  *
  *   \ingroup EventGen
@@ -128,7 +137,7 @@ class BigcalSimpleEventGenerator : public BETAG4EventGenerator   {
 };
 
 
-
+//______________________________________________________________________________
 /**  Flat Event generator centered on bigcal with small solid angle
  *   and near mono chromatic energies
  *

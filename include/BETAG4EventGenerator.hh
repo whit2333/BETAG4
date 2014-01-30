@@ -7,7 +7,7 @@
 #include "G4ThreeVector.hh"
 #include "TMath.h"
 #include "InSANETargetEventGenerator.h"
-#include "F1F209eInclusiveDiffXSec.h"
+#include "InSANECompositeDiffXSec.h"
 #include "TParticle.h"
 #include "InSANEFunctionManager.h"
 

@@ -26,16 +26,17 @@ void BETAG4EventGenerator::Initialize(){
    // here we provide a simple initialization
 
    // Create the cross section
-   F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+   //F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+   InSANEInclusiveDISXSec * fDiffXSec = new  InSANEInclusiveDISXSec();
    fDiffXSec->SetBeamEnergy(fBeamEnergy);
    fDiffXSec->InitializePhaseSpaceVariables();
-   //      fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-   //      fPrimaryPS->ListVariables();
+   //fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+   //fPrimaryPS->ListVariables();
 
-   /// Create the sampler 
-   InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-   /// Add sampler to event generator
-   AddSampler(fF1F2EventSampler);
+   // Create the sampler 
+   InSANEPhaseSpaceSampler *  disEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+   // Add sampler to event generator
+   AddSampler(disEventSampler);
 
    CalculateTotalCrossSection();
 
