@@ -39,7 +39,7 @@ class ConeEventGenerator : public BETAG4EventGenerator   {
    public:
       ConeEventGenerator();
       virtual ~ConeEventGenerator();
-      virtual  G4ThreeVector &  GetInitialPosition(){
+      virtual  G4ThreeVector&  GetInitialPosition(){
          fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
          fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm);
          fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
@@ -83,7 +83,7 @@ class InclusivePionEventGenerator : public BETAG4EventGenerator  {
    public :
       InclusivePionEventGenerator(){ }
       virtual ~InclusivePionEventGenerator() { }
-   virtual void Initialize();
+      virtual void Initialize();
 };
 
 
@@ -92,10 +92,10 @@ class InclusivePionEventGenerator : public BETAG4EventGenerator  {
  *   \ingroup EventGen
  */
 class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
-public :
-   InclusiveElectronPionGenerator(){ }
-   virtual ~InclusiveElectronPionGenerator() { }
-   virtual void Initialize();
+   public :
+      InclusiveElectronPionGenerator(){ }
+      virtual ~InclusiveElectronPionGenerator() { }
+      virtual void Initialize();
 };
 
 
@@ -105,10 +105,10 @@ public :
  *   \ingroup EventGen
  */
 class MottEventGenerator : public BETAG4EventGenerator   {
-public:
-   MottEventGenerator(){}
-   virtual ~MottEventGenerator(){}
-   virtual void Initialize();
+   public:
+      MottEventGenerator(){}
+      virtual ~MottEventGenerator(){}
+      virtual void Initialize();
 };
 
 
@@ -118,10 +118,10 @@ public:
  *   \ingroup EventGen
  */
 class WiserEventGenerator : public BETAG4EventGenerator   {
-public:
-   WiserEventGenerator(){ }
-   virtual ~WiserEventGenerator() { }
-   virtual void Initialize();
+   public:
+      WiserEventGenerator(){ }
+      virtual ~WiserEventGenerator() { }
+      virtual void Initialize();
 };
 
 

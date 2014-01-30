@@ -22,24 +22,30 @@ BETAG4EventGenerator::~BETAG4EventGenerator(){
 }
 //________________________________________________________________________________
 void BETAG4EventGenerator::Initialize(){
+   InSANETargetEventGenerator::Initialize();
    // Initialize is likely to be overloaded later.
    // here we provide a simple initialization
 
    // Create the cross section
    //F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-   InSANEInclusiveDISXSec * fDiffXSec = new  InSANEInclusiveDISXSec();
-   fDiffXSec->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec->InitializePhaseSpaceVariables();
-   //fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-   //fPrimaryPS->ListVariables();
+   //InSANEInclusiveDISXSec * fDiffXSec = new  InSANEInclusiveDISXSec();
+   //fDiffXSec->SetBeamEnergy(fBeamEnergy);
+   //fDiffXSec->InitializePhaseSpaceVariables();
+   ////fPrimaryPS = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+   ////fPrimaryPS->ListVariables();
 
-   // Create the sampler 
-   InSANEPhaseSpaceSampler *  disEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-   // Add sampler to event generator
-   AddSampler(disEventSampler);
+   //// Create the sampler 
+   //InSANEPhaseSpaceSampler *  disEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+   //// Add sampler to event generator
+   //AddSampler(disEventSampler);
 
-   CalculateTotalCrossSection();
+   //CalculateTotalCrossSection();
 
+}
+//________________________________________________________________________________
+void BETAG4EventGenerator::InitializeMaterialXSec(const Int_t i, const Double_t weight, 
+      const InSANETargetMaterial * mat, const InSANENucleus * targ){
+   InSANETargetEventGenerator::InitializeMaterialXSec(i,weight,mat,targ);
 }
 //________________________________________________________________________________
 G4ThreeVector&  BETAG4EventGenerator::GetInitialPosition(TParticle * p){

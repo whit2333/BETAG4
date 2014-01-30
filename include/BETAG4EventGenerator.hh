@@ -61,6 +61,13 @@ class BETAG4EventGenerator : public InSANETargetEventGenerator {
        */
       virtual void Initialize();
 
+      /** Override this instead of Initialize. 
+       */
+      virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ);
+
+
+
+
       virtual bool HasPolarizedTarget(){ return false; }
       double       GetThetaTarget(){ return fThetaTarget; }
       void         SetThetaTarget(double angle) { fThetaTarget = angle; }
