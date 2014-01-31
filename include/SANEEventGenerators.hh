@@ -200,8 +200,13 @@ class BeamOnTargetEventGenerator : public BETAG4EventGenerator   {
  */
 class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
    public :
-      SANEInclusiveDISEventGenerator(){}
+      SANEInclusiveDISEventGenerator(){
+         fNH3PackingFraction = 0.6;
+         UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
+         SetTarget(targ);
+      }
       virtual ~SANEInclusiveDISEventGenerator() { }
+
 
       virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ){
          InSANEPhaseSpaceSampler * samp = 0;
@@ -219,6 +224,12 @@ class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
          samp->SetWeight(weight);
          AddSampler(samp);
       }
+      virtual void Initialize() {
+         InSANETargetEventGenerator::Initialize();
+      }
+
+      Double_t fNH3PackingFraction;
+
 };
 
 /** Uses A1,A2 models
