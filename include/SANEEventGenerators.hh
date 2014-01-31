@@ -202,6 +202,23 @@ class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
    public :
       SANEInclusiveDISEventGenerator(){}
       virtual ~SANEInclusiveDISEventGenerator() { }
+
+      virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ){
+         InSANEPhaseSpaceSampler * samp = 0;
+         //F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
+         InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
+         xsec->Dump();
+         xsec->SetTargetMaterial(*mat);
+         xsec->SetTargetMaterialIndex(i);
+         xsec->SetBeamEnergy(GetBeamEnergy());
+         xsec->SetTargetNucleus(*targ);
+         xsec->InitializePhaseSpaceVariables();
+         xsec->InitializeFinalStateParticles();
+         samp = new InSANEPhaseSpaceSampler(xsec);
+         samp->SetFoamCells(100);
+         samp->SetWeight(weight);
+         AddSampler(samp);
+      }
 };
 
 /** Uses A1,A2 models

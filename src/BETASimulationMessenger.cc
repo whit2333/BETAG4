@@ -163,6 +163,7 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_setType->SetGuidance ( " Possible arguments are :" );
    fCmd_setType->SetGuidance ( " flat - uniformly populate events" );
    fCmd_setType->SetGuidance ( " allNH3 - electrons and pions from NH3 target" );
+   fCmd_setType->SetGuidance ( " disNH3 - only electrons from NH3 target" );
    fCmd_setType->SetGuidance ( " mott - mott cross section" );
    fCmd_setType->SetGuidance ( " cone - a small cone near with a small energy range " );
    fCmd_setType->SetGuidance ( " dis - inclusive electron DIS(F1p and F2p)" );
@@ -370,6 +371,11 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
          anEventGen->fIsInitialized = true;
       } else if(newValue == "allNH3") {
          anEventGen = new NH3TargetEventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      } else if(newValue == "disNH3") {
+         anEventGen = new SANEInclusiveDISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
          anEventGen->Initialize();
          anEventGen->fIsInitialized = true;
