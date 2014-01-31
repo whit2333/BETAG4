@@ -13,6 +13,9 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
    InSANEFunctionManager * fm = InSANEFunctionManager::GetInstance();
    fm->CreateSFs(6);
    fm->CreatePolSFs(6);
+
+   InSANESimpleTarget * target = new InSANESimpleTarget("LH2Target","Simple LH2 Target");
+   SetTarget(target);
 }
 //________________________________________________________________________________
 BETAG4EventGenerator::~BETAG4EventGenerator(){

@@ -11,6 +11,7 @@
 #include "TParticle.h"
 #include "InSANEFunctionManager.h"
 
+
 /** Base class for InSANE -> BETAG4.
  *  By default it assumes there is only one particle and thus 3 random variables
  *
@@ -64,9 +65,6 @@ class BETAG4EventGenerator : public InSANETargetEventGenerator {
       /** Override this instead of Initialize. 
        */
       virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ);
-
-
-
 
       virtual bool HasPolarizedTarget(){ return false; }
       double       GetThetaTarget(){ return fThetaTarget; }
