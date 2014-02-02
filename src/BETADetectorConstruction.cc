@@ -2743,7 +2743,7 @@ BETADetectorConstruction::Construct()
    //    Construct everything in the target can.
    //Also constructs the target magnet and nosepiece.
    ConstructTCan();
-   G4cout<<"Tcan";
+   //G4cout<<"Tcan";
    ConstructN2Shield();
 //   G4cout<<"N2shield";
 //   ConstructBeamPipe();
