@@ -146,7 +146,7 @@ void BETAG4DAQReadout::Digitize() {
 void BETAG4DAQReadout::ReadOut() {
    // Get pointers
    G4String colName;
-   G4SDManager* SDman = G4SDManager::GetSDMpointer();
+   //G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4RunManager* fRM = G4RunManager::GetRunManager();
    const G4Event* currentEvent = fRM->GetCurrentEvent();
    G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();

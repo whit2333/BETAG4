@@ -168,7 +168,7 @@ int BETASimulationManager::Reset()  {
 
 int BETASimulationManager::InitScoring()  {
 
-   G4SDManager * sensitiveDetManager = G4SDManager::GetSDMpointer();
+   //G4SDManager * sensitiveDetManager = G4SDManager::GetSDMpointer();
    G4String filterName, particleName;
 
 

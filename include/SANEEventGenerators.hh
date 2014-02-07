@@ -13,7 +13,7 @@
 #include "HallCBeam.h"
 #include "PolarizedDISXSec.h"
 #include "EPCVXSection.h"
-#include "InSANETarget.h"
+#include "SANETargets.h"
 
 /*! \page EventGeneratorHowTo How to make an event generator
 

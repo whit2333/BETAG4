@@ -60,7 +60,7 @@ G4Run*  BETARunAction::GenerateRun() {
    } else {
       out << "data/rootfiles/InSANE" << fRunNumber << ".-1.root"  ;
       fname = out.str();
-      const char * rootName = fname.c_str();
+      //const char * rootName = fname.c_str();
       //      fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
       fSimulationManager->fRootFile = SANERunManager::GetRunManager()->GetCurrentFile();
       fSimulationManager->fDetectorTree = new TTree("betaDetectors","Simulated BETA Detectors");
@@ -91,11 +91,11 @@ G4Run*  BETARunAction::GenerateRun() {
 
    // Get the runmanager and constructors/messengers and only fill the database if
    // you have them!
-   double targetAngle = 0.0;
+   //double targetAngle = 0.0;
    if (runManager) {
       BETADetectorConstruction *  construction = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
       if (construction) {
-         targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
+         //targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
 
          //printf("\n got run manager %f\n",targetAngle);
          /// \todo Better database filling!!

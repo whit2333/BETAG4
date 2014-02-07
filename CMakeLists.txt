@@ -36,8 +36,9 @@ include_directories(${PROJECT_SOURCE_DIR}/include
    ${Geant4_INCLUDE_DIR}
    ${GSL_INCLUDE_DIR}
    ${ROOT_INCLUDE_DIR})
-
-set(CMAKE_CXX_FLAGS "-Wno-unused-parameter -Wno-unused-variable ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
+#-Wno-unused-variable 
+#-Wdeprecated-declarations
+set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -Wno-unused-parameter ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 #---------------------------------------------------------------------------
 # ROOT compile flags
 if(useROOT)

@@ -44,7 +44,7 @@ void BETAFrontTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
 
    // Initialise hits
-   G4int i ( 0 );
+   //G4int i ( 0 );
 
 // 8 PMTs
    /*  for (i=0; i<8; i++) {

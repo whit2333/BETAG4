@@ -2263,17 +2263,17 @@ G4double farMirrorAngle = 20* pi/180;
    pmtFace_log =//container_log;
     new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
 
-   G4VPhysicalVolume * pmtFace1_phys = new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,7 );
-   G4VPhysicalVolume * pmtFace2_phys = new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,8 );
-   G4VPhysicalVolume * pmtFace3_phys = new G4PVPlacement ( G4Transform3D ( pmtRM3,pmt22 ), pmtFace_log,  "pmtFace_phys", tank_log, false,5 );
-   G4VPhysicalVolume * pmtFace4_phys = new G4PVPlacement ( G4Transform3D ( pmtRM4,pmt21 ), pmtFace_log,  "pmtFace_phys", tank_log, false,6 );
-   G4VPhysicalVolume * pmtFace5_phys = new G4PVPlacement ( G4Transform3D ( pmtRM5,pmt32 ), pmtFace_log,  "pmtFace_phys", tank_log, false,3 );
-   G4VPhysicalVolume * pmtFace6_phys = new G4PVPlacement ( G4Transform3D ( pmtRM6,pmt31 ), pmtFace_log,  "pmtFace_phys", tank_log, false,4 );
-   G4VPhysicalVolume * pmtFace7_phys = new G4PVPlacement ( G4Transform3D ( pmtRM7,pmt42 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1 );
-   G4VPhysicalVolume * pmtFace8_phys = new G4PVPlacement ( G4Transform3D ( pmtRM8,pmt41 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2 );
+   /*G4VPhysicalVolume * pmtFace1_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,7 );
+   /*G4VPhysicalVolume * pmtFace2_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,8 );
+   /*G4VPhysicalVolume * pmtFace3_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM3,pmt22 ), pmtFace_log,  "pmtFace_phys", tank_log, false,5 );
+   /*G4VPhysicalVolume * pmtFace4_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM4,pmt21 ), pmtFace_log,  "pmtFace_phys", tank_log, false,6 );
+   /*G4VPhysicalVolume * pmtFace5_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM5,pmt32 ), pmtFace_log,  "pmtFace_phys", tank_log, false,3 );
+   /*G4VPhysicalVolume * pmtFace6_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM6,pmt31 ), pmtFace_log,  "pmtFace_phys", tank_log, false,4 );
+   /*G4VPhysicalVolume * pmtFace7_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM7,pmt42 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1 );
+   /*G4VPhysicalVolume * pmtFace8_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM8,pmt41 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2 );
 
 ////////////////////////// Print out Magnetic field at pmt face ////////////////
-   G4ThreeVector localPosition = pmtFace4_phys->GetTranslation();
+   //G4ThreeVector localPosition = pmtFace4_phys->GetTranslation();
 //G4ThreeVector fieldVector =
 //    std::cout << "\n\nPMT#4 : POSITION (" << localPosition.x()/cm << ", " << localPosition.y()/cm << ", " <<localPosition.z()/cm << ") and Field \n\n" ;
 //     G4ThreeVector localPosition = theTouchable->GetHistory()->
@@ -2311,11 +2311,11 @@ G4double farMirrorAngle = 20* pi/180;
    const G4int num = 2;
    G4double Ephoton[num] = {1.0*eV, 10.0*eV};
 
-   G4double RefractiveIndex[num] = {1.00029, 1.00048};
+   //G4double RefractiveIndex[num] = {1.00029, 1.00048};
    G4double SpecularLobe[num]    = {0.3, 0.3};
    G4double SpecularSpike[num]   = {0.2, 0.2};
    G4double Backscatter[num]     = {0.2, 0.2};
-   G4double Reflectivity[num] = {0.3, 0.5};
+   //G4double Reflectivity[num] = {0.3, 0.5};
    G4double Efficiency[num]   = {1.0, 1.0};
 
    //----- Optical surface of PMT 
@@ -2425,8 +2425,8 @@ void BETADetectorConstruction::ConstructFakePlane()
       G4Box* fakePlane_box = new G4Box ( "PlaneBeforeBigcal",1.4*m/2.0,2.5*m/2.0 , 0.10*mm );
       fBigCalFakePlane_log = 
            new G4LogicalVolume ( fakePlane_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
-      BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
-//rTarget
+      //BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
+      //rTarget
       G4double bigcalFace = rBigcal;  // from target
       G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0 + fBETADistance ) ;
       G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-0.10*cm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
@@ -2727,15 +2727,15 @@ BETADetectorConstruction::Construct()
    expHall_phys = new G4PVPlacement ( 0,G4ThreeVector(),expHall_log,"World",0,false,0 );
 
 // FLOOR ( only for looks )
-   G4Box* Floor = new G4Box ( "floor",1.0*mm,expHall_y,expHall_z );
-   G4LogicalVolume* floor_log = new G4LogicalVolume ( Floor,Aluminum,"floor log",0,0,0 );
-// G4VPhysicalVolume* floor_phys = new G4PVPlacement ( 0,G4ThreeVector ( -1.0*4.*m,0,0 ),floor_log,"floor phys",expHall_log,false,0 );
+   //G4Box* Floor = new G4Box ( "floor",1.0*mm,expHall_y,expHall_z );
+   //G4LogicalVolume* floor_log = new G4LogicalVolume ( Floor,Aluminum,"floor log",0,0,0 );
+   //G4VPhysicalVolume* floor_phys = new G4PVPlacement ( 0,G4ThreeVector ( -1.0*4.*m,0,0 ),floor_log,"floor phys",expHall_log,false,0 );
 
 // beam pipe
-   G4Tubs * beamPipe = new G4Tubs ( "Beam Pipe", 2.0*cm, ( 2.+0.25 )*cm, 2.0*m,0,2.0*pi );
-   G4LogicalVolume* beamPipe_log = new G4LogicalVolume ( beamPipe,Aluminum,"target",0,0,0 );
- /*  G4VPhysicalVolume* beamPipe_phys = new G4PVPlacement(0,G4ThreeVector(0,0,-2*m),beamPipe_log,"Beam Pipe",expHall_log,false,0);
-  */ /*  G4VPhysicalVolume* beamPipe2_phys = new G4PVPlacement(0,G4ThreeVector(2*(2.+0.3)*2.54*cm,0,-2*m),beamPipe_log,"Beam Pipe top",expHall_log,false,0);
+   //G4Tubs * beamPipe = new G4Tubs ( "Beam Pipe", 2.0*cm, ( 2.+0.25 )*cm, 2.0*m,0,2.0*pi );
+   //G4LogicalVolume* beamPipe_log = new G4LogicalVolume ( beamPipe,Aluminum,"target",0,0,0 );
+   //G4VPhysicalVolume* beamPipe_phys = new G4PVPlacement(0,G4ThreeVector(0,0,-2*m),beamPipe_log,"Beam Pipe",expHall_log,false,0);
+   /*  G4VPhysicalVolume* beamPipe2_phys = new G4PVPlacement(0,G4ThreeVector(2*(2.+0.3)*2.54*cm,0,-2*m),beamPipe_log,"Beam Pipe top",expHall_log,false,0);
    */
 
    ConstructTarget();
@@ -2779,12 +2779,12 @@ BETADetectorConstruction::Construct()
                                       ( 2.54*2.0 ) *cm/2.0);            // z half length
 
 
-   G4LogicalVolume* leadShield_log =
-      new G4LogicalVolume ( leadShield,     // Solid
-                            Lead,                    // Material
-                            "BIGCAL_sheild" ); // Name
+   //G4LogicalVolume* leadShield_log =
+   //   new G4LogicalVolume ( leadShield,     // Solid
+   //                         Lead,                    // Material
+   //                         "BIGCAL_sheild" ); // Name
 
-   G4double shieldDistance = 5*cm;
+   //G4double shieldDistance = 5*cm;
 
    /*  new G4PVPlacement(0,G4ThreeVector(0*cm,-14.0*2.54*cm,-66.5*2.54*cm), leadShield_log,         // Logical volume
                         "PMT_sheild",     // Name
@@ -2919,8 +2919,8 @@ BETADetectorConstruction::Construct()
    OpNitrogenSurface->SetFinish ( ground );
    OpNitrogenSurface->SetModel ( unified );
 
-   G4LogicalSkinSurface* NitrogenSurface =
-      new G4LogicalSkinSurface ( "NitrogenSurface", tank_log, OpNitrogenSurface );
+   //G4LogicalSkinSurface* NitrogenSurface =
+   //   new G4LogicalSkinSurface ( "NitrogenSurface", tank_log, OpNitrogenSurface );
 
 // OpticalNitrogenSurface properties
 
@@ -2955,8 +2955,8 @@ BETADetectorConstruction::Construct()
    OpTargetSurface->SetFinish ( polished );
    OpTargetSurface->SetModel ( unified );
 
-   G4LogicalSkinSurface* TargetnSurface =
-      new G4LogicalSkinSurface ( "TargetSurface", target_log, OpTargetSurface );
+   //G4LogicalSkinSurface* TargetnSurface =
+   //   new G4LogicalSkinSurface ( "TargetSurface", target_log, OpTargetSurface );
 
    G4double RefractiveIndexT[num] = {1.0, 1.0};
 
@@ -3047,7 +3047,7 @@ void BETADetectorConstruction::ConstructMagneticField() {
    fieldMgr->SetMinimumEpsilonStep( minEps );
    fieldMgr->SetMaximumEpsilonStep( maxEps );
 
-   G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
+   //G4TransportationManager* tmanager = G4TransportationManager::GetTransportationManager();
    //       tmanager->GetPropagatorInField()->SetLargestAcceptableStep(20.*m);
 
    expHall_log ->SetFieldManager ( fieldMgr, true );
@@ -3162,7 +3162,7 @@ void BETADetectorConstruction::SetMaterialPropertiesTables() {
    //Water->SetMaterialPropertiesTable ( waterMPT );
 
 // Air
-   G4double airIndexOfRefraction=1.000293;
+   //G4double airIndexOfRefraction=1.000293;
    G4MaterialPropertiesTable* airMPT = new G4MaterialPropertiesTable();
 /*   airMPT->AddConstProperty ( "RINDEX",airIndexOfRefraction );*/
    airMPT->AddConstProperty ( "ABSLENGTH",1000.0*m );
@@ -3206,14 +3206,14 @@ void BETADetectorConstruction::SetMaterialPropertiesTables() {
        1.00033, 1.00033, 1.00033, 1.00033, 1.00034, 1.00034, 1.00035, 1.00035, \
        1.00035, 1.00036, 1.00036, 1.00037, 1.00037, 1.00038, 1.00039
       };
-   G4double AbsorptionN[nEntries] =
-      {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
-       15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
-       45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
-       52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
-       30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
-       17.500*m, 14.500*m
-      };
+   //G4double AbsorptionN[nEntries] =
+   //   {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
+   //    15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
+   //    45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
+   //    52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
+   //    30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
+   //    17.500*m, 14.500*m
+   //   };
 
    G4MaterialPropertiesTable* nitrogenMPT = new G4MaterialPropertiesTable();
    nitrogenMPT->AddProperty ( "RINDEX", NitrogenPhotonEnergy, NitrogenRefractiveIndexN, nEnergies );
