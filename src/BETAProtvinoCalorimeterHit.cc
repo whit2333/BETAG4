@@ -122,8 +122,8 @@ std::vector<G4AttValue>* BETAProtvinoCalorimeterHit::CreateAttValues() const
    if ( pLogicalVolume ) values->push_back ( G4AttValue ( "LVol", pLogicalVolume->GetName(), "" ) );
    else values->push_back ( G4AttValue ( "LVol", " ", "" ) );
 
-   return values;
 */
+   return values;
 }
 
 void BETAProtvinoCalorimeterHit::Print()
