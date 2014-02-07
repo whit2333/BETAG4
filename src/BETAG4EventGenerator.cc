@@ -51,14 +51,14 @@ void BETAG4EventGenerator::InitializeMaterialXSec(const Int_t i, const Double_t 
    InSANETargetEventGenerator::InitializeMaterialXSec(i,weight,mat,targ);
 }
 //________________________________________________________________________________
-G4ThreeVector&  BETAG4EventGenerator::GetInitialPosition(TParticle * p){
+G4ThreeVector&  BETAG4EventGenerator::GetInitialPosition(const TParticle * p){
    fInitialPosition->setX(p->Vx());
    fInitialPosition->setY(p->Vy());
    fInitialPosition->setZ(p->Vz());
    return(*fInitialPosition);
 }
 //________________________________________________________________________________
-G4ThreeVector&  BETAG4EventGenerator::GetInitialDirection(TParticle * p){
+G4ThreeVector&  BETAG4EventGenerator::GetInitialDirection(const TParticle * p){
    fInitialDirection->setX(p->Px());
    fInitialDirection->setY(p->Py());
    fInitialDirection->setZ(p->Pz());
@@ -67,7 +67,7 @@ G4ThreeVector&  BETAG4EventGenerator::GetInitialDirection(TParticle * p){
 //________________________________________________________________________________
 
 /// \todo assuming particle is electron (eg E=P))
-G4ThreeVector&  BETAG4EventGenerator::GetMomentumVector(TParticle * p){
+G4ThreeVector&  BETAG4EventGenerator::GetMomentumVector(const TParticle * p){
    // \deprecated
    fInitialDirection->setX(p->Px());
    fInitialDirection->setY(p->Py());
@@ -75,7 +75,7 @@ G4ThreeVector&  BETAG4EventGenerator::GetMomentumVector(TParticle * p){
    return(*fMomentumVector);
 }
 //________________________________________________________________________________
-double BETAG4EventGenerator::GetParticleEnergy(TParticle * p) {
+double BETAG4EventGenerator::GetParticleEnergy(const TParticle * p) {
    return(p->Energy());
 }
 //________________________________________________________________________________

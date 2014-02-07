@@ -39,7 +39,7 @@ class ConeEventGenerator : public BETAG4EventGenerator   {
    public:
       ConeEventGenerator();
       virtual ~ConeEventGenerator();
-      virtual  G4ThreeVector&  GetInitialPosition(){
+      virtual  G4ThreeVector&  GetInitialPosition(const TParticle * ){
          fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
          fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm);
          fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
@@ -170,28 +170,26 @@ class BeamOnTargetEventGenerator : public BETAG4EventGenerator   {
       double fUpstreamPosition;
       double fBeamEnergy;
 
-      virtual  G4ThreeVector &  GetInitialPosition(){
+      virtual  G4ThreeVector &  GetInitialPosition(const TParticle * ){
          fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
          fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm + fYPosition*cm);
          fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*0.0*cm  - fUpstreamPosition*cm);
          return(*fInitialPosition);
       }
 
-      virtual  G4ThreeVector &  GetInitialDirection(){
+      virtual  G4ThreeVector &  GetInitialDirection(const TParticle * ){
          fInitialDirection->setX(0.0);
          fInitialDirection->setY(1.0*TMath::Sin(fChicaneBendAngle));
          fInitialDirection->setZ(1.0*TMath::Cos(fChicaneBendAngle));
          return(*fInitialDirection);
       }
-      virtual  G4ThreeVector &  GetMomentumVector(){
+      virtual  G4ThreeVector &  GetMomentumVector(const TParticle * ){
          fMomentumVector->setX(fInitialDirection->x() *fEventArray[0]*1000.0);
          fMomentumVector->setY(fInitialDirection->y()*fEventArray[0]*1000.0);
          fMomentumVector->setZ(fInitialDirection->z()*fEventArray[0]*1000.0);
          return(*fMomentumVector);
       }
-      virtual double GetParticleEnergy() {
-         return(fBeamEnergy);
-      }
+      virtual double GetParticleEnergy(const TParticle *) { return(fBeamEnergy); }
 };
 
 /** Uses QFS

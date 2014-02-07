@@ -73,21 +73,21 @@ class BETAG4EventGenerator : public InSANETargetEventGenerator {
    public:
 
       /** Returns the starting postiong of the primary particle. */
-      virtual  G4ThreeVector &  GetInitialPosition(TParticle * p);
+      virtual  G4ThreeVector&  GetInitialPosition(const TParticle * p);
 
       /** Returns the starting direction of the primary particle.
        * \deprecated
        */
-      virtual  G4ThreeVector &  GetInitialDirection(TParticle * p);
+      virtual  G4ThreeVector&  GetInitialDirection(const TParticle * p);
 
       /// \todo assuming particle is electron (eg E=P))
 
       /** Returns the starting postiong of the primary particle
        * \deprecated
        */
-      virtual  G4ThreeVector &  GetMomentumVector(TParticle * p);
+      virtual  G4ThreeVector &  GetMomentumVector(const TParticle * p);
 
-      virtual double GetParticleEnergy(TParticle * p);
+      virtual double GetParticleEnergy(const TParticle * p);
 
       void SetThetaMax    ( double val);
       void SetThetaMin    ( double val);

@@ -26,11 +26,14 @@
 BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 //_________________________________________________________________//
 
-BETASimulationManager::BETASimulationManager () :
-     fIsAppendMode(false),fRunNumber(0),
-     fSimulateCherenkovOptics(true),fSimulateHodoscopeOptics(false),
-     fSimulateTrackerOptics(true),fDebugLevel(3),fSimulateTrigger(true)
-{
+BETASimulationManager::BETASimulationManager () {
+   fIsAppendMode            = false;
+   fRunNumber               = 0;
+   fSimulateCherenkovOptics = true;
+   fSimulateHodoscopeOptics = false;
+   fSimulateTrackerOptics   = true;
+   fDebugLevel              = 3;
+   fSimulateTrigger         = true;
 
    fSimulationMessenger = new BETASimulationMessenger ( this );
 
@@ -98,11 +101,11 @@ void BETASimulationManager::write()
 }
 //_________________________________________________________________//
 
-void BETASimulationManager::SetDetectorVerbosity( char * detName, int level) {
-   if( detName == "GasCherenkov" ) {
+void BETASimulationManager::SetDetectorVerbosity(const char * detName, int level) {
+   if( !strcmp(detName,"GasCherenkov") ) {
       std::cout << "Setting Gas Cherenkov verbosity level to " << level << "\n";
       fGasCherenkovVerbosity = level;
-   } else if( detName == "Bigcal" ) {
+   } else if( !strcmp(detName , "Bigcal") ) {
       std::cout << "Setting Bigcal verbosity level to " << level << "\n";
       fBigcalVerbosity = level;
    } else {
@@ -111,12 +114,11 @@ void BETASimulationManager::SetDetectorVerbosity( char * detName, int level) {
 }
 //_________________________________________________________________//
 
-int BETASimulationManager::GetDetectorVerbosity( char * detName) {
+int BETASimulationManager::GetDetectorVerbosity(const char * detName) {
 
-   if( detName == "GasCherenkov" ) {
+   if( !strcmp(detName,"GasCherenkov") ) {
       return(fGasCherenkovVerbosity);
-   }
-   else if( detName == "Bigcal" ) {
+   } else if( !strcmp(detName , "Bigcal") ) {
       return(1);
       //    return(fBigcalVerbosity);
    }  else {

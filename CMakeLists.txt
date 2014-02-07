@@ -37,7 +37,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include
    ${GSL_INCLUDE_DIR}
    ${ROOT_INCLUDE_DIR})
 
-set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wno-unused-parameter -Wno-unused-variable ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wno-unused-parameter -Wno-unused-variable ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 #---------------------------------------------------------------------------
 # ROOT compile flags
 if(useROOT)

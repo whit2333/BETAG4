@@ -52,6 +52,16 @@ class BETARun;
  * \ingroup Manager
  */
 class BETASimulationManager {
+
+   public:
+      SANEScalers               * fSANEScalers;
+      SANEEvents                * fEvents;
+      bool                        fSimulateCherenkovOptics;
+      bool                        fSimulateTrackerOptics;
+      bool                        fSimulateHodoscopeOptics;
+      bool                        fSimulateBigcalOptics;
+      bool                        fSimulateTrigger;
+      int                         fDebugLevel;
    private: 
       BETASimulationManager( );
       static BETASimulationManager* fgBETASimulationManager;
@@ -92,15 +102,6 @@ class BETASimulationManager {
    public:
       BETASimulationMessenger * GetMessenger(){ return(fSimulationMessenger) ;}
 
-      SANEScalers               * fSANEScalers;
-      SANEEvents                * fEvents;
-      bool                        fSimulateCherenkovOptics;
-      bool                        fSimulateTrackerOptics;
-      bool                        fSimulateHodoscopeOptics;
-      bool                        fSimulateBigcalOptics;
-      bool                        fSimulateTrigger;
-      int                         fDebugLevel;
-
       G4MultiFunctionalDetector * fTrackerScoring;
       G4MultiFunctionalDetector * fCherenkovScoring;
       G4MultiFunctionalDetector * fBigcalScoring;
@@ -127,10 +128,10 @@ class BETASimulationManager {
       static void Dispose();
 
       /** Set detector's verbosity for debugging purposes. */
-      void SetDetectorVerbosity( char * detName, int level);
+      void SetDetectorVerbosity(const char * detName, int level);
 
       /** Get detector's verbosity for debugging purposes. */
-      int GetDetectorVerbosity( char * detName);
+      int GetDetectorVerbosity(const char * detName);
 
       /**
        * Sets whether plots are shown or not.
