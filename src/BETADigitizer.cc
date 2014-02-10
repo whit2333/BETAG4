@@ -57,6 +57,8 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
     fTrackerPhotonCounts = new int[132+132+72];
     fTrackerTimings = new int[132+132+72];
 
+    
+
 }
 //_______________________________________________________//
 
@@ -70,7 +72,7 @@ BETADigitizer::~BETADigitizer() {
    if(fHodoscopeTDCDC) delete fHodoscopeTDCDC;
    if(fTrackerADCDC) delete fTrackerADCDC;
    if(fTrackerTDCDC) delete fTrackerTDCDC;
-   if(fRandomNumberGenerator) delete fRandomNumberGenerator;
+   //if(fRandomNumberGenerator) delete fRandomNumberGenerator;
 }
 //_______________________________________________________//
 
@@ -168,18 +170,20 @@ void BETADigitizer::Digitize() {
    if(tDigi) if( tDigi->fChannelNumber == (G4int)bigcalGeoCalc->GetGroupNumber(1744) ) fBigcalTDCDC->insert ( tDigi );
 
    // Loop over Cherenkov Hits
-   for ( int i=0 ; i < fGasCherenkovHC->entries();i++ ) {
-      cerHit =  ( *fGasCherenkovHC )[i];
       /*    std::cout << "tube number: " << cerHit->fTubeNumber << "\n";*/
-      aDigi = new BETAG4DigiADC(cerHit->fTubeNumber);
+   for ( int i=0 ; i < fGasCherenkovHC->entries();i++ ) {
+      cerHit            = ( *fGasCherenkovHC )[i];
+      aDigi             = new BETAG4DigiADC(cerHit->fTubeNumber);
       aDigi->fTrueValue = cerHit->GetNumberOfPhotons();
-      aDigi->fADCValue = 100.*cerHit->GetNumberOfPhotoElectrons();
+      //aDigi->fADCValue  = 100.*cerHit->GetNumberOfPhotoElectrons();
+      aDigi->fADCValue  = fRandomNumberGenerator->Gaus( 100.*cerHit->GetNumberOfPhotoElectrons(), 
+                                                        TMath::Sqrt(cerHit->GetNumberOfPhotoElectrons())*50.0);
       fCherenkovADCDC->insert ( aDigi );
       if(cerHit->fTimingHit) {
-         tDigi = new BETAG4DigiTDC(cerHit->fTubeNumber);
-         tDigi->fTDCValue = cherenkovTDCChannelScaleFactor*cerHit->fTiming; 
-         tDigi->fTrueValue = cerHit->fTiming; 
-         tDigi->fADCValue = aDigi->fADCValue;
+         tDigi             = new BETAG4DigiTDC(cerHit->fTubeNumber);
+         tDigi->fTDCValue  = cherenkovTDCChannelScaleFactor*cerHit->fTiming;
+         tDigi->fTrueValue = cerHit->fTiming;
+         tDigi->fADCValue  = aDigi->fADCValue;
          tDigi->fNumberOfHits++;
          fCherenkovTDCDC->insert ( tDigi );
       }
@@ -346,10 +350,15 @@ void BETADigitizer::ReadOut() {
       aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
       aCERhit->fTDC           = 0;
       aCERhit->fLevel         = 0; /// Level zero is just ADC data
-      aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,2.5*TMath::Sqrt(aDigi->fADCValue)) + cerpedval+
-         fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth/2.0); 
+      //std::cout << aDigi->fTrueValue << std::endl;
+      //std::cout << aDigi->fADCValue << std::endl;
+      //aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,2.5*TMath::Sqrt(aDigi->fADCValue)) + cerpedval +
+      //aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,500.0/2.0) + cerpedval +
+      aCERhit->fADC           = aDigi->fADCValue + cerpedval + fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth/2.0); 
+      //std::cout << aCERhit->fADC << std::endl;
       aCERhit->fHitNumber     = gcEvent->fNumberOfHits;;
       aCERhit->fMirrorNumber  = aDigi->fChannelNumber;
+      aDigi->fADCValue        = aCERhit->fADC;
       gcEvent->fNumberOfHits++;
    }
 

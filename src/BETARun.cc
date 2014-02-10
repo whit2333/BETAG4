@@ -71,17 +71,22 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    fBETADigitizer = new BETADigitizer("/DAQ/BETA");
    fBETADigitizer->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
-}
-//____________________________________________________________________//
+   G4DigiManager * DM = G4DigiManager::GetDMpointer();
 
+   DM->AddNewModule(fDAQReadout);
+   DM->AddNewModule(fBETADigitizer);
+
+   runManager->SetNumberOfEventsToBeStored(1);
+
+}
+//______________________________________________________________________________
 BETARun::~BETARun()
 {
-if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
-   G4cout << "= Deleted BETARun \n";
+   if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
+      G4cout << "= Deleted BETARun \n";
+   }
 }
-}
-//____________________________________________________________________//
-
+//______________________________________________________________________________
 void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
 #ifdef BETAG4_DEBUG
@@ -140,18 +145,18 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       /*    std::cout << " Above Readout Triggered DAQ! \n";*/
       fBETADigitizer->Digitize();
 
-      fSimulationManager->fEvents->fEventNumber = numberOfEvent;
-      fSimulationManager->fEvents->fRunNumber = fSimulationManager->GetRunNumber();
+      fSimulationManager->fEvents->fEventNumber       = numberOfEvent;
+      fSimulationManager->fEvents->fRunNumber         = fSimulationManager->GetRunNumber();
       fSimulationManager->fEvents->TRIG->fEventNumber = numberOfEvent;
-      fSimulationManager->fEvents->TRIG->fRunNumber = fSimulationManager->fRunNumber;
+      fSimulationManager->fEvents->TRIG->fRunNumber   = fSimulationManager->fRunNumber;
       fSimulationManager->fEvents->BETA->fEventNumber = numberOfEvent;
-      fSimulationManager->fEvents->BETA->fRunNumber = fSimulationManager->GetRunNumber();
+      fSimulationManager->fEvents->BETA->fRunNumber   = fSimulationManager->GetRunNumber();
       fSimulationManager->fEvents->BEAM->fEventNumber = numberOfEvent;
-      fSimulationManager->fEvents->BEAM->fRunNumber = fSimulationManager->GetRunNumber();
+      fSimulationManager->fEvents->BEAM->fRunNumber   = fSimulationManager->GetRunNumber();
       fSimulationManager->fEvents->TRIG->fEventNumber = numberOfEvent;
-      fSimulationManager->fEvents->TRIG->fRunNumber = fSimulationManager->GetRunNumber();
-      fSimulationManager->fEvents->HMS->fEventNumber = numberOfEvent;
-      fSimulationManager->fEvents->HMS->fRunNumber = fSimulationManager->GetRunNumber();
+      fSimulationManager->fEvents->TRIG->fRunNumber   = fSimulationManager->GetRunNumber();
+      fSimulationManager->fEvents->HMS->fEventNumber  = numberOfEvent;
+      fSimulationManager->fEvents->HMS->fRunNumber    = fSimulationManager->GetRunNumber();
 
       //fBETADigitizer->Print();
       

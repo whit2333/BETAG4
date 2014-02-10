@@ -9,8 +9,7 @@
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 #include "InSANERun.h"
-// ROOT //
-//#include "Riostream.h"
+
 #include "TFile.h"
 #include "TNetFile.h"
 #include "TRandom.h"
@@ -62,9 +61,6 @@ class BETASimulationManager;
 class BETAG4DAQReadout;
 class BETADigitizer;
 class BETADetectorConstruction;
-/**
- * \ingroup Runs
- */
 
 /**
  * \brief Concrete class implementation of G4Run 
@@ -73,157 +69,133 @@ class BETADetectorConstruction;
  * Here is where we select the data we wish to record.
  * The important s here is RecordEvent which is called at then
  * end of each event.
+ *
+ * \ingroup Runs
  */
 class BETARun : public G4Run {
 
-public:
+   private:
+      int cer_tdc_thresh;
+      G4int  CherenkovPMTCount[20];
 
-   /**  Constructor opens ROOT file..
-    *  
-    */
-   BETARun(const int runNumber);
+      G4int hodoscopePMTHCID;
+      G4int hodoscopePMTcount;
+      G4double BCTE;
+      G4int fakePlaneID;
+      G4int PMTG4HCID;
 
-   /**  Destructor
-    */
-   ~BETARun();
-
-   /** Generates 1000 pedestal events before running /run/beamOn */
-   void GeneratePedestals();
-
-   BETADigitizer * fBETADigitizer;
-
-private:
-  BETAG4DAQReadout * fDAQReadout;
-  BETASimulationManager * fSimulationManager;
-  G4RunManager * runManager;
-  BETAPrimaryGeneratorAction * generator;
-  BETADetectorConstruction * construction;
-
-public:
-
-//   BETAEvent * betaEvent;
-//   HMSEvent* hmsEvent;
-//   HallCBeamEvent * beamEvent;
-  InSANERun * simulationRun;
-  BETAG4MonteCarloEvent * mcEvent;
+      G4int HHC1ID;
+      G4int HHC2ID;
+      G4int DHC1ID;
+      G4int DHC2ID;
+      G4int ECHCID;
+      G4int HCHCID;
+      G4int numberOfPrim;
+      G4int BIGCALID;
+      G4int BIGCALID2;
+      G4int FTID;
+      G4int fakePlaneEventNumber;
+      G4int MirrorHCID;
+      G4int PMTHCID;
 
 
-   /**  G4Run virtual method for recording all sensitive detector data
-    *
-    *  Makes use of BETAG4DAQReadout and BETADigitizer classes
-    *
-    */
-   void RecordEvent(const G4Event*);
+      G4int colIDSum[4];
 
-   /* Returns the Analysis manager singleton */
-//   BETASimulationManager* GetRunAnalysisManager() const { return fSimulationManager ;}
+      bool catLastFile;
+      bool fShowUnrealisticData;
 
-  // Dump all data
-  void DumpData() const;
+      std::ofstream MCOutput ;
 
-private:
+   private:
+      BETAG4DAQReadout           * fDAQReadout;
+      BETASimulationManager      * fSimulationManager;
+      G4RunManager               * runManager;
+      BETAPrimaryGeneratorAction * generator;
+      BETADetectorConstruction   * construction;
 
-   G4int colIDSum[4];
+   public:
 
-   bool catLastFile;
-   bool fShowUnrealisticData;
+      BETADigitizer         * fBETADigitizer;
+      InSANERun             * simulationRun;
+      BETAG4MonteCarloEvent * mcEvent;
 
-   std::ofstream MCOutput ;
+   public:
 
+      /**  Constructor opens ROOT file.  */
+      BETARun(const int runNumber);
+      virtual ~BETARun();
 
-// TROOT * theRoot; 
-// TApplication * theApp;
-//    TFile * RootFile;
+      /** Generates 1000 pedestal events before running /run/beamOn */
+      void GeneratePedestals();
 
-void DumpHallCMC();
+      /**  G4Run virtual method for recording all sensitive detector data.
+       *   Makes use of BETAG4DAQReadout and BETADigitizer classes
+       */
+      void RecordEvent(const G4Event*);
 
-public:
-
-//   G4double getPMT_MirrorEfficiency() {return(static_cast<G4double>(pmtTotalCount)/static_cast<G4double>(mirrorTotalCount) ); }
-
-TCanvas * c1;
-
-/**
- * Counters and IDs
- */
-private:
-int cer_tdc_thresh;
-    G4int  CherenkovPMTCount[20];
-
-    G4int hodoscopePMTHCID;
-    G4int hodoscopePMTcount;
-    G4double BCTE;
-    G4int fakePlaneID;
-    G4int PMTG4HCID;
-
-    G4int HHC1ID;
-    G4int HHC2ID;
-    G4int DHC1ID;
-    G4int DHC2ID;
-    G4int ECHCID;
-    G4int HCHCID;
-    G4int numberOfPrim;
-    G4int BIGCALID;
-    G4int BIGCALID2;
-    G4int FTID;
-    G4int fakePlaneEventNumber;
-    G4int MirrorHCID;
-    G4int PMTHCID;
+      void DumpData() const;
 
 
 
-	TTree * testTree;
-	TTree * detectorTree;
-	TTree * pseudoTree;
-    bool triggered;
-    int Trigger;
-    Double_t EDeposited;
-    Int_t FrontTrackerCellNumber;
+      //TROOT * theRoot; 
+      //TApplication * theApp;
+      //TFile * RootFile;
 
-    Double_t * BigCalEDepTop;
-    Double_t * BigCalEDepBottom;
-    Double_t * PhotoElectrons;
+      void DumpHallCMC();
 
-   typedef struct {
-       Double_t Energy,
-		Xpos, 
-		Ypos, 
-		Px, 
-		Py, 
-		Pz;
-          Int_t Type; /// 1=electron 2=positron, 3=pi+, 4=pi-, 5=gamma... should do this another way???
-	  Int_t NumberOfHits;
-		} fakeDetectorData;
-fakeDetectorData fakePlaneData;
+   public:
 
-Int_t eCountsThisEvent;
+      TCanvas * c1;
+      TTree * testTree;
+      TTree * detectorTree;
+      TTree * pseudoTree;
+      bool triggered;
+      int Trigger;
+      Double_t EDeposited;
+      Int_t FrontTrackerCellNumber;
 
-   typedef struct {Double_t one,two,three,four,five,six,seven,eight,total;} PE;
-PE pmtPE;
+      Double_t * BigCalEDepTop;
+      Double_t * BigCalEDepBottom;
+      Double_t * PhotoElectrons;
 
-   typedef struct {Double_t x, y , energy;} BIGCALEdep;
-BIGCALEdep BIGCALEdepPos;
+      typedef struct {
+         Double_t Energy,
+                  Xpos, 
+                  Ypos, 
+                  Px, 
+                  Py, 
+                  Pz;
+         Int_t Type; /// 1=electron 2=positron, 3=pi+, 4=pi-, 5=gamma... should do this another way???
+         Int_t NumberOfHits;
+      } fakeDetectorData;
+      fakeDetectorData fakePlaneData;
 
-   typedef struct {Int_t cellNumber, a, b ,c;} ForwardTrackerEvent;
-ForwardTrackerEvent ForwardTrackerAveragePos;
- // Define some simple structures
+      Int_t eCountsThisEvent;
 
-   typedef struct {Float_t x,y,z;} POINT;
-   typedef struct {
-      Int_t ntrack,nseg,nvertex;
-      UInt_t flag;
-      Float_t temperature;
-   } EVENTN;
+      //typedef struct {Double_t one,two,three,four,five,six,seven,eight,total;} PE;
+      //PE pmtPE;
 
-  // Helper function
-  void Print(const std::vector<G4String>& title,
-	     const std::map< G4int, std::vector<G4double> >&out) const;  
+      //typedef struct {Double_t x, y , energy;} BIGCALEdep;
+      //BIGCALEdep BIGCALEdepPos;
 
-  // Data member
-//  std::map<G4int, G4THitsMap<G4double>* > fMap;
+      //typedef struct {Int_t cellNumber, a, b ,c;} ForwardTrackerEvent;
+      //ForwardTrackerEvent ForwardTrackerAveragePos;
+      // Define some simple structures
+
+      //typedef struct {Float_t x,y,z;} POINT;
+      //typedef struct {
+      //   Int_t ntrack,nseg,nvertex;
+      //   UInt_t flag;
+      //   Float_t temperature;
+      //} EVENTN;
+
+      // Helper function
+      void Print(const std::vector<G4String>& title,
+            const std::map< G4int, std::vector<G4double> >&out) const;  
+
+      // Data member
+      //  std::map<G4int, G4THitsMap<G4double>* > fMap;
 };
-
-
 
 #endif
 

@@ -21,16 +21,15 @@
 #include "G4ParticleDefinition.hh"
 
 
-//_________________________________________________________________//
 
+//______________________________________________________________________________
 BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
-//_________________________________________________________________//
-
+//______________________________________________________________________________
 BETASimulationManager::BETASimulationManager () {
    fIsAppendMode            = false;
    fRunNumber               = 0;
    fSimulateCherenkovOptics = true;
-   fSimulateHodoscopeOptics = false;
+   fSimulateHodoscopeOptics = true;
    fSimulateTrackerOptics   = true;
    fDebugLevel              = 3;
    fSimulateTrigger         = true;

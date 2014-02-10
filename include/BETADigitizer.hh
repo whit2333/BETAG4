@@ -122,8 +122,7 @@ class BETADigitizer : public G4VDigitizerModule {
        */
       void ReadOut();
 
-      /** Clears Digi collections
-      */
+      /** Clears Digi collections */
       void Clear();
 
       virtual void Print();

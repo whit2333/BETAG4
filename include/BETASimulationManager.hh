@@ -32,9 +32,6 @@
 #include "BETAG4EventGenerator.hh"
 #include "SANEEventGenerators.hh"
 
-//#include "BETADetectorConstruction.hh"
-//#include "BETAPrimaryGeneratorAction.hh"
-
 class BETADetectorConstruction;
 class BETAPrimaryGeneratorAction;
 class BETARunAction;
@@ -219,21 +216,21 @@ class BETASimulationManager {
             std::cout << "Updating run info... " << std::cout;
             // Beam
             fInSANERun->SetBeamEnergy(  GetBeamEnergy() );
-            fInSANERun->fBeamPolarization = 60.0;
-            fInSANERun->fAverageBeamCurrent = 90.0;
+            fInSANERun->fBeamPolarization        = 60.0;
+            fInSANERun->fAverageBeamCurrent      = 90.0;
             fInSANERun->fAverageBeamPolarization = 60.0;
-            fInSANERun->fBCM1ChargeAsymmetry = 0.0;
-            fInSANERun->fBCM2ChargeAsymmetry = 0.0;
+            fInSANERun->fBCM1ChargeAsymmetry     = 0.0;
+            fInSANERun->fBCM2ChargeAsymmetry     = 0.0;
             // Target
             fInSANERun->SetTargetAngle( GetTargetAngle() );
             fInSANERun->fTargetOfflinePolarization = 60.0;
-            fInSANERun->fTargetOnlinePolarization = 60.0;
+            fInSANERun->fTargetOnlinePolarization  = 60.0;
             fInSANERun->fAverageTargetPolarization = 60.0;
-            fInSANERun->fTarget = InSANERun::kNH3;
-            fInSANERun->fTargetPolarizationSign = InSANERun::kPOSITIVE;
-            fInSANERun->fTargetCup = InSANERun::kTOP;
-            fInSANERun->fTargetOrientation = InSANERun::kANTIPARALLEL;
-            fInSANERun->fTargetField = 5.1;
+            fInSANERun->fTarget                    = InSANERun::kNH3;
+            fInSANERun->fTargetPolarizationSign    = InSANERun::kPOSITIVE;
+            fInSANERun->fTargetCup                 = InSANERun::kTOP;
+            fInSANERun->fTargetOrientation         = InSANERun::kANTIPARALLEL;
+            fInSANERun->fTargetField               = 5.1;
          }
       }
 

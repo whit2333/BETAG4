@@ -12,61 +12,42 @@
 #include <algorithm>
 #include <vector>
 
-/**
- *  Simulates an ADC channel
+/**  Simulates an ADC channel.
  */
 class BETAG4DigiADC : public G4VDigi {
-  public:
-/**
- *  Constructor
- */
-  BETAG4DigiADC(G4int channel=-1) {
-    fChannelNumber = channel;
-    fADCValue = 0;
-    fTrueValue =0.0;
-  };
 
+   public:
+      G4int    fChannelNumber;
+      G4int    fADCValue;
+      G4double fTrueValue;
 
-/**
- *  Destructor
- */
-  ~BETAG4DigiADC(){
-  };
+   public:
+      BETAG4DigiADC(G4int channel=-1);
+      ~BETAG4DigiADC();
 
-  void *operator new(size_t);
-
-  void operator delete(void *aDigi);
-
-  // Methods
-  virtual void Draw(){
-  };
-
-  virtual void Print(){
-  };
-
-  G4int fChannelNumber;
-  G4int fADCValue;
-  G4double fTrueValue;
-
-private:
+      void* operator new(size_t);
+      void  operator delete(void *aDigi);
+      void Draw();
+      void Print();
 
 };
-//_______________________________________________________//
+//______________________________________________________________________________
 
 typedef G4TDigiCollection<BETAG4DigiADC> BETAG4DigiADCCollection;
 
 extern G4Allocator<BETAG4DigiADC> BETAG4DigiADCAllocator;
 
+//______________________________________________________________________________
 inline void * BETAG4DigiADC::operator new(size_t)
 {
-  void* aDigi;
-  aDigi = (void*)BETAG4DigiADCAllocator.MallocSingle();
-  return aDigi;
+   void* aDigi;
+   aDigi = (void*)BETAG4DigiADCAllocator.MallocSingle();
+   return aDigi;
 }
-
+//______________________________________________________________________________
 inline void BETAG4DigiADC::operator delete(void* aDigi)
 {
-  BETAG4DigiADCAllocator.FreeSingle((BETAG4DigiADC*) aDigi);
+   BETAG4DigiADCAllocator.FreeSingle((BETAG4DigiADC*) aDigi);
 }
 
 #endif
