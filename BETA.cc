@@ -20,7 +20,22 @@
 #ifdef G4VIS_USE
 #include "G4VisExecutive.hh"
 #endif
+#include "getopt.h"
+#include <math.h>
+#include <string>
 
+#define no_argument 0
+#define required_argument 1 
+#define optional_argument 2
+
+
+void print_usage();
+void print_libs();
+void print_cflags();
+void print_ldflags();
+void print_inc();
+void print_version();
+void print_grid();
 
 /**
  * \mainpage 
@@ -79,12 +94,83 @@
 */
 /**  BETAG4 : Big Electron Telescope Array Geant4 Simulation
  *
- * 
- *
- *
  */
 int main(int argc,char** argv)
 {
+   int  run_set         = 0;
+   bool is_interactive  = true;
+   std::string theMacro = "";
+
+   const struct option longopts[] =
+   {
+      {"run",       required_argument,  0, 'r'},
+      {"version",   no_argument,        0, 'v'},
+      {"help",      no_argument,        0, 'h'},
+      {"macro",     required_argument,  0, 'm'},
+      {"cflags",    no_argument,        0, 'c'},
+      {"ldflags",   no_argument,        0, 'd'},
+      {"inc",       no_argument,        0, 'i'},
+      {"grid",      no_argument,        0, 'g'},
+      {0,0,0,0}
+   };
+
+   int index = 0;
+   int iarg  = 0;
+   opterr    = 1; //turn off getopt error message
+
+   while(iarg != -1) {
+      iarg = getopt_long(argc, argv, "vhlcdr:m:", longopts, &index);
+
+      switch (iarg)
+      {
+         case 'r':
+            std::cout << "run should be set to " << optarg << std::endl;
+            run_set = atoi(optarg);
+            break;
+
+         case 'm':
+            std::cout << "Macro set to " << optarg << std::endl;
+            theMacro = optarg;
+            is_interactive  = false;
+            break;
+
+         case 'h':
+            print_usage();
+            break;
+
+         case 'v':
+            print_version();
+            break;
+
+         case 'l':
+            print_libs();
+            break;
+
+         case 'c':
+            print_cflags();
+            break;
+
+         case 'i':
+            print_inc();
+            break;
+
+         case 'd':
+            print_ldflags();
+            break;
+
+         case 'g':
+            print_grid();
+            break;
+      }
+   }
+
+   std::string theRest  = "";
+   for (int i = optind; i < argc; i++) {
+      is_interactive  = false;
+      theRest        += argv[i];
+   }
+   std::cout << " the rest of the arguments: " << theRest << std::endl;
+
    // Seed the random number generator manually
    G4long myseed = 983;
    std::ifstream input_file ;
@@ -100,32 +186,31 @@ int main(int argc,char** argv)
    TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
    rand->SetSeed(myseed);
 
-
-   /// User Verbose output class
+   // User Verbose output class
    G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
    G4VSteppingVerbose::SetInstance(verbosity);
 
-   /// Run manager
+   // Run manager
    G4RunManager* runManager = new G4RunManager;
 
-   /// UserInitialization classes - mandatory
+   // UserInitialization classes - mandatory
    G4VUserDetectorConstruction* detector = new BETADetectorConstruction;
    runManager->SetUserInitialization(detector);
 
-   /// Physics List
+   // Physics List
    G4VUserPhysicsList* physics = new BETAPhysicsList;
    physics->SetVerboseLevel(0);
    runManager-> SetUserInitialization(physics);
 
-   /// visualization manager
+   // visualization manager
    #ifdef G4VIS_USE
    G4VisManager* visManager = new G4VisExecutive;
    visManager->SetVerboseLevel(0);
    visManager->Initialize();
    #endif
 
-   /// UserAction classes
-   G4UserRunAction* run_action = new BETARunAction;
+   // UserAction classes
+   G4UserRunAction* run_action = new BETARunAction(run_set);
    runManager->SetUserAction(run_action);
 
    G4VUserPrimaryGeneratorAction* gen_action = new BETAPrimaryGeneratorAction;
@@ -151,16 +236,15 @@ int main(int argc,char** argv)
       new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
 
    std::cout << " o Initializing G4 kernel " << std::endl;
-   /// Initialize G4 kernel
+
+   // Initialize G4 kernel
    runManager->Initialize();
    std::cout << " o Done initializing G4 kernel " << std::endl;
 
-   /// Get the pointer to the User Interface manager
+   // Get the pointer to the User Interface manager
    G4UImanager* UI = G4UImanager::GetUIpointer(); 
 
-
-   if (argc==1)   // Define UI session for interactive mode
-   {
+   if(is_interactive) {
       G4UIsession* session = 0;
       #ifdef G4UI_USE_TCSH
       // session = new G4UIGAG;      
@@ -175,7 +259,12 @@ int main(int argc,char** argv)
    } else {
       // Batch mode, quit at the end
       G4String command = "/control/execute ";
-      G4String fileName = argv[1];
+      G4String fileName;
+      if(!theMacro.empty()) {
+         fileName = theMacro;//argv[1];
+      } else {
+         fileName = theRest;//argv[1];
+      }
       //UI->ApplyCommand(command+fileName);
       G4UIsession* session = 0;
       // UI->ApplyCommand("/control/execute vis.mac"); 
@@ -206,4 +295,32 @@ int main(int argc,char** argv)
     Detectors
  */
 
+
+void print_version(){
+   //std::cout << "InSANE Version " << InSANE_VERSION_MAJOR << "." << InSANE_VERSION_MINOR << " ";
+}
+
+void print_usage(){
+   //std::cout << "insane-config --libs --cflags --ldflags --inc --grid" << " ";
+}
+
+void print_libs(){
+   //std::cout << InSANE_CXX_LIBS << " ";
+}
+
+void print_inc(){
+   //std::cout << InSANE_CXX_INC_DIR << " ";
+}
+
+void print_cflags(){
+   //std::cout << InSANE_CXX_CFLAGS << " ";
+}
+
+void print_ldflags(){
+   //std::cout << InSANE_CXX_LDFLAGS << " ";
+}
+
+void print_grid(){
+   //std::cout << InSANE_GRID_DATA_DIR << " ";
+}
 

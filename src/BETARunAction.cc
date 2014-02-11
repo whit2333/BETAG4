@@ -16,10 +16,12 @@
 
 //_________________________________________________________________
 
-BETARunAction::BETARunAction() :showThePlots ( 0 ) {
+BETARunAction::BETARunAction(int run) :showThePlots ( 0 ) {
+
    fSimulationManager = BETASimulationManager::GetInstance();
-   fRunNumber = fSimulationManager->InitializeNewRun();
-   fRunNumber = fSimulationManager->IncrementRunNumber();
+
+   fRunNumber = fSimulationManager->InitializeNewRun(run);
+
    timer = new G4Timer;
    fCurrentRun=0;
 }
@@ -48,7 +50,7 @@ G4Run*  BETARunAction::GenerateRun() {
    SANERunManager::GetRunManager()->SetRun(fRunNumber);
    fSimulationManager->fInSANERun  = SANERunManager::GetRunManager()->GetCurrentRun();// = new InSANERun(fRunNumber);
 
-   /// Opens Root File With a name Depending on the Run number
+   // Opens Root File With a name Depending on the Run number
    std::string fname;
    std::stringstream out;
    if ( fSimulationManager->IsAppendMode() ) {

@@ -58,8 +58,7 @@ BETASimulationManager::~BETASimulationManager()
 {
    delete fSimulationMessenger;
 }
-//_________________________________________________________________//
-
+//______________________________________________________________________________
 BETASimulationManager* BETASimulationManager::GetInstance (  )
 {
    if ( fgBETASimulationManager == 0 )
@@ -71,12 +70,12 @@ BETASimulationManager* BETASimulationManager::GetInstance (  )
         }*/
    return fgBETASimulationManager;
 }
-//_________________________________________________________________//
-
-int BETASimulationManager::InitializeNewRun() {
-   fRunNumber= RetrieveRunNumber();
+//______________________________________________________________________________
+int BETASimulationManager::InitializeNewRun(int run) {
+   fRunNumber = RetrieveRunNumber(run);
    return(fRunNumber);
 }
+//______________________________________________________________________________
 
 void BETASimulationManager::Dispose()
 {
@@ -125,14 +124,19 @@ int BETASimulationManager::GetDetectorVerbosity(const char * detName) {
    }
    return(-1);
 }
-//_________________________________________________________________//
-
-int BETASimulationManager::RetrieveRunNumber()
-{
-   std::ifstream input_file;
-   input_file.open ( "run.txt" );
-   input_file >> fRunNumber ;
-   input_file.close(); 
+//______________________________________________________________________________
+int BETASimulationManager::RetrieveRunNumber(int run) {
+   // If the run argument is supplied the run is simply set to that number.
+   // otherwise the run file is used (and incrmeneted).
+   if(run == 0){
+      std::ifstream input_file;
+      input_file.open ( "run.txt" );
+      input_file >> fRunNumber ;
+      input_file.close(); 
+      IncrementRunNumber();
+   } else {
+      fRunNumber = run;
+   }
    return(fRunNumber);
 }
 //_________________________________________________________________//

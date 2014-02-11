@@ -25,7 +25,7 @@ class BETARunAction : public G4UserRunAction
  *    run number incrementing --> run.txt file ... should just get it from a database
  *
  */
-    BETARunAction();
+    BETARunAction(int run = 0);
 /**
  *
  *

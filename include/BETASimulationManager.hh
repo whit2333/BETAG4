@@ -163,7 +163,7 @@ class BETASimulationManager {
        * Returns the run number 
        * \todo Make the source of run number a database, not a text file. 
        */ 
-      int GetRunNumber(){ return fRunNumber; };
+      int GetRunNumber() const { return fRunNumber; };
 
       /**
        * Increments the run number in memory and in file/database
@@ -176,7 +176,7 @@ class BETASimulationManager {
        * Gets the run number from a file/database
        * \todo Make the source of run number a database, not a text file. 
        */
-      int RetrieveRunNumber();
+      int RetrieveRunNumber(int run = 0);
 
       /**
        * Allocate Event and Hit memory
@@ -209,7 +209,7 @@ class BETASimulationManager {
       /**
        *  Only increments some counter in text file.
        */
-      int InitializeNewRun();
+      int InitializeNewRun(int run = 0);
 
       void UpdateRun(){
          if(fInSANERun){
