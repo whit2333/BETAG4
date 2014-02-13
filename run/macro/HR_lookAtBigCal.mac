@@ -33,6 +33,15 @@
 /vis/modeling/trajectories/drawByCharge-0/set 1 blue
 /vis/modeling/trajectories/drawByCharge-0/set 0 red
 
+/beta/gun/setEventType flat
+/beta/gun/setEnergyMin 0.50
+/beta/gun/setEnergyMax  5.0
+/beta/gun/setThetaMin 35.0
+/beta/gun/setThetaMax 45.0
+/beta/gun/setPhiMin   -60.0
+/beta/gun/setPhiMax   50.0
+/beta/gun/refresh
+/beta/gun/listPSVariables
 #/vis/modeling/trajectories/create/drawByParticleID 
 #/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton red
 #/vis/modeling/trajectories/drawByParticleID-0/setRGBA e- 1 0 1 1

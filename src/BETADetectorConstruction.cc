@@ -73,7 +73,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    usingFakePlaneAtBigcal  = true;
    usingFakePlaneAtForwardTracker = false;
 
-   fIsBlackLineVis = true;
+   fIsBlackLineVis = false;//true;
 
    tracker_log=0;
    tracker_phys=0;
@@ -4007,14 +4007,12 @@ void BETADetectorConstruction::ConstructN2Shield()
    ConstructMagnet();   //Constructs the magnet and its components
 
 }
+//______________________________________________________________________________
+void BETADetectorConstruction::ConstructNose() {
 
-//___________________________________________________________________
-// Constructs the nosepiece and everything in it
-void BETADetectorConstruction::ConstructNose()
-{
-   
-   //The Nose piece as a whole (made of LHe)
-   //Displaced by -1.8542 cm in z direction because the windows in the target
+   // Constructs the nosepiece and everything in it
+   // The Nose piece as a whole (made of LHe)
+   // Displaced by -1.8542 cm in z direction because the windows in the target
    // can are also slightly off center
 
    HeIR = 4.*cm;
@@ -4077,16 +4075,16 @@ void BETADetectorConstruction::ConstructNose()
   //int i;
   //double x,y,z;
 
-  solidCell = new G4Tubs("Cell", 0.*cm, 1.25*cm, 0.15*cm, 0., 7.);
-    logicCell = new G4LogicalVolume(solidCell, TargetNH3, "Cell");
+   //solidCell = new G4Tubs("Cell", 0.*cm, 1.25*cm, 0.15*cm, 0., 7.);
+   //logicCell = new G4LogicalVolume(solidCell, TargetNH3, "Cell");
 
-//   for(i=0;i<10;i++){
-//     x = -1.35*cm + i*0.30*cm;
-//     y = 0.;
-//     z = 0.;
-//     physiCell = new G4PVPlacement(G4Transform3D(RMCell, G4ThreeVector(x,y,z)),
-//       logicCell, "Cell", logicNose, true, i);
-//   }
+   //for(int i=0;i<10;i++){
+   //  x = -1.35*cm + i*0.30*cm;
+   //  y = 0.;
+   //  z = 0.;
+   //  physiCell = new G4PVPlacement(G4Transform3D(RMCell, G4ThreeVector(x,y,z)),
+   //    logicCell, "Cell", logicNose, true, i);
+   //}
 
    //I want to see the tail...
    G4VisAttributes* TailVisAtt= new G4VisAttributes ( G4Colour ( 1.,0.,0.5,0.2 ) );
