@@ -143,7 +143,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       if( fDAQReadout->IsGoodEvent() ) fBETADigitizer->SetTriggered(true);
 
       /*    std::cout << " Above Readout Triggered DAQ! \n";*/
-      fBETADigitizer->Digitize();
+      if(fBETADigitizer->IsTriggered()) fBETADigitizer->Digitize();
 
       fSimulationManager->fEvents->fEventNumber       = numberOfEvent;
       fSimulationManager->fEvents->fRunNumber         = fSimulationManager->GetRunNumber();
@@ -161,18 +161,20 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       //fBETADigitizer->Print();
       
 
-      fBETADigitizer->ReadOut();
-      fDAQReadout->ReadOut();
+      if(fBETADigitizer->IsTriggered())fBETADigitizer->ReadOut(); // contains the detector's readout
+      if(fBETADigitizer->IsTriggered())fDAQReadout->ReadOut();    // contains the fake plane's readout
 
       fSimulationManager->fDetectorTree->Fill();
 
-   fBETADigitizer->Clear();
+      fBETADigitizer->Clear();
 
    }
    fDAQReadout->Clear();
 
    numberOfEvent++;
 
+   fDAQReadout->Reset();
+   fBETADigitizer->Reset();
 
 #ifdef BETAG4_DEBUG
    if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {

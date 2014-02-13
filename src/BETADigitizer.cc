@@ -583,6 +583,9 @@ void BETADigitizer::DigitizePedestals(){
 //__________________________________________________________________
 
 void BETADigitizer::Clear() {
+
+   BETASimulationManager::GetInstance()->fEvents->ClearEvent();
+
    delete fCherenkovADCDC;
    fCherenkovADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );

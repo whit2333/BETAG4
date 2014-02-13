@@ -32,7 +32,7 @@ BETASimulationManager::BETASimulationManager () {
    fSimulateHodoscopeOptics = true;
    fSimulateTrackerOptics   = true;
    fDebugLevel              = 3;
-   fSimulateTrigger         = true;
+   fSimulateTrigger         = false;
 
    fSimulationMessenger = new BETASimulationMessenger ( this );
 
