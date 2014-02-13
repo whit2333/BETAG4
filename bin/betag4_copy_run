@@ -1,7 +1,18 @@
 #!/bin/bash
 
 runNumber=${1}
-cd $HOME/sane08/BETAG4/run
-scp data/rootfiles/InSANE${runNumber}.-1.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
-scp data/rootfiles/scalers${runNumber}.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
+#cd $HOME/sane08/BETAG4/run
+echo "test"
+#scp data/rootfiles/InSANE${runNumber}.-1.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
+#scp data/rootfiles/scalers${runNumber}.root quarks.temple.edu:sane08/InSANE/main/data/rootfiles/.
+#ssh demodoc@cli.globusonline.org scp go#ep1:/share/godata/file1.txt go#ep2:~/myfile.txt
 
+ssh cli.globusonline.org transfer -- jlab#scigw/expphy/volatile/hallc/sane/whit/data/rootfiles/InSANE${runNumber}.-1.root \
+       whit#quarks.temple.edu/home/whit/globus_data_dump/InSANE${runNumber}.-1.root
+ssh cli.globusonline.org transfer -- jlab#scigw/expphy/volatile/hallc/sane/whit/data/rootfiles/scalers${runNumber}.root \
+       whit#quarks.temple.edu/home/whit/globus_data_dump/scalers${runNumber}.root
+
+#ssh cli.globusonline.org scp jlab#scigw:/expphy/volatile/hallc/sane/whit/data/rootfiles/InSANE${runNumber}.-1.root \
+#       whit#quarks.temple.edu:/home/whit/globus_data_dump/InSANE${runNumber}.-1.root
+#ssh cli.globusonline.org scp jlab#scigw:/expphy/volatile/hallc/sane/whit/data/rootfiles/scalers${runNumber}.root \
+#       whit#quarks.temple.edu:/home/whit/globus_data_dump/scalers${runNumber}.root

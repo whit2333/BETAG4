@@ -4,14 +4,15 @@
 
 
 /beta/gun/setEventType allNH3 
-/beta/gun/setEnergyMin 0.500
-/beta/gun/setEnergyMax 3.0 
-/beta/gun/setThetaMin 30.0 
-/beta/gun/setThetaMax 50.0
-/beta/gun/setPhiMin   -60.0
-/beta/gun/setPhiMax   60.0
+#/beta/gun/setEventType disNH3 
+#/beta/gun/setEnergyMin 0.500
+#/beta/gun/setEnergyMax 3.0 
+#/beta/gun/setThetaMin 20.0 
+#/beta/gun/setThetaMax 50.0
+#/beta/gun/setPhiMin   -60.0
+#/beta/gun/setPhiMax   60.0
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 10000
+/run/beamOn 100000
 

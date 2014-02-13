@@ -1,18 +1,39 @@
 #!/bin/bash
-source /home/whit/.bashrc
-macfile=${1}
 
-#printenv
-#echo $LD_LIBRARY_PATH  | sed 's/:/\n/g'
+usage() { echo "Error: Requires run and macro arguments";  }
+runnumber=
+macro=
+while getopts "r:m:" options; do
+  case $options in
+    r ) runnumber=$OPTARG ;;
+    m ) macro=$OPTARG ;;
+    h ) usage;;
+    \? ) usage 
+         exit 1;;
+    * ) usage ;
+          exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [ -z "${runnumber}" ] || [ -z "${macro}" ]; then
+   usage
+   exit -1
+fi
+
+source /home/whit/.bashrc
+
 cd $HOME/sane08/BETAG4/run; 
 pwd
-runnum=`cat run.txt`
-runnum=`expr $runnum + 1`
-mkdir log/$runnum
 
-cat $macfile >> log/$runnum/betag4.mac
+mkdir -p log/${runnumber}
 
-BETA $macfile 1>> log/$runnum/betag4.out 2>> log/$runnum/betag4.err
+cat ${macro} >> log/${runnumber}/betag4.mac
+if [ $? -ne 0 ]; then 
+   exit -1;
+fi
+
+BETA -r ${runnumber} -m ${macro} 1>> log/${runnumber}/betag4.out 2>> log/${runnumber}/betag4.err
 
 #wait
 
