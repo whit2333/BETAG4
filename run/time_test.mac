@@ -1,0 +1,6 @@
+/beta/target/setPolarizationAngle 180
+
+/beta/gun/setEventType allNH3 
+
+/run/beamOn 10000
+

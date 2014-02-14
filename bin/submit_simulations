@@ -1,0 +1,46 @@
+#!/bin/bash
+
+usage() { 
+   echo "submit_simulations -r FIRSTRUN -n NUMBEROFRUNS -m MACRO ";
+   echo "   -d optionally does a dry run without submiting the jobs and prints the jsub script";
+}
+runnumber=
+macro=
+numberofruns=
+dryrun=
+while getopts "dr:m:n:" options; do
+  case $options in
+    d ) dryrun=1 ;;
+    r ) runnumber=$OPTARG ;;
+    n ) numberofruns=$OPTARG ;;
+    m ) macro=$OPTARG ;;
+    h ) usage;;
+    \? ) usage 
+         exit 1;;
+    * ) usage ;
+          exit 1;;
+  esac
+done
+shift $((OPTIND-1))
+
+if [ -z "${runnumber}" ] || [ -z "${macro}" ] || [ -z "${numberofruns}" ]; then
+   usage
+   exit -1
+fi
+
+tempfile=`mktemp`
+nruns=`expr ${numberofruns} - 1`
+for i in `seq 0 ${nruns}` ; do
+   aRunNum=`expr ${runnumber} + ${i}`
+   #echo "${i}"
+   echo "run: ${aRunNum}"
+   betag4_auger_config -r ${aRunNum} -m ${macro} > ${tempfile} 
+   echo $tempfile
+   if [ -z "${dryrun}" ] ; then
+      jsub $tempfile
+   else 
+      cat  $tempfile
+   fi
+
+done
+
