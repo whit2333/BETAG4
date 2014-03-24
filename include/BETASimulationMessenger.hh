@@ -79,6 +79,8 @@ class BETASimulationMessenger: public G4UImessenger {
       G4UIcmdWithAString       * fCmd_toggleLuciteHodoscope;
       G4UIcmdWithAString       * fCmd_toggleBigcal;
 
+      G4UIcmdWithAnInteger      * fCmd_simTrigger;
+
    public:
       BETASimulationMessenger(BETASimulationManager* );
       ~BETASimulationMessenger();

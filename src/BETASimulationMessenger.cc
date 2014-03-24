@@ -37,6 +37,11 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_polSet->SetDefaultValue ( fSimManager->GetTargetAngle() );
    fCmd_polSet->AvailableForStates ( G4State_Idle );
 
+   fCmd_simTrigger = new G4UIcmdWithAnInteger ( "/beta/simulateTrigger",this );
+   fCmd_simTrigger->SetGuidance ( "Set to 1 in order to simulate the trigger of readout, otherwise readout occurs for every event" );
+   fCmd_simTrigger->SetDefaultValue ( 0 );
+   fCmd_simTrigger->AvailableForStates ( G4State_Idle );
+
    fCmd_rotateMirror = new G4UIcmdWithAString ( "/beta/gasCherenkov/mirrors/rotateToroidalMirrors",this );
    fCmd_rotateMirror->SetGuidance ( "Arguments: [mirror number] [rotate horz] [rotate  vert]" );
    fCmd_rotateMirror->AvailableForStates ( G4State_Idle );
@@ -217,7 +222,12 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
    BETADetectorConstruction * fDetConstruction = GetDetectorConstruction();
    BETAPrimaryGeneratorAction * BETAAction = GetPrimaryGeneratorAction();
    BETAG4EventGenerator * anEventGen = BETAAction->GetEventGenerator();
+   BETASimulationManager * simManager = BETASimulationManager::GetInstance();
 
+   if ( command == fCmd_simType ) {
+      if(fCmd_simTrigger->GetNewIntValue(newValue) != 0) simManager->fSimulateTrigger = true;
+      else simManager->fSimulateTrigger = false;
+   }
    if ( command == fCmd_simType ) {
 
    }
