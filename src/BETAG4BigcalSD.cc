@@ -4,23 +4,17 @@
 #include "G4Step.hh"
 #include "G4TouchableHistory.hh"
 #include "G4Track.hh"
-//_______________________________________________________//
 
-BETAG4BigcalSD::BETAG4BigcalSD ( const G4String& name )
-      : G4VSensitiveDetector ( name )
-{
+//______________________________________________________________________________
+BETAG4BigcalSD::BETAG4BigcalSD(const G4String& name):G4VSensitiveDetector(name){
    collectionName.insert ( "bigcal" );
    fHitsCollectionID = -1;
 }
-//_______________________________________________________//
-
+//______________________________________________________________________________
 BETAG4BigcalSD::~BETAG4BigcalSD() { 
-
 }
-//_______________________________________________________//
-
-void BETAG4BigcalSD::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
-{
+//______________________________________________________________________________
+void BETAG4BigcalSD::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent){
    // Create a new collection
    fHitsCollection =
       new BETAG4BigcalHitsCollection ( SensitiveDetectorName, collectionName[0] );
@@ -33,17 +27,14 @@ void BETAG4BigcalSD::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent )
 
    // Initialise hits
    G4int i ( 0 );
-
    for ( i=0; i<1744; i++ )
    {
       BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
       fHitsCollection->insert ( aHit );
    }
 }
-//_______________________________________________________//
-
-G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
-{
+//______________________________________________________________________________
+G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 
    G4Track * theTrack = aStep->GetTrack();
 
@@ -86,10 +77,7 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* )
 
    return true;
 }
-//_______________________________________________________//
-
+//______________________________________________________________________________
 void BETAG4BigcalSD::EndOfEvent ( G4HCofThisEvent* ) {
-
-
 }
-//_______________________________________________________//
+//______________________________________________________________________________
