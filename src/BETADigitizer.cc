@@ -411,7 +411,7 @@ void BETADigitizer::ReadOut() {
       aBChit->fiCell = bigcalGeoCalc->GetBlock_i(aDigi->fChannelNumber);
       aBChit->fjCell = bigcalGeoCalc->GetBlock_j(aDigi->fChannelNumber);
       aBChit->fADC   = aDigi->fADCValue + fSimulationManager->fBigcalDetector->fTypicalPedestal+
-         fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth/2.0);
+         fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth/4.0);
 
       /// Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
       grouprowNumber = bigcalGeoCalc->GetGroupNumber(aBChit->fiCell,aBChit->fjCell);
