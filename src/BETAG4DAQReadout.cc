@@ -1,4 +1,5 @@
 #include "BETAG4DAQReadout.hh"
+#include "BETADetectorConstruction.hh"
 
 BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modName) {
 
@@ -7,7 +8,6 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    fBigcalADCSumDC =
       new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCSums" );
 
-   fSimulationManager = 0;
    fSimulationManager = BETASimulationManager::GetInstance();
 
    mcEvent= fSimulationManager->fEvents->MC;
@@ -31,15 +31,18 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
      fCherenkovHCID  = SDman->GetCollectionID (colName= "GasCherenkov/pmt" );
    if(fCherenkovHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-/*  if(fSimulationManager->fConstruction->usingFakePlaneAtBigcal)*/
-    fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
-   if(fBigcalFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+   if(fSimulationManager->GetDetectorConstruction()->usingFakePlaneAtBigcal) {
+      fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
+      if(fBigcalFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+   }
 
-   fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
-   if(fTrackerFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+   if(fSimulationManager->GetDetectorConstruction()->usingFakePlaneAtForwardTracker) {
+      fTrackerFakePlaneHCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane/fakePlane" );
+      if(fTrackerFakePlaneHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-   fTrackerFakePlane2HCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane2/fakePlane2" );
-   if(fTrackerFakePlane2HCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+      fTrackerFakePlane2HCID  = SDman->GetCollectionID (colName= "ForwardTrackerPlane2/fakePlane2" );
+      if(fTrackerFakePlane2HCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+   }
 
 
    fBigcalTriggerThreshold    = 200.0; //MeV

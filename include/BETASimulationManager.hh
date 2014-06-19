@@ -1,20 +1,30 @@
 #ifndef BETASimulationManager_h
 #define BETASimulationManager_h 1
+
+#include <fstream>
+
 #include "G4UserEventAction.hh"
 #include "globals.hh"
-#include <fstream>
 #include "G4PSFlatSurfaceFlux.hh"
 #include "G4PSPassageCellCurrent.hh"
 #include "G4PSTrackLength.hh"
 #include "G4PSTrackLength.hh"
 #include "G4PSPassageTrackLength.hh"
 #include "G4PSEnergyDeposit.hh"
+#include "G4SDKineticEnergyFilter.hh"
+#include "G4SDChargedFilter.hh"
+#include "G4ScoringManager.hh"
+#include "G4SDParticleFilter.hh"
+#include "G4SDManager.hh"
+
+#include "BETAG4EventGenerator.hh"
+#include "SANEEventGenerators.hh"
+
+#include "BETADetectorPackage.h"
 #include "BigcalDetector.h"
 #include "GasCherenkovDetector.h"
 #include "LuciteHodoscopeDetector.h"
 #include "ForwardTrackerDetector.h"
-#include "G4SDKineticEnergyFilter.hh"
-#include "G4SDChargedFilter.hh"
 #include "BETAG4EventGenerator.hh"
 #include "HallCBeamEvent.h"
 #include "HMSEvent.h"
@@ -24,13 +34,8 @@
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
 #include "BETAG4SimulationRun.h"
-#include "G4ScoringManager.hh"
 #include "SANEEvents.h"
 #include "SANEScalers.h"
-#include "G4SDParticleFilter.hh"
-#include "G4SDManager.hh"
-#include "BETAG4EventGenerator.hh"
-#include "SANEEventGenerators.hh"
 
 class BETADetectorConstruction;
 class BETAPrimaryGeneratorAction;
@@ -59,6 +64,7 @@ class BETASimulationManager {
       bool                        fSimulateBigcalOptics;
       bool                        fSimulateTrigger;
       int                         fDebugLevel;
+
    private: 
       BETASimulationManager( );
       static BETASimulationManager* fgBETASimulationManager;
@@ -104,6 +110,7 @@ class BETASimulationManager {
       G4MultiFunctionalDetector * fBigcalScoring;
       G4MultiFunctionalDetector * fHodoscopeScoring;
 
+      BETADetectorPackage       * fBETADetectorPackage;
       ForwardTrackerDetector    * fTrackerDetector;
       GasCherenkovDetector      * fCherenkovDetector;
       BigcalDetector            * fBigcalDetector;
@@ -140,6 +147,8 @@ class BETASimulationManager {
        * Not yet implemented.
        */
       void write();
+
+      void PrintSummary();
 
       /**
        * Prints a general statement about the current run configuration
@@ -213,7 +222,7 @@ class BETASimulationManager {
 
       void UpdateRun(){
          if(fInSANERun){
-            std::cout << "Updating run info... " << std::cout;
+            //std::cout << "Updating run info... " << std::cout;
             // Beam
             fInSANERun->SetBeamEnergy(  GetBeamEnergy() );
             fInSANERun->fBeamPolarization        = 60.0;
@@ -234,15 +243,15 @@ class BETASimulationManager {
          }
       }
 
-      G4double GetBeamEnergy(){return(fBeamEnergy);}
+      G4double GetBeamEnergy() const {return(fBeamEnergy);}
       void     SetBeamEnergy(G4double en){fBeamEnergy=en;}
-      G4double GetTargetAngle(){   return(fTargetAngle);}
+      G4double GetTargetAngle() const {   return(fTargetAngle);}
       void     SetTargetAngle(G4double a){fTargetAngle=a;}
 
-      int GetEventNumber() { return(fEventNumber); };
+      int GetEventNumber() const { return(fEventNumber); };
 
-      BETADetectorConstruction   * GetDetectorConstruction(){ return fDetConstruction ; }
-      BETAPrimaryGeneratorAction * GetPrimaryGeneratorAction(){ return fPrimaryGenAction ; }
+      BETADetectorConstruction   * GetDetectorConstruction() const  { return fDetConstruction ; }
+      BETAPrimaryGeneratorAction * GetPrimaryGeneratorAction() const { return fPrimaryGenAction ; }
 
       void SetDetectorConstruction(BETADetectorConstruction * detcon){ fDetConstruction = detcon; }
       void SetPrimaryGeneratorAction(BETAPrimaryGeneratorAction * gen){ fPrimaryGenAction = gen; }

@@ -17,61 +17,47 @@
 
 double mottCrossSection(double p, double theta) ;
 
+//______________________________________________________________________________
 BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 
    G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
+
    BETASimulationManager * simMan = BETASimulationManager::GetInstance();
    simMan->SetPrimaryGeneratorAction(this);
-   
-   fBETAG4EventGen = new BETAG4EventGenerator();
-   //fBETAG4EventGen->Initialize();
-   //fBETAG4EventGen->fIsInitialized = true;
-   fOutputTree = 0;
-
    //gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
-  
-   // ---- setup particles 
+   
+   fBETAG4EventGen    = new BETAG4EventGenerator();
+   fOutputTree        = 0;
+   fMonteCarloEvent   = 0;
+   fNumberOfParticles = 1;
+   fInitialized       = false;
+   aThrownParticle    = 0;
+   fMonteCarloEvent   = 0;
+   fThrownParticles   = 0;
 
+   // Particles
    G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
-   fParticleGun = new G4ParticleGun(1);
+   fParticleGun                   = new G4ParticleGun(fNumberOfParticles);
+   electron  = particleTable->FindParticle( "e-"     ) ;
+   positron  = particleTable->FindParticle( "e+"     ) ;
+   pionminus = particleTable->FindParticle( "pi-"    ) ;
+   pionplus  = particleTable->FindParticle( "pi+"    ) ;
+   pionzero  = particleTable->FindParticle( "pi0"    ) ;
+   kaon      = particleTable->FindParticle( "kaon+"  ) ;
+   proton    = particleTable->FindParticle( "proton" ) ;
+   gamma     = particleTable->FindParticle( "gamma"  ) ;
 
-   G4String particleName;
-   electron = particleTable->FindParticle ( particleName="e-" );
-   positron = particleTable->FindParticle ( particleName="e+" );
-   pionminus = particleTable->FindParticle ( particleName="pi-" );
-   pionplus = particleTable->FindParticle ( particleName="pi+" );
-   pionzero = particleTable->FindParticle ( particleName="pi0" );
-   kaon = particleTable->FindParticle ( particleName="kaon+" );
-   proton = particleTable->FindParticle ( particleName="proton" );
-   gamma = particleTable->FindParticle ( particleName="gamma" );
-
-   /// Electron by default. Use /beta/gun/setParticle
+   // Electron by default. Use /beta/gun/setParticle
    fParticleGun->SetParticleDefinition(electron);
 
-   //fParticlesSource=0;
-   //fParticlesSource  = new G4GeneralParticleSource ( );
-   //fParticlesSource->SetNumberOfParticles(1);
-   // Using General Particle Source
-   //   fParticlesSource->SetParticleDefinition(electron);
-   //   fParticlesSource->SetCurrentSourceto(1);
-   //   fParticlesSource->GetCurrentSource()->GetEneDist()->SetEneDisType("Gauss");
-   //   fParticlesSource->GetCurrentSource()->GetAngDist()->SetAngDisType("iso");
-   //   fParticlesSource->GetCurrentSource()->GetPosDist()->SetEneDisType("Volume");
-   /*   fSimulationManager = ;*/
-   //   if(BETASimulationManager::GetInstance()->fEvents) std::cout << "fEvents Found !\n";
-   //   fMonteCarloEvent = BETASimulationManager::GetInstance()->fEvents->MC;
-   fMonteCarloEvent=0;
 }
-//________________________________________________________//
-
-BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction()
-{
+//______________________________________________________________________________
+BETAPrimaryGeneratorAction::~BETAPrimaryGeneratorAction() {
    //if(fParticlesSource) delete fParticlesSource;
    //if(gunMessenger) delete gunMessenger;
    if(fBETAG4EventGen) delete fBETAG4EventGen;
 }
-//________________________________________________________//
-
+//______________________________________________________________________________
 void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
 
    if(!fBETAG4EventGen->fIsInitialized) {

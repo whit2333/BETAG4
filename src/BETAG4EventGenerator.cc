@@ -1,5 +1,6 @@
 #include "BETAG4EventGenerator.hh"
 
+//______________________________________________________________________________
 BETAG4EventGenerator::BETAG4EventGenerator() {
    fNumberOfGeneratedParticles = 1;
    fNeedsRefreshed             = false;

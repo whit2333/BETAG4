@@ -1,22 +1,23 @@
 #ifndef BETAPrimaryGeneratorAction_h
 #define BETAPrimaryGeneratorAction_h 1
+
+#include "globals.hh"
+#include "G4VUserPrimaryGeneratorAction.hh"
+#include "G4GeneralParticleSource.hh"
+#include "G4ParticleGun.hh"
+
+#include "SANEEventGenerators.hh"
 #include "BETASimulationManager.hh"
+
+#include "InSANEPhaseSpaceSampler.h"
 #include "InSANEPhaseSpaceSampler.h"
 #include "InSANEPhaseSpace.h"
 #include "InSANEInclusiveDiffXSec.h"
-#include "G4VUserPrimaryGeneratorAction.hh"
-#include "globals.hh"
-#include "InSANEPhaseSpaceSampler.h"
-#include "G4GeneralParticleSource.hh"
-#include "SANEEventGenerators.hh"
 #include "BETAG4MonteCarloEvent.h"
 #include "TClonesArray.h"
-#include "G4ParticleGun.hh"
-//class G4ParticleGun;
+
 class G4Event;
-//class BETAPrimaryGeneratorMessenger;
 class G4ParticleDefinition;
-// class BETASimulationManager;
 
 /** BETAPrimaryGeneratorAction is a mandatory concrete imp of G4VUserPrimaryGeneratorAction
  *
@@ -25,11 +26,12 @@ class G4ParticleDefinition;
  *   \ingroup EventGen
  */
 class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
+
    private:
-      Int_t fNumberOfParticles;
-      bool background;
-      bool goodElectron;
-      bool backgroundAndElectron;
+      Int_t   fNumberOfParticles;
+      //bool    background;
+      //bool    goodElectron;
+      //bool    backgroundAndElectron;
 
       //BETAPrimaryGeneratorMessenger * gunMessenger;
       G4ParticleDefinition          * electron;
@@ -47,21 +49,16 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
       bool                    fInitialized;      ///< flag telling event-generator to be initialized
       BETAG4MonteCarloEvent * fMonteCarloEvent;
       TClonesArray          * fThrownParticles;
-
-      G4ParticleGun  * fParticleGun;
+      G4ParticleGun         * fParticleGun;
 
    public:
 
-      /** C'tor :
-       *   - defines some particles 
-       *   - Creates particle gun
-       *   - Creates the event generator
-       */
       BETAPrimaryGeneratorAction();
-      ~BETAPrimaryGeneratorAction();
+      virtual ~BETAPrimaryGeneratorAction();
+
       void GeneratePrimaries(G4Event*);
 
-      BETAG4EventGenerator  * GetEventGenerator(){ return fBETAG4EventGen; }
+      BETAG4EventGenerator  * GetEventGenerator() const { return fBETAG4EventGen; }
       void                    SetEventGenerator(BETAG4EventGenerator * gen){
          if(fBETAG4EventGen) delete fBETAG4EventGen;
          fBETAG4EventGen = gen;
@@ -85,7 +82,7 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
       }
 
       //G4GeneralParticleSource* Gun() {return fParticlesSource;}
-      G4ParticleGun * GetParticleGun(){ return  fParticleGun; }
+      G4ParticleGun * GetParticleGun() const { return  fParticleGun; }
 
 };
 

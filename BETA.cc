@@ -200,7 +200,7 @@ int main(int argc,char** argv)
    // Physics List
    G4VUserPhysicsList* physics = new BETAPhysicsList;
    physics->SetVerboseLevel(0);
-   runManager-> SetUserInitialization(physics);
+   runManager->SetUserInitialization(physics);
 
    // visualization manager
    #ifdef G4VIS_USE

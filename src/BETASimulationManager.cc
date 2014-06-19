@@ -32,7 +32,7 @@ BETASimulationManager::BETASimulationManager () {
    fSimulateHodoscopeOptics = true;
    fSimulateTrackerOptics   = true;
    fDebugLevel              = 3;
-   fSimulateTrigger         = false;
+   fSimulateTrigger         = true;
 
    fSimulationMessenger = new BETASimulationMessenger ( this );
 
@@ -44,6 +44,7 @@ BETASimulationManager::BETASimulationManager () {
    fRootFile                 = 0;
    fDetectorTree             = 0;
 
+   fBETADetectorPackage      = 0;
    fCherenkovDetector        = 0;
    fBigcalDetector           = 0;
    fHodoscopeDetector        = 0;
@@ -240,8 +241,7 @@ int BETASimulationManager::InitScoring()  {
 
    return(0);
 }
-//_________________________________________________________________//
-
+//______________________________________________________________________________
 int BETASimulationManager::DefineScoringFilters() {
    // Sensitive volume filters
    protonFilter->add("proton");
@@ -252,24 +252,36 @@ int BETASimulationManager::DefineScoringFilters() {
 
    bigcalEnergyFilter->SetKineticEnergy(0.010*GeV,6.0*GeV);
 
-
    return(0);
 }
-
+//______________________________________________________________________________
 int BETASimulationManager::AddDetectors(int runNumber) {
+   // Creates the detectors
 
-   fCherenkovDetector = new GasCherenkovDetector(runNumber);
+   fBETADetectorPackage = new BETADetectorPackage("BETADetectorPackage",runNumber);
+
+   fCherenkovDetector = fBETADetectorPackage->fCherenkovDetector;//new GasCherenkovDetector(runNumber);
    fCherenkovDetector->SetEventAddress(fEvents->BETA->fGasCherenkovEvent);
 
-   fBigcalDetector = new BigcalDetector(runNumber);
+   fBigcalDetector = fBETADetectorPackage->fBigcalDetector;//= new BigcalDetector(runNumber);
    fBigcalDetector->SetEventAddress(fEvents->BETA->fBigcalEvent);
 
-   fHodoscopeDetector = new LuciteHodoscopeDetector(runNumber);
+   fHodoscopeDetector = fBETADetectorPackage->fHodoscopeDetector;//= new LuciteHodoscopeDetector(runNumber);
    fHodoscopeDetector->SetEventAddress(fEvents->BETA->fLuciteHodoscopeEvent);
 
-   fTrackerDetector = new ForwardTrackerDetector(runNumber);
+   fTrackerDetector = fBETADetectorPackage->fTrackerDetector;//= new ForwardTrackerDetector(runNumber);
    fTrackerDetector->SetEventAddress(fEvents->BETA->fForwardTrackerEvent);
 
    return(0);
 }
+//______________________________________________________________________________
+void BETASimulationManager::PrintSummary(){
+   std::cout << " fSimulateCherenkovOptics " << fSimulateCherenkovOptics << std::endl;
+   std::cout << " fSimulateTrackerOptics   " << fSimulateTrackerOptics   << std::endl;
+   std::cout << " fSimulateHodoscopeOptics " << fSimulateHodoscopeOptics << std::endl;
+   std::cout << " fSimulateBigcalOptics    " << fSimulateBigcalOptics    << std::endl;
+   std::cout << " fSimulateTrigger         " << fSimulateTrigger         << std::endl;
+}
+//______________________________________________________________________________
+
 

@@ -210,7 +210,7 @@ class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
          InSANEPhaseSpaceSampler * samp = 0;
          //F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
          InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
-         xsec->Dump();
+         //xsec->Dump();
          xsec->SetTargetMaterial(*mat);
          xsec->SetTargetMaterialIndex(i);
          xsec->SetBeamEnergy(GetBeamEnergy());

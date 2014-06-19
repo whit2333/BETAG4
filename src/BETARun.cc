@@ -34,40 +34,37 @@
 #include "InSANERun.h"
 
 
-//______________________________________________________________________//
-
+//______________________________________________________________________________
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
 #ifdef BETAG4_DEBUG
-  if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
-    G4cout << "= Created new BETARun \n";
-  }
+   if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
+      G4cout << "= Created new BETARun \n";
+   }
 #endif
-  
-  G4String colName;
 
-  fSimulationManager = BETASimulationManager::GetInstance ();
-//   fSimulationManager->fRunNumber = runNumber;
+   //G4String colName;
 
-  if(fSimulationManager) {
-    fSimulationManager->SetDetectorVerbosity("GasCherenkov",0);
-  }
+   fSimulationManager             = BETASimulationManager::GetInstance ();
+   fSimulationManager->fRunNumber = runNumber;
 
-   mcEvent = fSimulationManager->fEvents->MC;
+   //mcEvent = fSimulationManager->fEvents->MC;
 
-   /// Get the event generator and detector constructoion 
-   /// so we can write the simulation truths to tree
+   // Get the event generator and detector constructoion 
+   // so we can write the simulation truths to tree
    runManager = G4RunManager::GetRunManager();
    if(runManager) {
-     generator = (BETAPrimaryGeneratorAction *)runManager->GetUserPrimaryGeneratorAction();
-     generator->SetMCEventAddress(mcEvent);
+      //generator = (BETAPrimaryGeneratorAction *)runManager->GetUserPrimaryGeneratorAction();
+      //generator->SetMCEventAddress(mcEvent);
 
-     construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
+      construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
    }
 
+   // Create the DAQ system
    fDAQReadout = new BETAG4DAQReadout("/DAQ/TriggerSupervisor");
    fDAQReadout->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
+   // Create Detector digitizers 
    fBETADigitizer = new BETADigitizer("/DAQ/BETA");
    fBETADigitizer->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
@@ -77,11 +74,9 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    DM->AddNewModule(fBETADigitizer);
 
    runManager->SetNumberOfEventsToBeStored(1);
-
 }
 //______________________________________________________________________________
-BETARun::~BETARun()
-{
+BETARun::~BETARun() {
    if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
       G4cout << "= Deleted BETARun \n";
    }

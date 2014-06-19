@@ -315,7 +315,7 @@ void BETAPhysicsList::SetCuts()
    //
    SetCutsWithDefault();
 
-   if ( verboseLevel>1 ) DumpCutValuesTable();
+   //if ( verboseLevel>1 ) DumpCutValuesTable();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -25,150 +25,71 @@ BETARunAction::BETARunAction(int run) :showThePlots ( 0 ) {
    timer = new G4Timer;
    fCurrentRun=0;
 }
-//_________________________________________________________________
-
-BETARunAction::~BETARunAction()
-{
-
+//______________________________________________________________________________
+BETARunAction::~BETARunAction() {
    delete timer;
 }
-//_________________________________________________________________
+//______________________________________________________________________________
 void BETARunAction::BeginOfRunAction ( const G4Run* aRun ) {
    G4cout <<"=================== RUN #" << fRunNumber << " ===================" << G4endl;
 }
-
-//_________________________________________________________________
+//______________________________________________________________________________
 G4Run*  BETARunAction::GenerateRun() {
+   // Generates the InSANERun object
+   // Initializes ...
 
-   //fRunNumber = fSimulationManager->IncrementRunNumber();
+   G4RunManager * runManager = G4RunManager::GetRunManager();
+
    G4cout << " = BETARunAction - GenerateRun   " << G4endl;
-   G4cout << "  - Creating Run Number " << fRunNumber << "   " << G4endl;
 
-   G4RunManager *   runManager = G4RunManager::GetRunManager();
    timer->Start();
 
+   G4cout << "  - Creating Run Number " << fRunNumber << "   " << G4endl;
    SANERunManager::GetRunManager()->SetRun(fRunNumber);
-   fSimulationManager->fInSANERun  = SANERunManager::GetRunManager()->GetCurrentRun();// = new InSANERun(fRunNumber);
+   fSimulationManager->fInSANERun = SANERunManager::GetRunManager()->GetCurrentRun();
 
    // Opens Root File With a name Depending on the Run number
    std::string fname;
    std::stringstream out;
    if ( fSimulationManager->IsAppendMode() ) {
+      // append to existing file
       out << "data/rootfiles/beta.accumulate.root"  ;
       fname = out.str();
       const char * rootName = fname.c_str();
       fSimulationManager->fRootFile = new TFile ( rootName,"UPDATE" );
       fSimulationManager->fEvents = new SANEEvents("betaDetectors0");
    } else {
+      // new file
       out << "data/rootfiles/InSANE" << fRunNumber << ".-1.root"  ;
       fname = out.str();
-      //const char * rootName = fname.c_str();
-      //      fSimulationManager->fRootFile = new TFile ( rootName,"RECREATE","BETA Simulation Output" );
-      fSimulationManager->fRootFile = SANERunManager::GetRunManager()->GetCurrentFile();
+      fSimulationManager->fRootFile     = SANERunManager::GetRunManager()->GetCurrentFile();
       fSimulationManager->fDetectorTree = new TTree("betaDetectors","Simulated BETA Detectors");
-      fSimulationManager->fEvents = new SANEEvents("betaDetectors");
-
+      fSimulationManager->fEvents       = new SANEEvents("betaDetectors");
    }
 
    SANERunManager::GetRunManager()->GetScalerFile()->cd();
-   fSimulationManager->fScalerTree = new TTree("Scalers","The SANE Scaler Data");
+   fSimulationManager->fScalerTree  = new TTree("Scalers","The SANE Scaler Data");
    fSimulationManager->fSANEScalers = new SANEScalers("Scalers");
-
    SANERunManager::GetRunManager()->GetCurrentFile()->cd();
 
-   // 
+   // What is this again?
    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
    genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
    genAction->InitOutput();
 
+   // Creates the detector classes
    fSimulationManager->AddDetectors(fRunNumber);
 
-   //    if (! fSimulationManager->IsAppendMode() ) {
-   //       //fSimulationManager->CreateTrees();
-   //     }
-   // New concrete InSANE Run class
+   fCurrentRun = new BETARun( fRunNumber );
 
-   //     fSimulationManager->fInSANERun->fPolarizationAngle
-
-
-   // Get the runmanager and constructors/messengers and only fill the database if
-   // you have them!
-   //double targetAngle = 0.0;
-   if (runManager) {
-      BETADetectorConstruction *  construction = (BETADetectorConstruction *) runManager->GetUserDetectorConstruction();
-      if (construction) {
-         //targetAngle = construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
-
-         //printf("\n got run manager %f\n",targetAngle);
-         /// \todo Better database filling!!
-         // // FILL THE DATABASE
-         //         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();
-         // // = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
-         //         TSQLResult * res;
-         //         TString SQLq("REPLACE into BETAG4_run_info set "); // dont forget the extra space at the end
-         // //aSQL  "Insert into BETAG4_run_info set " ;s
-         // 
-         //         SQLq +=" run_number=" ; // Dont add space here
-         //         SQLq +=fRunNumber;
-         // // starting Date and time
-         //         TDatime * dt = new TDatime();
-         //         TString datetime( dt->AsSQLString() );
-         //         TString date(datetime(0,10));
-         //         TString time(datetime(11,8));
-         //         SQLq += ", start_date='";
-         //         SQLq += date.Data();
-         //         SQLq += "', start_time='";
-         //         SQLq += time.Data();
-         // // SQLq.Append(Form(" start_date='%s', start_time='%s' ",date.Data(),time.Data() ));
-         // // SQLq.Append(Form(" start_date='%s', start_time='%s' ",date.Data(),time.Data() ));
-         // //  res = db->Query(Form("Insert into BETAG4_run_info set run_number=%d, start_date='%s',
-         // //  start_time='%s',  target_angle=%f ", runNumber,date.Data(), time.Data(), targetAngle));
-         // 
-         //          SQLq += "', BETAg4_Lucite_On=" ;
-         //          SQLq += (int)construction->usingLuciteHodoscope;
-         // 
-         //          SQLq += ", BETAg4_Bigcal_on=" ;
-         //          SQLq += (int)construction->usingBigcal;
-         // 
-         //          SQLq += ", Betag4_tracker_on=" ;
-         //          SQLq += (int)construction->usingForwardTracker;
-         // 
-         //          SQLq += ", betag4_cherenkov_on=" ;
-         //          SQLq += (int)construction->usingGasCherenkov;
-         // 
-         //          SQLq += ", betag4_bigcal_plane_on=" ;
-         //          SQLq += (int)construction->usingFakePlaneAtBigcal;
-         // 
-         //          SQLq += ", target_angle=" ;
-         //          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
-         //          SQLq += ", target_field=" ;
-         //          SQLq += construction->fMagneticField->fUVAMagnet->GetScaleFactor();
-         // 
-         // //          SQLq += ", target_angle=" ;
-         // //          SQLq += construction->fMagneticField->fUVAMagnet->fPolarizationAngle*180.0/TMath::Pi();
-         // // Fill MySQL table
-         //          res = db->Query(SQLq.Data());
-         //          cout << SQLq.Data() << "\n";
-         // //          db->Close();
-
-         /// DONE with database
-
-      }
-   }
-
-
-   //    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-   /*   genAction->SetMCEventAddress((BETAG4MonteCarloEvent *)fSimulationManager->fEvents->MC);*/
-   //    fRunNumber = fSimulationManager;
-   //   if(fCurrentRun) delete fCurrentRun;
-   fCurrentRun = new BETARun ( fRunNumber );
    // Simulate Pedestals before entering actual simulation
    fSimulationManager->UpdateRun();
-
    fCurrentRun->GeneratePedestals();
 
    fSimulationManager->UpdateRun();
+
    fSimulationManager->fInSANERun->Print();
+   fSimulationManager->PrintSummary();
 
    return (G4Run*)fCurrentRun;
 }

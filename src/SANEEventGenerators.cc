@@ -18,7 +18,7 @@ ConeEventGenerator::~ConeEventGenerator() {
 //____________________________________________________________________
 void DISEventGenerator::Initialize(){
    F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-   std::cout << " Beam Energy: " << fBeamEnergy << std::endl;
+   //std::cout << " Beam Energy: " << fBeamEnergy << std::endl;
    fDiffXSec->SetBeamEnergy(fBeamEnergy);
    fDiffXSec->InitializePhaseSpaceVariables();
    fDiffXSec->InitializeFinalStateParticles();
@@ -108,16 +108,16 @@ void PolarizedDISEventGenerator::Initialize(){
    //InSANEEventGenerator::Initialize();
    CalculateTotalCrossSection();
 
-   fDiffXSec->Print();
-   fDiffXSec1->Print();
-   fDiffXSec2->Print();
-   fPolXSec->Print();
+   //fDiffXSec->Print();
+   //fDiffXSec1->Print();
+   //fDiffXSec2->Print();
+   //fPolXSec->Print();
 }
 //____________________________________________________________________
 
 //____________________________________________________________________
 void InclusiveElectronPionGenerator::Initialize(){
-   std::cout << " InclusiveElectronPionGenerator::Initialize() \n";
+   //std::cout << " InclusiveElectronPionGenerator::Initialize() \n";
    /// Neutral Pion
    InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
    fDiffXSec1->SetBeamEnergy(fBeamEnergy);
@@ -169,7 +169,7 @@ void InclusiveElectronPionGenerator::Initialize(){
 
 //____________________________________________________________________
 void InclusivePionEventGenerator::Initialize(){
-   std::cout << " InclusivePionEventGenerator::Initialize() \n";
+   //std::cout << " InclusivePionEventGenerator::Initialize() \n";
    /// Neutral Pion
    InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
    //InSANEInclusiveEPCVXSec * fDiffXSec1 = new InSANEInclusiveEPCVXSec();
@@ -237,7 +237,7 @@ void WiserEventGenerator::Initialize() {
    SetBeamEnergy(fBeamEnergy);
    InSANEEventGenerator::Initialize();
    CalculateTotalCrossSection();
-   ps->Print();
+   //ps->Print();
 }
 //____________________________________________________________________
 
@@ -253,7 +253,7 @@ void BigcalCenterEventGenerator::Initialize() {
       SetBeamEnergy(fBeamEnergy);
       InSANEEventGenerator::Initialize();
       CalculateTotalCrossSection();
-      ps->Print();
+      //ps->Print();
 
    }
 //____________________________________________________________________
