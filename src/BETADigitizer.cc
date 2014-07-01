@@ -123,28 +123,28 @@ void BETADigitizer::Digitize() {
    G4double cherenkovTDCChannelScaleFactor = 10.0;
 
    int currentGroup = 0;
-   for ( int gg =0;gg<1744;gg++ )
-   {
-      bcHit = ( *fBigcalHC)[gg];
+   for( int gg =0;gg<1744;gg++ ) {
+
+      bcHit      = (*fBigcalHC)[gg];
       energyTemp = bcHit->GetDepositedEnergy();
 
-      if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold )
-      { // Record Bigcal Data !
+      if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold ) { 
+         // Record Bigcal Data !
+
          aDigi = new BETAG4DigiADC(gg+1);
          fNADC++;
          aDigi->fTrueValue = energyTemp;
-         /// Divide the energy deposited by the calibration coefficient so that 
-         /// in reconstruction, we can multiply by the calibration coefficient.
+         // Divide the energy deposited by the calibration coefficient so that 
+         // in reconstruction, we can multiply by the calibration coefficient.
          aDigi->fADCValue = 
             (float)energyTemp/((float) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
          fBigcalADCDC->insert ( aDigi );
-
 
          //       std::cout << aDigi->fChannelNumber +1 <<  " has calib coef = " 
          //                 << bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber) << "\n";
          //       std::cout << " digi value = " << aDigi->fADCValue << " from energy value " << energyTemp << "\n";
 
-         // Fill the "TDC hits" if there was a discriminator fire with the time that was recorded
+         // Fill the "TDC hits" as if there was a discriminator fire with the time that was recorded
          // The hits are summed for the "group of 8" 
          // since we loop through all blocks, we just add a hit indexed by group if there was a hit
          if(bcHit->fTimingHit) {

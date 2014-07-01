@@ -89,7 +89,7 @@ void BETAG4DAQReadout::Digitize() {
    for ( int gg =0;gg<1744;gg++ )
    {
       bcHit      = (*fBigcalHC)[gg];
-      energyTemp = bcHit->GetDepositedEnergy()/ (bigcalGeoCalc->GetCalibrationCoefficient(bcHit->fCellID));;
+      energyTemp = bcHit->GetDepositedEnergy();///(bigcalGeoCalc->GetCalibrationCoefficient(gg+1));;
 
       if(energyTemp > 0.01) { ///10 MeV Block Threshold?
          fNBigcalHits++;

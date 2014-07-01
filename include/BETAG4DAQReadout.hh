@@ -71,12 +71,12 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
       Bool_t IsGoodEvent() { return(fIsTriggered); }
 
       void Reset() {
-         fCherenkovTotal = 0;
-         fCherenkovFired=false;
-         fBigcalFired=false;
-         fNCherenkovHits=0;
-         fNumberOfTriggeredGroups=0;
-         fIsTriggered=false;
+         fCherenkovTotal          = 0;
+         fCherenkovFired          = false;
+         fBigcalFired             = false;
+         fNCherenkovHits          = 0;
+         fNumberOfTriggeredGroups = 0;
+         fIsTriggered             = false;
          for(int i = 0;i<4;i++) fTriggerGroupEnergy[i]=0.0;
       }
 
