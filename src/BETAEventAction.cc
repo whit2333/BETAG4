@@ -1,6 +1,6 @@
 #include "globals.hh"
 #include "BETASimulationManager.hh"
-#include "BETAFrontTrackerHit.hh"
+//#include "BETAFrontTrackerHit.hh"
 #include "BETAProtvinoCalorimeterHit.hh"
 #include "BETARCSCalorimeterHit.hh"
 #include "BETAEventAction.hh"
