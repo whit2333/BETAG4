@@ -24,7 +24,7 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    G4String colName;
 
 /*  if(fSimulationManager->fConstruction->usingBigcal)*/
-   fBigcalHCID  = SDman->GetCollectionID (colName= "BIGCAL/bigcal" );
+   fBigcalHCID  = SDman->GetCollectionID (colName= "BigCal/blockEdep" );
    if(fBigcalHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
 /*  if(fSimulationManager->fConstruction->usingGasCherenkov)*/

@@ -1,38 +1,38 @@
+#include "BETARun.hh"
+
 #include "G4MultiFunctionalDetector.hh"
 #include "G4SDManager.hh"
 #include "G4VPrimitiveScorer.hh"
+#include "G4THitsMap.hh"
+
 #include <assert.h>
-//#include "BETAPMT.hh"
-#include "BETAFakePlane.hh"
-#include <string>  //For the string functions
+#include <string>
 #include <sstream>
 #include <fstream>
 #include <algorithm>
-#include "Riostream.h"
-#include "TROOT.h"
-#include "TFile.h"
-#include "TNetFile.h"
-#include "TRandom.h"
-#include "TTree.h"
-#include "TBranch.h"
-#include "TClonesArray.h"
-#include "TStopwatch.h"
-#include "TH1F.h"
-#include "TObjArray.h"
-#include "TH1.h"
-#include "G4THitsMap.hh"
-#include "TProfile.h"
-#include "TRint.h"
-#include "TApplication.h"
-#include "TCanvas.h"
-#include "BETARun.hh"
-// InSANE
+
+//#include "Riostream.h"
+//#include "TROOT.h"
+//#include "TFile.h"
+//#include "TNetFile.h"
+//#include "TRandom.h"
+//#include "TTree.h"
+//#include "TBranch.h"
+//#include "TClonesArray.h"
+//#include "TStopwatch.h"
+//#include "TH1F.h"
+//#include "TObjArray.h"
+//#include "TH1.h"
+//#include "TProfile.h"
+//#include "TRint.h"
+//#include "TApplication.h"
+//#include "TCanvas.h"
+
+#include "BETAFakePlane.hh"
 #include "BETAEvent.h"
 #include "HMSEvent.h"
 #include "HallCBeamEvent.h"
 #include "BETAG4MonteCarloEvent.h"
-#include "InSANERun.h"
-
 
 //______________________________________________________________________________
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
@@ -44,7 +44,6 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 #endif
 
    //G4String colName;
-
    fSimulationManager             = BETASimulationManager::GetInstance ();
    fSimulationManager->fRunNumber = runNumber;
 

@@ -12,64 +12,56 @@
 class G4AttDef;
 class G4AttValue;
 
-
 /** New Bigcal hit class for GEANT4 Sensitive detector
  *
  */
 class BETAG4BigcalHit : public G4VHit {
-  public:
-  BETAG4BigcalHit(G4int id = -1);
-   ~BETAG4BigcalHit();
-  
-  inline void *operator new(size_t);
-  inline void operator delete(void *aHit);
 
-   void Draw();
+   public:
+      BETAG4BigcalHit(G4int id = -1);
+      virtual ~BETAG4BigcalHit();
 
-   const std::map<G4String,G4AttDef>* GetAttDefs() const;
-   std::vector<G4AttValue>* CreateAttValues() const;
+      inline void *operator new(size_t);
+      inline void operator delete(void *aHit);
 
-   void Print();
+      void Draw();
 
-/** Add Deposited energy
- */
-   void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
+      const std::map<G4String,G4AttDef>* GetAttDefs() const;
+      std::vector<G4AttValue>* CreateAttValues() const;
 
-/** Get Deposited energy
- */
-  G4double GetDepositedEnergy() const {return fDepositedEnergy;}
+      void Print();
 
-/**  Set Position vector
- */
-   void SetPosition(G4ThreeVector position) {fPosition = position;}
+      /** Add Deposited energy */
+      void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
 
-/**  Get Position vector
- */
-   G4ThreeVector GetPosition() const {return fPosition;}
+      /** Get Deposited energy */
+      G4double GetDepositedEnergy() const {return fDepositedEnergy;}
 
-/**  Set Rotation matrix
- */
-   void SetRotation(G4RotationMatrix rotation) {fRotation = rotation;}
+      /**  Set Position vector */
+      void SetPosition(G4ThreeVector position) {fPosition = position;}
 
-/**  Get Rotation matrix
- */
-   G4RotationMatrix GetRotation() const {return fRotation;}
+      /**  Get Position vector */
+      G4ThreeVector GetPosition() const {return fPosition;}
 
-/**  Set Logical Volume
- */
-   void SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
-   const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
-  
-  /// Cell Number
-  G4int fCellNumber;
-  G4int fCellID;
-  G4double fTiming;
-  G4double fDepositedEnergy;
-  G4ThreeVector fPosition;
-  G4RotationMatrix fRotation;
-  const G4LogicalVolume* pLogicalVolume;
-  G4int fNHits;
-  bool fTimingHit;
+      /**  Set Rotation matrix */
+      void SetRotation(G4RotationMatrix rotation) {fRotation = rotation;}
+
+      /**  Get Rotation matrix */
+      G4RotationMatrix GetRotation() const {return fRotation;}
+
+      /**  Set Logical Volume */
+      void  SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
+      const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
+
+      G4int fCellNumber;
+      G4int fCellID;
+      G4double fTiming;
+      G4double fDepositedEnergy;
+      G4ThreeVector fPosition;
+      G4RotationMatrix fRotation;
+      const G4LogicalVolume* pLogicalVolume;
+      G4int fNHits;
+      bool fTimingHit;
 };
 
 typedef G4THitsCollection<BETAG4BigcalHit> BETAG4BigcalHitsCollection;
@@ -78,14 +70,14 @@ extern G4Allocator<BETAG4BigcalHit> BETAG4BigcalHitAllocator;
 
 inline void* BETAG4BigcalHit::operator new(size_t)
 {
-  void* aHit;
-  aHit = (void*)BETAG4BigcalHitAllocator.MallocSingle();
-  return aHit;
+   void* aHit;
+   aHit = (void*)BETAG4BigcalHitAllocator.MallocSingle();
+   return aHit;
 }
 
 inline void BETAG4BigcalHit::operator delete(void* aHit)
 {
-  BETAG4BigcalHitAllocator.FreeSingle((BETAG4BigcalHit*) aHit);
+   BETAG4BigcalHitAllocator.FreeSingle((BETAG4BigcalHit*) aHit);
 }
 
 #endif

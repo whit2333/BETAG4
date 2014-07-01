@@ -99,6 +99,7 @@ int main(int argc,char** argv)
 {
    int  run_set         = 0;
    bool is_interactive  = true;
+   bool is_interactive_with_macro  = false;
    std::string theMacro = "";
 
    const struct option longopts[] =
@@ -109,7 +110,7 @@ int main(int argc,char** argv)
       {"macro",     required_argument,  0, 'm'},
       {"cflags",    no_argument,        0, 'c'},
       {"ldflags",   no_argument,        0, 'd'},
-      {"inc",       no_argument,        0, 'i'},
+      {"int",       no_argument,        0, 'i'},
       {"grid",      no_argument,        0, 'g'},
       {0,0,0,0}
    };
@@ -119,7 +120,7 @@ int main(int argc,char** argv)
    opterr    = 1; //turn off getopt error message
 
    while(iarg != -1) {
-      iarg = getopt_long(argc, argv, "vhlcdr:m:", longopts, &index);
+      iarg = getopt_long(argc, argv, "vhilcdr:m:", longopts, &index);
 
       switch (iarg)
       {
@@ -136,10 +137,12 @@ int main(int argc,char** argv)
 
          case 'h':
             print_usage();
+            exit(0);
             break;
 
          case 'v':
             print_version();
+            exit(0);
             break;
 
          case 'l':
@@ -152,6 +155,7 @@ int main(int argc,char** argv)
 
          case 'i':
             print_inc();
+            is_interactive_with_macro = true;
             break;
 
          case 'd':
@@ -233,7 +237,7 @@ int main(int argc,char** argv)
    char * fargs[2] = {arg0,arg1};
    //char * fargs[2] = {"BETAG4","-l"};
    //TRint * fApp = 
-      new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
+   new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
 
    std::cout << " o Initializing G4 kernel " << std::endl;
 
@@ -246,13 +250,13 @@ int main(int argc,char** argv)
 
    if(is_interactive) {
       G4UIsession* session = 0;
-      #ifdef G4UI_USE_TCSH
+#ifdef G4UI_USE_TCSH
       // session = new G4UIGAG;      
       session = new G4UIterminal(new G4UItcsh);      
       // session = new G4UIQt(argc, argv);    
-      #else
+#else
       session = new G4UIterminal();
-      #endif
+#endif
       //UI->ApplyCommand("/control/execute vis.mac"); 
       session->SessionStart();
       delete session;
@@ -269,7 +273,17 @@ int main(int argc,char** argv)
       G4UIsession* session = 0;
       // UI->ApplyCommand("/control/execute vis.mac"); 
       UI->ApplyCommand(command+fileName);
-      // session->SessionStart();
+      if(is_interactive_with_macro) {
+#ifdef G4UI_USE_TCSH
+         // session = new G4UIGAG;      
+         session = new G4UIterminal(new G4UItcsh);      
+         // session = new G4UIQt(argc, argv);    
+#else
+         session = new G4UIterminal();
+#endif
+         //UI->ApplyCommand("/control/execute vis.mac"); 
+         session->SessionStart();
+      }
       if(session) delete session;
    }
 
@@ -301,6 +315,12 @@ void print_version(){
 }
 
 void print_usage(){
+   std::cout << " BETA [OPTIONS...] [MACRO FILE] " << std::endl;
+   std::cout << "   Giving only the argument [MACRO FILE] runs the macro in batch mode," << std::endl;
+   std::cout << "   otherwise GEANT4 runs in interactive mode." << std::endl;
+   std::cout << "   -m MACRO     Executes macro in batch mode." << std::endl;
+   std::cout << "   -i           Forces interactive mode after running a macro" << std::endl;
+   std::cout << "   -h           prints this help " << std::endl;
    //std::cout << "insane-config --libs --cflags --ldflags --inc --grid" << " ";
 }
 

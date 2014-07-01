@@ -7,7 +7,7 @@
 
 //______________________________________________________________________________
 BETAG4BigcalSD::BETAG4BigcalSD(const G4String& name):G4VSensitiveDetector(name){
-   collectionName.insert ( "bigcal" );
+   collectionName.insert ( "blockEdep" );
    fHitsCollectionID = -1;
 }
 //______________________________________________________________________________
@@ -40,15 +40,14 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 
    // Get energy deposited in this step
    G4double depositedEnergy = aStep->GetTotalEnergyDeposit();
-   if ( 0 == depositedEnergy ) return true;
-
+   if( 0 == depositedEnergy ) return true;
 
    // Get volume and copy number
-   G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+   G4StepPoint* preStepPoint        = aStep->GetPreStepPoint();
    G4TouchableHistory* theTouchable = ( G4TouchableHistory* ) ( preStepPoint->GetTouchable() );
 
-   G4VPhysicalVolume* thePhysical = theTouchable->GetVolume();
-   G4int copyNo = thePhysical->GetCopyNo();
+   G4VPhysicalVolume* thePhysical   = theTouchable->GetVolume();
+   G4int copyNo                     = thePhysical->GetCopyNo();
 
    // Get corresponding hit
    BETAG4BigcalHit* aHit = ( *fHitsCollection ) [copyNo];

@@ -302,7 +302,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
    }
    if ( command == fCmd_toggleForwardTracker )
    {
-      std::cout << " args = " << newValue.data() << "\n";
+      //std::cout << " args = " << newValue.data() << "\n";
       if( !(strcmp(newValue.data(),"on")) )  {
          fDetConstruction->usingForwardTracker = true;
          fDetConstruction->fSimulationManager->fSimulateTrackerOptics = true;
@@ -327,6 +327,30 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
 /*         if(constructi*/
       }
          G4RunManager::GetRunManager()->GeometryHasBeenModified();
+   }
+   if ( command == fCmd_toggleBigcal )
+   {
+      std::cout << " args = " << newValue.data() << "\n";
+      if( !(strcmp(newValue.data(),"on")) )  {
+         fDetConstruction->usingBigcal = true;
+         fDetConstruction->fSimulationManager->fSimulateBigcalOptics = true;
+         fDetConstruction->DestroyBigCal();
+         if(fDetConstruction->constructed == true) fDetConstruction->ConstructBigCal();
+      }
+      if( !(strcmp(newValue.data(),"off"))) {
+         fDetConstruction->usingBigcal = false;
+         fDetConstruction->fSimulationManager->fSimulateBigcalOptics = false;
+         fDetConstruction->DestroyBigCal();
+         if(fDetConstruction->constructed == true) fDetConstruction->ConstructBigCal();
+      }
+      if( !(strcmp(newValue.data(),"noOptics"))) {
+         fDetConstruction->usingBigcal = true;
+         fDetConstruction->fSimulationManager->fSimulateBigcalOptics = false;
+         fDetConstruction->DestroyBigCal();
+         if(fDetConstruction->constructed == true) fDetConstruction->ConstructBigCal();
+
+      }
+      G4RunManager::GetRunManager()->GeometryHasBeenModified();
    }
    if ( command == fCmd_setThetaMax ) {
       anEventGen->SetThetaMax(fCmd_setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);

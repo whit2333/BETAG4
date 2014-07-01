@@ -1,35 +1,39 @@
 #ifndef BETARUN_HH
-#define BETARUN_HH
+#define BETARUN_HH 1
+
+#include <map>
+//#include <iostream>
+#include <algorithm>
+#include <vector>
 
 #include "G4Event.hh"
 #include "G4Run.hh"
 #include "G4THitsMap.hh"
-#include <map>
+
 #include "BETASimulationManager.hh"
 #include "BETAEvent.h"
 #include "BETAMirrorHit.hh"
 #include "InSANERun.h"
 
 #include "TFile.h"
-#include "TNetFile.h"
+//#include "TNetFile.h"
 #include "TRandom.h"
 #include "TTree.h"
-#include "TBranch.h"
+//#include "TBranch.h"
 #include "TClonesArray.h"
 #include "TStopwatch.h"
-#include "TH1F.h"
-#include "TObjArray.h"
-#include "TH1.h"
-#include "TH2.h"
-#include "TProfile.h"
+//#include "TH1F.h"
+//#include "TObjArray.h"
+//#include "TH1.h"
+//#include "TH2.h"
+//#include "TProfile.h"
 #include "TRint.h"
 #include "TVector3.h"
-#include "TCanvas.h"
-#include "TApplication.h"
+//#include "TCanvas.h"
+//#include "TApplication.h"
 #include "G4RunManager.hh"
 #include "BETAPrimaryGeneratorAction.hh"
 #include "BETADetectorConstruction.hh"
-
 
 #include "HallCBeamEvent.h"
 #include "HMSEvent.h"
@@ -39,18 +43,12 @@
 #include "BigcalEvent.h"
 #include "GasCherenkovHit.h"
 
-
-//#include <iostream>
-#include <algorithm>
-#include <vector>
-
 #include "BETASimulationManager.hh"
 #include "BETAG4DAQReadout.hh"
 #include "BETADigitizer.hh"
 
 #include "BETAHodoscopePMTHit.hh"
 #include "BETAForwardTrackerHit.hh"
-#include "BETAPMTHit.hh"
 #include "BETAFakePlaneHit.hh"
 #include "BETAG4BigcalSD.hh"
 #include "BETAG4BigcalHit.hh"
@@ -62,8 +60,8 @@ class BETAG4DAQReadout;
 class BETADigitizer;
 class BETADetectorConstruction;
 
-/**
- * \brief Concrete class implementation of G4Run 
+
+/** \brief Concrete class implementation of G4Run 
  * 
  * Concrete class implementation of G4Run. 
  * Here is where we select the data we wish to record.
@@ -75,38 +73,14 @@ class BETADetectorConstruction;
 class BETARun : public G4Run {
 
    private:
-      int cer_tdc_thresh;
-      G4int  CherenkovPMTCount[20];
-
-      G4int hodoscopePMTHCID;
-      G4int hodoscopePMTcount;
-      G4double BCTE;
-      G4int fakePlaneID;
-      G4int PMTG4HCID;
-
-      G4int HHC1ID;
-      G4int HHC2ID;
-      G4int DHC1ID;
-      G4int DHC2ID;
-      G4int ECHCID;
-      G4int HCHCID;
-      G4int numberOfPrim;
-      G4int BIGCALID;
-      G4int BIGCALID2;
-      G4int FTID;
-      G4int fakePlaneEventNumber;
-      G4int MirrorHCID;
-      G4int PMTHCID;
-
-
-      G4int colIDSum[4];
 
       bool catLastFile;
       bool fShowUnrealisticData;
 
       std::ofstream MCOutput ;
 
-   private:
+   protected:
+
       BETAG4DAQReadout           * fDAQReadout;
       BETASimulationManager      * fSimulationManager;
       G4RunManager               * runManager;
@@ -134,12 +108,6 @@ class BETARun : public G4Run {
       void RecordEvent(const G4Event*);
 
       void DumpData() const;
-
-
-
-      //TROOT * theRoot; 
-      //TApplication * theApp;
-      //TFile * RootFile;
 
       void DumpHallCMC();
 

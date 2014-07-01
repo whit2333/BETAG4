@@ -1,6 +1,6 @@
 # Step 1 : Open Driver and define parameters
-/vis/open OIX 900x800
-#/vis/open OGLIX 900x800
+#/vis/open OIX 900x800
+/vis/open OGLIX 900x800
 
 /beta/target/setPolarizationAngle 80
 

@@ -3,6 +3,7 @@
 
 #include "G4VPVParameterisation.hh"
 #include "globals.hh"
+#include "G4LogicalVolume.hh"
 #include <vector>
 
 class G4VPhysicalVolume;

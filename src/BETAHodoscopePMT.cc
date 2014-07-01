@@ -30,7 +30,6 @@ BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name ):G4VSensitiveDetector ( nam
 //    }
 //    input_file.close();
 }
-
 //______________________________________________________________________________
 BETAHodoscopePMT::~BETAHodoscopePMT(){
 }
@@ -50,8 +49,7 @@ void BETAHodoscopePMT::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent ) {
       fHitsCollection->insert(aHit);
    }
 }
-//_______________________________________________________//
-
+//______________________________________________________________________________
 G4bool BETAHodoscopePMT::ProcessHits(G4Step* aStep, G4TouchableHistory* ) {
 
    G4Track * theTrack = aStep->GetTrack();

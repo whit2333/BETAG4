@@ -113,14 +113,26 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    fLuciteHodoBar_log=0;
    HodoscopePMTSD=0;
 
-   calorimeterTop_log=0;
-   calorimeterTop_phys=0;
-   calorimeterBottom_log=0;
-   calorimeterBottom_phys=0;
-   cellLogicalBottom=0;
-   cellLogical=0;
+   fCalorimeterTop_log     = 0;
+   fCalorimeterTop_phys    = 0;
+   fCalorimeterBottom_log  = 0;
+   fCalorimeterBottom_phys = 0;
+   fCellLogicalBottom      = 0;
+   fCellLogicalTop         = 0;
+   fCellParamTop           = 0;
+   fCellParamBottom        = 0;
+   fCalorimeterSolidTop    = 0;
+   fCalorimeterSolidBottom = 0;
+   fCellSolidTop           = 0;
+   fCellSolidBottom        = 0;
+   fPMTTop_phys            = 0;
+   fPMTBottom_phys         = 0;
+   fPMTLogicalBottom      = 0;
+   fPMTLogicalTop         = 0;
+   fPMTSolidTop           = 0;
+   fPMTSolidBottom        = 0;
 
-   fBigCalFakePlane_log = 0;
+   fBigCalFakePlane_log  = 0;
    fTrackerFakePlane_log = 0;
 
    fHeBagExtenderBox_log = 0;
@@ -228,6 +240,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    physiLN2Can=0;
 
    ConstructVisAtt();
+   std::cout << " BETADetectorConstruction Constructor " << std::endl;
 }
 
 //___________________________________________________________________
@@ -312,10 +325,10 @@ void BETADetectorConstruction::SetVisAtt(){
    if(fIsBlackLineVis) {
       
       /// BigCal - individual cells are invisible
-      if(calorimeterTop_log)calorimeterTop_log->SetVisAttributes(fBlackLineVisAtt);
-      if(calorimeterBottom_log)calorimeterBottom_log->SetVisAttributes(fBlackLineVisAtt);
-      if(cellLogical)cellLogical->SetVisAttributes(fInvisibleVisAtt);
-      if(cellLogicalBottom)cellLogicalBottom->SetVisAttributes(fInvisibleVisAtt);
+      if(fCalorimeterTop_log    ) fCalorimeterTop_log->SetVisAttributes(fBlackLineVisAtt    ) ;
+      if(fCalorimeterBottom_log ) fCalorimeterBottom_log->SetVisAttributes(fBlackLineVisAtt ) ;
+      if(fCellLogicalTop        ) fCellLogicalTop->SetVisAttributes(fInvisibleVisAtt           ) ;
+      if(fCellLogicalBottom     ) fCellLogicalBottom->SetVisAttributes(fInvisibleVisAtt     ) ;
 
       /// Cherenkov - tank invisible
       if(tank_log)tank_log->SetVisAttributes(fBlackLineVisAtt);
@@ -953,7 +966,6 @@ fTrackerVertBar_log->SetVisAttributes(lightCollectionFTAttributes);
  *
 */
 void BETADetectorConstruction::ConstructHodoscope() {
-   
 
    if(hodoscopeContainerBox_phys)     delete hodoscopeContainerBox_phys;
    if(hodoscopeContainerBox_log)      delete hodoscopeContainerBox_log;
@@ -962,7 +974,7 @@ void BETADetectorConstruction::ConstructHodoscope() {
    if(fLuciteHodoBar_log)             delete fLuciteHodoBar_log;
 
    G4Box * hodoscopeContainerBox = new G4Box ( "hodoscope",75.0*cm ,28.0*6.4*cm/2.0,30.0*cm );
-   hodoscopeContainerBox_log = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
+   hodoscopeContainerBox_log     = new G4LogicalVolume ( hodoscopeContainerBox, Air ,"hodoscope_log" );
 
    G4double hodocenter = -DetectorLength/2 -50.*cm+ 240.*cm;
    G4RotationMatrix rotOldCoords;
@@ -979,38 +991,38 @@ void BETADetectorConstruction::ConstructHodoscope() {
    hodBarRotate.rotateX ( -pi/2. );
 
    /*
-   G4RotationMatrix hodBarRotateRemove1;
-   hodBarRotateRemove1.rotateZ((23.)*pi/(180.*2)-pi/4.);
-   G4RotationMatrix hodBarRotateRemove2;
-   hodBarRotateRemove2.rotateZ((-23.)*pi/(180.*2)+pi/4.);
-   G4double theta = 23.*pi/(180.*2.0);
-   */
+      G4RotationMatrix hodBarRotateRemove1;
+      hodBarRotateRemove1.rotateZ((23.)*pi/(180.*2)-pi/4.);
+      G4RotationMatrix hodBarRotateRemove2;
+      hodBarRotateRemove2.rotateZ((-23.)*pi/(180.*2)+pi/4.);
+      G4double theta = 23.*pi/(180.*2.0);
+    */
 
    G4VSolid* hodoscope = new G4Tubs ( "Lucite-barContainer", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10.*cm,6.*28.*cm/2. +10.*cm, -26.*pi/2.0/180.,26.*pi/180. );// made a little bigger around surfaces of reflection
-// Lets try a box
-  G4LogicalVolume* hodoscope_log =
+   // Lets try a box
+   G4LogicalVolume* hodoscope_log =
       new G4LogicalVolume ( hodoscope,     // Solid
-                            Air,                    // Material
-                            "hodoscope_Logical" ); // Name
+            Air,                    // Material
+            "hodoscope_Logical" ); // Name
 
    G4VSolid* hodoscopeSingleBarSection = new G4Tubs ( "Lucite-Singlebar", 240.*cm-10.*cm, ( 240.+3.5 ) *cm+10.*cm,6.*cm/2. , -26.*pi/2.0/180.,26.*pi/180. );// made a little bigger around surfaces of reflection
 
 
-  G4RotationMatrix hodBarRotateRemove1;
-  G4RotationMatrix hodBarRotateRemove2;
-  G4RotationMatrix * rotate1;
-  G4RotationMatrix * rotate2;
-  G4VSolid * theSolid;
-  G4VSolid * hodoscopeBar;
-  G4VSolid * PMTinquotes;
-  G4VSolid * PMTphotocathode;
+   G4RotationMatrix hodBarRotateRemove1;
+   G4RotationMatrix hodBarRotateRemove2;
+   G4RotationMatrix * rotate1;
+   G4RotationMatrix * rotate2;
+   G4VSolid * theSolid;
+   G4VSolid * hodoscopeBar;
+   G4VSolid * PMTinquotes;
+   G4VSolid * PMTphotocathode;
 
-  G4double theta;
+   G4double theta;
 
-  // Data members
-  std::vector<G4double> xCell;
-  std::vector<G4double> yCell;
-  std::vector<G4double> zCell;
+   // Data members
+   std::vector<G4double> xCell;
+   std::vector<G4double> yCell;
+   std::vector<G4double> zCell;
 
    rotate1 = &hodBarRotateRemove1;
    rotate2 = &hodBarRotateRemove2;
@@ -1020,22 +1032,22 @@ void BETADetectorConstruction::ConstructHodoscope() {
    // Initialise
    G4int i ( 0 );
    theta = 23.*pi/ ( 180.*2.0 );
-// First 28 are the curved bars
+   // First 28 are the curved bars
    for ( i=0; i<28; i++ )
    {
-//for BOX mother    xCell.push_back(-240*cm);
+      //for BOX mother    xCell.push_back(-240*cm);
       xCell.push_back ( 0*cm );
       yCell.push_back ( 0*cm );
       zCell.push_back ( ( i-13 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
    }
-// second 28 are the angled pmt light guides
+   // second 28 are the angled pmt light guides
    for ( i=28; i<28*2; i++ )
    {
       xCell.push_back ( ( 240.+3.5/2.0 ) *cm*std::cos ( theta ) );
       yCell.push_back ( ( 240.+3.5/2.0 ) *cm*std::sin ( theta ) );
       zCell.push_back ( ( i-13 - 28 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
    }
-// third 28 are the angled pmt light guides
+   // third 28 are the angled pmt light guides
    for ( i=28*2; i<28*3; i++ )
    {
       xCell.push_back ( ( 240.+3.5/2.0 ) *cm*std::cos ( theta ) );
@@ -1044,14 +1056,14 @@ void BETADetectorConstruction::ConstructHodoscope() {
    }
 
 
-//Sensors
+   //Sensors
    for ( i=28; i<28*2; i++ )
    {
       xCell.push_back ( ( 240.+3.5/2.0+(sideA+senseThickness)/2.0 ) *cm*std::cos ( theta ) );
       yCell.push_back ( ( 240.+3.5/2.0 +(sideA+senseThickness)/2.0 ) *cm*std::sin ( theta ) );
       zCell.push_back ( ( i-13 - 28 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3*cm+2.54*cm*0.002/2.0 ) );
    }
-// third 28 are the angled pmt light guides
+   // third 28 are the angled pmt light guides
    for ( i=28*2; i<28*3; i++ )
    {
       xCell.push_back ( ( 240.+3.5/2.0+(sideA+senseThickness)/2.0 ) *cm*std::cos ( theta ) );
@@ -1059,109 +1071,108 @@ void BETADetectorConstruction::ConstructHodoscope() {
       zCell.push_back ( (G4double)( i-13 -28*2 ) * ( 6.0*cm+2.54*cm*0.002 ) - ( 3.0*cm+2.54*cm*0.002/2.0 ) );
    }
 
- hodBarRotateRemove1.rotateZ ( ( 23. ) *pi/ ( 180.*2 )-pi/4. );
+   hodBarRotateRemove1.rotateZ ( ( 23. ) *pi/ ( 180.*2 )-pi/4. );
 
    hodBarRotateRemove2.rotateZ ( ( -23. ) *pi/ ( 180.*2 ) +pi/4. );
 
    theta = 23.*pi/ ( 180.*2.0 );
 
-//   G4VSolid* hodoscope = new G4Box ( "Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm );
+   //   G4VSolid* hodoscope = new G4Box ( "Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm );
    G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. );
    G4Box * hodoscopeRemoveBox = new G4Box ( "hodoscoperemovebox", 100.*cm,std::sqrt ( 2.*3.5*3.5 ) *cm/2.  ,100.*cm );
 
    hodoscopeBar = new G4SubtractionSolid ( "Frame top",hoBar , hodoscopeRemoveBox,G4Transform3D
-                                           ( hodBarRotateRemove1,G4ThreeVector ( ( 240.+3.5 ) *cm*std::cos ( theta ), ( 240.+3.5 ) *cm*std::sin ( theta ),0*cm ) ) );
+         ( hodBarRotateRemove1,G4ThreeVector ( ( 240.+3.5 ) *cm*std::cos ( theta ), ( 240.+3.5 ) *cm*std::sin ( theta ),0*cm ) ) );
 
 
    hodoscopeBar = new G4SubtractionSolid ( "Frame top",hodoscopeBar, hodoscopeRemoveBox,
-                                           G4Transform3D ( hodBarRotateRemove2, G4ThreeVector ( ( 240.+3.5 ) *cm*cos ( theta ),
-                                                                                                -1.0* ( 240.+3.5 ) *cm*sin ( theta ),0*cm ) ) );
-    PMTinquotes = new G4Box ( "hodoscopePMTinquotes", std::sqrt ( 2.*3.5*3.5 ) *cm/2.,std::sqrt ( 2.*3.5*3.5 ) *cm/2.,6.*cm/2. );
- hodoscopeBar = new G4UnionSolid ( "Frame top",hodoscopeBar, PMTinquotes,
-              G4Transform3D ( hodBarRotateRemove1, 
-              G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
-                              ( 240.+3.5/*/2.0 +(sideA)/2.0 */) *cm*std::sin ( theta ) ,0*cm ) ) );
- hodoscopeBar = new G4UnionSolid ( "Frame top",hodoscopeBar, PMTinquotes,
-              G4Transform3D ( hodBarRotateRemove2, 
-              G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
-                              -1.0*( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ) );
-   
+         G4Transform3D ( hodBarRotateRemove2, G4ThreeVector ( ( 240.+3.5 ) *cm*cos ( theta ),
+               -1.0* ( 240.+3.5 ) *cm*sin ( theta ),0*cm ) ) );
+   PMTinquotes = new G4Box ( "hodoscopePMTinquotes", std::sqrt ( 2.*3.5*3.5 ) *cm/2.,std::sqrt ( 2.*3.5*3.5 ) *cm/2.,6.*cm/2. );
+   hodoscopeBar = new G4UnionSolid ( "Frame top",hodoscopeBar, PMTinquotes,
+         G4Transform3D ( hodBarRotateRemove1, 
+            G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
+               ( 240.+3.5/*/2.0 +(sideA)/2.0 */) *cm*std::sin ( theta ) ,0*cm ) ) );
+   hodoscopeBar = new G4UnionSolid ( "Frame top",hodoscopeBar, PMTinquotes,
+         G4Transform3D ( hodBarRotateRemove2, 
+            G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
+               -1.0*( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ) );
+
    // Use material with index of refraction defined or not.
    G4Material * luciteMaterial = Lucite;
    if( !(fSimulationManager->fSimulateHodoscopeOptics) ) luciteMaterial = Lucite_NoOptics;
 
-  fLuciteHodoBar_log =
+   fLuciteHodoBar_log =
       new G4LogicalVolume ( hodoscopeBar,     // Solid
-                            luciteMaterial,                    // Material
-                            "fLuciteHodoBar_log" ); // Name
+            luciteMaterial,                    // Material
+            "fLuciteHodoBar_log" ); // Name
 
 
    PMTphotocathode = new G4Box ( "hodoscopePMTinquotes", /*std::sqrt ( 2.*3.5*3.5 ) */std::sqrt ( 2.*3.5*3.5 ) *cm/2.,0.1*cm/2.,6.0*cm/2. );
 
    fLuciteHodoPMTphotocathode_log =
       new G4LogicalVolume ( PMTphotocathode,     // Solid
-                            luciteMaterial,                    // Material
-                            "fLuciteHodoPMTphotocathode_log" ); // Name
+            luciteMaterial,                    // Material
+            "fLuciteHodoPMTphotocathode_log" ); // Name
 
 
-      new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove1, 
-              G4ThreeVector( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
-                              ( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ), fLuciteHodoPMTphotocathode_log,     // Logical volume
-                       "hodoscope_sensitive",     // Name
-                       fLuciteHodoBar_log,true,1);
-      new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove2, 
-              G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/) *cm*std::cos ( theta ),
-                             -1.0* ( 240.+3.5/*/2.0 +(sideA)/2.0*/) *cm*std::sin ( theta ) ,0*cm ) ) ,fLuciteHodoPMTphotocathode_log,     // Logical volume
-                       "hodoscope_sensitive",     // Name
-                       fLuciteHodoBar_log,true,2);
+   new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove1, 
+            G4ThreeVector( ( 240.+3.5/*/2.0+(sideA)/2.0*/ ) *cm*std::cos ( theta ),
+               ( 240.+3.5/*/2.0 +(sideA)/2.0*/ ) *cm*std::sin ( theta ) ,0*cm ) ), fLuciteHodoPMTphotocathode_log,     // Logical volume
+         "hodoscope_sensitive",     // Name
+         fLuciteHodoBar_log,true,1);
+   new G4PVPlacement ( G4Transform3D ( hodBarRotateRemove2, 
+            G4ThreeVector ( ( 240.+3.5/*/2.0+(sideA)/2.0*/) *cm*std::cos ( theta ),
+               -1.0* ( 240.+3.5/*/2.0 +(sideA)/2.0*/) *cm*std::sin ( theta ) ,0*cm ) ) ,fLuciteHodoPMTphotocathode_log,     // Logical volume
+         "hodoscope_sensitive",     // Name
+         fLuciteHodoBar_log,true,2);
 
 
-for(int k = 0;k<28;k++) {
+   for(int k = 0;k<28;k++) {
       new G4PVPlacement (  G4Transform3D(hodBarRotate, 
-   G4ThreeVector (0.0*cm, ( k-13 )*( 6.0*cm+2.54*cm*0.002 ) -( 3*cm+2.54*cm*0.002/2.0 ),-1.0*cm*( 240.+3.5/2.0 ) ) ) 
-                      ,fLuciteHodoBar_log,     // Logical volume
-                       "hodoscope_bar_and_pmt",     // Name
-                       hodoscopeContainerBox_log,true,k);
-}
-
-//   G4VSolid* hodoscope = new G4Box("Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm);
-/*
-   G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. ); 
-   G4LogicalVolume* fLuciteHodoBar_log;
-
-  if(fSimulationManager->fSimulateHodoscopeOptics) {
-    fLuciteHodoBar_log = new G4LogicalVolume ( hoBar, Lucite,"hodoscopeBAAAAAR_Logical" );
-  } else {
-    fLuciteHodoBar_log = new G4LogicalVolume ( hoBar, Lucite_NoOptics,"hodoscopeBAAAAAR_Logical" );
-  }
-   G4VPhysicalVolume * hodoscope_phys = new G4PVPlacement ( G4Transform3D ( hodBarRotate,G4ThreeVector ( 0*m,0*m,-240.*cm ) ), hodoscope_log,  // Logical volume
-                                                            "hodoscope_Physical",     // Name
-                                                            hodoscopeContainerBox_log,             // Mother volume
-                                                            false,                      // Unused boolean
-                                                            0 );
-   G4VPVParameterisation* HodoscopeCellParam;
-   if(fSimulationManager->fSimulateHodoscopeOptics) {
-     HodoscopeCellParam= new BETAHodoscopeCellParameterisation ( Lucite );
-   } else {
-     HodoscopeCellParam = new BETAHodoscopeCellParameterisation ( Lucite_NoOptics );
+               G4ThreeVector (0.0*cm, ( k-13 )*( 6.0*cm+2.54*cm*0.002 ) -( 3*cm+2.54*cm*0.002/2.0 ),-1.0*cm*( 240.+3.5/2.0 ) ) ) 
+            ,fLuciteHodoBar_log,     // Logical volume
+            "hodoscope_bar_and_pmt",     // Name
+            hodoscopeContainerBox_log,true,k);
    }
-// G4VNestedParameterisation* HodoscopePMTParam = new BETAHodoscopePMTParameterisation();
 
-// uncomment for placement
+   //   G4VSolid* hodoscope = new G4Box("Lucitebar-container", 45*2.54*cm/2., 45*2.54*cm/2.,6.*28.*cm/2. +10*cm);
+   /*
+      G4VSolid* hoBar= new G4Tubs ( "Lucitebar", 240.*cm, ( 240.+3.5 ) *cm,6.*cm/2. , -23.*pi/2.0/180.,23.*pi/180. ); 
+      G4LogicalVolume* fLuciteHodoBar_log;
+
+      if(fSimulationManager->fSimulateHodoscopeOptics) {
+      fLuciteHodoBar_log = new G4LogicalVolume ( hoBar, Lucite,"hodoscopeBAAAAAR_Logical" );
+      } else {
+      fLuciteHodoBar_log = new G4LogicalVolume ( hoBar, Lucite_NoOptics,"hodoscopeBAAAAAR_Logical" );
+      }
+      G4VPhysicalVolume * hodoscope_phys = new G4PVPlacement ( G4Transform3D ( hodBarRotate,G4ThreeVector ( 0*m,0*m,-240.*cm ) ), hodoscope_log,  // Logical volume
+      "hodoscope_Physical",     // Name
+      hodoscopeContainerBox_log,             // Mother volume
+      false,                      // Unused boolean
+      0 );
+      G4VPVParameterisation* HodoscopeCellParam;
+      if(fSimulationManager->fSimulateHodoscopeOptics) {
+      HodoscopeCellParam= new BETAHodoscopeCellParameterisation ( Lucite );
+      } else {
+      HodoscopeCellParam = new BETAHodoscopeCellParameterisation ( Lucite_NoOptics );
+      }
+   // G4VNestedParameterisation* HodoscopePMTParam = new BETAHodoscopePMTParameterisation();
+
+   // uncomment for placement
    G4VPhysicalVolume * hodoscopeBar_phys =   new G4PVParameterised ( "Hodoscope_Cell_Physical",  // Name
-         fLuciteHodoBar_log,        // Logical volume
-         hodoscope_phys, // Mother volume
-         kZAxis,             // Axis
-         28*3,                // Number of replicas
-         HodoscopeCellParam );        // Parameterisation
-*/
-//  G4VPhysicalVolume * hodoscopePMT_phys =   new G4PVParameterised("Hodoscope_PMT_Physical",    // Name
-//                         hodoscopePMT_log,        // Logical volume
-//                         hodoscope_phys, // Mother volume
-//                         kZAxis,             // Axis
-//                         28*2,                // Number of replicas
-//                         HodoscopePMTParam);         // Parameterisation
-
+   fLuciteHodoBar_log,        // Logical volume
+   hodoscope_phys, // Mother volume
+   kZAxis,             // Axis
+   28*3,                // Number of replicas
+   HodoscopeCellParam );        // Parameterisation
+    */
+   //  G4VPhysicalVolume * hodoscopePMT_phys =   new G4PVParameterised("Hodoscope_PMT_Physical",    // Name
+   //                         hodoscopePMT_log,        // Logical volume
+   //                         hodoscope_phys, // Mother volume
+   //                         kZAxis,             // Axis
+   //                         28*2,                // Number of replicas
+   //                         HodoscopePMTParam);         // Parameterisation
 
 
    // LUCITE TOTAL INTERNAL REFLECTION
@@ -1181,7 +1192,8 @@ for(int k = 0;k<28;k++) {
    //    myMPTL->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,     lucitedatapoints );
    //    Lucite->SetMaterialPropertiesTable ( myMPTL );
 
-// OPTICS
+   // -------------------------------
+   // OPTICS
    const G4int num = 2;
    G4double Ephoton[num] = {1.7*eV, 3.2*eV};
 
@@ -1202,11 +1214,11 @@ for(int k = 0;k<28;k++) {
    G4MaterialPropertiesTable* LuciteSurfacePTable = new G4MaterialPropertiesTable();
    LuciteSurfacePTable->AddProperty ( "RINDEX", EphotonLucite, luciteRefractiveIndex, 2);
    LuciteSurfacePTable->AddProperty ( "REFLECTIVITY", EphotonLucite, LReflectivity, 2 );
-/*   LuciteSurfacePTable->AddProperty ( "ABSLENGTH",    EphotonLucite, LuciteAbsLength,     lucitedatapoints );*/
-//   LuciteSurfacePTable->AddProperty("SPECULARLOBECONSTANT",  EphotonLucite, MSpecularLobe,    num);
-//   LuciteSurfacePTable->AddProperty("SPECULARSPIKECONSTANT", EphotonLucite, MSpecularSpike,   num);
-//   LuciteSurfacePTable->AddProperty("BACKSCATTERCONSTANT",   EphotonLucite, MBackscatter,     num);
-//   LuciteSurfacePTable->AddProperty("EFFICIENCY",   EphotonLucite, MEfficiency,   num);
+   /*   LuciteSurfacePTable->AddProperty ( "ABSLENGTH",    EphotonLucite, LuciteAbsLength,     lucitedatapoints );*/
+   //   LuciteSurfacePTable->AddProperty("SPECULARLOBECONSTANT",  EphotonLucite, MSpecularLobe,    num);
+   //   LuciteSurfacePTable->AddProperty("SPECULARSPIKECONSTANT", EphotonLucite, MSpecularSpike,   num);
+   //   LuciteSurfacePTable->AddProperty("BACKSCATTERCONSTANT",   EphotonLucite, MBackscatter,     num);
+   //   LuciteSurfacePTable->AddProperty("EFFICIENCY",   EphotonLucite, MEfficiency,   num);
 
    LuciteSurface->SetMaterialPropertiesTable ( LuciteSurfacePTable );
    LuciteSurface->SetModel ( unified );
@@ -1214,19 +1226,19 @@ for(int k = 0;k<28;k++) {
    LuciteSurface->SetFinish ( polishedbackpainted );
 
 
-//     myPVolume = myLVolume->GetDaughter(i);
-//for(int qq = 0; qq<28;qq++) {
-//if(qq != 0) new G4LogicalBorderSurface("Border Lucite", fLuciteHodoBar_log->GetDaughter(qq-1), fLuciteHodoBar_log->GetDaughter(qq), LuciteSurface);
+   //     myPVolume = myLVolume->GetDaughter(i);
+   //for(int qq = 0; qq<28;qq++) {
+   //if(qq != 0) new G4LogicalBorderSurface("Border Lucite", fLuciteHodoBar_log->GetDaughter(qq-1), fLuciteHodoBar_log->GetDaughter(qq), LuciteSurface);
 
 
-//uncomment FOR HODOSCOPE
-//   new G4LogicalBorderSurface ( "Border Lucite1",hodoscopeBar_phys, hodoscope_phys, LuciteSurface );
-  G4LogicalSkinSurface * LuciteBarSurface = new G4LogicalSkinSurface ( "LuciteBarsurface", fLuciteHodoBar_log, LuciteSurface );
+   //uncomment FOR HODOSCOPE
+   //   new G4LogicalBorderSurface ( "Border Lucite1",hodoscopeBar_phys, hodoscope_phys, LuciteSurface );
+   G4LogicalSkinSurface * LuciteBarSurface = new G4LogicalSkinSurface ( "LuciteBarsurface", fLuciteHodoBar_log, LuciteSurface );
 
 
-// G4cout << (fLuciteHodoBar_log->GetDaughter(qq))->GetName() << G4endl;
-//if(qq != 27) new G4LogicalBorderSurface("Border Lucite1", fLuciteHodoBar_log->GetDaughter(qq+1), fLuciteHodoBar_log->GetDaughter(qq), LuciteSurface);
-//}
+   // G4cout << (fLuciteHodoBar_log->GetDaughter(qq))->GetName() << G4endl;
+   //if(qq != 27) new G4LogicalBorderSurface("Border Lucite1", fLuciteHodoBar_log->GetDaughter(qq+1), fLuciteHodoBar_log->GetDaughter(qq), LuciteSurface);
+   //}
 
 
    G4SDManager* manager = G4SDManager::GetSDMpointer();
@@ -1269,249 +1281,369 @@ for(int k = 0;k<28;k++) {
    hodoPMT_log_attr->SetForceSolid(true);
    hodoPMT_log_attr->SetVisibility(true);
    fLuciteHodoPMTphotocathode_log->SetVisAttributes ( hodoPMT_log_attr );
-/*
-   G4VisAttributes* lucAttributes2 = new G4VisAttributes ( G4Colour ( 0.2,0.,0.5,0.5 ) );
-   lucAttributes2->SetVisibility(false);
-   lucAttributes2->SetDaughtersInvisible(true);
-   hodoscopeContainerBox_log->SetVisAttributes(lucAttributes2   );
+   /*
+      G4VisAttributes* lucAttributes2 = new G4VisAttributes ( G4Colour ( 0.2,0.,0.5,0.5 ) );
+      lucAttributes2->SetVisibility(false);
+      lucAttributes2->SetDaughtersInvisible(true);
+      hodoscopeContainerBox_log->SetVisAttributes(lucAttributes2   );
 
-   G4VisAttributes* lucAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.,0.5,0.5 ) );
-   lucAttributes->SetVisibility(false);
-   lucAttributes->SetDaughtersInvisible(true);
-   hodoscope_log->SetVisAttributes( lucAttributes );
+      G4VisAttributes* lucAttributes = new G4VisAttributes ( G4Colour ( 0.2,0.,0.5,0.5 ) );
+      lucAttributes->SetVisibility(false);
+      lucAttributes->SetDaughtersInvisible(true);
+      hodoscope_log->SetVisAttributes( lucAttributes );
 
-   G4VisAttributes* lucBarAttributes = new G4VisAttributes ( G4Colour ( 0.5,0.1,0.2 ) );
-   fLuciteHodoBar_log->SetVisAttributes( lucBarAttributes );
-//    hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
-*/
+      G4VisAttributes* lucBarAttributes = new G4VisAttributes ( G4Colour ( 0.5,0.1,0.2 ) );
+      fLuciteHodoBar_log->SetVisAttributes( lucBarAttributes );
+   //    hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );
+    */
 }
+//______________________________________________________________________________
+void BETADetectorConstruction::DestroyBigCal(){
 
+   if(fCalorimeterTop_phys)    delete fCalorimeterTop_phys;
+   if(fCalorimeterBottom_phys) delete fCalorimeterBottom_phys;
+   fCalorimeterTop_phys    = 0;
+   fCalorimeterBottom_phys = 0;
+
+   if(fCellParamTop           ) delete fCellParamTop           ;
+   if(fCellParamBottom        ) delete fCellParamBottom        ;
+   fCellParamTop           = 0;
+   fCellParamBottom        = 0;
+
+   if(fPMTTop_phys    ) delete fPMTTop_phys    ;
+   if(fPMTBottom_phys ) delete fPMTBottom_phys ;
+   fPMTTop_phys     = 0;
+   fPMTBottom_phys  = 0;
+
+   if(fCalorimeterTop_log)    delete fCalorimeterTop_log;
+   if(fCalorimeterBottom_log) delete fCalorimeterBottom_log;
+   fCalorimeterTop_log    = 0;
+   fCalorimeterBottom_log = 0;
+
+   if(fPMTLogicalTop)    delete fPMTLogicalTop;
+   if(fPMTLogicalBottom) delete fPMTLogicalBottom;
+   fPMTLogicalTop = 0;
+   fPMTLogicalBottom = 0;
+
+   if(fCellLogicalTop)       delete fCellLogicalTop;
+   if(fCellLogicalBottom) delete fCellLogicalBottom;
+   fCellLogicalTop = 0;
+   fCellLogicalBottom = 0;
+
+   if(fPMTSolidTop           ) delete fPMTSolidTop           ;
+   if(fPMTSolidBottom        ) delete fPMTSolidBottom        ;
+   fPMTSolidTop           = 0;
+   fPMTSolidBottom        = 0;
+
+   if(fCalorimeterSolidTop    ) delete fCalorimeterSolidTop    ;
+   if(fCalorimeterSolidBottom ) delete fCalorimeterSolidBottom ;
+   fCalorimeterSolidTop    = 0;
+   fCalorimeterSolidBottom = 0;
+
+   if(fCellSolidTop           ) delete fCellSolidTop           ;
+   if(fCellSolidBottom        ) delete fCellSolidBottom        ;
+   fCellSolidTop           = 0;
+   fCellSolidBottom        = 0;
+
+   //std::cout << "Destroyed" << std::endl;
+}
 //___________________________________________________________________
-void BETADetectorConstruction::ConstructBIGCAL()
-{
-   //BigCal
+void BETADetectorConstruction::ConstructBigCal() {
 
+   //std::cout << "BETADetectorConstruction::ConstructBigCal" << std::endl;
+   //BigCal
    BIGCALGeometryCalculator * BCgeo = BIGCALGeometryCalculator::GetCalculator();
 
-   G4double bigcalFace = rBigcal;//  from target
+   G4double bigcalFace         = rBigcal;//  from target
    G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0+ fBETADistance );
 
-   // Sensitive detector (for all of bigcal)
+   // --------------------------
+   // Sensitive Detectors
    G4SDManager* manager = G4SDManager::GetSDMpointer();
-   G4VSensitiveDetector* fBigcalSD =
-       new BETAG4BigcalSD ( "BIGCAL" );
 
-   // pointers used 
-   G4VSolid* cellSolid=0;
-   G4VPVParameterisation* cellParam;
-   G4VSolid* calorimeterSolidBottom;
-   G4VSolid* cellSolidBottom ;
-   G4VPVParameterisation* cellParamBottom;
-
-
-   // RCS Section (TOP)
-   if(!calorimeterTop_log) {
-   G4VSolid* calorimeterSolidTop = new G4Box ( "RCS_BOX", // Name
-                                               BCgeo->rcsXSize*cm/2.0,                   // y half length
-                                               BCgeo->rcsYSize*cm/2.0,                   // x half length
-                                               BCgeo->rcsCellZSize*cm/2.0 ) ;            // z half length
-
-   calorimeterTop_log =
-      new G4LogicalVolume ( calorimeterSolidTop,     // Solid
-                            Air,                    // Material
-                            "RCS_BOX_Logical" ); // Name
-   cellSolid = new G4Box ( "Cell_Solid", // Name
-                                     4.02167*cm/2.0,         // x half length
-                                     4.02167*cm/2.0,         // y half length
-                                     40.*cm/2.0 );     // z half length
-
-   cellLogical
-   = new G4LogicalVolume ( cellSolid,     // Solid
-                           LeadGlass,             // Material
-                           "Cell_Logical" ); // Name
-
-   cellParam = new BETARCSCellParameterisation();
-
-   /*uncomment for placement */
-   new G4PVParameterised ( "Cell_Physical",  // Name
-                           cellLogical,        // Logical volume
-                           calorimeterTop_log, // Mother volume
-                           kXAxis,             // Axis
-                           720,                // Number of replicas
-                           cellParam );        // Parameterisation
-
-//cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
-//    G4VSensitiveDetector* BIGCALRCS =
-//       new BETARCSCalorimeter ( "BIGCALRCS" );
-
-// Register detector with manager
-   manager->AddNewDetector ( fBigcalSD );
-// Attach detector to scoring volume
-   cellLogical->SetSensitiveDetector ( fBigcalSD );
+   // Accumulated energy deposited per block
+   G4VSensitiveDetector* fBigcalSD = manager->FindSensitiveDetector( "BigCal" );
+   if(!fBigcalSD) {
+      fBigcalSD = new BETAG4BigcalSD ( "BigCal" );
+      manager->AddNewDetector ( fBigcalSD );
    }
 
-   if(usingBigcal && calorimeterTop_phys==0) {
-   calorimeterTop_phys = new G4PVPlacement ( 0,G4ThreeVector ( 
-      BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm+BCgeo->rcsYSize*cm/2.0,
-                                         bigcalFaceRelative+40.*cm/2.0 ), calorimeterTop_log,     // Logical volume
-                       "RCS_BOX_Physical",     // Name
-                       BETADetector_log,             // Mother volume
-                       false,                      // Unused boolean
-                       0 );                        // Copy number
-  }
+   // Accumulated optical photons 
+   G4VSensitiveDetector* fBigcalAdcSD = 0;
+   if(fSimulationManager->fSimulateBigcalOptics) {
+       fBigcalAdcSD = manager->FindSensitiveDetector( "BigCalPMT" );
+       if(!fBigcalAdcSD) {
+          fBigcalAdcSD = new BETAG4PMTArray("BigCalPMT",1744,"photons");
+          manager->AddNewDetector ( fBigcalAdcSD );
+       }
+   } 
 
 
+   // Get the material for the calorimeter
+   //fSimulationManager->PrintSummary();
+   G4Material * calorimeterMaterial = LeadGlass_NoOptics;
+   if(fSimulationManager->fSimulateBigcalOptics) {
+      calorimeterMaterial = LeadGlass;
+   }
 
+   // --------------------------
+   // RCS Section (TOP)
+   if(!fCalorimeterTop_log) {
+      fCalorimeterSolidTop = new G4Box ( "RCS_BOX", // Name
+            BCgeo->rcsXSize*cm/2.0,                   // y half length
+            BCgeo->rcsYSize*cm/2.0,                   // x half length
+            BCgeo->rcsCellZSize*cm/2.0 ) ;            // z half length
 
-// Protvino
-   if(!calorimeterBottom_log) {
+      fCalorimeterTop_log = new G4LogicalVolume ( 
+            fCalorimeterSolidTop,     // Solid
+            Air,                    // Material
+            "RCS_BOX_Logical" ); // Name
 
+      fCellSolidTop = new G4Box ( "Cell_Solid", // Name
+            4.02167*cm/2.0,         // x half length
+            4.02167*cm/2.0,         // y half length
+            40.*cm/2.0 );     // z half length
 
-   calorimeterSolidBottom = new G4Box ( "Protvino_BOX", // Name
-                                                  BCgeo->protXSize*cm/2.0,                // y half length
-                                                  BCgeo->protYSize*cm/2.0,                // x half length
-                                                  BCgeo->protCellZSize*cm/2.0 ) ;
+      fCellLogicalTop = new G4LogicalVolume ( 
+            fCellSolidTop,     // Solid
+            calorimeterMaterial,             // Material
+            "CellLogicalTop" ); // Name
 
-   calorimeterBottom_log =
-      new G4LogicalVolume ( calorimeterSolidBottom,     // Solid
-                            Air,                   // Material
-                            "Protvino_BOX_Logical" ); // Name
+      fPMTSolidTop = new G4Box ( "PMTSolidTop", // Name
+            4.02167*cm/2.0,         // x half length
+            4.02167*cm/2.0,         // y half length
+            0.1*mm/2.0 );     // z half length
 
+      fPMTLogicalTop = new G4LogicalVolume ( 
+            fPMTSolidTop,     // Solid
+            calorimeterMaterial,             // Material
+            "PMTLogicalTop" ); // Name
 
+      fPMTTop_phys = new G4PVPlacement(
+            0, 
+            G4ThreeVector(0.0*cm,0.0*cm,(40.0*cm - 0.1*mm )/2.0), 
+            fPMTLogicalTop,     // Logical volume
+            "PMTTopPhys",       // Name
+            fCellLogicalTop,true,0);
 
-   cellSolidBottom = new G4Box ( "Cell_Solid_bottom", // Name
-                                           3.8*cm/2.0,         // x half length
-                                           3.8*cm/2.0,         // y half length
-                                           45.*cm/2.0 );     // z half length
+      fCellParamTop = new BETARCSCellParameterisation();
+      new G4PVParameterised ( "CellPhysicalTop",  // Name
+            fCellLogicalTop,        // Logical volume
+            fCalorimeterTop_log, // Mother volume
+            kXAxis,             // Axis
+            720,                // Number of replicas
+            fCellParamTop );        // Parameterisation
 
-   cellLogicalBottom
-   = new G4LogicalVolume ( cellSolidBottom,     // Solid
-                           LeadGlass,             // Material
-                           "Cell_Logical" ); // Name
+      //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+      //    G4VSensitiveDetector* BIGCALRCS =
+      //       new BETARCSCalorimeter ( "BIGCALRCS" );
 
-   cellParamBottom = new BETAProtvinoCellParameterisation();
+      // Register detector with manager
+      // Attach detector to scoring volume
+      fCellLogicalTop->SetSensitiveDetector ( fBigcalSD );
 
-// uncomment for placement
-   new G4PVParameterised ( "Cell_Physical",  // Name
-                           cellLogicalBottom,        // Logical volume
-                           calorimeterBottom_log, // Mother volume
-                           kXAxis,             // Axis
-                           1024,                // Number of replicas
-                           cellParamBottom );        // Parameterisation
- //  cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+      if(fBigcalAdcSD && fSimulationManager->fSimulateBigcalOptics) 
+         fPMTLogicalTop->SetSensitiveDetector ( fBigcalAdcSD );
+   }
 
-//    G4VSensitiveDetector* BIGCALProtvino =
-//       new BETAProtvinoCalorimeter ( "BIGCALBottom" );
-//    // Register detector with manager
-//    manager->AddNewDetector ( BIGCALProtvino );
-//    // Attach detector to scoring volume
-//    cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
-//     G4VSensitiveDetector* fBigcalSDprot =
-//        new BETAG4BigcalSD ( "PROT" );
-//    // Register detector with manager
-//    manager->AddNewDetector ( fBigcalSDprot );
-   // Attach detector to scoring volume
-   cellLogicalBottom->SetSensitiveDetector ( fBigcalSD );
+   if(usingBigcal && fCalorimeterTop_phys==0) {
+      fCalorimeterTop_phys = new G4PVPlacement ( 0,G4ThreeVector ( 
+               BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm+BCgeo->rcsYSize*cm/2.0,
+               bigcalFaceRelative+40.*cm/2.0 ), fCalorimeterTop_log,     // Logical volume
+            "RCS_BOX_Physical",     // Name
+            BETADetector_log,             // Mother volume
+            false,                      // Unused boolean
+            0 );                        // Copy number
+   }
+
+   // --------------------------
+   // Protvino (bottom)
+   if(!fCalorimeterBottom_log) {
+
+      fCalorimeterSolidBottom = new G4Box ( "Protvino_BOX", // Name
+            BCgeo->protXSize*cm/2.0,                // y half length
+            BCgeo->protYSize*cm/2.0,                // x half length
+            BCgeo->protCellZSize*cm/2.0 ) ;
+
+      fCalorimeterBottom_log =
+         new G4LogicalVolume ( fCalorimeterSolidBottom,     // Solid
+               Air,                   // Material
+               "Protvino_BOX_Logical" ); // Name
+
+      fCellSolidBottom = new G4Box ( "Cell_Solid_bottom", // Name
+            3.8*cm/2.0,         // x half length
+            3.8*cm/2.0,         // y half length
+            45.*cm/2.0 );     // z half length
+
+      fCellLogicalBottom
+         = new G4LogicalVolume ( fCellSolidBottom,     // Solid
+               calorimeterMaterial,             // Material
+               "Cell_Logical" ); // Name
+
+      fPMTSolidBottom = new G4Box ( "PMT_Solid_bottom", // Name
+            3.8*cm/2.0,         // x half length
+            3.8*cm/2.0,         // y half length
+            0.1*mm/2.0 );     // z half length
+
+      fPMTLogicalBottom
+         = new G4LogicalVolume ( fPMTSolidBottom,     // Solid
+               calorimeterMaterial,             // Material
+               "PMTLogical" ); // Name
+
+      fPMTBottom_phys = new G4PVPlacement(
+            0, 
+            G4ThreeVector(0.0*cm,0.0*cm,(45.0*cm - 0.1*mm )/2.0), 
+            fPMTLogicalBottom,     // Logical volume
+            "PMTTopPhys",       // Name
+            fCellLogicalBottom,true,0);
+
+      fCellParamBottom = new BETAProtvinoCellParameterisation();
+      new G4PVParameterised ( "Cell_Physical",  // Name
+            fCellLogicalBottom,        // Logical volume
+            fCalorimeterBottom_log, // Mother volume
+            kXAxis,             // Axis
+            1024,                // Number of replicas
+            fCellParamBottom );        // Parameterisation
+
+      //  cellLogicalBottom->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+      //    G4VSensitiveDetector* BIGCALProtvino =
+      //       new BETAProtvinoCalorimeter ( "BIGCALBottom" );
+      //    // Register detector with manager
+      //    manager->AddNewDetector ( BIGCALProtvino );
+      //    // Attach detector to scoring volume
+      //    cellLogicalBottom->SetSensitiveDetector ( BIGCALProtvino );
+      //     G4VSensitiveDetector* fBigcalSDprot =
+      //        new BETAG4BigcalSD ( "PROT" );
+      //    // Register detector with manager
+      //    manager->AddNewDetector ( fBigcalSDprot );
+
+      // Attach detector to scoring volume
+      fCellLogicalBottom->SetSensitiveDetector ( fBigcalSD );
+
+      if(fBigcalAdcSD && fSimulationManager->fSimulateBigcalOptics) 
+         fPMTLogicalBottom->SetSensitiveDetector ( fBigcalAdcSD );
    }  
 
-   if(usingBigcal && calorimeterBottom_phys==0) {
-   calorimeterBottom_phys = new G4PVPlacement ( 0,G4ThreeVector (BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm-BCgeo->protYSize*cm/2.0,
-                                         bigcalFaceRelative+45.*cm/2.0 ), calorimeterBottom_log,    // Logical volume
-                       "Protvino_BOX_Physical",     // Name
-                       BETADetector_log,             // Mother volume
-                       false,                      // Unused boolean
-                       0 );                        // Copy number
+   if(usingBigcal && fCalorimeterBottom_phys==0) {
+      fCalorimeterBottom_phys = new G4PVPlacement ( 0,G4ThreeVector (BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm-BCgeo->protYSize*cm/2.0,
+               bigcalFaceRelative+45.*cm/2.0 ), fCalorimeterBottom_log,    // Logical volume
+            "Protvino_BOX_Physical",     // Name
+            BETADetector_log,             // Mother volume
+            false,                      // Unused boolean
+            0 );                        // Copy number
    }
 
-// OPTICS
+   // ------------------
+   // OPTICS
 
-   G4OpticalSurface* bigcalReflecitveSurface = new G4OpticalSurface ( "BigcalLeadGlassOpticalSurface" );
-     bigcalReflecitveSurface->SetModel ( unified );
-     bigcalReflecitveSurface->SetType ( dielectric_dielectric );
-     bigcalReflecitveSurface->SetFinish ( groundbackpainted);
-//      forwardTrackerSurface->SetFinish ( polishedfrontpainted);
+   const G4int num = 2;
+   G4double Ephoton[num] = {1.7*eV, 3.4*eV};
+   G4double RefractiveIndex[num] = {1.65, 1.65};
+   G4double SpecularLobe[num]    = {0.3, 0.3};
+   G4double SpecularSpike[num]   = {0.2, 0.2};
+   G4double Backscatter[num]     = {0.2, 0.2};
+   G4double Reflectivity[num] = {0.5, 0.5};
+   G4double Efficiency[num]   = {1.0, 1.0};
+   G4double EphotonLucite[2] = {1.7*eV, 3.2*eV};
+   G4double LReflectivity[2] = {0.99, 0.99};
+   G4double luciteRefractiveIndex[2] = {1.49, 1.49};
+
+   G4OpticalSurface* bigcalReflectiveSurface = new G4OpticalSurface ( "BigcalLeadGlassReflectiveSurface" );
+   G4MaterialPropertiesTable* BigcalSurfacePTable = new G4MaterialPropertiesTable();
+   BigcalSurfacePTable->AddProperty ( "RINDEX", EphotonLucite, luciteRefractiveIndex, 2);
+   BigcalSurfacePTable->AddProperty ( "REFLECTIVITY", EphotonLucite, LReflectivity, 2 );
+   bigcalReflectiveSurface->SetMaterialPropertiesTable ( BigcalSurfacePTable );
+   bigcalReflectiveSurface->SetModel ( unified );
+   bigcalReflectiveSurface->SetType ( dielectric_dielectric );
+   bigcalReflectiveSurface->SetFinish ( polishedbackpainted );
+
+   //G4LogicalSkinSurface * LuciteBarSurface = new G4LogicalSkinSurface ( "LuciteBarsurface", fLuciteHodoBar_log, LuciteSurface );
+   //bigcalReflecitveSurface->SetModel ( unified );
+   //bigcalReflecitveSurface->SetType ( dielectric_dielectric );
+   //bigcalReflecitveSurface->SetFinish ( groundbackpainted);
+   // forwardTrackerSurface->SetFinish ( polishedfrontpainted);
 
    G4OpticalSurface* bigcalNonReflectiveSurface = new G4OpticalSurface ( "BigcalLeadGlassOpticalSurface" );
-     bigcalNonReflectiveSurface->SetModel ( unified );
-     bigcalNonReflectiveSurface->SetType ( dielectric_metal);
-     bigcalNonReflectiveSurface->SetFinish ( groundbackpainted);
+   bigcalNonReflectiveSurface->SetModel ( unified );
+   bigcalNonReflectiveSurface->SetType ( dielectric_metal);
+   bigcalNonReflectiveSurface->SetFinish ( groundbackpainted);
 
-if(fSimulationManager->fSimulateTrackerOptics) {
-   new G4LogicalSkinSurface ( "protLeadGassSurface",  cellLogicalBottom, bigcalNonReflectiveSurface );
-   new G4LogicalSkinSurface ( "rcsLeadGassSurface", cellLogical, bigcalNonReflectiveSurface );
-} else {
-   new G4LogicalSkinSurface ( "protLeadGassSurface",  cellLogicalBottom, bigcalNonReflectiveSurface );
-   new G4LogicalSkinSurface ( "rcsLeadGassSurface", cellLogical, bigcalNonReflectiveSurface );
-}
+   if(fSimulationManager->fSimulateBigcalOptics) {
+      new G4LogicalSkinSurface("protLeadGassSurface",  fCellLogicalBottom, bigcalReflectiveSurface );
+      new G4LogicalSkinSurface("rcsLeadGassSurface",   fCellLogicalTop,    bigcalReflectiveSurface );
+   } else {
+      new G4LogicalSkinSurface("protLeadGassSurface",  fCellLogicalBottom, bigcalNonReflectiveSurface );
+      new G4LogicalSkinSurface("rcsLeadGassSurface",   fCellLogicalTop,    bigcalNonReflectiveSurface );
+   }
+
 
    G4VisAttributes* BIGCALAttributes = new G4VisAttributes (/* G4Colour::Black()*/G4Colour ( 0.0,0.5,0.5,0.5 ) );
-/*   BIGCALAttributes->SetForceSolid ( false );*/
+   /*   BIGCALAttributes->SetForceSolid ( false );*/
    BIGCALAttributes->SetForceWireframe( true );
    BIGCALAttributes->SetDaughtersInvisible(false  );
-   calorimeterTop_log->SetVisAttributes(BIGCALAttributes);
-   calorimeterBottom_log->SetVisAttributes(BIGCALAttributes);
-// Make cells invisible!
-//    cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
-//    cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
-// Make containers invisible
-  G4VisAttributes* BIGCALRcsProtAttributes = new G4VisAttributes (/*G4Colour::Black()*/ G4Colour ( 0.2,0.6,0.0,0.25 )  );
-   calorimeterTop_log->SetVisAttributes ( BIGCALRcsProtAttributes );
-   calorimeterBottom_log->SetVisAttributes ( BIGCALRcsProtAttributes);
+   fCalorimeterTop_log->SetVisAttributes(BIGCALAttributes);
+   fCalorimeterBottom_log->SetVisAttributes(BIGCALAttributes);
+   // Make cells invisible!
+   //    cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
+   //    cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
+   // Make containers invisible
+   G4VisAttributes* BIGCALRcsProtAttributes = new G4VisAttributes (/*G4Colour::Black()*/ G4Colour ( 0.2,0.6,0.0,0.25 )  );
+   fCalorimeterTop_log->SetVisAttributes ( BIGCALRcsProtAttributes );
+   fCalorimeterBottom_log->SetVisAttributes ( BIGCALRcsProtAttributes);
 
-  G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( /*G4Colour::Black()*/G4Colour ( 0.2,0.6,0.0,0.25 )  );
-  //BIGCALCellAttributes->SetForceSolid ( true );
-  //BIGCALCellAttributes->SetForceWireframe( true );
-//  cellLogical->SetVisAttributes(BIGCALCellAttributes );
-  cellLogical->SetVisAttributes(G4VisAttributes::Invisible );
-//  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
-  cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
+   G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( /*G4Colour::Black()*/G4Colour ( 0.2,0.6,0.0,0.25 )  );
+   //BIGCALCellAttributes->SetForceSolid ( true );
+   //BIGCALCellAttributes->SetForceWireframe( true );
+   //  cellLogical->SetVisAttributes(BIGCALCellAttributes );
+   fCellLogicalTop->SetVisAttributes(G4VisAttributes::Invisible );
+   //  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
+   fCellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 }
 
 //___________________________________________________________________
-void BETADetectorConstruction::ConstructCherenkov()
-{
+void BETADetectorConstruction::ConstructCherenkov() {
    
-// THICKNESS
+   // THICKNESS
    G4double frontWindowThickness = 2.0*0.002*2.54*cm;
-// Target at is at (0,0,0)
-// Target vacuum radius
-// OVC radius = 46*cm
+   // Target at is at (0,0,0)
+   // Target vacuum radius
+   // OVC radius = 46*cm
    G4double targetSnoutGap = 5*cm;
    G4double detectorFaceDistance = 55*cm;//55*cm;
    G4double tankVolume =0;
 
 
 
-// Tank box dimensions
+   // Tank box dimensions
    G4double zTank = ( 25.6875 ) *2.54*cm;
    G4double yTank = 75*2.54*cm;
    G4double xTank = ( 43.4375 ) *2.54*cm;
    tankVolume = zTank*xTank*yTank+tankVolume;
-// The angle the pmt face plane makes with the z axis
+   // The angle the pmt face plane makes with the z axis
    G4double pmtPlaneAngle = 45*pi/180;
    G4double pmtAngle = 20*pi/180;
-// Tank Front trapezdoid piece
+   // Tank Front trapezdoid piece
    G4double tankFrontSide = 12.5*2.54*cm;
    G4double zTankFront  = tankFrontSide*std::cos ( pmtPlaneAngle );
    G4double xTankFrontBase = xTank;
    G4double yTankFrontBase = yTank;
    G4double xTankFrontEnd = xTank-2.*tankFrontSide*std::sin ( pmtPlaneAngle );
    G4double yTankFrontEnd = yTank;
-// approx tank snout and front  volume...
+   // approx tank snout and front  volume...
    tankVolume = ( xTankFrontBase+xTankFrontEnd ) /2 * ( yTankFrontBase+yTankFrontEnd ) /2 *zTankFront+tankVolume;
-// Snout
+   // Snout
    G4double ySnoutEnd = 20.5*2.54*cm;
    G4double xSnoutEnd =12.0*2.54*cm;
-// angle between snout-top plane and verticle (spherical coordinate theta)
+   // angle between snout-top plane and verticle (spherical coordinate theta)
    G4double snoutTheta = 120 *pi/180;
-// angle between snout-side and z axis
+   // angle between snout-side and z axis
    G4double snoutPhi = 80 *pi/180;
    G4double snoutSide = 37*2.54*cm;
-//    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
-//    G4double ySnoutBase =ySnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
-//    G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
+   //    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
+   //    G4double ySnoutBase =ySnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
+   //    G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
 
-// NEW snout
+   // NEW snout
    G4double snoutThetaNEW = 30.0*pi/180.0;
    G4double snoutPhiNEW = 10.0*pi/180.0;
    G4double zSnout  = fabs ( snoutSide*std::cos ( snoutThetaNEW )  );
@@ -1521,168 +1653,168 @@ void BETADetectorConstruction::ConstructCherenkov()
    tankVolume = ( xSnoutBase+xSnoutEnd ) /2 * ( ySnoutBase+ySnoutEnd ) /2 * zSnout + tankVolume;
 
 
-// OLD SNOUT
-// Snout
-//    G4double xSnoutEnd = 12.5*2.54*cm;
-//    G4double ySnoutEnd =9*2.54*cm;
-// // angle between snout-top plane and verticle (spherical coordinate theta)
-//    G4double snoutTheta = 120 *pi/180;
-// angle between snout-side and z axis
-//    G4double snoutPhi = 80 *pi/180;
-//    G4double snoutSide = 37*2.54*cm;
-//    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
-//    G4double xSnoutBase =xSnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
-//    G4double ySnoutBase = ySnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
+   // OLD SNOUT
+   // Snout
+   //    G4double xSnoutEnd = 12.5*2.54*cm;
+   //    G4double ySnoutEnd =9*2.54*cm;
+   // // angle between snout-top plane and verticle (spherical coordinate theta)
+   //    G4double snoutTheta = 120 *pi/180;
+   // angle between snout-side and z axis
+   //    G4double snoutPhi = 80 *pi/180;
+   //    G4double snoutSide = 37*2.54*cm;
+   //    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
+   //    G4double xSnoutBase =xSnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
+   //    G4double ySnoutBase = ySnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
 
 
 
-// PMT Mount
+   // PMT Mount
    G4double PMTmountLength = ( 10.0 ) *2.54*cm, //0.5 is thickness of backplate
-                             // discrepency of 1"(either 10 or 11?)
-                             // Also here we can add the possibility of
-                             // the 1.5" spacer
-                             PMTmountOD = 6.625*2.54*cm,
-PMTmountID = 5.75*2.54*cm,
-PMTmountRadius = PMTmountOD/2.0,
-PMTmountCenterLength = PMTmountLength - PMTmountRadius*std::tan ( pmtAngle ),
-PMTmountXsize = 7.0*2.54*cm,
-PMTmountYsize = 7.0*2.54*cm,
-PMTmountBackPlateThickness = 0.5*2.54*cm;
-// Panels
-  G4double yBackPanel = 74.5*2.54*cm,
-  xBackPanel = 43.0*2.54*cm,
-  BackPanelThickness = 0.032*2.54*cm,
-  ySidePanel = 74.0*2.54*cm,
-  xSidePanel = 25.0*2.54*cm,
-  SidePanelThickness = 0.1875*2.54*cm,
-  
-  yBevelPanel = 73.0*2.54*cm,
-  xBevelPanel = 10.5*2.54*cm,
-  BevelPanelThickness = 0.1875*2.54*cm,
+            // discrepency of 1"(either 10 or 11?)
+            // Also here we can add the possibility of
+            // the 1.5" spacer
+            PMTmountOD = 6.625*2.54*cm,
+            PMTmountID = 5.75*2.54*cm,
+            PMTmountRadius = PMTmountOD/2.0,
+            PMTmountCenterLength = PMTmountLength - PMTmountRadius*std::tan ( pmtAngle ),
+            PMTmountXsize = 7.0*2.54*cm,
+            PMTmountYsize = 7.0*2.54*cm,
+            PMTmountBackPlateThickness = 0.5*2.54*cm;
+   // Panels
+   G4double yBackPanel = 74.5*2.54*cm,
+            xBackPanel = 43.0*2.54*cm,
+            BackPanelThickness = 0.032*2.54*cm,
+            ySidePanel = 74.0*2.54*cm,
+            xSidePanel = 25.0*2.54*cm,
+            SidePanelThickness = 0.1875*2.54*cm,
 
-  yPMTmountPanel = 73.0*2.54*cm,
-  xPMTmountPanel = 12.1*2.54*cm,
-  PMTmountThickness = 0.5*2.54*cm,
-  PMTpanelThickness = PMTmountThickness;
+            yBevelPanel = 73.0*2.54*cm,
+            xBevelPanel = 10.5*2.54*cm,
+            BevelPanelThickness = 0.1875*2.54*cm,
 
-  G4double 
-  yTopPanelBox = 24.25*2.54*cm,
-  zTopPanelBox=yTopPanelBox,
-  xTopPanelBox = ( 41.0+7.0/16.0 ) *2.54*cm,
-  TopPanelThickness = 0.25*2.54*cm,
-  zTopPanelTrd = ( 32.0-24.25 ) *2.54*cm,
-  endTopPanelTrd = 24.0*2.54*cm,
+            yPMTmountPanel = 73.0*2.54*cm,
+            xPMTmountPanel = 12.1*2.54*cm,
+            PMTmountThickness = 0.5*2.54*cm,
+            PMTpanelThickness = PMTmountThickness;
 
-  yBottomPanelBox = 25.0*2.54*cm,
-  zBottomPanelBox=yBottomPanelBox,
-  xBottomPanelBox = ( 42.0+7.0/16.0 ) *2.54*cm,
-  BottomPanelThickness = 0.25*2.54*cm,
-  zBottomPanelTrd = ( 32.0-25.0+13.0/16.0 ) *2.54*cm,
-  endBottomPanelTrd = ( 24.0+9.0/16.0 ) *2.54*cm;
+   G4double 
+      yTopPanelBox = 24.25*2.54*cm,
+                   zTopPanelBox=yTopPanelBox,
+                   xTopPanelBox = ( 41.0+7.0/16.0 ) *2.54*cm,
+                   TopPanelThickness = 0.25*2.54*cm,
+                   zTopPanelTrd = ( 32.0-24.25 ) *2.54*cm,
+                   endTopPanelTrd = 24.0*2.54*cm,
 
-///////////////////////////
-// END PARAMETERS
-////////////////////////////
+                   yBottomPanelBox = 25.0*2.54*cm,
+                   zBottomPanelBox=yBottomPanelBox,
+                   xBottomPanelBox = ( 42.0+7.0/16.0 ) *2.54*cm,
+                   BottomPanelThickness = 0.25*2.54*cm,
+                   zBottomPanelTrd = ( 32.0-25.0+13.0/16.0 ) *2.54*cm,
+                   endBottomPanelTrd = ( 24.0+9.0/16.0 ) *2.54*cm;
 
-// Detector Positioning
+   ///////////////////////////
+   // END PARAMETERS
+   ////////////////////////////
+
+   // Detector Positioning
 
    G4double Extra = 3*m;
-// ==============
-// The Snout
-// ==============
+   // ==============
+   // The Snout
+   // ==============
    G4double snoutCenter = rTarget+targetSnoutGap+zSnout/2;
    G4Trd * snout = new  G4Trd ( "Snout",xSnoutEnd/2, xSnoutBase/2, ySnoutEnd/2, ySnoutBase/2, zSnout/2 );
-//  G4LogicalVolume * snout_log = new G4LogicalVolume(snout, NitrogenGas,"snout_log",0,0,0);
-//  G4VPhysicalVolume * snout_phys = new G4PVPlacement(0,G4ThreeVector(0,0,snoutCenter), snout_log , "snout_phys",  expHall_log, false,0);
+   //  G4LogicalVolume * snout_log = new G4LogicalVolume(snout, NitrogenGas,"snout_log",0,0,0);
+   //  G4VPhysicalVolume * snout_phys = new G4PVPlacement(0,G4ThreeVector(0,0,snoutCenter), snout_log , "snout_phys",  expHall_log, false,0);
 
-// ==============
-// The tank front
-// ==============
-// This will be unioned with other cylinders for pmt mounts
+   // ==============
+   // The tank front
+   // ==============
+   // This will be unioned with other cylinders for pmt mounts
    G4double tankFrontCenter =rTarget+targetSnoutGap+zSnout+zTankFront/2 ;
    G4Trd * tankFront = new  G4Trd ( "Front", xTankFrontEnd/2, xTankFrontBase/2, yTankFrontEnd/2, yTankFrontBase/2, zTankFront/2 );
    G4Tubs * tankPMTfar = new G4Tubs ( "PMTfar", 0, PMTmountRadius, PMTmountCenterLength,0,2*pi );
-//G4Tubs * PMTmount = new G4Tubs("PMTfar", 0, PMTmountRadius, PMTmountLength,0,2*pi);
+   //G4Tubs * PMTmount = new G4Tubs("PMTfar", 0, PMTmountRadius, PMTmountLength,0,2*pi);
    G4Tubs * tankPMTnear = new G4Tubs ( "PMTfar", 0, PMTmountRadius, PMTmountCenterLength,0,2*pi );
    G4Box * removebox = new  G4Box ( "intersection box", 2*PMTmountCenterLength, 2*PMTmountCenterLength, 2*PMTmountCenterLength );
 
    G4RotationMatrix* oldCoordRot = new G4RotationMatrix;
-     oldCoordRot->rotateZ ( -pi/2.0);
+   oldCoordRot->rotateZ ( -pi/2.0);
 
    G4RotationMatrix* noRot = new G4RotationMatrix;
    G4RotationMatrix* xRotNear = new G4RotationMatrix;
-     xRotNear->rotateY ( pmtPlaneAngle-pmtAngle );
+   xRotNear->rotateY ( pmtPlaneAngle-pmtAngle );
    G4RotationMatrix* xRotFar = new G4RotationMatrix;
-     xRotFar->rotateY ( pmtPlaneAngle+pmtAngle );
+   xRotFar->rotateY ( pmtPlaneAngle+pmtAngle );
    G4RotationMatrix* PMTfarROT = new G4RotationMatrix;
-     PMTfarROT->rotateY ( +pmtAngle );
+   PMTfarROT->rotateY ( +pmtAngle );
    G4RotationMatrix* PMTnearROT = new G4RotationMatrix;
-     PMTnearROT->rotateY ( -pmtAngle );
+   PMTnearROT->rotateY ( -pmtAngle );
 
    G4ThreeVector ZTrans ( 0, 0, -1.8*PMTmountCenterLength );
 
    G4ThreeVector pmt4Trans ( 
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     PMTmountYsize/2,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         PMTmountYsize/2,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
 
    G4ThreeVector pmt5Trans (  
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     -PMTmountYsize/2,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         -PMTmountYsize/2,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
 
    G4ThreeVector pmt3Trans ( 
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     -PMTmountYsize/2-PMTmountYsize,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         -PMTmountYsize/2-PMTmountYsize,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
 
    G4ThreeVector pmt6Trans (  
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     PMTmountYsize/2+PMTmountYsize,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         PMTmountYsize/2+PMTmountYsize,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
    G4ThreeVector pmt2Trans ( 
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     -PMTmountYsize/2-2.0*PMTmountYsize,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         -PMTmountYsize/2-2.0*PMTmountYsize,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
 
    G4ThreeVector pmt7Trans (  
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     PMTmountYsize/2+2.0*PMTmountYsize,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         PMTmountYsize/2+2.0*PMTmountYsize,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
    G4ThreeVector pmt1Trans ( 
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     -PMTmountYsize/2-3.0*PMTmountYsize,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         -PMTmountYsize/2-3.0*PMTmountYsize,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
 
    G4ThreeVector pmt8Trans (  
-     ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
-     PMTmountYsize/2+3.0*PMTmountYsize,
-     -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
-   );
-//    G4ThreeVector pmt3Trans ( PMTmountXsize/2+PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
-// 
-//    G4ThreeVector pmt6Trans ( -PMTmountXsize/2-PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
+         ( xTankFrontEnd/2 + ( xTankFrontBase/2 - xTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ),
+         PMTmountYsize/2+3.0*PMTmountYsize,
+         -PMTpanelThickness*std::sin ( pmtPlaneAngle ) 
+         );
+   //    G4ThreeVector pmt3Trans ( PMTmountXsize/2+PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
+   // 
+   //    G4ThreeVector pmt6Trans ( -PMTmountXsize/2-PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
 
-//    G4ThreeVector pmt2Trans ( PMTmountXsize/2 +2*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
-// 
-//    G4ThreeVector pmt7Trans ( -PMTmountXsize/2-2*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
-// 
-//    G4ThreeVector pmt1Trans ( PMTmountXsize/2+3*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
-// 
-//    G4ThreeVector pmt8Trans ( -PMTmountXsize/2-3*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
+   //    G4ThreeVector pmt2Trans ( PMTmountXsize/2 +2*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
+   // 
+   //    G4ThreeVector pmt7Trans ( -PMTmountXsize/2-2*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
+   // 
+   //    G4ThreeVector pmt1Trans ( PMTmountXsize/2+3*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
+   // 
+   //    G4ThreeVector pmt8Trans ( -PMTmountXsize/2-3*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
 
    G4IntersectionSolid* PMTmountFar = new G4IntersectionSolid ( "pmt-removed unwanted union",tankPMTfar, removebox,PMTfarROT,ZTrans );
    G4IntersectionSolid* PMTmountNear = new G4IntersectionSolid ( "pmt-removed unwanted union",tankPMTnear, removebox,PMTnearROT,ZTrans );
 
-//G4LogicalVolume * int_log = new G4LogicalVolume(PMTmount, NitrogenGas,"tankFront_log",0,0,0);
-//  G4VPhysicalVolume * int_phys = new G4PVPlacement(0,G4ThreeVector(0,0,0), int_log , "tankFront_phys",  expHall_log, false,0);
+   //G4LogicalVolume * int_log = new G4LogicalVolume(PMTmount, NitrogenGas,"tankFront_log",0,0,0);
+   //  G4VPhysicalVolume * int_phys = new G4PVPlacement(0,G4ThreeVector(0,0,0), int_log , "tankFront_phys",  expHall_log, false,0);
 
 
 
@@ -1708,10 +1840,10 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    TANK =
       new G4UnionSolid ( "totaltank minus box", TANK,snout, noRot, snoutTrans );
 
-// ==============
-// The tank
-// ==============
-// Extra is the space for the hodoscope and big cal
+   // ==============
+   // The tank
+   // ==============
+   // Extra is the space for the hodoscope and big cal
    G4double tankCenterDetector = DetectorLength/2 -zTank/2-1*frontWindowThickness -Extra;
    G4double tankCenter = rTarget+targetSnoutGap+zSnout+zTankFront+zTank/2;
 
@@ -1722,8 +1854,8 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
       new G4UnionSolid ( "Total Tank", tankbox, TANK,noRot, snoutTrans2 );
 
 
-// Add volumes for side panels
-// in the PMTmount plane
+   // Add volumes for side panels
+   // in the PMTmount plane
 
 
    G4RotationMatrix* yRot90deg = new G4RotationMatrix;
@@ -1738,10 +1870,10 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4ThreeVector TopPanelTrdTrans ( 0, yTank/2+TopPanelThickness/2,-zTopPanelTrd/2-zTopPanelBox/2 );
 
 
-//    TANK =
-//       new G4UnionSolid ( "topPanelBox", TANK, TopPanelBox, noRot, TopPanelBoxTrans );
-//    TANK =
-//       new G4UnionSolid ( "topPanelTrd", TANK, TopPanelTrd, noRot, TopPanelTrdTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "topPanelBox", TANK, TopPanelBox, noRot, TopPanelBoxTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "topPanelTrd", TANK, TopPanelTrd, noRot, TopPanelTrdTrans );
 
    G4Box * BottomPanelBox = new  G4Box ( "bottom panel", xBottomPanelBox/2, BottomPanelThickness/2, zBottomPanelBox/2 );
    G4Trd * BottomPanelTrd = new  G4Trd ( "Bottom panel trd",  endBottomPanelTrd/2, yBottomPanelBox/2, BottomPanelThickness/2, BottomPanelThickness/2, zBottomPanelTrd/2 );
@@ -1750,10 +1882,10 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4ThreeVector BottomPanelBoxTrans ( 0, -yTank/2-BottomPanelThickness/2,0 );
    G4ThreeVector BottomPanelTrdTrans ( 0,-yTank/2-BottomPanelThickness/2,-zBottomPanelTrd/2-zBottomPanelBox/2 );
 
-//    TANK =
-//       new G4UnionSolid ( "bottomPanelBox", TANK, BottomPanelBox, noRot, BottomPanelBoxTrans );
-//    TANK =
-//       new G4UnionSolid ( "bottomPanelTrd", TANK, BottomPanelTrd, noRot, BottomPanelTrdTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "bottomPanelBox", TANK, BottomPanelBox, noRot, BottomPanelBoxTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "bottomPanelTrd", TANK, BottomPanelTrd, noRot, BottomPanelTrdTrans );
 
 
 
@@ -1761,43 +1893,43 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
 
    G4ThreeVector SidePanelTrans ( xTank/2+SidePanelThickness/2,0,0 );
 
-//    TANK =
-//       new G4UnionSolid ( "tank_side_panel", TANK, SidePanelBox, yRot90deg, SidePanelTrans );
-//    TANK =
-//       new G4UnionSolid ( "tank_side_panel2", TANK, SidePanelBox, yRot90deg, -SidePanelTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "tank_side_panel", TANK, SidePanelBox, yRot90deg, SidePanelTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "tank_side_panel2", TANK, SidePanelBox, yRot90deg, -SidePanelTrans );
 
-// Bevel Panel
+   // Bevel Panel
    G4Box * BevelPanelBox = new  G4Box ( "bevel_panel", xBevelPanel/2, yBevelPanel/2, BevelPanelThickness/2 );
 
    G4ThreeVector BevelPanelTrans ( - ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2-BevelPanelThickness/2*std::sin ( pmtPlaneAngle ) , 0,
-                                   -zTank/2-zTankFront/2-BevelPanelThickness/2*std::cos ( pmtPlaneAngle ) );
+         -zTank/2-zTankFront/2-BevelPanelThickness/2*std::cos ( pmtPlaneAngle ) );
 
    G4RotationMatrix *rot45degy = new G4RotationMatrix;
    rot45degy->rotateY ( -pi/4 );
 
-//    TANK =
-//       new G4UnionSolid ( "tank_bevel_panel", TANK, BevelPanelBox, rot45degy, BevelPanelTrans );
+   //    TANK =
+   //       new G4UnionSolid ( "tank_bevel_panel", TANK, BevelPanelBox, rot45degy, BevelPanelTrans );
 
-// PMT Panel
+   // PMT Panel
    G4Box * PMTPanelBox = new  G4Box ( "PMT_panel", xPMTmountPanel/2, yPMTmountPanel/2, PMTmountThickness/2 );
 
    G4ThreeVector PMTmountPanelTrans ( 
-     ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2+PMTmountThickness/2*std::sin ( pmtPlaneAngle ) ,
-   0*cm,
-                                      -zTank/2-zTankFront/2 -PMTmountThickness/2*std::cos ( pmtPlaneAngle ) );
-    G4RotationMatrix *rot45degy2 = new G4RotationMatrix;
+         ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2+PMTmountThickness/2*std::sin ( pmtPlaneAngle ) ,
+         0*cm,
+         -zTank/2-zTankFront/2 -PMTmountThickness/2*std::cos ( pmtPlaneAngle ) );
+   G4RotationMatrix *rot45degy2 = new G4RotationMatrix;
    rot45degy2->rotateY ( pi/4 );
 
-//   TANK =
-//     new G4UnionSolid("Cherenkov_Tank", TANK, PMTPanelBox, rot45degy2, PMTmountPanelTrans);
+   //   TANK =
+   //     new G4UnionSolid("Cherenkov_Tank", TANK, PMTPanelBox, rot45degy2, PMTmountPanelTrans);
 
 
-//////////////////////////////////////////////////////////////
-//             Physical Placements
+   //////////////////////////////////////////////////////////////
+   //             Physical Placements
    G4double cherenkovFaceToCenter = zTank/2.0 + zSnout + zTankFront;
    G4double TankPositionInDetPackage = -1.0*DetectorLength/2.0 + - fBETADistance + rCherenkov + cherenkovFaceToCenter;
 
-// Container Box 
+   // Container Box 
    G4double cherenkovContainerZLength = zTank+zTankFront+zSnout+2.0*cm; // 2cm buffer
    G4double cherenkovContainerXLength = xTank+2.0*cm;// 2cm buffer
    G4double cherenkovContainerYLength = yTank+2.0*cm;// 2cm buffer
@@ -1808,14 +1940,14 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4Box * cherenkovContainerBox = new  G4Box ( "cherenkovContainerBox", cherenkovContainerXLength/2.0, cherenkovContainerYLength/2.0, cherenkovContainerZLength/2.0 );
 
    cherenkovContainer_log = new G4LogicalVolume ( cherenkovContainerBox, Air,"cherenkovContainter_log",0,0,0 );
-//    G4VPhysicalVolume * cherenkovContainer_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,cherenkovPositionInContainer ), tank_log , "tank_phys",  BETADetector_log, false,0 );
+   //    G4VPhysicalVolume * cherenkovContainer_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,cherenkovPositionInContainer ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
    if(fSimulationManager->fSimulateCherenkovOptics) {
-     tank_log = new G4LogicalVolume ( TANK, NitrogenGas,"tank_log",0,0,0 );
+      tank_log = new G4LogicalVolume ( TANK, NitrogenGas,"tank_log",0,0,0 );
    } else {
-     tank_log = new G4LogicalVolume ( TANK, NitrogenGas_NoOptics,"tank_log",0,0,0 );
+      tank_log = new G4LogicalVolume ( TANK, NitrogenGas_NoOptics,"tank_log",0,0,0 );
    }
-   
+
    cherenkovTank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
    G4Box * tedlarFront = new  G4Box ( "tedlarFrontBox", xSnoutEnd/2, ySnoutEnd/2, frontWindowThickness );
@@ -1827,21 +1959,21 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    fCerBackWindow_log = new G4LogicalVolume ( tedlarBack, Aluminum,"tedlarBack",0,0,0 );
    G4VPhysicalVolume * tedlarBack_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage+zTank/2+frontWindowThickness/2 ), fCerBackWindow_log, "tedlarBack_phys",  BETADetector_log, false,0 );
 
-/////////////////////////////////////////////
-////// ALUMINUM Pieces within TANK      /////
-/////////////////////////////////////////////
-//PMT panel plus the aluminum cans
+   /////////////////////////////////////////////
+   ////// ALUMINUM Pieces within TANK      /////
+   /////////////////////////////////////////////
+   //PMT panel plus the aluminum cans
    G4Tubs * PMTIDcylinder = new G4Tubs ( "PMTfar", 0, PMTmountID/2, PMTmountCenterLength,0,2*pi );
    G4Tubs * PMTODcylinder = new G4Tubs ( "PMTfar", 0, PMTmountOD/2, PMTmountCenterLength,0,2*pi );
 
-//   G4IntersectionSolid* PMTmountFar = new G4IntersectionSolid("pmt-removed unwanted union",tankPMTfar, removebox,PMTfarROT,ZTrans);
+   //   G4IntersectionSolid* PMTmountFar = new G4IntersectionSolid("pmt-removed unwanted union",tankPMTfar, removebox,PMTfarROT,ZTrans);
 
-//G4SubtractionSolid * PMTnear = new G4Subtraction("PMT removed
+   //G4SubtractionSolid * PMTnear = new G4Subtraction("PMT removed
 
    G4ThreeVector PMTcanBackThickness ( 0, 0, PMTmountBackPlateThickness );
    G4ThreeVector zerotrans ( 0, 0,0 );
 
-// NEED TO FIX NUMBERING to convention
+   // NEED TO FIX NUMBERING to convention
    G4ThreeVector pmt1T ( 0 , -PMTmountYsize/2, 0 );
    G4ThreeVector pmt2T ( 0 , PMTmountYsize/2,0  );
    G4ThreeVector pmt3T ( 0 , -PMTmountYsize/2-PMTmountYsize, 0 );
@@ -1852,17 +1984,17 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4ThreeVector pmt8T ( 0 , PMTmountYsize/2+3*PMTmountYsize,0  );
 
 
-//    G4ThreeVector ZTrans(0, 0, -PMTmountLength+PMTmountRadius*std::tan(pmtAngle));
+   //    G4ThreeVector ZTrans(0, 0, -PMTmountLength+PMTmountRadius*std::tan(pmtAngle));
    /*  G4SubtractionSolid* PMTcanFar =
        new G4SubtractionSolid("PMT ODcylinder - IDcylinder", PMTmountFar, PMTIDcylinder,noRot,PMTcanBackThickness);
-     G4SubtractionSolid* PMTcanNear =
+       G4SubtractionSolid* PMTcanNear =
        new G4SubtractionSolid("PMT ODcylinder - IDcylinder", PMTmountNear, PMTIDcylinder,noRot,PMTcanBackThickness);
-   */
+    */
 
-//Go DO ALL 8 Cans then Remove the middles
+   //Go DO ALL 8 Cans then Remove the middles
 
    G4UnionSolid*
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTPanelBox, PMTmountNear, PMTfarROT, pmt1T );
+      PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTPanelBox, PMTmountNear, PMTfarROT, pmt1T );
    PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountFar, PMTfarROT, pmt2T );
    PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountFar, PMTnearROT, pmt3T );
    PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountNear, PMTnearROT, pmt4T );
@@ -1882,7 +2014,7 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
 
 
    G4SubtractionSolid*
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID1", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt1Tbp );
+      pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID1", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt1Tbp );
    pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID2", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt2Tbp );
    pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID3", PMTmountAlCans,PMTIDcylinder,PMTnearROT,pmt3Tbp );
    pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID4", PMTmountAlCans,PMTIDcylinder,PMTnearROT,pmt4Tbp );
@@ -1900,22 +2032,22 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4RotationMatrix pmtPanelRotMatrix;
    pmtPanelRotMatrix.rotateY ( -pi/4 );
 
-// aluminum can placement
+   // aluminum can placement
    AlCans_log = new G4LogicalVolume ( PMTAlCans, Aluminum,"AlCans_log",0,0,0 );
 
    G4VPhysicalVolume * AlCans_phys = new G4PVPlacement ( 
-     G4Transform3D ( pmtPanelRotMatrix,
-       G4ThreeVector (
-         ( ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2+PMTmountThickness/2*std::sin ( pmtPlaneAngle ) ) ,
-         0,
-         -zTank/2-zTankFront/2 -PMTmountThickness/2*std::sin ( pmtPlaneAngle ) )
-     )
-     , AlCans_log , "tankFront_phys",  tank_log, false,0 );
+         G4Transform3D ( pmtPanelRotMatrix,
+            G4ThreeVector (
+               ( ( xTankFrontEnd/2 +xTankFrontBase/2 ) /2+PMTmountThickness/2*std::sin ( pmtPlaneAngle ) ) ,
+               0,
+               -zTank/2-zTankFront/2 -PMTmountThickness/2*std::sin ( pmtPlaneAngle ) )
+            )
+         , AlCans_log , "tankFront_phys",  tank_log, false,0 );
 
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~
-//  ALUMINUM FRAME
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
+   //  ALUMINUM FRAME
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~
    G4RotationMatrix * rot90deg= new G4RotationMatrix;
    rot90deg->rotateX ( pi/2 );
    G4RotationMatrix * rotneg90deg= new G4RotationMatrix;
@@ -1971,73 +2103,73 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    fCerFrameTopBottom_log = new G4LogicalVolume ( FrameTop, Aluminum,"Frame-top-bottom",0,0,0 );
    G4VPhysicalVolume * test_phys = new G4PVPlacement ( G4Transform3D ( Zrotneg90deg,G4ThreeVector ( -xTank/2+2.54*cm,yTank/2-2.54*cm,0 )), fCerFrameTopBottom_log , "tankFrametop_phys",  tank_log, false,0 );
    G4VPhysicalVolume * test_phys2 = new G4PVPlacement ( G4Transform3D ( Zrotneg90deg, G4ThreeVector ( -xTank/2+2.54*cm,-yTank/2+2.54*cm,0 )), fCerFrameTopBottom_log , "tankFramebot_phys",  tank_log, false,0 );
-// ~~~~~~~~~~~~~~~~~~~~~~~~
-// END OF TANK CONSTRUCTION
-// ~~~~~~~~~~~~~~~~~~~~~~~~
+   // ~~~~~~~~~~~~~~~~~~~~~~~~
+   // END OF TANK CONSTRUCTION
+   // ~~~~~~~~~~~~~~~~~~~~~~~~
 
 
 
 
-////////////////////////////////////////////////
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Spherical Mirrors (cut into rectangles)
-// ---------------------------------------
-////////////////////////////////////////////////
+   ////////////////////////////////////////////////
+   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   // Spherical Mirrors (cut into rectangles)
+   // ---------------------------------------
+   ////////////////////////////////////////////////
 
    /*
-     ----------------------------
-     5 Spherical mirrors (Set A):
-     ----------------------------
-       horiz size:    35.5 cm
-             radius:  92.0 cm
-       vert  size:    36.5 cm
-             radius:  92.0 cm
+      ----------------------------
+      5 Spherical mirrors (Set A):
+      ----------------------------
+      horiz size:    35.5 cm
+radius:  92.0 cm
+vert  size:    36.5 cm
+radius:  92.0 cm
 
-     -------------------------------------------------------
-     5 Toroidal mirrors (Set B) (sketch attached)
-     -------------------------------------------------------
-       horiz size:              43.0 cm
-         toroid defining axis:  25.8 cm
-       vert size:               36.5 cm
-        toroid "tube" axis:     85.8 cm
-   (Each set includes 4 mirrors plus 1 spare.)
-   */
-// ( above coordinates XYZ)->(below coordinates xyz)
-// z -> X-150-zTank/2 , y -> -Z , x -> -Y
-// mirrorx2 are the nearMirrors, mirrorx1 are the far mirrors
-// This is due to the Brad's drawings using a length of 150cm while in Ed K.'s the tank is 167.49 long.
+-------------------------------------------------------
+5 Toroidal mirrors (Set B) (sketch attached)
+-------------------------------------------------------
+horiz size:              43.0 cm
+toroid defining axis:  25.8 cm
+vert size:               36.5 cm
+toroid "tube" axis:     85.8 cm
+(Each set includes 4 mirrors plus 1 spare.)
+    */
+   // ( above coordinates XYZ)->(below coordinates xyz)
+   // z -> X-150-zTank/2 , y -> -Z , x -> -Y
+   // mirrorx2 are the nearMirrors, mirrorx1 are the far mirrors
+   // This is due to the Brad's drawings using a length of 150cm while in Ed K.'s the tank is 167.49 long.
    G4double correction = 13.0*cm;
    G4double correctionFAR = 17.49*cm;
-// Second attempt at PMT and Mirror Positions
+   // Second attempt at PMT and Mirror Positions
    G4double TESTCorrection = 0.0*cm;
    G4double alength = zTank/2 + zSnout+ zTankFront;
    G4double zfix21 = 5.0*cos ( beta2 ) *cm, yfix21 = -5.0*sin ( beta2 ) *cm;
    G4ThreeVector 
-   mirror11 (  -17.6499996*cm ,54.9375*cm,132*cm-150*cm  +correction +TESTCorrection),
-   mirror21 (  -17.6499996*cm,17.8125*cm,  130.0*cm-150*cm+correction  +TESTCorrection),
-   mirror31 (  -17.6499996*cm,-18.3125*cm,131.0*cm-150*cm+correction  +TESTCorrection),
-   mirror41 (  -17.6499996*cm,-54.9375*cm, 132.0*cm-150*cm+correction  +TESTCorrection),
+      mirror11 (  -17.6499996*cm ,54.9375*cm,132*cm-150*cm  +correction +TESTCorrection),
+               mirror21 (  -17.6499996*cm,17.8125*cm,  130.0*cm-150*cm+correction  +TESTCorrection),
+               mirror31 (  -17.6499996*cm,-18.3125*cm,131.0*cm-150*cm+correction  +TESTCorrection),
+               mirror41 (  -17.6499996*cm,-54.9375*cm, 132.0*cm-150*cm+correction  +TESTCorrection),
 
-   mirror12 (  17.6499996*cm,54.4375*cm,150*cm-150*cm+correction +TESTCorrection ),
-   mirror22 (  17.6499996*cm,17.8125*cm,150*cm-150*cm+correction +TESTCorrection ),
-   mirror32 (  17.6499996*cm,-18.3125*cm,150.0*cm-150*cm+correction +TESTCorrection ),
-   mirror42 (  17.6499996*cm,-54.9375*cm, 150.0*cm-150*cm+correction +TESTCorrection );
+               mirror12 (  17.6499996*cm,54.4375*cm,150*cm-150*cm+correction +TESTCorrection ),
+               mirror22 (  17.6499996*cm,17.8125*cm,150*cm-150*cm+correction +TESTCorrection ),
+               mirror32 (  17.6499996*cm,-18.3125*cm,150.0*cm-150*cm+correction +TESTCorrection ),
+               mirror42 (  17.6499996*cm,-54.9375*cm, 150.0*cm-150*cm+correction +TESTCorrection );
 
-//The numbering above is kinda backwards
-//toroidal
+   //The numbering above is kinda backwards
+   //toroidal
    mirror2Trans = mirror11;
    mirror4Trans = mirror21;
    mirror6Trans = mirror31;
    mirror8Trans = mirror41;
-//spherical
+   //spherical
    mirror1Trans = mirror12;
    mirror3Trans = mirror22;
    mirror5Trans = mirror32;
    mirror7Trans = mirror42;
 
 
-// PMT positions
-/////////////// ADJUSTMENTS to far pmt positions /////////////////////
+   // PMT positions
+   /////////////// ADJUSTMENTS to far pmt positions /////////////////////
    G4double xcorrection2 = 0.0*cm;
    G4double ycorrection2 = 0.0*cm;
    G4double zcorrection2 = 0.0*cm;
@@ -2060,50 +2192,50 @@ PMTmountBackPlateThickness = 0.5*2.54*cm;
    G4double zcorrection = 0*cm;
 
    G4ThreeVector
-   pmt11 ( 40.0*cm +ycorrection2,45.0*cm+xcorrection, 98.*cm-150*cm+correction+zcorrection2 ),
-   pmt21 ( 40.0*cm +ycorrection4, 9.0*cm+xcorrection, 98.0*cm-150*cm+correction+zcorrection4 ),
-   pmt31 ( 40.0*cm +ycorrection6, -9.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection6 ),
-   pmt41 ( 40.0*cm +ycorrection8, -45.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection8 ),
-   pmt12 ( 40.0*cm +ycorrection,63.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection ),
-   pmt22 ( 40.0*cm+ycorrection, 27.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection ),
-   pmt32 ( 40.0*cm+ycorrection, -27.0*cm+xcorrection, 98.0*cm-150*cm+correction+zcorrection ),
-   pmt42 ( 40.0*cm+ycorrection,-63.0*cm+xcorrection, 98.0*cm-150*cm+correction+zcorrection );
+      pmt11 ( 40.0*cm +ycorrection2,45.0*cm+xcorrection, 98.*cm-150*cm+correction+zcorrection2 ),
+            pmt21 ( 40.0*cm +ycorrection4, 9.0*cm+xcorrection, 98.0*cm-150*cm+correction+zcorrection4 ),
+            pmt31 ( 40.0*cm +ycorrection6, -9.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection6 ),
+            pmt41 ( 40.0*cm +ycorrection8, -45.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection8 ),
+            pmt12 ( 40.0*cm +ycorrection,63.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection ),
+            pmt22 ( 40.0*cm+ycorrection, 27.0*cm+xcorrection,98.0*cm-150*cm+correction+zcorrection ),
+            pmt32 ( 40.0*cm+ycorrection, -27.0*cm+xcorrection, 98.0*cm-150*cm+correction+zcorrection ),
+            pmt42 ( 40.0*cm+ycorrection,-63.0*cm+xcorrection, 98.0*cm-150*cm+correction+zcorrection );
 
 
 
-// PMT angles
+   // PMT angles
    G4double   pmtalpha2 = -8*pi/180,//-16.2925549*pi/180,
-pmtbeta2 = -59.4693527*pi/180,
-pmtalpha4 = -8*pi/180,//-15.3970566*pi/180,
-pmtbeta4 = -60.9664955*pi/180,
-pmtalpha6 = 8*pi/180,//15.7589064*pi/180,
-pmtbeta6 = -30*pi/180,//-60.212326*pi/180,
-pmtalpha8 = 8*pi/180,//16.2925549*pi/180,
-pmtbeta8= -59.4693527*pi/180,
-pmtalpha1 =  9.350*pi/180,
-pmtbeta1 =  -23.2584057*pi/180,
-pmtalpha3 = 10.2121353*pi/180,
-pmtbeta3 =  -23.6647282*pi/180,
-pmtalpha5 = -9.48465538*pi/180,
-pmtbeta5 =  -23.2584057*pi/180,
-pmtalpha7 = -8.8134222*pi/180,
-pmtbeta7 =  -23.2584057*pi/180;
-//
-// Toroidal mirror is ellipsoid4. -9.
-//
-G4double nearMirrorRadius = 92.*cm,
-farToroidalTubeRadius = 85.8*cm,// 85.8
-farToroidalAxisRadius = 25.8*cm,// 25.8*cm
-farMirrorRadius = farToroidalTubeRadius + farToroidalAxisRadius,
-mirrorThickness = 3.0*mm,
-yNearMirrorBox = 36.5*cm,
-xNearMirrorBox = 35.5*cm,
-yFarMirrorBox = 36.5*cm,
-xFarMirrorBox = 43.0*cm;
-G4double yzsemiaxis = 86.0*cm,
-xsemiaxis = 97.0*cm;
-G4double farMirrorAngle = 20* pi/180;
- G4double nearMirrorAngle = 10*pi/180;
+              pmtbeta2 = -59.4693527*pi/180,
+              pmtalpha4 = -8*pi/180,//-15.3970566*pi/180,
+              pmtbeta4 = -60.9664955*pi/180,
+              pmtalpha6 = 8*pi/180,//15.7589064*pi/180,
+              pmtbeta6 = -30*pi/180,//-60.212326*pi/180,
+              pmtalpha8 = 8*pi/180,//16.2925549*pi/180,
+              pmtbeta8= -59.4693527*pi/180,
+              pmtalpha1 =  9.350*pi/180,
+              pmtbeta1 =  -23.2584057*pi/180,
+              pmtalpha3 = 10.2121353*pi/180,
+              pmtbeta3 =  -23.6647282*pi/180,
+              pmtalpha5 = -9.48465538*pi/180,
+              pmtbeta5 =  -23.2584057*pi/180,
+              pmtalpha7 = -8.8134222*pi/180,
+              pmtbeta7 =  -23.2584057*pi/180;
+   //
+   // Toroidal mirror is ellipsoid4. -9.
+   //
+   G4double nearMirrorRadius = 92.*cm,
+            farToroidalTubeRadius = 85.8*cm,// 85.8
+            farToroidalAxisRadius = 25.8*cm,// 25.8*cm
+            farMirrorRadius = farToroidalTubeRadius + farToroidalAxisRadius,
+            mirrorThickness = 3.0*mm,
+            yNearMirrorBox = 36.5*cm,
+            xNearMirrorBox = 35.5*cm,
+            yFarMirrorBox = 36.5*cm,
+            xFarMirrorBox = 43.0*cm;
+   G4double yzsemiaxis = 86.0*cm,
+            xsemiaxis = 97.0*cm;
+   G4double farMirrorAngle = 20* pi/180;
+   G4double nearMirrorAngle = 10*pi/180;
 
 
 
@@ -2115,7 +2247,7 @@ G4double farMirrorAngle = 20* pi/180;
    G4IntersectionSolid * nearMirrorGlass = new G4IntersectionSolid ( "3mm thick glass spherical mirror near", nearMirrorBox, nearMirrorSphere,0,G4ThreeVector ( 0,0,-nearMirrorRadius ) );
 
 
-//// Temporary Far Spherical Mirror
+   //// Temporary Far Spherical Mirror
    G4Sphere * farMirrorSphere = new G4Sphere ( "SphericalMirrorfar", farMirrorRadius, farMirrorRadius+mirrorThickness,0,360*deg,0,90*deg );
 
    G4Box* farMirrorBox = new G4Box ( "farMirrorBox", xFarMirrorBox/2, yFarMirrorBox/2,farMirrorRadius+2*mirrorThickness );
@@ -2125,20 +2257,20 @@ G4double farMirrorAngle = 20* pi/180;
    G4Sphere * OUTSIDEsphere = new G4Sphere ( "SphericalMirrorfar", 0, farToroidalAxisRadius+farToroidalTubeRadius+mirrorThickness,0,360*deg,0,180*deg );
 
 
-/// Ellipsoid
-//
+   /// Ellipsoid
+   //
    G4Ellipsoid * ellipsoidMirrorOutside = new G4Ellipsoid ( "farmirror Ellipsoid outside",
-                                                            xsemiaxis+mirrorThickness,
-                                                            yzsemiaxis+mirrorThickness ,
-                                                            yzsemiaxis+mirrorThickness,
-                                                            15*cm,
-                                                            farToroidalAxisRadius+ farToroidalTubeRadius+mirrorThickness );
+         xsemiaxis+mirrorThickness,
+         yzsemiaxis+mirrorThickness ,
+         yzsemiaxis+mirrorThickness,
+         15*cm,
+         farToroidalAxisRadius+ farToroidalTubeRadius+mirrorThickness );
 
    G4Ellipsoid * ellipsoidMirrorInside = new G4Ellipsoid ( "farmirror Ellipsoid inside",
-                                                           xsemiaxis,
+         xsemiaxis,
 
-                                                           yzsemiaxis,
-                                                           yzsemiaxis );
+         yzsemiaxis,
+         yzsemiaxis );
 
 
    G4SubtractionSolid * shell  = new G4SubtractionSolid ( "Outside - Inside Ellipsoid",ellipsoidMirrorOutside ,ellipsoidMirrorInside );
@@ -2147,12 +2279,12 @@ G4double farMirrorAngle = 20* pi/180;
 
    G4IntersectionSolid * farMirrorGlassElliptical = new G4IntersectionSolid ( "3mm glass elliptical mirror", farMirrorBox2, shell,0,G4ThreeVector ( 0,0,-yzsemiaxis ) );
 
-//G4IntersectionSolid * farMirrorGlass = new G4IntersectionSolid("3mm glass elliptical mirror", farMirrorBox1, EllipsoidShell,toroidRot,G4ThreeVector(0,0,-farToroidalAxisRadius-farToroidalTubeRadius));
-//Look at Toroidal mirror
+   //G4IntersectionSolid * farMirrorGlass = new G4IntersectionSolid("3mm glass elliptical mirror", farMirrorBox1, EllipsoidShell,toroidRot,G4ThreeVector(0,0,-farToroidalAxisRadius-farToroidalTubeRadius));
+   //Look at Toroidal mirror
    G4LogicalVolume * toroid_log = new G4LogicalVolume ( shell, Glass,"farMirrorBox_log",0,0,0 );
-//  G4VPhysicalVolume * toroid_phys = new G4PVPlacement(0,G4ThreeVector(0,0,-2*m), toroid_log , "toroid phys",  expHall_log, false,0);
+   //  G4VPhysicalVolume * toroid_phys = new G4PVPlacement(0,G4ThreeVector(0,0,-2*m), toroid_log , "toroid phys",  expHall_log, false,0);
 
-//Y-Z focal point coordinates w/ origin at the centertorus  radius of the tank
+   //Y-Z focal point coordinates w/ origin at the centertorus  radius of the tank
    G4double yFocalpoint =  zTankFront/2+zTank/2;
    G4double zFocalpoint = yTank/2-fabs ( tankFrontSide*std::cos ( pmtPlaneAngle ) /2 );
 
@@ -2194,12 +2326,12 @@ G4double farMirrorAngle = 20* pi/180;
    pmtRM7.rotateY ( pmtbeta7 );
 
 
-/// Gas Cherenkov spherical mirror Logical Volume
+   /// Gas Cherenkov spherical mirror Logical Volume
    fCerSphericalMirror_log = new G4LogicalVolume ( nearMirrorGlass, Glass,"nearMirrorBox_log",0,0,0 );
-/// Gas Cherenkov elliptical approximation to a toroidal mirror Logical Volume
+   /// Gas Cherenkov elliptical approximation to a toroidal mirror Logical Volume
    fCerToroidalMirror_log = new G4LogicalVolume ( farMirrorGlassElliptical, Glass,"farMirrorBox_log",0,0,0 );
 
-/// Physical Volumes - MIRRORS
+   /// Physical Volumes - MIRRORS
    MirrorGlass_phys1 = new G4PVPlacement ( G4Transform3D ( RM1,mirror12 ), fCerSphericalMirror_log , "Near - Mirror",  tank_log, false,1 );
 
    MirrorGlass_phys2 = new G4PVPlacement ( G4Transform3D ( RM2,mirror11 ), fCerToroidalMirror_log , "Far - Mirror",  tank_log, false,2 );
@@ -2217,89 +2349,89 @@ G4double farMirrorAngle = 20* pi/180;
    MirrorGlass_phys8 = new G4PVPlacement ( G4Transform3D ( RM8,mirror41 ), fCerToroidalMirror_log , "Far - Mirror",  tank_log, false,8 );
 
 
-//
-// temp counting box
-  
-//
-//   G4Box * somevolume = new G4Box ( "someBox", xPMTmountPanel/2, yPMTmountPanel/2, 1*cm );
-//   G4LogicalVolume * somevolume_log = new G4LogicalVolume ( somevolume, NitrogenGas, "somevolume_log", 0,0,0 );
-//  G4VPhysicalVolume * somevolume_phys = new G4PVPlacement(G4Transform3D(ROTATE45DEG, G4ThreeVector(0, -yTankFrontEnd/2 , -zTank/2  )), somevolume_log,  "somevolume_phys", tank_log, false,0);
+   //
+   // temp counting box
 
-/// scoring       
+   //
+   //   G4Box * somevolume = new G4Box ( "someBox", xPMTmountPanel/2, yPMTmountPanel/2, 1*cm );
+   //   G4LogicalVolume * somevolume_log = new G4LogicalVolume ( somevolume, NitrogenGas, "somevolume_log", 0,0,0 );
+   //  G4VPhysicalVolume * somevolume_phys = new G4PVPlacement(G4Transform3D(ROTATE45DEG, G4ThreeVector(0, -yTankFrontEnd/2 , -zTank/2  )), somevolume_log,  "somevolume_phys", tank_log, false,0);
 
-  G4double tubeDiameter=4.0*2.54*cm;
-  G4double tubeLength=15.0*2.54*cm;
+   /// scoring       
 
- G4double  MUtubeID=3.01*2.54*cm;
- G4double  MUtubeLength=14.0*2.54*cm;
- G4double  MUtubeThickness=4.0*mm;
+   G4double tubeDiameter=4.0*2.54*cm;
+   G4double tubeLength=15.0*2.54*cm;
 
-  G4double PMTtubeDiameter=3.0*2.54*cm;
-  G4double PMTtubeLength=3.0*2.54*cm;
+   G4double  MUtubeID=3.01*2.54*cm;
+   G4double  MUtubeLength=14.0*2.54*cm;
+   G4double  MUtubeThickness=4.0*mm;
 
-  G4Tubs * PMTcontainer =  new G4Tubs("PMTcontainer", 0., tubeDiameter/2.0, tubeLength/2.0, 0., 7.);
-  G4Tubs * PMT =  new G4Tubs("PMT", 0., PMTtubeDiameter/2.0, PMTtubeLength/2.0, 0., 7.);
-  G4Tubs * MU =  new G4Tubs("MU", 0., MUtubeID/2.0, tubeLength, 0., 7.);
-  G4Tubs * MU2 =  new G4Tubs("MU2", 0., (MUtubeID+MUtubeThickness)/2.0, tubeLength/2.0, 0., 7.);
-          G4RotationMatrix unitrm;
+   G4double PMTtubeDiameter=3.0*2.54*cm;
+   G4double PMTtubeLength=3.0*2.54*cm;
 
- //   fit perfectly with the real can. Do it for the cavity too.
+   G4Tubs * PMTcontainer =  new G4Tubs("PMTcontainer", 0., tubeDiameter/2.0, tubeLength/2.0, 0., 7.);
+   G4Tubs * PMT =  new G4Tubs("PMT", 0., PMTtubeDiameter/2.0, PMTtubeLength/2.0, 0., 7.);
+   G4Tubs * MU =  new G4Tubs("MU", 0., MUtubeID/2.0, tubeLength, 0., 7.);
+   G4Tubs * MU2 =  new G4Tubs("MU2", 0., (MUtubeID+MUtubeThickness)/2.0, tubeLength/2.0, 0., 7.);
+   G4RotationMatrix unitrm;
+
+   //   fit perfectly with the real can. Do it for the cavity too.
    G4VSolid* MUPipe =
       new G4SubtractionSolid("MUPipe", MU2, MU,G4Transform3D(unitrm,G4ThreeVector(0.,0.,0.)));
-/*,
-                             G4Transform3D(,
-                                           G4ThreeVector(0,0,-4.8433/2*m)));*/
-  container_log = new G4LogicalVolume(PMTcontainer, NitrogenGas, "PipeCav1");
-  MUPipe_log = new G4LogicalVolume(MUPipe, ((G4NistManager*)G4NistManager::Instance())->FindOrBuildMaterial ( "G4_Fe" ), "MUPipe_log");
+   /*,
+     G4Transform3D(,
+     G4ThreeVector(0,0,-4.8433/2*m)));*/
+   container_log = new G4LogicalVolume(PMTcontainer, NitrogenGas, "PipeCav1");
+   MUPipe_log = new G4LogicalVolume(MUPipe, ((G4NistManager*)G4NistManager::Instance())->FindOrBuildMaterial ( "G4_Fe" ), "MUPipe_log");
    new G4PVPlacement(G4Transform3D(unitrm,G4ThreeVector()),MUPipe_log, "PMT+mumetal",container_log, false, 0);
 
-  BETASimulationManager::GetInstance()->InitScoring();
+   BETASimulationManager::GetInstance()->InitScoring();
 
    G4VSensitiveDetector* aPMTModel =
       new BETAG4PMTArray ( "GasCherenkov" );
-   
+
    G4Tubs * pmtFace = new G4Tubs ( "PMTFACE",0,3*2.54*cm/2, 0.05*cm,0,360*deg );
 
    pmtFace_log =//container_log;
-    new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
+   new G4LogicalVolume ( pmtFace, NitrogenGas, "pmtFace_log", 0,0,0 );
 
-   /*G4VPhysicalVolume * pmtFace1_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,7 );
-   /*G4VPhysicalVolume * pmtFace2_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,8 );
-   /*G4VPhysicalVolume * pmtFace3_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM3,pmt22 ), pmtFace_log,  "pmtFace_phys", tank_log, false,5 );
-   /*G4VPhysicalVolume * pmtFace4_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM4,pmt21 ), pmtFace_log,  "pmtFace_phys", tank_log, false,6 );
-   /*G4VPhysicalVolume * pmtFace5_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM5,pmt32 ), pmtFace_log,  "pmtFace_phys", tank_log, false,3 );
-   /*G4VPhysicalVolume * pmtFace6_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM6,pmt31 ), pmtFace_log,  "pmtFace_phys", tank_log, false,4 );
-   /*G4VPhysicalVolume * pmtFace7_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM7,pmt42 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1 );
-   /*G4VPhysicalVolume * pmtFace8_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM8,pmt41 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2 );
+   /*G4VPhysicalVolume * pmtFace1_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM1,pmt12 ), pmtFace_log,  "pmtFace_phys", tank_log, false,7-1 );
+   /*G4VPhysicalVolume * pmtFace2_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM2,pmt11 ), pmtFace_log,  "pmtFace_phys", tank_log, false,8-1 );
+   /*G4VPhysicalVolume * pmtFace3_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM3,pmt22 ), pmtFace_log,  "pmtFace_phys", tank_log, false,5-1 );
+   /*G4VPhysicalVolume * pmtFace4_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM4,pmt21 ), pmtFace_log,  "pmtFace_phys", tank_log, false,6-1 );
+   /*G4VPhysicalVolume * pmtFace5_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM5,pmt32 ), pmtFace_log,  "pmtFace_phys", tank_log, false,3-1 );
+   /*G4VPhysicalVolume * pmtFace6_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM6,pmt31 ), pmtFace_log,  "pmtFace_phys", tank_log, false,4-1 );
+   /*G4VPhysicalVolume * pmtFace7_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM7,pmt42 ), pmtFace_log,  "pmtFace_phys", tank_log, false,1-1 );
+   /*G4VPhysicalVolume * pmtFace8_phys =*/ new G4PVPlacement ( G4Transform3D ( pmtRM8,pmt41 ), pmtFace_log,  "pmtFace_phys", tank_log, false,2-1 );
 
-////////////////////////// Print out Magnetic field at pmt face ////////////////
+   ////////////////////////// Print out Magnetic field at pmt face ////////////////
    //G4ThreeVector localPosition = pmtFace4_phys->GetTranslation();
-//G4ThreeVector fieldVector =
-//    std::cout << "\n\nPMT#4 : POSITION (" << localPosition.x()/cm << ", " << localPosition.y()/cm << ", " <<localPosition.z()/cm << ") and Field \n\n" ;
-//     G4ThreeVector localPosition = theTouchable->GetHistory()->
-//                                   GetTopTransform().TransformPoint(worldPosition);
-/////////////////////////////////////////////////
-// Pmt Detector Faces
-/////////////////////////////////////////////////
+   //G4ThreeVector fieldVector =
+   //    std::cout << "\n\nPMT#4 : POSITION (" << localPosition.x()/cm << ", " << localPosition.y()/cm << ", " <<localPosition.z()/cm << ") and Field \n\n" ;
+   //     G4ThreeVector localPosition = theTouchable->GetHistory()->
+   //                                   GetTopTransform().TransformPoint(worldPosition);
+   /////////////////////////////////////////////////
+   // Pmt Detector Faces
+   /////////////////////////////////////////////////
    // new for the detector part
    // Create a new sensitive detector named "MyDetector"
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
-//    G4VSensitiveDetector* CherenkovTank =
-//       new BETAPMT ( "PMT" );
+   //    G4VSensitiveDetector* CherenkovTank =
+   //       new BETAPMT ( "PMT" );
 
    // Register detector with manager
-//   manager->AddNewDetector ( CherenkovTank );
+   //   manager->AddNewDetector ( CherenkovTank );
    pmtFace_log->SetSensitiveDetector (aPMTModel );
 
    manager->AddNewDetector ( aPMTModel );
 
    // Attach detector to scoring volume
- //  pmtFace_log->SetSensitiveDetector(fSimulationManager->fCherenkovDetector);
-// CherenkovTank );
+   //  pmtFace_log->SetSensitiveDetector(fSimulationManager->fCherenkovDetector);
+   // CherenkovTank );
 
-/// Also doing mirrors as a detector, but this is only for determining the optical efficiency of the
-/// mirror/pmt combination.
+   /// Also doing mirrors as a detector, but this is only for determining the optical efficiency of the
+   /// mirror/pmt combination.
    G4VSensitiveDetector* mirrorDetectorFake =
       new BETAMirror ( "Mirrors" );
    // Register detector with manager
@@ -2307,7 +2439,7 @@ G4double farMirrorAngle = 20* pi/180;
    // Attach detector to scoring volume
    fCerSphericalMirror_log->SetSensitiveDetector ( mirrorDetectorFake );
    fCerToroidalMirror_log->SetSensitiveDetector ( mirrorDetectorFake );
-// OPTICS
+   // OPTICS
    const G4int num = 2;
    G4double Ephoton[num] = {1.0*eV, 10.0*eV};
 
@@ -2361,9 +2493,9 @@ G4double farMirrorAngle = 20* pi/180;
    OpMirrorSurface->SetMaterialPropertiesTable ( reflectiveCoatingSurfacePTable );
 
    G4LogicalSkinSurface * nearMirrorSurface = new G4LogicalSkinSurface ( "silversurface", fCerSphericalMirror_log, OpMirrorSurface );
-// Workaround: use border surface instead of skin for elliptical mirrors
-//  G4LogicalSkinSurface * farMirrorSurface = new G4LogicalSkinSurface("silversurface", fCerToroidalMirror_log, OpMirrorSurface);
-// elliptical mirror work around for far elliptical mirrors
+   // Workaround: use border surface instead of skin for elliptical mirrors
+   //  G4LogicalSkinSurface * farMirrorSurface = new G4LogicalSkinSurface("silversurface", fCerToroidalMirror_log, OpMirrorSurface);
+   // elliptical mirror work around for far elliptical mirrors
    G4LogicalBorderSurface * farMirrorSurfaceTEMP2 = new G4LogicalBorderSurface ( "farmirror1", cherenkovTank_phys, MirrorGlass_phys2, OpMirrorSurface );
    G4LogicalBorderSurface * farMirrorSurfaceTEMP4 = new G4LogicalBorderSurface ( "farmirror3", cherenkovTank_phys, MirrorGlass_phys4, OpMirrorSurface );
    G4LogicalBorderSurface * farMirrorSurfaceTEMP6 = new G4LogicalBorderSurface ( "farmirror6", cherenkovTank_phys, MirrorGlass_phys6, OpMirrorSurface );
@@ -2411,11 +2543,8 @@ G4double farMirrorAngle = 20* pi/180;
    fCerToroidalMirror_log->SetVisAttributes(mirrorAttributes);
 
 }
-
 //___________________________________________________________________
-void BETADetectorConstruction::ConstructFakePlane()
-{
-   
+void BETADetectorConstruction::ConstructFakePlane() {
 
    //BETAReadOutGeometry * fROGeo  = new BETAReadOutGeometry("FakePlanes");
    //fROGeo->buildROGeometry();
@@ -2680,7 +2809,7 @@ void BETADetectorConstruction::ConstructBETA()
    if (usingForwardTracker)  ConstructForwardTracker();
    if (usingGasCherenkov)  ConstructCherenkov();
    if (usingLuciteHodoscope)  ConstructHodoscope();
-   if (usingBigcal)   ConstructBIGCAL();
+   if (usingBigcal)   ConstructBigCal();
 
    expHall_log->SetVisAttributes ( G4VisAttributes::Invisible );
    BETADetector_log->SetVisAttributes ( G4VisAttributes::Invisible );
@@ -2974,40 +3103,40 @@ BETADetectorConstruction::Construct()
 
 
 
-///////////////// VGM ////////////////////////
+   ///////////////// VGM ////////////////////////
    // Export geometry in Root and save it in a file
    // Import Geant4 geometry to VGM
    //
 
-//             Geant4GM::Factory g4Factory;
-    //         g4Factory.SetDebug(1);
-//             g4Factory.Import(expHall_phys);
-     // Export VGM geometry to Root
-// 
-//  XmlVGM::GDMLExporter xmlExporter2(&g4Factory);
-//  xmlExporter2.SetFileName("XML_test.xml");
-//  xmlExporter2.GenerateXMLGeometry();
-// 
-//      // Export VGM geometry to Root
-//      //
-//              RootGM::Factory rtFactory;
+   //             Geant4GM::Factory g4Factory;
+   //         g4Factory.SetDebug(1);
+   //             g4Factory.Import(expHall_phys);
+   // Export VGM geometry to Root
+   // 
+   //  XmlVGM::GDMLExporter xmlExporter2(&g4Factory);
+   //  xmlExporter2.SetFileName("XML_test.xml");
+   //  xmlExporter2.GenerateXMLGeometry();
+   // 
+   //      // Export VGM geometry to Root
+   //      //
+   //              RootGM::Factory rtFactory;
    //           rtFactory.SetDebug(1);
-//              g4Factory.Export(&rtFactory);
-//              gGeoManager->CloseGeometry();
-//              gGeoManager->Export("SANEGeometry.root");
+   //              g4Factory.Export(&rtFactory);
+   //              gGeoManager->CloseGeometry();
+   //              gGeoManager->Export("SANEGeometry.root");
 
-//    
-///////////////////////////////////////////////////////
-// END OF OPTICAL SURFACES
-///////////////////////////////////////////////////////
-// Print material properties to file
+   //    
+   ///////////////////////////////////////////////////////
+   // END OF OPTICAL SURFACES
+   ///////////////////////////////////////////////////////
+   // Print material properties to file
    /*
-    std::ofstream outfile("materialTable.dat", std::ios_base::out);
-   outfile <<  *(G4Material::GetMaterialTable())
-   outfile.close();
-    std::ofstream outfile("materialTable.dat", std::ios_base::out);
-   */
-//always return the physical World
+      std::ofstream outfile("materialTable.dat", std::ios_base::out);
+      outfile <<  *(G4Material::GetMaterialTable())
+      outfile.close();
+      std::ofstream outfile("materialTable.dat", std::ios_base::out);
+    */
+   //always return the physical World
 
    SetVisAtt();
 
@@ -3020,7 +3149,6 @@ void BETADetectorConstruction::ConstructMagneticField() {
    fMagneticField->fUVAMagnet->SetPolarizationAngle (fSimulationManager->GetTargetAngle() ); 
    G4FieldManager* fieldMgr
       = G4TransportationManager::GetTransportationManager()->GetFieldManager();
-
    fieldMgr->SetDetectorField ( fMagneticField );
    fieldMgr->CreateChordFinder ( fMagneticField );
 
@@ -3055,98 +3183,98 @@ void BETADetectorConstruction::ConstructMagneticField() {
    /*      fieldIsInitialized = true;*/
 }
 //______________________________________________________________________________
-
 void BETADetectorConstruction::SetMaterialPropertiesTables() {
-   
+
    // Note: 1.8eV -> 688nm
    //       3.1eV -> 400nm
+
+   // ------------------------
    // Lucite
    const int lucitedatapoints =  4;
    G4double LucitePhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
-      {1.7*eV,1.8*eV,3.1*eV,3.2*eV
-       /*,2.27*eV,2.89*eV,3.48013631*eV,
-       3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
-       3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV,10.0*eV*/
-      };
+   {1.7*eV,1.8*eV,3.1*eV,3.2*eV
+      /*,2.27*eV,2.89*eV,3.48013631*eV,
+        3.84013632*eV,3.84013633*eV,3.84013634*eV,3.84013635*eV,
+        3.84013636*eV,3.84013637*eV,4.2024*eV,6.186886*eV,10.0*eV*/
+   };
 
    G4double LuciteRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
-      {1.49,1.49,1.49,1.49/*,1.49,1.49,1.49
-       ,1.49,1.49,1.49,1.49,1.49,1.49,1.49*/
-      };
+   {1.49,1.49,1.49,1.49/*,1.49,1.49,1.49
+                         ,1.49,1.49,1.49,1.49,1.49,1.49,1.49*/
+   };
 
    G4double LuciteAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
-      {0.01*cm,0.2611*m, 0.2791*m, 0.01*cm/*, 0.2791*m, 0.26115*m,
-       0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
-       0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
-       0.021193*m,0.021193*m*/
-      };
-    G4MaterialPropertiesTable* luciteMPT = new G4MaterialPropertiesTable();
-    luciteMPT->AddProperty ( "RINDEX",       LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
-    luciteMPT->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,       lucitedatapoints );
-    Lucite->SetMaterialPropertiesTable ( luciteMPT );
+   {0.01*cm,0.2611*m, 0.2791*m, 0.01*cm/*, 0.2791*m, 0.26115*m,
+                                         0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
+                                         0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
+                                         0.021193*m,0.021193*m*/
+   };
+   G4MaterialPropertiesTable* luciteMPT = new G4MaterialPropertiesTable();
+   luciteMPT->AddProperty ( "RINDEX",       LucitePhotonEnergy, LuciteRefractiveIndex, lucitedatapoints );
+   luciteMPT->AddProperty ( "ABSLENGTH",    LucitePhotonEnergy, LuciteAbsLength,       lucitedatapoints );
+   Lucite->SetMaterialPropertiesTable ( luciteMPT );
 
-// LeadGlass
-//    G4double LeadGlassPhotonEnergy[lucitedatapoints] =//{1.57*eV, 1.59*eV};
-//       {0.2*eV,1.4*eV};
-//    G4double LeadGlassRefractiveIndex[lucitedatapoints] =//{1.49,1.49};
-//       {2.3,2.30 };
-//    G4double LeadGlassAbsLength[lucitedatapoints] =//  {0.2611*m,0.021193*m};
-//       {0.2611*m, 0.2791*m/*, 0.2791*m, 0.26115*m,
-//        0.19275*m, 0.1928*m, 0.0941*m, 0.05397*m,
-//        0.032644*m, 0.02735*m, 0.0228*m, 0.02199*m,
-//        0.021193*m,0.021193*m*/
-//       };
-//     G4MaterialPropertiesTable* LeadGlassMPT = new G4MaterialPropertiesTable();
-//     LeadGlassMPT->AddProperty ( "RINDEX", LeadGlassPhotonEnergy, LeadGlassRefractiveIndex, lucitedatapoints );
-//     LeadGlassMPT->AddProperty ( "ABSLENGTH",    LeadGlassPhotonEnergy, LeadGlassAbsLength,     lucitedatapoints );
-//     LeadGlass->SetMaterialPropertiesTable ( LeadGlassMPT );
+   // ------------------------
+   // LeadGlass
+   const int LeadGlassdatapoints =  2;
+   G4double LeadGlassPhotonEnergy[LeadGlassdatapoints]    = {1.57*eV, 3.5*eV};
+   G4double LeadGlassRefractiveIndex[LeadGlassdatapoints] = {1.65,1.65};
+   G4double LeadGlassAbsLength[LeadGlassdatapoints] = {0.2611*m, 0.1791*m };
 
+   G4MaterialPropertiesTable* LeadGlassMPT = new G4MaterialPropertiesTable();
+   LeadGlassMPT->AddProperty ( "RINDEX",    LeadGlassPhotonEnergy, LeadGlassRefractiveIndex, LeadGlassdatapoints );
+   LeadGlassMPT->AddProperty ( "ABSLENGTH", LeadGlassPhotonEnergy, LeadGlassAbsLength,        LeadGlassdatapoints );
+   LeadGlass->SetMaterialPropertiesTable ( LeadGlassMPT );
 
+   // ---------------------------------------
+   // Other
    const G4int nEntries = 32;
    G4double PhotonEnergy[nEntries] =
-      { 0.034*eV, 2.068*eV, 2.103*eV, 2.139*eV,
-        2.177*eV, 2.216*eV, 2.256*eV, 2.298*eV,
-        2.341*eV, 2.386*eV, 2.433*eV, 2.481*eV,
-        2.532*eV, 2.585*eV, 2.640*eV, 2.697*eV,
-        2.757*eV, 2.820*eV, 2.885*eV, 2.954*eV,
-        3.026*eV, 3.102*eV, 3.181*eV, 3.265*eV,
-        3.353*eV, 3.446*eV, 3.545*eV, 3.649*eV,
-        3.760*eV, 3.877*eV, 4.002*eV, 20.0*eV
-      };
-// Water
+   { 0.034*eV, 2.068*eV, 2.103*eV, 2.139*eV,
+      2.177*eV, 2.216*eV, 2.256*eV, 2.298*eV,
+      2.341*eV, 2.386*eV, 2.433*eV, 2.481*eV,
+      2.532*eV, 2.585*eV, 2.640*eV, 2.697*eV,
+      2.757*eV, 2.820*eV, 2.885*eV, 2.954*eV,
+      3.026*eV, 3.102*eV, 3.181*eV, 3.265*eV,
+      3.353*eV, 3.446*eV, 3.545*eV, 3.649*eV,
+      3.760*eV, 3.877*eV, 4.002*eV, 20.0*eV
+   };
+
+   // ---------------------------------------
+   // Water
    G4double waterRefractiveIndex[nEntries] =
-      { 1.3435, 1.344,  1.3445, 1.345,  1.3455,
-        1.346,  1.3465, 1.347,  1.3475, 1.348,
-        1.3485, 1.3492, 1.35,   1.3505, 1.351,
-        1.3518, 1.3522, 1.3530, 1.3535, 1.354,
-        1.3545, 1.355,  1.3555, 1.356,  1.3568,
-        1.3572, 1.358,  1.3585, 1.359,  1.3595,
-        1.36,   1.3608
-      };
+   { 1.3435, 1.344,  1.3445, 1.345,  1.3455,
+      1.346,  1.3465, 1.347,  1.3475, 1.348,
+      1.3485, 1.3492, 1.35,   1.3505, 1.351,
+      1.3518, 1.3522, 1.3530, 1.3535, 1.354,
+      1.3545, 1.355,  1.3555, 1.356,  1.3568,
+      1.3572, 1.358,  1.3585, 1.359,  1.3595,
+      1.36,   1.3608
+   };
 
    G4double waterAbsorption[nEntries] =
-      {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
-       15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
-       45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
-       52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
-       30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
-       17.500*m, 14.500*m
-      };
+   {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
+      15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
+      45.455*m, 47.619*m, 52.632*m, 52.632*m, 55.556*m, 52.632*m,
+      52.632*m, 47.619*m, 45.455*m, 41.667*m, 37.037*m, 33.333*m,
+      30.000*m, 28.500*m, 27.000*m, 24.500*m, 22.000*m, 19.500*m,
+      17.500*m, 14.500*m
+   };
 
    G4double ScintilFast[nEntries] =
-      { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-        1.00, 1.00, 1.00, 1.00
-      };
+   { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+      1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+      1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+      1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+      1.00, 1.00, 1.00, 1.00
+   };
    G4double ScintilSlow[nEntries] =
-      { 0.01, 1.00, 2.00, 3.00, 4.00, 5.00, 6.00,
-        7.00, 8.00, 9.00, 8.00, 7.00, 6.00, 4.00,
-        3.00, 2.00, 1.00, 0.01, 1.00, 2.00, 3.00,
-        4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 8.00,
-        7.00, 6.00, 5.00, 4.00
-      };
+   { 0.01, 1.00, 2.00, 3.00, 4.00, 5.00, 6.00,
+      7.00, 8.00, 9.00, 8.00, 7.00, 6.00, 4.00,
+      3.00, 2.00, 1.00, 0.01, 1.00, 2.00, 3.00,
+      4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 8.00,
+      7.00, 6.00, 5.00, 4.00
+   };
 
    G4MaterialPropertiesTable* waterMPT = new G4MaterialPropertiesTable();
    waterMPT->AddProperty ( "RINDEX",       PhotonEnergy, waterRefractiveIndex,nEntries );
@@ -3161,51 +3289,48 @@ void BETADetectorConstruction::SetMaterialPropertiesTables() {
 
    //Water->SetMaterialPropertiesTable ( waterMPT );
 
-// Air
+   // Air
    //G4double airIndexOfRefraction=1.000293;
    G4MaterialPropertiesTable* airMPT = new G4MaterialPropertiesTable();
-/*   airMPT->AddConstProperty ( "RINDEX",airIndexOfRefraction );*/
+   /*   airMPT->AddConstProperty ( "RINDEX",airIndexOfRefraction );*/
    airMPT->AddConstProperty ( "ABSLENGTH",1000.0*m );
    Air->SetMaterialPropertiesTable ( airMPT );
 
-//
-// Vacuum
-//
-//    G4double vacuumRefractiveIndex[nEntries] =
-//       { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-//         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-//         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-//         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
-//         1.00, 1.00, 1.00, 1.00
-//       };
+   //
+   // Vacuum
+   //
+   //    G4double vacuumRefractiveIndex[nEntries] =
+   //       { 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+   //         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+   //         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+   //         1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00,
+   //         1.00, 1.00, 1.00, 1.00
+   //       };
 
-//   G4MaterialPropertiesTable* vacuumMPT = new G4MaterialPropertiesTable();
-//   vacuumMPT->AddProperty ( "RINDEX", PhotonEnergy, vacuumRefractiveIndex, nEntries );
-//   Vacuum->SetMaterialPropertiesTable ( myMPTV );
+   //   G4MaterialPropertiesTable* vacuumMPT = new G4MaterialPropertiesTable();
+   //   vacuumMPT->AddProperty ( "RINDEX", PhotonEnergy, vacuumRefractiveIndex, nEntries );
+   //   Vacuum->SetMaterialPropertiesTable ( myMPTV );
 
 
 
-//
-// Nitrogen Gas
-//
-
+   // ----------------------
+   // Nitrogen Gas
    const G4int nEnergies = 32;
 
    G4double NitrogenPhotonEnergy[nEnergies] =
-      {1.8*eV,2.*eV,2.2*eV,2.4000000000000004*eV,2.6*eV,2.8000000000000003*eV,3.*eV,3.2*eV,3.4000000000000004*eV,
-       3.6*eV,3.8000000000000003*eV,4.*eV,4.2*eV,4.4*eV,
-       4.6000000000000005*eV,4.800000000000001*eV,5.*eV,5.2*eV,5.4*eV,5.6000000000000005*eV,
-       5.800000000000001*eV,6.*eV,6.2*eV,6.4*eV,6.6000000000000005*eV,
-       6.800000000000001*eV,7.*eV,7.2*eV,7.4*eV,7.6000000000000005*eV,7.800000000000001*eV,8.2*eV
-      };
-
+   {1.8*eV,2.*eV,2.2*eV,2.4000000000000004*eV,2.6*eV,2.8000000000000003*eV,3.*eV,3.2*eV,3.4000000000000004*eV,
+      3.6*eV,3.8000000000000003*eV,4.*eV,4.2*eV,4.4*eV,
+      4.6000000000000005*eV,4.800000000000001*eV,5.*eV,5.2*eV,5.4*eV,5.6000000000000005*eV,
+      5.800000000000001*eV,6.*eV,6.2*eV,6.4*eV,6.6000000000000005*eV,
+      6.800000000000001*eV,7.*eV,7.2*eV,7.4*eV,7.6000000000000005*eV,7.800000000000001*eV,8.2*eV
+   };
 
    G4double NitrogenRefractiveIndexN[nEnergies] =
-      {1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.00031, \
-       1.00031, 1.00031, 1.00031, 1.00031, 1.00032, 1.00032, 1.00032, 1.00032, \
-       1.00033, 1.00033, 1.00033, 1.00033, 1.00034, 1.00034, 1.00035, 1.00035, \
-       1.00035, 1.00036, 1.00036, 1.00037, 1.00037, 1.00038, 1.00039
-      };
+   {1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.0003, 1.00031, \
+      1.00031, 1.00031, 1.00031, 1.00031, 1.00032, 1.00032, 1.00032, 1.00032, \
+         1.00033, 1.00033, 1.00033, 1.00033, 1.00034, 1.00034, 1.00035, 1.00035, \
+         1.00035, 1.00036, 1.00036, 1.00037, 1.00037, 1.00038, 1.00039
+   };
    //G4double AbsorptionN[nEntries] =
    //   {3.448*m,  4.082*m,  6.329*m,  9.174*m, 12.346*m, 13.889*m,
    //    15.152*m, 17.241*m, 18.868*m, 20.000*m, 26.316*m, 35.714*m,
@@ -3220,24 +3345,25 @@ void BETADetectorConstruction::SetMaterialPropertiesTables() {
    nitrogenMPT->AddConstProperty ( "ABSLENGTH",1000.0*m );
    NitrogenGas->SetMaterialPropertiesTable ( nitrogenMPT );
 
-   //----- Tracker Scint Material Properties
+   // -----------------------
+   // Tracker Scint Plastic
    const G4int NUMENTRIESbc408 = 12;
    G4double PhotonEnergybc408[NUMENTRIESbc408] =
-        { 3.44*eV, 3.26*eV, 3.1*eV, 3.02*eV, 2.95*eV,
-          2.92*eV, 2.82*eV, 2.76*eV, 2.7*eV, 2.58*eV,
-          2.38*eV, 2.08*eV };
+   { 3.44*eV, 3.26*eV, 3.1*eV, 3.02*eV, 2.95*eV,
+      2.92*eV, 2.82*eV, 2.76*eV, 2.7*eV, 2.58*eV,
+      2.38*eV, 2.08*eV };
    G4double RINDEX_Bc408[NUMENTRIESbc408] =
-        { 1.58, 1.58, 1.58, 1.58, 1.58,
-          1.58, 1.58, 1.58, 1.58, 1.58,
-          1.58, 1.58 };
+   { 1.58, 1.58, 1.58, 1.58, 1.58,
+      1.58, 1.58, 1.58, 1.58, 1.58,
+      1.58, 1.58 };
    G4double ABSORPTION_Bc408[NUMENTRIESbc408] =
-        { 210*cm, 210*cm, 210*cm, 210*cm, 210*cm,
-          210*cm, 210*cm, 210*cm, 210*cm, 210*cm,
-          210*cm, 210*cm };
+   { 210*cm, 210*cm, 210*cm, 210*cm, 210*cm,
+      210*cm, 210*cm, 210*cm, 210*cm, 210*cm,
+      210*cm, 210*cm };
    G4double SCINTILLATION_Bc408[NUMENTRIESbc408] =
-        { 0.04, 0.07, 0.20, 0.49, 0.84,
-          1.00, 0.83, 0.55, 0.40, 0.17,
-          0.03, 0 };
+   { 0.04, 0.07, 0.20, 0.49, 0.84,
+      1.00, 0.83, 0.55, 0.40, 0.17,
+      0.03, 0 };
    G4MaterialPropertiesTable *Bc408_mt = new G4MaterialPropertiesTable();
    Bc408_mt->AddProperty("RINDEX", PhotonEnergybc408, RINDEX_Bc408, NUMENTRIESbc408);
    Bc408_mt->AddProperty("ABSLENGTH", PhotonEnergybc408, ABSORPTION_Bc408, NUMENTRIESbc408);
@@ -3250,25 +3376,26 @@ void BETADetectorConstruction::SetMaterialPropertiesTables() {
    //Bc408->SetMaterialPropertiesTable(Bc408_mt);
    TrackerScint->SetMaterialPropertiesTable ( Bc408_mt );
    /*G4MaterialPropertiesTable* trackerScintMPT = new G4MaterialPropertiesTable();
-   trackerScintMPT->AddConstProperty ( "RINDEX", 1.59 );
-   trackerScintMPT->AddConstProperty ( "ABSLENGTH",210.0*cm );
-   TrackerScint->SetMaterialPropertiesTable ( trackerScintMPT );
-   */
+     trackerScintMPT->AddConstProperty ( "RINDEX", 1.59 );
+     trackerScintMPT->AddConstProperty ( "ABSLENGTH",210.0*cm );
+     TrackerScint->SetMaterialPropertiesTable ( trackerScintMPT );
+    */
 
-// Setting Glass==nitrogen!!!!!!!!!!!!!!! WRONGs
+
+   // Setting Glass==nitrogen!!!!!!!!!!!!!!! WRONGs
    Glass->SetMaterialPropertiesTable ( nitrogenMPT );
 
-// Quartz
+   // Quartz
    G4double QuartzRefractiveIndexN[nEnergies] =
-      { 1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
-        1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
-        1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
-        1.4585,1.4585
-      };
+   { 1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
+      1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
+      1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,1.4585,
+      1.4585,1.4585
+   };
    G4MaterialPropertiesTable* quartzMPT = new G4MaterialPropertiesTable();
    quartzMPT->AddProperty ( "RINDEX", NitrogenPhotonEnergy, QuartzRefractiveIndexN, nEnergies );
    Quartz->SetMaterialPropertiesTable ( quartzMPT );
-//  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
+   //  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
 
 }
 //___________________________________________________________________
@@ -3363,6 +3490,9 @@ void BETADetectorConstruction::DefineMaterials() {
 
    //----- G4_GLASS_LEAD
    LeadGlass = nistman->FindOrBuildMaterial ( "G4_GLASS_LEAD" );
+   LeadGlass_NoOptics = new G4Material("LeadGlass_NoOptics",LeadGlass->GetDensity(),1 );
+   LeadGlass_NoOptics->AddMaterial(LeadGlass,1.0);
+   //LeadGlass_NoOptics = nistman->FindOrBuildMaterial ( "G4_GLASS_LEAD" );
 
    //----- QUARTZ
    Quartz = nistman->FindOrBuildMaterial ( "G4_SILICON_DIOXIDE" );

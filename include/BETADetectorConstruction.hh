@@ -86,12 +86,10 @@ class BETASimulationManager;
  * \ingroup Detectors
  */
 class BETADetectorConstruction : public G4VUserDetectorConstruction {
-   private:
-
-   protected:
 
    public:
       friend class BETASimulationManager;
+
    public:
       BETAField * fMagneticField;
 
@@ -102,7 +100,7 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
       G4bool             constructed;
       G4VPhysicalVolume* expHall_phys;
 
-      G4LogicalVolume* expHall_log;
+      G4LogicalVolume*   expHall_log;
 
       /** @name Big Electron Telescope Array Construction
        *  Constructs the BETA Detector Package.
@@ -141,14 +139,28 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
       /** @name BigCal construction.
        *  @{
        */
-      void ConstructBIGCAL();
-      bool usingBigcal;
-      G4LogicalVolume *   calorimeterTop_log;
-      G4VPhysicalVolume * calorimeterTop_phys;
-      G4LogicalVolume *   calorimeterBottom_log;
-      G4VPhysicalVolume * calorimeterBottom_phys;
-      G4LogicalVolume*    cellLogicalBottom;
-      G4LogicalVolume*    cellLogical;
+      void DestroyBigCal();
+      void ConstructBigCal();
+
+      bool                        usingBigcal;
+      G4VPVParameterisation     * fCellParamTop;
+      G4VPVParameterisation     * fCellParamBottom;
+      G4VSolid                  * fCalorimeterSolidTop;
+      G4VSolid                  * fCalorimeterSolidBottom;
+      G4VSolid                  * fCellSolidTop;
+      G4VSolid                  * fCellSolidBottom ;
+      G4VSolid                  * fPMTSolidTop;
+      G4VSolid                  * fPMTSolidBottom ;
+      G4LogicalVolume           * fPMTLogicalBottom;
+      G4LogicalVolume           * fPMTLogicalTop;
+      G4VPhysicalVolume         * fPMTTop_phys;
+      G4VPhysicalVolume         * fPMTBottom_phys;
+      G4LogicalVolume           * fCalorimeterTop_log;
+      G4VPhysicalVolume         * fCalorimeterTop_phys;
+      G4LogicalVolume           * fCalorimeterBottom_log;
+      G4VPhysicalVolume         * fCalorimeterBottom_phys;
+      G4LogicalVolume           * fCellLogicalBottom;
+      G4LogicalVolume           * fCellLogicalTop;
       //@}
 
       /** @name Cherenkov Construction.

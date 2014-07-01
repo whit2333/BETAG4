@@ -12,52 +12,61 @@
 #include "ForwardTrackerGeometryCalculator.h"
 #include "InSANERunManager.h"
 
+//______________________________________________________________________________
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
-  fSimulationManager=0;
-  fRandomNumberGenerator = InSANERunManager::GetRunManager()->GetRandom(); //new TRandom();
 
-  fBeam = new HallCRasteredBeam();
+   fSimulationManager = 0;
 
-  fCherenkovADCDC =
+   fRandomNumberGenerator = InSANERunManager::GetRunManager()->GetRandom(); //new TRandom();
+
+   fBeam = new HallCRasteredBeam();
+
+   fCherenkovADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );
-  fCherenkovTDCDC =
+   fCherenkovTDCDC =
       new BETAG4DigiTDCCollection ( this->GetName(), "cerTDCs" );
-  fBigcalADCDC =
+   fBigcalADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCs" );
-  fBigcalTDCDC =
+   fBigcalTDCDC =
       new BETAG4DigiTDCCollection ( this->GetName(), "bigcalTDCs" );
-  fHodoscopeADCDC =
+   fHodoscopeADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "hodoscopeADCs" );
-  fHodoscopeTDCDC =
+   fHodoscopeTDCDC =
       new BETAG4DigiTDCCollection ( this->GetName(), "hodoscopeTDCs" );
-  fTrackerADCDC =
+   fTrackerADCDC =
       new BETAG4DigiADCCollection ( this->GetName(), "trackerADCs" );
-  fTrackerTDCDC =
+   fTrackerTDCDC =
       new BETAG4DigiTDCCollection ( this->GetName(), "trackerTDCs" );
 
-//   fSimulationManager = BETASimulationManager::GetInstance();
-//  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
+   //   fSimulationManager = BETASimulationManager::GetInstance();
+   //  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
 
-  G4SDManager* SDman = G4SDManager::GetSDMpointer();
+   G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
-    //if(fSimulationManager->fConstruction->usingBigcal)
-    fBigcalHCID  = SDman->GetCollectionID ( "BIGCAL/bigcal" );
+   //if(fSimulationManager->fConstruction->usingBigcal)
+   fBigcalHCID  = SDman->GetCollectionID ( "BigCal/blockEdep" );
+   if(fCherenkovHCID<0) {
+      std::cout << "ERROR BIGCAL HCID < 0 " << std::endl;
+   }
 
-    //if(fSimulationManager->fConstruction->usingGasCherenkov)
-    fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+   //if(fSimulationManager->fConstruction->usingGasCherenkov)
+   fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
+   if(fCherenkovHCID<0) {
+      std::cout << "ERROR Cherenkov HCID < 0 " << std::endl;
+   }
 
-    //if(fSimulationManager->fConstruction->usingForwardTracker)
-    fTrackerHCID  = SDman->GetCollectionID ( "ForwardTracker/tracking" );
+   //if(fSimulationManager->fConstruction->usingForwardTracker)
+   fTrackerHCID  = SDman->GetCollectionID ( "ForwardTracker/tracking" );
 
-    //if(fSimulationManager->fConstruction->usingLuciteHodoscope)
-    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
+   //if(fSimulationManager->fConstruction->usingLuciteHodoscope)
+   fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-    fBigcalChannelThreshold = 5.0; //MeV
+   fBigcalChannelThreshold = 5.0; //MeV
 
-    fTrackerPhotonCounts = new int[132+132+72];
-    fTrackerTimings = new int[132+132+72];
+   fTrackerPhotonCounts = new int[132+132+72];
+   fTrackerTimings = new int[132+132+72];
 
-    
+
 
 }
 //_______________________________________________________//

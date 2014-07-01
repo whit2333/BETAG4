@@ -9,31 +9,24 @@ class G4TouchableHistory;
 class G4Step;
 
 /**
- *
  * \ingroup Detectors
  */
 class BETAG4BigcalSD : public G4VSensitiveDetector {
 
-public:
+   private:
 
-  // Constructor
-  BETAG4BigcalSD(const G4String& name);
+      BETAG4BigcalHitsCollection  * fHitsCollection;
+      G4int                         fHitsCollectionID;
 
-  // Destructor
-  virtual ~BETAG4BigcalSD();
-  
-  // Methods
-  virtual void Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent);
-  
-  virtual G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* history);
+   public:
 
-  virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
-  
-private:
-  
-  // Data members
-  BETAG4BigcalHitsCollection* fHitsCollection;
-  G4int fHitsCollectionID;
+      BETAG4BigcalSD(const G4String& name);
+      virtual ~BETAG4BigcalSD();
+
+      virtual void Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent);
+      virtual G4bool ProcessHits(G4Step* aStep,G4TouchableHistory* history);
+      virtual void EndOfEvent(G4HCofThisEvent* hitsCollectionOfThisEvent);
+
 
 };
 

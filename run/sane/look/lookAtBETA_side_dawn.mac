@@ -1,9 +1,22 @@
 # Step 1 : Open Driver and define parameters
-/vis/open DAWNFILE 900x800
+#/vis/open DAWNFILE 900x800
+/vis/open OGLSXm 900x800
 
 /beta/target/setPolarizationAngle 80
+/beta/toggleBigcal on
+/beta/toggleForwardTracker off
+/beta/gun/setEventType flat
+/beta/gun/setEnergyMin 0.90
+/beta/gun/setEnergyMax  4.0
+/beta/gun/setThetaMin 39.0
+/beta/gun/setThetaMax 41.0
+/beta/gun/setPhiMin   -5.0
+/beta/gun/setPhiMax   5.0
+/beta/gun/refresh
+/beta/gun/setParticle e-
 
 /vis/viewer/reset
+
 
 ### Variables / Alias ###
 /control/alias theta1 130
@@ -22,8 +35,6 @@
 #/control/alias perspectiveangle 23
 
 # Step 2 : Set up the viewer
-
-
 /vis/viewer/set/style wireframe
 #/vis/viewer/set/style s
 /vis/viewer/set/hiddenEdge 1
@@ -45,6 +56,12 @@
 # Step 3 : Create empty scene
 /vis/scene/create
 
+# Step 3.5 : Modeling
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set opticalphoton yellow
+/vis/modeling/trajectories/drawByParticleID-0/set neutron cyan
+
+
 # Step 4 : Declare what 3D data should be added to the created scene
 /vis/scene/add/volume  
 #/vis/scene/add/axes  
@@ -54,12 +71,13 @@
 # Step 5 : Attach scene to sceneHandler
 /vis/sceneHandler/attach
 
+
 # Step 6 : Run simulation with appropriate options to store trajectory information
 #/tracking/storeTrajectory 1
-#/run/beamOn 1
+/run/beamOn 1
 
 # Step 7 : Execute Visualization
-/vis/viewer/flush
+#/vis/viewer/flush
 
 #/run/beamOn 2
 

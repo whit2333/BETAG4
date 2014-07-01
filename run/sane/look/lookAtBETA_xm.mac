@@ -1,6 +1,7 @@
 # Step 1 : Open Driver and define parameters
 #/vis/open DAWNFILE 900x800
-/vis/open OGLSX 900x800
+#/vis/open OGLSX 900x800
+/vis/open OGLSXm 900x800
 
 /beta/target/setPolarizationAngle 80
 

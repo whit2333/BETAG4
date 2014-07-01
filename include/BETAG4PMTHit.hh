@@ -12,10 +12,7 @@
 #include <algorithm>
 #include <vector>
 
-/**
- *  A PMT hit contains all accumulated photons for a single PMT
- *  
- *  
+/**  A PMT hit contains all accumulated photons for a single PMT.
  */
 class BETAG4PMTHit : public G4VHit {
 

@@ -28,7 +28,9 @@ BETASimulationManager* BETASimulationManager::fgBETASimulationManager = 0;
 BETASimulationManager::BETASimulationManager () {
    fIsAppendMode            = false;
    fRunNumber               = 0;
+
    fSimulateCherenkovOptics = true;
+   fSimulateBigcalOptics    = false;
    fSimulateHodoscopeOptics = true;
    fSimulateTrackerOptics   = true;
    fDebugLevel              = 3;
