@@ -15,20 +15,17 @@
 #include "globals.hh"
 
 
-
-BETASteppingAction::BETASteppingAction()
-{
-         fConsecutiveSteps=0;
-fLastTrackIdInTracker=-100;
-fLastStepNumberInTracker=-100;
+//______________________________________________________________________________
+BETASteppingAction::BETASteppingAction() {
+   fConsecutiveSteps=0;
+   fLastTrackIdInTracker=-100;
+   fLastStepNumberInTracker=-100;
 }
-
+//______________________________________________________________________________
 BETASteppingAction::~BETASteppingAction()
 {
-
-
 }
-
+//______________________________________________________________________________
 void BETASteppingAction::UserSteppingAction ( const G4Step * theStep )
 {
    G4Track * theTrack = theStep->GetTrack();

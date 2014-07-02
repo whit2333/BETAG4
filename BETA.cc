@@ -196,6 +196,7 @@ int main(int argc,char** argv)
 
    // Run manager
    G4RunManager* runManager = new G4RunManager;
+   runManager->SetVerboseLevel(0);
 
    // UserInitialization classes - mandatory
    G4VUserDetectorConstruction* detector = new BETADetectorConstruction;
@@ -203,7 +204,7 @@ int main(int argc,char** argv)
 
    // Physics List
    G4VUserPhysicsList* physics = new BETAPhysicsList;
-   physics->SetVerboseLevel(0);
+   physics->SetVerboseLevel(4);
    runManager->SetUserInitialization(physics);
 
    // visualization manager

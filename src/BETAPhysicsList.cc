@@ -108,10 +108,12 @@ void BETAPhysicsList::ConstructBaryons() {
 }
 //______________________________________________________________________________
 void BETAPhysicsList::ConstructProcess() {
+   std::cout << "BETAPhysicsList::ConstructProcess" << std::endl;
    AddTransportation();
    ConstructGeneral();
    ConstructEM();
    ConstructOp();
+   std::cout << " end of BETAPhysicsList::ConstructProcess" << std::endl;
 }
 //______________________________________________________________________________
 void BETAPhysicsList::ConstructGeneral() {
@@ -266,7 +268,8 @@ void BETAPhysicsList::SetCuts() {
    //   the default cut value for all particle types
    //
    SetCutsWithDefault();
-   if ( verboseLevel>1 ) DumpCutValuesTable();
+   if ( verboseLevel>1 ) 
+      DumpCutValuesTable();
 }
 //______________________________________________________________________________
 

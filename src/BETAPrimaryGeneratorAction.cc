@@ -20,7 +20,7 @@ double mottCrossSection(double p, double theta) ;
 //______________________________________________________________________________
 BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
 
-   //G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
+   G4cout << "BETAPrimaryGeneratorAction constructor" << G4endl;
 
    BETASimulationManager * simMan = BETASimulationManager::GetInstance();
    simMan->SetPrimaryGeneratorAction(this);

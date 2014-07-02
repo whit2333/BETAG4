@@ -2009,7 +2009,6 @@ void BETADetectorConstruction::ConstructCherenkov() {
    G4ThreeVector pmt7Tbp (0 , -PMTmountXsize/2-3*PMTmountXsize,  PMTmountBackPlateThickness );
    G4ThreeVector pmt8Tbp (0 , PMTmountXsize/2+3*PMTmountXsize, PMTmountBackPlateThickness );
 
-
    G4SubtractionSolid*
       pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID1", PMTmountAlCans,PMTIDcylinder,fCerPMTfarROT,pmt1Tbp );
    pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID2", PMTmountAlCans,PMTIDcylinder,   fCerPMTfarROT,pmt2Tbp );
@@ -3392,16 +3391,16 @@ void BETADetectorConstruction::SetMaterialPropertiesTables() {
    G4MaterialPropertiesTable* quartzMPT = new G4MaterialPropertiesTable();
    quartzMPT->AddProperty ( "RINDEX", NitrogenPhotonEnergy, QuartzRefractiveIndexN, nEnergies );
    Quartz->SetMaterialPropertiesTable ( quartzMPT );
-   //  G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
+
+   //G4cout << *(G4Material::GetMaterialTable());  // print the list of materials
 
 }
 //___________________________________________________________________
-
 void BETADetectorConstruction::DefineMaterials() {
+   //std::cout << "BETADetectorConstruction::DefineMaterials" << std::endl;
    
-
    G4NistManager* nistman = G4NistManager::Instance();
-   //nistman->SetVerbose ( 1 );
+   nistman->SetVerbose ( 0 );
    G4double a, z, density,fractionmass;
    G4int nelements,ncomponents,natoms;
    G4String symbol;

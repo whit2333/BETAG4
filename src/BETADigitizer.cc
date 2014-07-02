@@ -136,11 +136,13 @@ void BETADigitizer::Digitize() {
    int fNTDC=0;
    G4double bigcalTDCChannelScaleFactor = 10.0;
    G4double cherenkovTDCChannelScaleFactor = 10.0;
+   BETAG4PMTHit * bcPMT;
    if(fBigcalHC) {
       int currentGroup = 0;
       for( int gg =0;gg<1744;gg++ ) {
 
          bcHit      = (*fBigcalHC)[gg];
+         if(fBigcalADCHC) bcPMT      = (*fBigcalADCHC)[gg];
          energyTemp = bcHit->GetDepositedEnergy();
 
          if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold ) { 
@@ -151,8 +153,12 @@ void BETADigitizer::Digitize() {
             aDigi->fTrueValue = energyTemp;
             // Divide the energy deposited by the calibration coefficient so that 
             // in reconstruction, we can multiply by the calibration coefficient.
-            aDigi->fADCValue = 
-               (float)energyTemp/((float) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
+            if(fBigcalADCHC) {
+               aDigi->fADCValue = bcPMT->fPhotons;
+            } else {
+               aDigi->fADCValue = (double)energyTemp/((double) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
+            }
+
             fBigcalADCDC->insert ( aDigi );
 
             //       std::cout << aDigi->fChannelNumber +1 <<  " has calib coef = " 
