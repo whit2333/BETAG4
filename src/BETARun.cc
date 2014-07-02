@@ -37,6 +37,7 @@
 //______________________________________________________________________________
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
+   fNUpdate = 10;
 #ifdef BETAG4_DEBUG
    if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
       G4cout << "= Created new BETARun \n";
@@ -60,11 +61,11 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    }
 
    // Create the DAQ system
-   fDAQReadout = new BETAG4DAQReadout("/DAQ/TriggerSupervisor");
+   fDAQReadout = new BETAG4DAQReadout("/DAQ/TSMod");
    fDAQReadout->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
    // Create Detector digitizers 
-   fBETADigitizer = new BETADigitizer("/DAQ/BETA");
+   fBETADigitizer = new BETADigitizer("/DAQ/BETAMod");
    fBETADigitizer->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
    G4DigiManager * DM = G4DigiManager::GetDMpointer();
@@ -72,6 +73,7 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    DM->AddNewModule(fDAQReadout);
    DM->AddNewModule(fBETADigitizer);
 
+   DM->List();
    runManager->SetNumberOfEventsToBeStored(1);
 }
 //______________________________________________________________________________
@@ -87,19 +89,22 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
 #endif
 
+   if ( ( numberOfEvent%fNUpdate ) == 0 ) {
+      G4cout << " Event " << numberOfEvent << G4endl;
+   }
+
    //---------------------------
    // "scaler event"
    // Every 100 events a scaler event is read. 
    //---------------------------
    if ( ( numberOfEvent%100 ) == 0 ) {
-      G4cout << " Event " << numberOfEvent << G4endl;
+      //G4cout << " Event " << numberOfEvent << G4endl;
       if(fSimulationManager->fSANEScalers->fTriggerEvent){
          fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
          fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = numberOfEvent;
          fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
       }
       SANEScalerEvent * scalerEvent = fSimulationManager->fSANEScalers->fScalerEvent;
-
 
       scalerEvent->fEventNumber = numberOfEvent;
       scalerEvent->fRunNumber   = fSimulationManager->fRunNumber;
@@ -115,7 +120,6 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       scalerEvent->fBCM2PositiveHelicityScaler = scalerEvent->GetPositiveScalerBCM2(current); 
       scalerEvent->fBCM1NegativeHelicityScaler = scalerEvent->GetNegativeScalerBCM1(current); 
       scalerEvent->fBCM2NegativeHelicityScaler = scalerEvent->GetNegativeScalerBCM2(current); 
-
 
       fSimulationManager->fScalerTree->Fill();
       fSimulationManager->fSANEScalers->ClearEvent();

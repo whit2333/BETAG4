@@ -87,6 +87,8 @@ class BETARun : public G4Run {
       BETAPrimaryGeneratorAction * generator;
       BETADetectorConstruction   * construction;
 
+      int   fNUpdate;
+
    public:
 
       BETADigitizer         * fBETADigitizer;

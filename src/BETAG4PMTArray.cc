@@ -29,7 +29,6 @@ BETAG4PMTArray::BETAG4PMTArray ( G4String  name, G4int Nchan, G4String colname) 
 //   fNumberOfChannels(Nchan),
 //   fDiscriminatorThreshold(2)
 {
-   std::cout << "DERP"<< std::endl;
    fHCID = -1;
    fCountAllPhotons = true;
    fSavePhotonPositions = false;

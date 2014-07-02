@@ -55,151 +55,55 @@
 #include "UVAOxfordMagneticField.h"
 #include "TVector3.h"
 
-
-
 //___________________________________________________________________
+BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
 
-BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
-{
    fSimulationManager = BETASimulationManager::GetInstance();
    fSimulationManager->SetDetectorConstruction(this);
-   //messenger = new BETADetectorMessenger ( this );
-   fMagneticField = 0;
 
-   usingGasCherenkov       = true;
-   usingBigcal             = true;
-   usingLuciteHodoscope    = true;
-   usingForwardTracker     = true;
-   usingFakePlaneAtBigcal  = true;
+   usingGasCherenkov              = true;
+   usingBigcal                    = true;
+   usingLuciteHodoscope           = true;
+   usingForwardTracker            = true;
+   usingFakePlaneAtBigcal         = true;
    usingFakePlaneAtForwardTracker = false;
+   fIsBlackLineVis                = false;
 
-   fIsBlackLineVis = false;//true;
+   expHall_x = expHall_y = expHall_z = 5.0*m;
 
-   tracker_log=0;
-   tracker_phys=0;
-   fTrackerHorizBar_log=0;
-   fTrackerVertBar_log=0;
-   fTrackerHorizBarScore_log=0;
-   fTrackerVertBarScore_log=0;
-   fTrackerX1BarScore_log=0;
-   fTrackerY1BarScore_log=0;
-   fTrackerY2BarScore_log=0;
-   fTrackerX1Bar_log=0;
-   fTrackerY1Bar_log=0;
-   fTrackerY2Bar_log=0;
-   trackerY1_log=0;
-   trackerY2_log=0;
-   trackerX1_log=0;
-   fTrackerG10Frame_log = 0;
-   frontTrackerSD=0;
-
-   tank_log=0;
-   cherenkovTank_phys=0;
-   cherenkovContainer_log=0;
-   fCerFrontWindow_log=0;
-   fCerBackWindow_log=0;
-   AlCans_log=0;
-   fCerFrameTopBottom_log=0;
-   fCerToroidalMirror_log=0;
-   fCerSphericalMirror_log=0;
-   MUPipe_log=0;
-   container_log=0;
-   pmtFace_log=0;
-
-   hodoscopeContainerBox_log=0;
-   hodoscopeContainerBox_phys=0;
-   fLuciteHodoPMTphotocathode_log=0;
-   fLuciteHodoPMTinquotes_log=0;
-   fLuciteHodoBar_log=0;
-   HodoscopePMTSD=0;
-
-   fCalorimeterTop_log     = 0;
-   fCalorimeterTop_phys    = 0;
-   fCalorimeterBottom_log  = 0;
-   fCalorimeterBottom_phys = 0;
-   fCellLogicalBottom      = 0;
-   fCellLogicalTop         = 0;
-   fCellParamTop           = 0;
-   fCellParamBottom        = 0;
-   fCalorimeterSolidTop    = 0;
-   fCalorimeterSolidBottom = 0;
-   fCellSolidTop           = 0;
-   fCellSolidBottom        = 0;
-   fPMTTop_phys            = 0;
-   fPMTBottom_phys         = 0;
-   fPMTLogicalBottom      = 0;
-   fPMTLogicalTop         = 0;
-   fPMTSolidTop           = 0;
-   fPMTSolidBottom        = 0;
-
-   fBigCalFakePlane_log  = 0;
-   fTrackerFakePlane_log = 0;
-
-   fHeBagExtenderBox_log = 0;
-   fHeBagExtenderAngle1_log=0;
-   fHeBagExtenderAngle2_log=0;
-   fHeBagExtenderAngle3_log=0;
-   fHeBagExtenderAngle4_log=0;
-   fHeBagExtenderHorizSupport_log=0;
-   fHeBagExtenderVertSupport_log=0;
-   fHeBagExtenderHorizWindow_log=0;
-   fHeBagExtenderVertWindow_log=0;
-   fHeBagExtenderFrontWindow_log=0;
-
-   logicTCan=0;
-   logicRad=0;
-   logicWinCan=0;
-   logicBeamWin=0;
-   logicLN2Shield=0;
-   logicLN2BeamWin=0;
-   logicLN2Can=0;
-   logicHelium=0;
-   logicNose=0;
-   logicTail=0;
-   logicCell=0;
-   logicCWall=0;
-   logicMagnet=0;
-   logicCoil=0;
-   logicBrace1=0;
-   logicBrace2=0;
-   logicBrace3=0;
-   logicBrace4=0;
-
-   expHall_x = expHall_y = expHall_z = 10.0*m;
-
-// These should be in the cherenkov construction
+   // These should be in the cherenkov construction
    // alpha and beta for mirrors
-   alpha2 =-14.0*pi/180.0; //16.35*pi/180,   // 14
-   beta2 = -32.5*pi/180.0;//31.7*pi/180;  // 32.5
+   alpha2 = -14.0*pi/180.0; //16.35*pi/180,   // 14
+   beta2  = -32.5*pi/180.0;//31.7*pi/180;  // 32.5
    alpha4 = -7.50000048*pi/180.0;//8.75*pi/180; //7.50000048
-   beta4 = -33.0*pi/180.0; // 32.62*pi/180;  // 33.0
+   beta4  = -33.0*pi/180.0; // 32.62*pi/180;  // 33.0
    alpha6 = 7.50000048*pi/180.0; //-8.75*pi/180; //trial1: 9.1 //-.50000048
-   beta6 = -32.5*pi/180.0;//32.25*pi/180; // trial2: 32.25 //32.5
+   beta6  = -32.5*pi/180.0;//32.25*pi/180; // trial2: 32.25 //32.5
    alpha8 = 14.0*pi/180.0;//-16.35*pi/180; // -14
-   beta8 = -32.5*pi/180.0;//31.7*pi/180; //32.5*
+   beta8  = -32.5*pi/180.0;//31.7*pi/180; //32.5*
 
    alpha1 = -3.5*pi/180.0;
-   beta1= -9.0*pi/180.0;
-   alpha3 =  2.0*pi/180.0;
-   beta3 =  -9.0*pi/180.0;
+   beta1  = -9.0*pi/180.0;
+   alpha3 = 2.0*pi/180.0;
+   beta3  = -9.0*pi/180.0;
    alpha5 = -2.0*pi/180.0;
-   beta5 =  -9.0*pi/180.0;
+   beta5  = -9.0*pi/180.0;
    alpha7 = 4.0*pi/180.0;
-   beta7 =  -9.0*pi/180.0;
+   beta7  = -9.0*pi/180.0;
 
-   DetectorAngle = 40.*pi/180.;
+   DetectorAngle  = 40.*pi/180.;
    DetectorLength = 5.0*m;
    DetectorWidth  = 75.*2.54*cm+0.5*m;
-   rTarget    = 50.*cm;  /// \todo fix this
-   rTracker   =  ForwardTrackerGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//55.*cm;
-   rCherenkov =  GasCherenkovGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;// 62.5*cm;
-   rHodoscope =  LuciteGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//240.*cm;
-   rBigcal    =  BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
-   fBETADistance = rTarget + 0.10*cm;
+
+   rTarget        = 50.*cm; 
+   rTracker       = ForwardTrackerGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//55.*cm;
+   rCherenkov     = GasCherenkovGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;// 62.5*cm;
+   rHodoscope     = LuciteGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//240.*cm;
+   rBigcal        = BIGCALGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;
+   fBETADistance  = rTarget + 0.10*cm;
 
 
-/// Copy of Justin Wrights Code:
-
+   // Copy of Justin Wright's Code:
    //define some OVC constants
    OVCIR = 45.60*cm;               //inner radius of can
    OVCCthick = 2.3749*cm;          //thickness of can (0.935 inch Al)
@@ -235,12 +139,105 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false )
    ULimits = 200.*MeV;
 
 
-   fTargetState = 1;
-   physiTCan=0;
-   physiLN2Can=0;
+   fTargetState   = 1;
+   fMagneticField = 0;
+
+   // T
+   tracker_log               = 0;
+   tracker_phys              = 0;
+   fTrackerHorizBar_log      = 0;
+   fTrackerVertBar_log       = 0;
+   fTrackerHorizBarScore_log = 0;
+   fTrackerVertBarScore_log  = 0;
+   fTrackerX1BarScore_log    = 0;
+   fTrackerY1BarScore_log    = 0;
+   fTrackerY2BarScore_log    = 0;
+   fTrackerX1Bar_log         = 0;
+   fTrackerY1Bar_log         = 0;
+   fTrackerY2Bar_log         = 0;
+   trackerY1_log             = 0;
+   trackerY2_log             = 0;
+   trackerX1_log             = 0;
+   fTrackerG10Frame_log      = 0;
+   frontTrackerSD            = 0;
+
+   tank_log                = 0;
+   cherenkovTank_phys      = 0;
+   cherenkovContainer_log  = 0;
+   fCerFrontWindow_log     = 0;
+   fCerBackWindow_log      = 0;
+   AlCans_log              = 0;
+   fCerFrameTopBottom_log  = 0;
+   fCerToroidalMirror_log  = 0;
+   fCerSphericalMirror_log = 0;
+   MUPipe_log              = 0;
+   container_log           = 0;
+   pmtFace_log             = 0;
+
+   hodoscopeContainerBox_log      = 0;
+   hodoscopeContainerBox_phys     = 0;
+   fLuciteHodoPMTphotocathode_log = 0;
+   fLuciteHodoPMTinquotes_log     = 0;
+   fLuciteHodoBar_log             = 0;
+   HodoscopePMTSD                 = 0;
+
+   fCalorimeterTop_log     = 0;
+   fCalorimeterTop_phys    = 0;
+   fCalorimeterBottom_log  = 0;
+   fCalorimeterBottom_phys = 0;
+   fCellLogicalBottom      = 0;
+   fCellLogicalTop         = 0;
+   fCellParamTop           = 0;
+   fCellParamBottom        = 0;
+   fCalorimeterSolidTop    = 0;
+   fCalorimeterSolidBottom = 0;
+   fCellSolidTop           = 0;
+   fCellSolidBottom        = 0;
+   fPMTTop_phys            = 0;
+   fPMTBottom_phys         = 0;
+   fPMTLogicalBottom      = 0;
+   fPMTLogicalTop         = 0;
+   fPMTSolidTop           = 0;
+   fPMTSolidBottom        = 0;
+
+   fBigCalFakePlane_log  = 0;
+   fTrackerFakePlane_log = 0;
+
+   fHeBagExtenderBox_log          = 0;
+   fHeBagExtenderAngle1_log       = 0;
+   fHeBagExtenderAngle2_log       = 0;
+   fHeBagExtenderAngle3_log       = 0;
+   fHeBagExtenderAngle4_log       = 0;
+   fHeBagExtenderHorizSupport_log = 0;
+   fHeBagExtenderVertSupport_log  = 0;
+   fHeBagExtenderHorizWindow_log  = 0;
+   fHeBagExtenderVertWindow_log   = 0;
+   fHeBagExtenderFrontWindow_log  = 0;
+
+   logicTCan       = 0;
+   logicRad        = 0;
+   logicWinCan     = 0;
+   logicBeamWin    = 0;
+   logicLN2Shield  = 0;
+   logicLN2BeamWin = 0;
+   logicLN2Can     = 0;
+   logicHelium     = 0;
+   logicNose       = 0;
+   logicTail       = 0;
+   logicCell       = 0;
+   logicCWall      = 0;
+   logicMagnet     = 0;
+   logicCoil       = 0;
+   logicBrace1     = 0;
+   logicBrace2     = 0;
+   logicBrace3     = 0;
+   logicBrace4     = 0;
+   physiTCan       = 0;
+   physiLN2Can     = 0;
+
 
    ConstructVisAtt();
-   std::cout << " BETADetectorConstruction Constructor " << std::endl;
+   //std::cout << " BETADetectorConstruction Constructor " << std::endl;
 }
 
 //___________________________________________________________________
@@ -1362,7 +1359,7 @@ void BETADetectorConstruction::ConstructBigCal() {
    G4SDManager* manager = G4SDManager::GetSDMpointer();
 
    // Accumulated energy deposited per block
-   G4VSensitiveDetector* fBigcalSD = manager->FindSensitiveDetector( "BigCal" );
+   G4VSensitiveDetector* fBigcalSD = manager->FindSensitiveDetector( "BigCal", false );
    if(!fBigcalSD) {
       fBigcalSD = new BETAG4BigcalSD ( "BigCal" );
       manager->AddNewDetector ( fBigcalSD );
@@ -1371,7 +1368,7 @@ void BETADetectorConstruction::ConstructBigCal() {
    // Accumulated optical photons 
    G4VSensitiveDetector* fBigcalAdcSD = 0;
    if(fSimulationManager->fSimulateBigcalOptics) {
-       fBigcalAdcSD = manager->FindSensitiveDetector( "BigCalPMT" );
+       fBigcalAdcSD = manager->FindSensitiveDetector( "BigCalPMT", false );
        if(!fBigcalAdcSD) {
           fBigcalAdcSD = new BETAG4PMTArray("BigCalPMT",1744,"photons");
           manager->AddNewDetector ( fBigcalAdcSD );
@@ -3579,21 +3576,18 @@ void BETADetectorConstruction::SwitchTargetField() {
    G4RunManager::GetRunManager()->GeometryHasBeenModified();
 
 }
-
-//___________________________________________________________________
+//______________________________________________________________________________
 void BETADetectorConstruction::SetTargetAngle ( G4double angle ) {
    
   fSimulationManager->SetTargetAngle(angle);
-  PrintTargetAngle();
   if(!fMagneticField) fMagneticField = new BETAField();
   fMagnetRotationMatirx = G4RotationMatrix::IDENTITY;
   fMagnetRotationMatirx.rotateZ( fSimulationManager->GetTargetAngle() );
+  //PrintTargetAngle();
   if(fMagneticField) {
     fMagneticField->fUVAMagnet->SetPolarizationAngle (angle );
-     
-    fCerSphericalMirror_log->RemoveDaughter ( MirrorGlass_phys1 ); // huh?
+    //fCerSphericalMirror_log->RemoveDaughter ( MirrorGlass_phys1 ); // huh?
     delete physiMagnet;
-
     physiMagnet = new G4PVPlacement (G4Transform3D(fMagnetRotationMatirx, G4ThreeVector ( 0.,0.,-LN2dis )),
                                      logicMagnet, "Magnet", logicLN2Shield,
                                      false, 0 );
@@ -4242,9 +4236,8 @@ void BETADetectorConstruction::ConstructNose() {
    logic4KSH->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
 }
 
-//___________________________________________________________________
-void BETADetectorConstruction::ConstructMagnet()
-{
+//______________________________________________________________________________
+void BETADetectorConstruction::ConstructMagnet() {
    
    //messenger->fTargetAngle
    fMagnetRotationMatirx.rotateZ( fSimulationManager->GetTargetAngle());
@@ -4260,7 +4253,7 @@ void BETADetectorConstruction::ConstructMagnet()
       new G4SubtractionSolid ( "Magnet", StarterMagnet, Dummy4KSH, 0,
                                G4ThreeVector() );
    logicMagnet = new G4LogicalVolume ( solidMagnet, Vacuum, "Magnet" );
-//This is the physical placement for the magnet volume, ie this has all the piece contained in it
+   //This is the physical placement for the magnet volume, ie this has all the piece contained in it
    physiMagnet = new G4PVPlacement (G4Transform3D(fMagnetRotationMatirx, G4ThreeVector ( 0.,0.,-LN2dis )),
                                      logicMagnet, "Magnet", logicLN2Shield,
                                      false, 0 );

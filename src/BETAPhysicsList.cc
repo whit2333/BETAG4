@@ -25,28 +25,44 @@
 #include "G4StepLimiter.hh"
 #include "G4UserSpecialCuts.hh"
 
-BETAPhysicsList::BETAPhysicsList() :  G4VUserPhysicsList()
-{
+#include "G4Decay.hh"
+
+#include "G4ComptonScattering.hh"
+#include "G4GammaConversion.hh"
+#include "G4PhotoElectricEffect.hh"
+
+#include "G4eMultipleScattering.hh"
+#include "G4MuMultipleScattering.hh"
+#include "G4hMultipleScattering.hh"
+
+#include "G4eIonisation.hh"
+#include "G4eBremsstrahlung.hh"
+#include "G4eplusAnnihilation.hh"
+
+#include "G4MuIonisation.hh"
+#include "G4MuBremsstrahlung.hh"
+#include "G4MuPairProduction.hh"
+
+#include "G4hIonisation.hh"
+
+//______________________________________________________________________________
+BETAPhysicsList::BETAPhysicsList() :  G4VUserPhysicsList() {
+
    theCerenkovProcess           = 0;
    theScintillationProcess      = 0;
    theAbsorptionProcess         = 0;
    theRayleighScatteringProcess = 0;
    theBoundaryProcess           = 0;
-   defaultCutValue = 1.0*mm;
-   pMessenger = new BETAPhysicsListMessenger ( this );
+   defaultCutValue              = 1.0*mm;
+   pMessenger                   = new BETAPhysicsListMessenger ( this );
    SetVerboseLevel ( 0 );
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//______________________________________________________________________________
 BETAPhysicsList::~BETAPhysicsList() {
    delete pMessenger;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructParticle()
-{
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructParticle() {
    // In this method, static member functions should be called
    // for all particles which you want to use.
    // This ensures that objects of these particle types will be
@@ -57,27 +73,16 @@ void BETAPhysicsList::ConstructParticle()
    ConstructMesons();
    ConstructBaryons();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructBosons()
-{
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructBosons() {
    // pseudo-particles
-   G4Geantino::GeantinoDefinition();
-   G4ChargedGeantino::ChargedGeantinoDefinition();
-
-   // gamma
+   //G4Geantino::GeantinoDefinition();
+   //G4ChargedGeantino::ChargedGeantinoDefinition();
    G4Gamma::GammaDefinition();
-
-   // optical photon
    G4OpticalPhoton::OpticalPhotonDefinition();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructLeptons()
-{
-   // leptons
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructLeptons() {
    G4Electron::ElectronDefinition();
    G4Positron::PositronDefinition();
    G4NeutrinoE::NeutrinoEDefinition();
@@ -87,46 +92,29 @@ void BETAPhysicsList::ConstructLeptons()
    G4NeutrinoMu::NeutrinoMuDefinition();
    G4AntiNeutrinoMu::AntiNeutrinoMuDefinition();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructMesons()
-{
-//  mesons
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructMesons() {
    G4PionPlus::PionPlusDefinition();
    G4PionMinus::PionMinusDefinition();
    G4PionZero::PionZeroDefinition();
+   G4Eta::EtaDefinition();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructBaryons()
-{
-//  baryons
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructBaryons() {
    G4Proton::ProtonDefinition();
    G4AntiProton::AntiProtonDefinition();
    G4Neutron::NeutronDefinition();
    G4AntiNeutron::AntiNeutronDefinition();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructProcess()
-{
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructProcess() {
    AddTransportation();
    ConstructGeneral();
    ConstructEM();
    ConstructOp();
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-#include "G4Decay.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructGeneral()
-{
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructGeneral() {
    // Add Decay Process
    G4Decay* theDecayProcess = new G4Decay();
    theParticleIterator->reset();
@@ -143,32 +131,9 @@ void BETAPhysicsList::ConstructGeneral()
       }
    }
 }
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructEM() {
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-#include "G4ComptonScattering.hh"
-#include "G4GammaConversion.hh"
-#include "G4PhotoElectricEffect.hh"
-
-#include "G4eMultipleScattering.hh"
-#include "G4MuMultipleScattering.hh"
-//#include "G4MultipleScattering.hh"
-#include "G4hMultipleScattering.hh"
-
-#include "G4eIonisation.hh"
-#include "G4eBremsstrahlung.hh"
-#include "G4eplusAnnihilation.hh"
-
-#include "G4MuIonisation.hh"
-#include "G4MuBremsstrahlung.hh"
-#include "G4MuPairProduction.hh"
-
-#include "G4hIonisation.hh"
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructEM()
-{
    theParticleIterator->reset();
    while ( ( *theParticleIterator ) () )
    {
@@ -178,7 +143,6 @@ void BETAPhysicsList::ConstructEM()
 
       if ( particleName == "gamma" )
       {
-         // gamma
          // Construct processes for gamma
          pmanager->AddDiscreteProcess ( new G4GammaConversion() );
          pmanager->AddDiscreteProcess ( new G4ComptonScattering() );
@@ -188,7 +152,6 @@ void BETAPhysicsList::ConstructEM()
       }
       else if ( particleName == "e-" )
       {
-         //electron
          // Construct processes for electron
          pmanager->AddProcess ( new G4eMultipleScattering(),-1, 1, 1 );
          pmanager->AddProcess ( new G4eIonisation(),       -1, 2, 2 );
@@ -223,28 +186,26 @@ void BETAPhysicsList::ConstructEM()
          {
             // all others charged particles except geantino
             pmanager->AddProcess ( new G4hMultipleScattering(),-1,1,1 );
-            pmanager->AddProcess ( new G4hIonisation(),       -1,2,2 );
+            pmanager->AddProcess ( new G4hIonisation(),        -1,2,2 );
          }
       }
    }
 }
+//______________________________________________________________________________
+void BETAPhysicsList::ConstructOp() {
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::ConstructOp()
-{
    theCerenkovProcess           = new G4Cerenkov ( "Cerenkov" );
-   theScintillationProcess = new G4Scintillation ( "Scintillation" );
-   theAbsorptionProcess     = new G4OpAbsorption();
+   theScintillationProcess      = new G4Scintillation ( "Scintillation" );
+   theAbsorptionProcess         = new G4OpAbsorption();
    theRayleighScatteringProcess = new G4OpRayleigh();
-   theBoundaryProcess  = new G4OpBoundaryProcess();
+   theBoundaryProcess           = new G4OpBoundaryProcess();
 
-//  theCerenkovProcess->DumpPhysicsTable();
-//  theScintillationProcess->DumpPhysicsTable();
-//  theAbsorptionProcess->DumpPhysicsTable();
-//  theRayleighScatteringProcess->DumpPhysicsTable();
+   //theCerenkovProcess->DumpPhysicsTable();
+   //theScintillationProcess->DumpPhysicsTable();
+   //theAbsorptionProcess->DumpPhysicsTable();
+   //theRayleighScatteringProcess->DumpPhysicsTable();
 
-   SetVerbose ( 0 );
+   //SetVerbose ( 0 );
 
    theCerenkovProcess->SetMaxNumPhotonsPerStep ( 150 );
    theCerenkovProcess->SetTrackSecondariesFirst ( true );
@@ -259,13 +220,12 @@ void BETAPhysicsList::ConstructOp()
    while ( ( *theParticleIterator ) () )
    {
       G4ParticleDefinition* particle = theParticleIterator->value();
-      G4ProcessManager* pmanager = particle->GetProcessManager();
-      G4String particleName = particle->GetParticleName();
+      G4ProcessManager* pmanager     = particle->GetProcessManager();
+      G4String particleName          = particle->GetParticleName();
       if ( theCerenkovProcess->IsApplicable ( *particle ) )
       {
          // pmanager->AddContinuousProcess ( theCerenkovProcess );
          // per Release 9.1,
-
          pmanager->AddProcess(theCerenkovProcess);
          pmanager->SetProcessOrdering(theCerenkovProcess,idxPostStep);
       }
@@ -277,7 +237,7 @@ void BETAPhysicsList::ConstructOp()
       }
       if ( particleName == "opticalphoton" )
       {
-/*         G4cout << " AddDiscreteProcess to OpticalPhoton " << G4endl;*/
+         /*         G4cout << " AddDiscreteProcess to OpticalPhoton " << G4endl;*/
          pmanager->AddDiscreteProcess ( theAbsorptionProcess );
          pmanager->AddDiscreteProcess ( theRayleighScatteringProcess );
          pmanager->AddDiscreteProcess ( theBoundaryProcess );
@@ -288,34 +248,25 @@ void BETAPhysicsList::ConstructOp()
       }
    }
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::SetVerbose ( G4int verbose )
-{
-   theCerenkovProcess->SetVerboseLevel ( verbose );
-   theScintillationProcess->SetVerboseLevel ( verbose );
-   theAbsorptionProcess->SetVerboseLevel ( verbose );
+//______________________________________________________________________________
+void BETAPhysicsList::SetVerbose ( G4int verbose ) {
+   theCerenkovProcess->SetVerboseLevel           ( verbose );
+   theScintillationProcess->SetVerboseLevel      ( verbose );
+   theAbsorptionProcess->SetVerboseLevel         ( verbose );
    theRayleighScatteringProcess->SetVerboseLevel ( verbose );
-   theBoundaryProcess->SetVerboseLevel ( verbose );
+   theBoundaryProcess->SetVerboseLevel           ( verbose );
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::SetNbOfPhotonsCerenkov ( G4int MaxNumber )
-{
+//______________________________________________________________________________
+void BETAPhysicsList::SetNbOfPhotonsCerenkov ( G4int MaxNumber ) {
    theCerenkovProcess->SetMaxNumPhotonsPerStep ( MaxNumber );
 }
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsList::SetCuts()
-{
+//______________________________________________________________________________
+void BETAPhysicsList::SetCuts() {
    //  " G4VUserPhysicsList::SetCutsWithDefault" method sets
    //   the default cut value for all particle types
    //
    SetCutsWithDefault();
-
-   //if ( verboseLevel>1 ) DumpCutValuesTable();
+   if ( verboseLevel>1 ) DumpCutValuesTable();
 }
+//______________________________________________________________________________
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

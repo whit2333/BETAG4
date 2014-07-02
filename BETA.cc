@@ -173,7 +173,7 @@ int main(int argc,char** argv)
       is_interactive  = false;
       theRest        += argv[i];
    }
-   std::cout << " the rest of the arguments: " << theRest << std::endl;
+   //std::cout << " the rest of the arguments: " << theRest << std::endl;
 
    // Seed the random number generator manually
    G4long myseed = 983;
@@ -239,11 +239,11 @@ int main(int argc,char** argv)
    //TRint * fApp = 
    new TRint("BETAG4", &fnargs,&fargs[0], NULL, 2);
 
-   std::cout << " o Initializing G4 kernel " << std::endl;
+   //std::cout << " o Initializing G4 kernel " << std::endl;
 
    // Initialize G4 kernel
    runManager->Initialize();
-   std::cout << " o Done initializing G4 kernel " << std::endl;
+   //std::cout << " o Done initializing G4 kernel " << std::endl;
 
    // Get the pointer to the User Interface manager
    G4UImanager* UI = G4UImanager::GetUIpointer(); 
@@ -293,7 +293,7 @@ int main(int argc,char** argv)
   //                 be deleted in the main() program !
 
 #ifdef G4VIS_USE
-  delete visManager;
+  //delete visManager;
 #endif
   delete runManager;
   delete verbosity;

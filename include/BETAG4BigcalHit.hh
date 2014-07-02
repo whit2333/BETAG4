@@ -31,37 +31,29 @@ class BETAG4BigcalHit : public G4VHit {
 
       void Print();
 
-      /** Add Deposited energy */
       void AddDepositedEnergy(G4double energy) {fDepositedEnergy += energy;}
 
-      /** Get Deposited energy */
       G4double GetDepositedEnergy() const {return fDepositedEnergy;}
 
-      /**  Set Position vector */
       void SetPosition(G4ThreeVector position) {fPosition = position;}
 
-      /**  Get Position vector */
       G4ThreeVector GetPosition() const {return fPosition;}
 
-      /**  Set Rotation matrix */
       void SetRotation(G4RotationMatrix rotation) {fRotation = rotation;}
 
-      /**  Get Rotation matrix */
       G4RotationMatrix GetRotation() const {return fRotation;}
 
-      /**  Set Logical Volume */
       void  SetLogicalVolume(G4LogicalVolume* volume) {pLogicalVolume = volume;}
       const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
 
-      G4int fCellNumber;
-      G4int fCellID;
-      G4double fTiming;
-      G4double fDepositedEnergy;
-      G4ThreeVector fPosition;
-      G4RotationMatrix fRotation;
-      const G4LogicalVolume* pLogicalVolume;
-      G4int fNHits;
-      bool fTimingHit;
+      G4int                   fCellID;
+      G4double                fTiming;
+      G4double                fDepositedEnergy;
+      G4ThreeVector           fPosition;
+      G4RotationMatrix        fRotation;
+      const G4LogicalVolume * pLogicalVolume;
+      G4int                   fNHits;
+      bool                    fTimingHit;
 };
 
 typedef G4THitsCollection<BETAG4BigcalHit> BETAG4BigcalHitsCollection;

@@ -36,6 +36,7 @@
  * \ingroup Detectors
  */
 class BETADigitizer : public G4VDigitizerModule {
+
    private: 
       HallCRasteredBeam *        fBeam;
       bool                       fIsTriggered;
@@ -66,28 +67,30 @@ class BETADigitizer : public G4VDigitizerModule {
 
       BETASimulationManager *    fSimulationManager;
 
-      G4int                      fCherenkovHCID;
-      G4int                      fBigcalHCID;
-      G4int                      fTrackerHCID;
-      G4int                      fHodoscopeHCID;
+      G4int                              fCherenkovHCID;
+      G4int                              fBigcalHCID;
+      G4int                              fBigcalADCHCID;
+      G4int                              fTrackerHCID;
+      G4int                              fHodoscopeHCID;
+
+      BETAG4BigcalHitsCollection       * fBigcalHC;
+      BETAG4PMTHitsCollection          * fBigcalADCHC;
+      BETAG4PMTHitsCollection          * fGasCherenkovHC;
+      BETAHodoscopePMTHitsCollection   * fLuciteHodoscopeHC;
+      BETAForwardTrackerHitsCollection * fForwardTrackerHC;
+
+      G4double fBigcalChannelThreshold;
 
       TRandom *                  fRandomNumberGenerator;
 
       int * fTrackerPhotonCounts;
       int * fTrackerTimings;
 
-      // Geant4 collections, hits, etc....
-      BETAG4BigcalHitsCollection * fBigcalHC;
-      BETAG4PMTHitsCollection * fGasCherenkovHC;
-      BETAHodoscopePMTHitsCollection * fLuciteHodoscopeHC;
-      BETAForwardTrackerHitsCollection * fForwardTrackerHC;
-
-      G4double fBigcalChannelThreshold;
    protected:
 
-      InSANETriggerEvent *    fTriggerEvent;
-      BETAEvent *             fBetaEvent;
-      HallCBeamEvent *        fBeamEvent;
+      InSANETriggerEvent    * fTriggerEvent;
+      BETAEvent             * fBetaEvent;
+      HallCBeamEvent        * fBeamEvent;
       BETAG4MonteCarloEvent * fMCEvent;
 
 
@@ -122,14 +125,11 @@ class BETADigitizer : public G4VDigitizerModule {
        */
       void ReadOut();
 
-      /** Clears Digi collections */
       void Clear();
 
       virtual void Print();
 
-
 };
-
 
 #endif
 

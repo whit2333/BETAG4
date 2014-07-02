@@ -44,8 +44,7 @@ class BETAG4DigiTDC : public G4VDigi {
       }
 
       virtual void Print(){
-         std::cout << "Channel " << fChannelNumber << " : bit " << fTDCValue << " \n";
-         std::cout << fNumberOfHits << " hits   "  <<  " :     " << fTrueValue << " ns\n";
+         std::cout << " TDC " << fChannelNumber << "\t" << fTDCValue << "\t" << fTrueValue << std::endl;
       }
 
 };

@@ -7,30 +7,61 @@
 
 //______________________________________________________________________________
 BETAG4BigcalSD::BETAG4BigcalSD(const G4String& name):G4VSensitiveDetector(name){
-   collectionName.insert ( "blockEdep" );
+   collectionName.insert ("blockEdep" );
+   collectionName.insert ("blockTimingGroup" );
+   collectionName.insert ("blockTriggerGroup" );
+
    fHitsCollectionID = -1;
+   fTimingHCID       = -1;
+   fTriggerHCID      = -1;
+
+   fHitsCollection = 0;
+   fTimingHC       = 0; 
+   fTriggerHC      = 0;
+   fGeoCalc = BIGCALGeometryCalculator::GetCalculator();
 }
 //______________________________________________________________________________
 BETAG4BigcalSD::~BETAG4BigcalSD() { 
 }
 //______________________________________________________________________________
 void BETAG4BigcalSD::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent){
-   // Create a new collection
+
+   // Create new collections
    fHitsCollection =
       new BETAG4BigcalHitsCollection ( SensitiveDetectorName, collectionName[0] );
-
    if ( fHitsCollectionID < 0 )
       fHitsCollectionID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
-
-   // Add collection to the event
    hitsCollectionOfThisEvent->AddHitsCollection ( fHitsCollectionID, fHitsCollection );
 
+   fTimingHC =
+      new BETAG4BigcalHitsCollection ( SensitiveDetectorName, collectionName[1] );
+   if ( fTimingHCID < 0 )
+      fTimingHCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fTimingHC );
+   hitsCollectionOfThisEvent->AddHitsCollection ( fTimingHCID, fTimingHC );
+
+   fTriggerHC =
+      new BETAG4BigcalHitsCollection ( SensitiveDetectorName, collectionName[1] );
+   if ( fTriggerHCID < 0 )
+      fTriggerHCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fTriggerHC );
+   hitsCollectionOfThisEvent->AddHitsCollection ( fTriggerHCID, fTriggerHC );
+
    // Initialise hits
-   G4int i ( 0 );
-   for ( i=0; i<1744; i++ )
-   {
+   // For each block
+   for( int i=0; i<1744; i++ ) {
       BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
       fHitsCollection->insert ( aHit );
+   }
+
+   // For the smallest timing groups, sums of 8 (4 columns x 56 rows = 224 groups)
+   for( int i=0; i< 56*4 ; i++ ) {
+      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
+      fTimingHC->insert ( aHit );
+   }
+
+   // For the trigger subgroups (sums of 64)
+   for( int i=0; i<19*2; i++ ) {
+      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
+      fTriggerHC->insert ( aHit );
    }
 }
 //______________________________________________________________________________
@@ -49,15 +80,22 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
    G4VPhysicalVolume* thePhysical   = theTouchable->GetVolume();
    G4int copyNo                     = thePhysical->GetCopyNo();
 
+   int timingGroupNo    = fGeoCalc->GetGroupNumber(copyNo+1);
+   int triggerGroupNo   = fGeoCalc->GetSumOf64GroupNumber(copyNo+1)[0];
+   int triggerGroupNo2  = fGeoCalc->GetSumOf64GroupNumber(copyNo+1)[1];
+
    // Get corresponding hit
    BETAG4BigcalHit* aHit = ( *fHitsCollection ) [copyNo];
+   BETAG4BigcalHit* bHit = ( *fTimingHC ) [timingGroupNo-1];
+   BETAG4BigcalHit* cHit = ( *fTriggerHC ) [triggerGroupNo-1];
+   BETAG4BigcalHit* dHit = 0;
+   if(triggerGroupNo2 != -1) dHit = ( *fTriggerHC ) [triggerGroupNo2-1];
 
    // Check to see if this is the first time the hit has been updated
    if ( ! ( aHit->GetLogicalVolume() ) )
    {
       // Set volume information
       aHit->SetLogicalVolume ( thePhysical->GetLogicalVolume() );
-
       G4AffineTransform aTrans = theTouchable->GetHistory()->GetTopTransform();
       aTrans.Invert();
       aHit->fNHits++;
@@ -67,11 +105,29 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 
    // Accumulate energy deposition
    aHit->AddDepositedEnergy ( depositedEnergy/MeV );
+   bHit->AddDepositedEnergy ( depositedEnergy/MeV );
+   cHit->AddDepositedEnergy ( depositedEnergy/MeV );
+   if(dHit) dHit->AddDepositedEnergy ( depositedEnergy/MeV );
+
    // if the energy is above the threshold to fire a discriminator (10MeV)
    // and has not had a time recorded, then record the time
    if( aHit->GetDepositedEnergy() > 10.0 && (!aHit->fTimingHit) ) {
      aHit->fTiming = theTrack->GetGlobalTime()/ns;
      aHit->fTimingHit = true;
+   }
+
+   if( (!bHit->fTimingHit) && (bHit->GetDepositedEnergy() > 100.0)  ) {
+     bHit->fTiming = theTrack->GetGlobalTime()/ns;
+     bHit->fTimingHit = true;
+   }
+
+   if( (!cHit->fTimingHit) && (cHit->GetDepositedEnergy() > 500.0)  ) {
+     cHit->fTiming = theTrack->GetGlobalTime()/ns;
+     cHit->fTimingHit = true;
+   }
+   if(dHit) if( (!dHit->fTimingHit) && (dHit->GetDepositedEnergy() > 500.0)  ) {
+     dHit->fTiming = theTrack->GetGlobalTime()/ns;
+     dHit->fTimingHit = true;
    }
 
    return true;
@@ -80,3 +136,4 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 void BETAG4BigcalSD::EndOfEvent ( G4HCofThisEvent* ) {
 }
 //______________________________________________________________________________
+

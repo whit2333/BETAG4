@@ -2,7 +2,9 @@
 #define BETAG4BigcalSD_HH
 
 #include "G4VSensitiveDetector.hh"
+
 #include "BETAG4BigcalHit.hh"
+#include "BIGCALGeometryCalculator.h"
 
 class G4HCofThisEvent;
 class G4TouchableHistory;
@@ -17,6 +19,14 @@ class BETAG4BigcalSD : public G4VSensitiveDetector {
 
       BETAG4BigcalHitsCollection  * fHitsCollection;
       G4int                         fHitsCollectionID;
+
+      BETAG4BigcalHitsCollection  * fTimingHC;
+      G4int                         fTimingHCID;
+
+      BETAG4BigcalHitsCollection  * fTriggerHC;
+      G4int                         fTriggerHCID;
+
+      BIGCALGeometryCalculator    * fGeoCalc;
 
    public:
 

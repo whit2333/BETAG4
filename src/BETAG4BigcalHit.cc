@@ -13,27 +13,21 @@
 #include "G4VVisManager.hh"
 
 G4Allocator<BETAG4BigcalHit> BETAG4BigcalHitAllocator;
-//_______________________________________________________//
-
+//______________________________________________________________________________
 BETAG4BigcalHit::BETAG4BigcalHit ( G4int id )
-      :fCellID ( id )
-      ,fDepositedEnergy ( 0 )
-      ,fPosition()
-      ,fRotation()
-      ,pLogicalVolume ( 0 )  {
-   fDepositedEnergy=0;
-   fNHits=0;
-   fTimingHit=false;
+      :fCellID ( id ),
+      fDepositedEnergy ( 0 ),
+      fPosition(),
+      fRotation(),
+      pLogicalVolume( 0 ),
+      fNHits( 0 ),
+      fTimingHit( false ) {
 }
-//_______________________________________________________//
-
+//______________________________________________________________________________
 BETAG4BigcalHit::~BETAG4BigcalHit() {
-;
 }
-//_______________________________________________________//
-
-void BETAG4BigcalHit::Draw()
-{
+//______________________________________________________________________________
+void BETAG4BigcalHit::Draw() {
 /*
   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 
@@ -61,9 +55,8 @@ void BETAG4BigcalHit::Draw()
   }
 */
 }
-
-const std::map<G4String,G4AttDef>* BETAG4BigcalHit::GetAttDefs() const
-{
+//______________________________________________________________________________
+const std::map<G4String,G4AttDef>* BETAG4BigcalHit::GetAttDefs() const {
    G4bool isNew;
    std::map<G4String,G4AttDef>* store
    = G4AttDefStore::GetInstance ( "BETAG4BigcalHit",isNew );
@@ -95,9 +88,8 @@ const std::map<G4String,G4AttDef>* BETAG4BigcalHit::GetAttDefs() const
 
    return store;
 }
-
-std::vector<G4AttValue>* BETAG4BigcalHit::CreateAttValues() const
-{
+//______________________________________________________________________________
+std::vector<G4AttValue>* BETAG4BigcalHit::CreateAttValues() const {
    std::vector<G4AttValue>* values = new std::vector<G4AttValue>;
 
    values->push_back ( G4AttValue ( "HitType", "ProtvinoCalorimeterHit", "" ) );
@@ -118,10 +110,11 @@ std::vector<G4AttValue>* BETAG4BigcalHit::CreateAttValues() const
 
    return values;
 }
+//______________________________________________________________________________
+void BETAG4BigcalHit::Print() {
 
-void BETAG4BigcalHit::Print()
-{
    G4cout << "  Cell[" << fCellID << "] " << fDepositedEnergy/MeV << " (MeV)" << G4endl;
 }
+//______________________________________________________________________________
 
 

@@ -1,6 +1,8 @@
 #include "BETADigitizer.hh"
+
 #include "G4SDManager.hh"
 #include "G4RunManager.hh"
+
 #include "BETAG4BigcalHit.hh"
 #include "BETAG4PMTHit.hh"
 #include "BigcalHit.h"
@@ -15,64 +17,56 @@
 //______________________________________________________________________________
 BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
 
+
    fSimulationManager = 0;
 
    fRandomNumberGenerator = InSANERunManager::GetRunManager()->GetRandom(); //new TRandom();
 
    fBeam = new HallCRasteredBeam();
 
-   fCherenkovADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );
-   fCherenkovTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "cerTDCs" );
-   fBigcalADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCs" );
-   fBigcalTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "bigcalTDCs" );
-   fHodoscopeADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "hodoscopeADCs" );
-   fHodoscopeTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "hodoscopeTDCs" );
-   fTrackerADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "trackerADCs" );
-   fTrackerTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "trackerTDCs" );
+   fCherenkovADCDC = 0;//new BETAG4DigiADCCollection ( GetName(), "cerADCs" );
+   fCherenkovTDCDC = 0;//new BETAG4DigiTDCCollection ( GetName(), "cerTDCs" );
+   fBigcalADCDC    = 0;//new BETAG4DigiADCCollection ( GetName(), "bigcalADCs" );
+   fBigcalTDCDC    = 0;//new BETAG4DigiTDCCollection ( GetName(), "bigcalTDCs" );
+   fHodoscopeADCDC = 0;//new BETAG4DigiADCCollection ( GetName(), "hodoscopeADCs" );
+   fHodoscopeTDCDC = 0;//new BETAG4DigiTDCCollection ( GetName(), "hodoscopeTDCs" );
+   fTrackerADCDC   = 0;//new BETAG4DigiADCCollection ( GetName(), "trackerADCs" );
+   fTrackerTDCDC   = 0;//new BETAG4DigiTDCCollection ( GetName(), "trackerTDCs" );
 
-   //   fSimulationManager = BETASimulationManager::GetInstance();
-   //  fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
+   collectionName.push_back("cerADCs" );
+   collectionName.push_back("cerTDCs" );
+   collectionName.push_back("bigcalADCs" );
+   collectionName.push_back("bigcalTDCs" );
+   collectionName.push_back("hodoscopeADCs");
+   collectionName.push_back("hodoscopeTDCs");
+   collectionName.push_back("trackerADCs");
+   collectionName.push_back("trackerTDCs");
+
+   //fSimulationManager = BETASimulationManager::GetInstance();
+   //fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
 
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
 
-   //if(fSimulationManager->fConstruction->usingBigcal)
-   fBigcalHCID  = SDman->GetCollectionID ( "BigCal/blockEdep" );
-   if(fCherenkovHCID<0) {
-      std::cout << "ERROR BIGCAL HCID < 0 " << std::endl;
-   }
+   fBigcalHC          = 0;
+   fBigcalADCHC       = 0;
+   fGasCherenkovHC    = 0;
+   fLuciteHodoscopeHC = 0;
+   fForwardTrackerHC  = 0;
 
-   //if(fSimulationManager->fConstruction->usingGasCherenkov)
+   fBigcalHCID     = SDman->GetCollectionID ( "BigCal/blockEdep" );
+   fBigcalADCHCID  = SDman->GetCollectionID ( "BigCalPMT/photons" );
    fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
-   if(fCherenkovHCID<0) {
-      std::cout << "ERROR Cherenkov HCID < 0 " << std::endl;
-   }
-
-   //if(fSimulationManager->fConstruction->usingForwardTracker)
-   fTrackerHCID  = SDman->GetCollectionID ( "ForwardTracker/tracking" );
-
-   //if(fSimulationManager->fConstruction->usingLuciteHodoscope)
+   fTrackerHCID    = SDman->GetCollectionID ( "ForwardTracker/tracking" );
    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
    fBigcalChannelThreshold = 5.0; //MeV
 
    fTrackerPhotonCounts = new int[132+132+72];
-   fTrackerTimings = new int[132+132+72];
-
-
+   fTrackerTimings      = new int[132+132+72];
 
 }
-//_______________________________________________________//
-
+//______________________________________________________________________________
 BETADigitizer::~BETADigitizer() {
-
    if(fCherenkovADCDC) delete fCherenkovADCDC;
    if(fCherenkovTDCDC) delete fCherenkovTDCDC;
    if(fBigcalADCDC) delete fBigcalADCDC;
@@ -81,126 +75,142 @@ BETADigitizer::~BETADigitizer() {
    if(fHodoscopeTDCDC) delete fHodoscopeTDCDC;
    if(fTrackerADCDC) delete fTrackerADCDC;
    if(fTrackerTDCDC) delete fTrackerTDCDC;
-   //if(fRandomNumberGenerator) delete fRandomNumberGenerator;
+   delete[] fTrackerPhotonCounts; 
+   delete[] fTrackerTimings; 
 }
-//_______________________________________________________//
-
+//______________________________________________________________________________
 void BETADigitizer::Digitize() {
+
+   fCherenkovADCDC = new BETAG4DigiADCCollection ( GetName(), "cerADCs" );
+   fCherenkovTDCDC = new BETAG4DigiTDCCollection ( GetName(), "cerTDCs" );
+   fBigcalADCDC    = new BETAG4DigiADCCollection ( GetName(), "bigcalADCs" );
+   fBigcalTDCDC    = new BETAG4DigiTDCCollection ( GetName(), "bigcalTDCs" );
+   fHodoscopeADCDC = new BETAG4DigiADCCollection ( GetName(), "hodoscopeADCs" );
+   fHodoscopeTDCDC = new BETAG4DigiTDCCollection ( GetName(), "hodoscopeTDCs" );
+   fTrackerADCDC   = new BETAG4DigiADCCollection ( GetName(), "trackerADCs" );
+   fTrackerTDCDC   = new BETAG4DigiTDCCollection ( GetName(), "trackerTDCs" );
+
+   StoreDigiCollection(fCherenkovADCDC);
+   StoreDigiCollection(fCherenkovTDCDC);
+   StoreDigiCollection(fBigcalADCDC);
+   StoreDigiCollection(fBigcalTDCDC);
+   StoreDigiCollection(fHodoscopeADCDC);
+   StoreDigiCollection(fHodoscopeTDCDC);
+   StoreDigiCollection(fTrackerADCDC);
+   StoreDigiCollection(fTrackerTDCDC);
+
    G4String colName;
    if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
 
    fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
    fBeamEvent = BETASimulationManager::GetInstance()->fEvents->BEAM;
 
-   G4SDManager* SDman = G4SDManager::GetSDMpointer();
-   G4RunManager* fRM = G4RunManager::GetRunManager();
+   G4SDManager* SDman          = G4SDManager::GetSDMpointer();
+   G4RunManager* fRM           = G4RunManager::GetRunManager();
    const G4Event* currentEvent = fRM->GetCurrentEvent();
-   G4HCofThisEvent* HCofEvent = currentEvent->GetHCofThisEvent();
+   G4HCofThisEvent* HCofEvent  = currentEvent->GetHCofThisEvent();
 
    BETAG4BigcalHit * bcHit;
    BETAG4PMTHit * cerHit;
+   BETAG4PMTHit * bcPhotonHit;
    BETAHodoscopePMTHit * lucHit;
    BETAForwardTrackerHit * ftHit;
-
    BETAG4DigiADC * aDigi;
    BETAG4DigiTDC * tDigi;
 
-   // Get Hits Collection pointers
-   if( fBigcalHCID != -1 ) 
-      fBigcalHC = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
-   if( fCherenkovHCID != -1 ) 
-      fGasCherenkovHC   = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-   //else  {
-   //   fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
-   //   fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-   //}
-
+   // Get Hits Collections
+   if( fBigcalHCID != -1 ) fBigcalHC = static_cast<BETAG4BigcalHitsCollection*>( HCofEvent->GetHC(fBigcalHCID) );
+   if( fBigcalADCHCID != -1 ) fBigcalADCHC = static_cast<BETAG4PMTHitsCollection*>( HCofEvent->GetHC(fBigcalADCHCID) );
+   if( fCherenkovHCID != -1 ) fGasCherenkovHC   = static_cast<BETAG4PMTHitsCollection*>( HCofEvent->GetHC(fCherenkovHCID) );
    if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAForwardTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
+   if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
 
    BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
 
-   /////////////////////////////////
-   /// Bigcal Hits
-   /////////////////////////////////
+   // -----------------------------------------------
+   // BigCal Hits
    G4double energyTemp = 0.0;
    G4int deltaT = 10;//ns
    tDigi=0;
    int fNADC=0;
    int fNTDC=0;
-
    G4double bigcalTDCChannelScaleFactor = 10.0;
    G4double cherenkovTDCChannelScaleFactor = 10.0;
+   if(fBigcalHC) {
+      int currentGroup = 0;
+      for( int gg =0;gg<1744;gg++ ) {
 
-   int currentGroup = 0;
-   for( int gg =0;gg<1744;gg++ ) {
+         bcHit      = (*fBigcalHC)[gg];
+         energyTemp = bcHit->GetDepositedEnergy();
 
-      bcHit      = (*fBigcalHC)[gg];
-      energyTemp = bcHit->GetDepositedEnergy();
+         if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold ) { 
+            // Record Bigcal Data !
 
-      if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold ) { 
-         // Record Bigcal Data !
+            aDigi = new BETAG4DigiADC(gg+1);
+            fNADC++;
+            aDigi->fTrueValue = energyTemp;
+            // Divide the energy deposited by the calibration coefficient so that 
+            // in reconstruction, we can multiply by the calibration coefficient.
+            aDigi->fADCValue = 
+               (float)energyTemp/((float) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
+            fBigcalADCDC->insert ( aDigi );
 
-         aDigi = new BETAG4DigiADC(gg+1);
-         fNADC++;
-         aDigi->fTrueValue = energyTemp;
-         // Divide the energy deposited by the calibration coefficient so that 
-         // in reconstruction, we can multiply by the calibration coefficient.
-         aDigi->fADCValue = 
-            (float)energyTemp/((float) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
-         fBigcalADCDC->insert ( aDigi );
+            //       std::cout << aDigi->fChannelNumber +1 <<  " has calib coef = " 
+            //                 << bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber) << "\n";
+            //       std::cout << " digi value = " << aDigi->fADCValue << " from energy value " << energyTemp << "\n";
 
-         //       std::cout << aDigi->fChannelNumber +1 <<  " has calib coef = " 
-         //                 << bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber) << "\n";
-         //       std::cout << " digi value = " << aDigi->fADCValue << " from energy value " << energyTemp << "\n";
-
-         // Fill the "TDC hits" as if there was a discriminator fire with the time that was recorded
-         // The hits are summed for the "group of 8" 
-         // since we loop through all blocks, we just add a hit indexed by group if there was a hit
-         if(bcHit->fTimingHit) {
-            // we create an energy weighted time within some interval deltat
-            if(currentGroup==0 || bigcalGeoCalc->GetGroupNumber(gg+1) != currentGroup || bcHit->fTiming - tDigi->fTDCValue > deltaT ) {
-               if(tDigi) fBigcalTDCDC->insert ( tDigi );
-               currentGroup = bigcalGeoCalc->GetGroupNumber(gg+1);
-               /*      tDigi = new(fBigcalTDCDC[fNTDC]) BETAG4DigiTDC(currentGroup);*/
-               tDigi = new BETAG4DigiTDC(currentGroup);
-               tDigi->fADCValue += energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
-               tDigi->fTrueValue += bcHit->fTiming;
-               tDigi->fNumberOfHits++;
-               tDigi->fTDCValue = (bcHit->fTiming*bigcalTDCChannelScaleFactor)/(tDigi->fNumberOfHits);
-            } else {
-               tDigi->fADCValue += energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
-               tDigi->fTrueValue += bcHit->fTiming;
-               tDigi->fNumberOfHits++;
-               tDigi->fTDCValue = (bcHit->fTiming*bigcalTDCChannelScaleFactor)/(tDigi->fNumberOfHits);
+            // Fill the "TDC hits" as if there was a discriminator fire with the time that was recorded
+            // The hits are summed for the "group of 8" 
+            // since we loop through all blocks, we just add a hit indexed by group if there was a hit
+            if(bcHit->fTimingHit) {
+               // we create an energy weighted time within some interval deltat
+               if(currentGroup==0 || bigcalGeoCalc->GetGroupNumber(gg+1) != currentGroup || bcHit->fTiming - tDigi->fTDCValue > deltaT ) {
+                  if(tDigi) fBigcalTDCDC->insert ( tDigi );
+                  currentGroup = bigcalGeoCalc->GetGroupNumber(gg+1);
+                  /*      tDigi = new(fBigcalTDCDC[fNTDC]) BETAG4DigiTDC(currentGroup);*/
+                  tDigi = new BETAG4DigiTDC(currentGroup);
+                  tDigi->fADCValue += energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
+                  tDigi->fTrueValue += bcHit->fTiming;
+                  tDigi->fNumberOfHits++;
+                  tDigi->fTDCValue = (bcHit->fTiming*bigcalTDCChannelScaleFactor)/(tDigi->fNumberOfHits);
+               } else {
+                  tDigi->fADCValue += energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
+                  tDigi->fTrueValue += bcHit->fTiming;
+                  tDigi->fNumberOfHits++;
+                  tDigi->fTDCValue = (bcHit->fTiming*bigcalTDCChannelScaleFactor)/(tDigi->fNumberOfHits);
+               }
             }
          }
       }
+      if(tDigi) if( tDigi->fChannelNumber == (G4int)bigcalGeoCalc->GetGroupNumber(1744) ) fBigcalTDCDC->insert ( tDigi );
    }
-   if(tDigi) if( tDigi->fChannelNumber == (G4int)bigcalGeoCalc->GetGroupNumber(1744) ) fBigcalTDCDC->insert ( tDigi );
 
-   // Loop over Cherenkov Hits
-      /*    std::cout << "tube number: " << cerHit->fTubeNumber << "\n";*/
-   for ( int i=0 ; i < fGasCherenkovHC->entries();i++ ) {
-      cerHit            = ( *fGasCherenkovHC )[i];
-      aDigi             = new BETAG4DigiADC(cerHit->fTubeNumber);
-      aDigi->fTrueValue = cerHit->GetNumberOfPhotons();
-      //aDigi->fADCValue  = 100.*cerHit->GetNumberOfPhotoElectrons();
-      aDigi->fADCValue  = fRandomNumberGenerator->Gaus( 100.*cerHit->GetNumberOfPhotoElectrons(), 
-                                                        TMath::Sqrt(cerHit->GetNumberOfPhotoElectrons())*50.0);
-      fCherenkovADCDC->insert ( aDigi );
-      if(cerHit->fTimingHit) {
-         tDigi             = new BETAG4DigiTDC(cerHit->fTubeNumber);
-         tDigi->fTDCValue  = cherenkovTDCChannelScaleFactor*cerHit->fTiming;
-         tDigi->fTrueValue = cerHit->fTiming;
-         tDigi->fADCValue  = aDigi->fADCValue;
-         tDigi->fNumberOfHits++;
-         fCherenkovTDCDC->insert ( tDigi );
+   // -----------------------------
+   // Gas Cherenkov
+   if(fGasCherenkovHC) {
+      // Loop over Cherenkov Hits
+      for ( int i=0 ; i < fGasCherenkovHC->entries();i++ ) {
+         cerHit            = ( *fGasCherenkovHC )[i];
+         aDigi             = new BETAG4DigiADC(cerHit->fTubeNumber);
+         aDigi->fTrueValue = cerHit->GetNumberOfPhotons();
+         //aDigi->fADCValue  = 100.*cerHit->GetNumberOfPhotoElectrons();
+         aDigi->fADCValue  = fRandomNumberGenerator->Gaus( 100.*cerHit->GetNumberOfPhotoElectrons(), 
+               TMath::Sqrt(cerHit->GetNumberOfPhotoElectrons())*50.0);
+         fCherenkovADCDC->insert ( aDigi );
+         if(cerHit->fTimingHit) {
+            tDigi             = new BETAG4DigiTDC(cerHit->fTubeNumber);
+            tDigi->fTDCValue  = cherenkovTDCChannelScaleFactor*cerHit->fTiming;
+            tDigi->fTrueValue = cerHit->fTiming;
+            tDigi->fADCValue  = aDigi->fADCValue;
+            tDigi->fNumberOfHits++;
+            fCherenkovTDCDC->insert ( tDigi );
+         }
       }
    }
 
-
-   if( fHodoscopeHCID != -1 ) {
-      fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
+   // -----------------------------
+   // Lucite Hodoscope 
+   if( fLuciteHodoscopeHC ) {
       // Loop over Hodoscope Hits
       for ( int i=0 ; i < fLuciteHodoscopeHC->entries();i++ ) {
          lucHit =  ( *fLuciteHodoscopeHC )[i];
@@ -219,11 +229,12 @@ void BETADigitizer::Digitize() {
       }
    }
 
-   /// Tracker digitization 
+   // -----------------------------
+   // Forward Tracker  
    for(int i = 0;i<132+132+72;i++){
       fTrackerPhotonCounts[i] = 0;
    } 
-   if( fTrackerHCID != -1 ) {
+   if( fForwardTrackerHC ) {
       // Loop over Tracker Hit Collection 
       for ( int i=0 ; i < fForwardTrackerHC->entries();i++ ) {
          ftHit =  ( *fForwardTrackerHC )[i];
@@ -244,159 +255,23 @@ void BETADigitizer::Digitize() {
 
 }
 //__________________________________________________________________
-
 void BETADigitizer::ReadOut() {
-   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
 
+   if(!fSimulationManager ) fSimulationManager = BETASimulationManager::GetInstance();
    BETAG4DigiADC * aDigi;
    BETAG4DigiTDC * tDigi;
    fBetaEvent = BETASimulationManager::GetInstance()->fEvents->BETA;
    fBeamEvent = BETASimulationManager::GetInstance()->fEvents->BEAM;
    fMCEvent   = BETASimulationManager::GetInstance()->fEvents->MC;
 
-   // Get Digi Collection pointers
-   //   if( fBigcal != -1 )    fBigcalHC          = (BETAG4BigcalHitsCollection* ) ( HCofEvent->GetHC ( fBigcalHCID ) );
-   //   if( fCherenkovHCID != -1 ) fGasCherenkovHC    = (BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-   //   if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
-   //   if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAForwardTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
-   // Loop over Bigcal ADC and TDC Digi collections
-   // We now make it look like class AnalyzerToInSANE::Process()
+   //Print();
 
-   ////////////////////////
-   /// FORWARD TRACKER
-   //
-   ForwardTrackerEvent * ftEvent = fSimulationManager->fEvents->BETA->fForwardTrackerEvent;
-   ftEvent->ClearEvent("C");
-   TClonesArray  &trackerHits = *(ftEvent->fTrackerHits);
-   ftEvent->fNumberOfHits = 0;
-   ftEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
-   ftEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
-
-   ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
-
-   ForwardTrackerHit *aFThit = 0;
-   for(int i = 0; i < fTrackerTDCDC->entries() ; i++ ) {
-      tDigi = (*fTrackerTDCDC)[i];
-      aFThit = new( trackerHits[ftEvent->fNumberOfHits] ) ForwardTrackerHit(); 
-      aFThit->fChannel             = tDigi->fChannelNumber+1;
-      aFThit->fLevel               = 1; // only tdc hits
-      aFThit->fHitNumber           = ftEvent->fNumberOfHits;
-      //aFThit->fTDC                 = tDigi->fTrueValue;
-      aFThit->fTDC                 = tDigi->fTDCValue + fSimulationManager->fTrackerDetector->fTypicalTDCPeak + 
-         fRandomNumberGenerator->Gaus(0,fSimulationManager->fTrackerDetector->fTypicalTDCPeakWidth/2.0);
-      aFThit->fScintLayer          = ftgeocalc->GetLayerNumber(aFThit->fChannel);
-      aFThit->fRow                 = ftgeocalc->GetScintNumber(aFThit->fChannel);
-      if(aFThit->fScintLayer == 0) aFThit->fPositionCoordinate  = 1; // x coord
-      else aFThit->fPositionCoordinate  = 2; // ycoord
-
-      //      tDigi->Print();
-      //      aFThit->Print(); 
-      ftEvent->fNumberOfHits++;    
-   }  
-
-   //////////////////////
-   /// LUCITE HODOSCOPE
-   // only timing information
-   LuciteHodoscopeEvent * lhEvent = fSimulationManager->fEvents->BETA->fLuciteHodoscopeEvent;
-   Int_t lucpedval = fSimulationManager->fHodoscopeDetector->fTypicalPedestal;
-   Int_t luctdcval = fSimulationManager->fHodoscopeDetector->fTypicalTDCPeak ;
-   lhEvent->ClearEvent("C");
-   TClonesArray &lucHits = *(lhEvent->fLuciteHits);
-   LuciteHodoscopeHit * aLUChit;
-
-   lhEvent->fNumberOfHits = 0;
-   lhEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
-   lhEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
-
-   // It was assumed in the Fortran code that both sides would have a hits
-   // This is probably not a good idea so early
-   /// \note Lucite indices go from 1 to 56 where 1,3,5,... are positive sides, and 2,4,6... are negative
-   for(int i=0;i<fHodoscopeTDCDC->entries();i++) {
-      tDigi = (*fHodoscopeTDCDC)[i];
-      aLUChit = new(lucHits[lhEvent->fNumberOfHits]) LuciteHodoscopeHit();
-      aLUChit->fRow       = (tDigi->fChannelNumber-1)/2 +1;
-      aLUChit->fPMTNumber =(tDigi->fChannelNumber);
-      aLUChit->fADC       = tDigi->fADCValue + lucpedval +
-         fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalPedestalWidth/2.0); ;
-      aLUChit->fTDC       = tDigi->fTDCValue + luctdcval +
-         fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalTDCPeakWidth/2.0);  ;
-      aLUChit->fPosition  = 0;
-      aLUChit->fLevel     = 1;
-      lhEvent->fNumberOfHits++;
-      //     aLUChit = new(lucHits[lhEvent->fNumberOfHits]) LuciteHodoscopeHit();
-      //     aLUChit->fRow       = luc_row[i];
-      //     aLUChit->fPMTNumber = (luc_row[i]-1)*2+2;
-      //     aLUChit->fADC       = ladc_neg[i];
-      //     aLUChit->fTDC       = ltdc_neg[i];
-      //     aLUChit->fPosition  = luc_y[i];
-      //     aLUChit->fLevel     = 1;
-      //     lhEvent->fNumberOfHits++;
-   }
-
-   //////////////////////
-   /// GAS CHERENKOV
-   // We count the number of hits by TDC hits
-   GasCherenkovEvent * gcEvent = fSimulationManager->fEvents->BETA->fGasCherenkovEvent;
-   Int_t cerpedval = fSimulationManager->fCherenkovDetector->fTypicalPedestal;
-   Int_t certdcval = fSimulationManager->fCherenkovDetector->fTypicalTDCPeak ;
-
-   gcEvent->ClearEvent("C");
-   gcEvent->fNumberOfHits = 0;
-   TClonesArray &cherenkovHits = *(gcEvent->fGasCherenkovHits);
-   GasCherenkovHit * aCERhit;
-   //cherenkovHits.Delete();
-
-   gcEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
-   gcEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
-
-   /** Gas Cherenkov: Inside the tdc hit loop
-    *  we add a hit for the cherenkov each time
-    *  the mirror numbers are the same. 
-    */
-
-   for( int j=0; j<fCherenkovADCDC->entries(); j++ ) {
-      aDigi = (*fCherenkovADCDC)[j];
-      aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
-      aCERhit->fTDC           = 0;
-      aCERhit->fLevel         = 0; /// Level zero is just ADC data
-      //std::cout << aDigi->fTrueValue << std::endl;
-      //std::cout << aDigi->fADCValue << std::endl;
-      //aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,2.5*TMath::Sqrt(aDigi->fADCValue)) + cerpedval +
-      //aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,500.0/2.0) + cerpedval +
-      aCERhit->fADC           = aDigi->fADCValue + cerpedval + fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth/2.0); 
-      //std::cout << aCERhit->fADC << std::endl;
-      aCERhit->fHitNumber     = gcEvent->fNumberOfHits;;
-      aCERhit->fMirrorNumber  = aDigi->fChannelNumber;
-      aDigi->fADCValue        = aCERhit->fADC;
-      gcEvent->fNumberOfHits++;
-   }
-
-   for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
-      for( int j=0; j<fCherenkovADCDC->entries(); j++ ) {
-         aDigi = (*fCherenkovADCDC)[j];
-         tDigi = (*fCherenkovTDCDC)[i];
-         if( aDigi->fChannelNumber == tDigi->fChannelNumber ) {
-            //       tDigi->Print();
-
-            aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
-            aCERhit->fTDC          = tDigi->fTDCValue + certdcval +
-               fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalTDCPeakWidth/2.0); 
-            aCERhit->fADC          = aDigi->fADCValue ;
-            aCERhit->fLevel        = 1; /// Level 1 is TDC data with ADC data
-            aCERhit->fHitNumber    = gcEvent->fNumberOfHits;
-            aCERhit->fMirrorNumber = tDigi->fChannelNumber ;
-            gcEvent->fNumberOfHits++;
-         }
-      }
-   }
-
-   ///////////////////////////
-   /// BIGCAL
-   ///////////////////////////
+   // ----------------------------------------------------------------
+   // BIGCAL
    BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
-   BigcalEvent * bcEvent = fBetaEvent->fBigcalEvent;
-
+   BigcalEvent              * bcEvent       = fBetaEvent->fBigcalEvent;
    bcEvent->ClearEvent("C");
+
    BigcalHit * trigGroupBigcalHit[263][128]; // 128 is arbitrary 32*2*2
    Int_t nTrigGrouphits[263];
    for(int i = 0; i<263;i++) nTrigGrouphits[i]=0;
@@ -530,6 +405,135 @@ void BETADigitizer::ReadOut() {
    //   }
    //   aBetaEvent->ClearEvent();
 
+   ////////////////////////
+   /// FORWARD TRACKER
+   //
+   ForwardTrackerEvent * ftEvent = fSimulationManager->fEvents->BETA->fForwardTrackerEvent;
+   ftEvent->ClearEvent("C");
+   TClonesArray  &trackerHits = *(ftEvent->fTrackerHits);
+   ftEvent->fNumberOfHits = 0;
+   ftEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
+   ftEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
+
+   ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
+
+   ForwardTrackerHit *aFThit = 0;
+   for(int i = 0; i < fTrackerTDCDC->entries() ; i++ ) {
+      tDigi = (*fTrackerTDCDC)[i];
+      aFThit = new( trackerHits[ftEvent->fNumberOfHits] ) ForwardTrackerHit(); 
+      aFThit->fChannel             = tDigi->fChannelNumber+1;
+      aFThit->fLevel               = 1; // only tdc hits
+      aFThit->fHitNumber           = ftEvent->fNumberOfHits;
+      //aFThit->fTDC                 = tDigi->fTrueValue;
+      aFThit->fTDC                 = tDigi->fTDCValue + fSimulationManager->fTrackerDetector->fTypicalTDCPeak + 
+         fRandomNumberGenerator->Gaus(0,fSimulationManager->fTrackerDetector->fTypicalTDCPeakWidth/2.0);
+      aFThit->fScintLayer          = ftgeocalc->GetLayerNumber(aFThit->fChannel);
+      aFThit->fRow                 = ftgeocalc->GetScintNumber(aFThit->fChannel);
+      if(aFThit->fScintLayer == 0) aFThit->fPositionCoordinate  = 1; // x coord
+      else aFThit->fPositionCoordinate  = 2; // ycoord
+
+      //      tDigi->Print();
+      //      aFThit->Print(); 
+      ftEvent->fNumberOfHits++;    
+   }  
+
+   //////////////////////
+   /// LUCITE HODOSCOPE
+   // only timing information
+   LuciteHodoscopeEvent * lhEvent = fSimulationManager->fEvents->BETA->fLuciteHodoscopeEvent;
+   Int_t lucpedval = fSimulationManager->fHodoscopeDetector->fTypicalPedestal;
+   Int_t luctdcval = fSimulationManager->fHodoscopeDetector->fTypicalTDCPeak ;
+   lhEvent->ClearEvent("C");
+   TClonesArray &lucHits = *(lhEvent->fLuciteHits);
+   LuciteHodoscopeHit * aLUChit;
+
+   lhEvent->fNumberOfHits = 0;
+   lhEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
+   lhEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
+
+   // It was assumed in the Fortran code that both sides would have a hits
+   // This is probably not a good idea so early
+   /// \note Lucite indices go from 1 to 56 where 1,3,5,... are positive sides, and 2,4,6... are negative
+   for(int i=0;i<fHodoscopeTDCDC->entries();i++) {
+      tDigi = (*fHodoscopeTDCDC)[i];
+      aLUChit = new(lucHits[lhEvent->fNumberOfHits]) LuciteHodoscopeHit();
+      aLUChit->fRow       = (tDigi->fChannelNumber-1)/2 +1;
+      aLUChit->fPMTNumber =(tDigi->fChannelNumber);
+      aLUChit->fADC       = tDigi->fADCValue + lucpedval +
+         fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalPedestalWidth/2.0); ;
+      aLUChit->fTDC       = tDigi->fTDCValue + luctdcval +
+         fRandomNumberGenerator->Gaus(0,fSimulationManager->fHodoscopeDetector->fTypicalTDCPeakWidth/2.0);  ;
+      aLUChit->fPosition  = 0;
+      aLUChit->fLevel     = 1;
+      lhEvent->fNumberOfHits++;
+      //     aLUChit = new(lucHits[lhEvent->fNumberOfHits]) LuciteHodoscopeHit();
+      //     aLUChit->fRow       = luc_row[i];
+      //     aLUChit->fPMTNumber = (luc_row[i]-1)*2+2;
+      //     aLUChit->fADC       = ladc_neg[i];
+      //     aLUChit->fTDC       = ltdc_neg[i];
+      //     aLUChit->fPosition  = luc_y[i];
+      //     aLUChit->fLevel     = 1;
+      //     lhEvent->fNumberOfHits++;
+   }
+
+   // --------------------------------------
+   // GAS CHERENKOV
+   // We count the number of hits by TDC hits
+   GasCherenkovEvent * gcEvent = fSimulationManager->fEvents->BETA->fGasCherenkovEvent;
+   Int_t cerpedval = fSimulationManager->fCherenkovDetector->fTypicalPedestal;
+   Int_t certdcval = fSimulationManager->fCherenkovDetector->fTypicalTDCPeak ;
+
+   gcEvent->ClearEvent("C");
+   gcEvent->fNumberOfHits = 0;
+   TClonesArray &cherenkovHits = *(gcEvent->fGasCherenkovHits);
+   GasCherenkovHit * aCERhit;
+   //cherenkovHits.Delete();
+
+   gcEvent->fRunNumber    =  fSimulationManager->GetRunNumber();
+   gcEvent->fEventNumber  =  fSimulationManager->GetEventNumber();
+
+   /** Gas Cherenkov: Inside the tdc hit loop
+    *  we add a hit for the cherenkov each time
+    *  the mirror numbers are the same. 
+    */
+
+   for( int j=0; j<fCherenkovADCDC->entries(); j++ ) {
+      aDigi = (*fCherenkovADCDC)[j];
+      aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
+      aCERhit->fTDC           = 0;
+      aCERhit->fLevel         = 0; /// Level zero is just ADC data
+      //std::cout << aDigi->fTrueValue << std::endl;
+      //std::cout << aDigi->fADCValue << std::endl;
+      //aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,2.5*TMath::Sqrt(aDigi->fADCValue)) + cerpedval +
+      //aCERhit->fADC           = fRandomNumberGenerator->Gaus( aDigi->fADCValue,500.0/2.0) + cerpedval +
+      aCERhit->fADC           = aDigi->fADCValue + cerpedval + fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalPedestalWidth/2.0); 
+      //std::cout << aCERhit->fADC << std::endl;
+      aCERhit->fHitNumber     = gcEvent->fNumberOfHits;;
+      aCERhit->fMirrorNumber  = aDigi->fChannelNumber;
+      aDigi->fADCValue        = aCERhit->fADC;
+      gcEvent->fNumberOfHits++;
+   }
+
+   for( int i=0; i<fCherenkovTDCDC->entries(); i++ ) { // TDC loop
+      for( int j=0; j<fCherenkovADCDC->entries(); j++ ) {
+         aDigi = (*fCherenkovADCDC)[j];
+         tDigi = (*fCherenkovTDCDC)[i];
+         if( aDigi->fChannelNumber == tDigi->fChannelNumber ) {
+            //       tDigi->Print();
+
+            aCERhit = new(cherenkovHits[gcEvent->fNumberOfHits]) GasCherenkovHit();
+            aCERhit->fTDC          = tDigi->fTDCValue + certdcval +
+               fRandomNumberGenerator->Gaus(0,fSimulationManager->fCherenkovDetector->fTypicalTDCPeakWidth/2.0); 
+            aCERhit->fADC          = aDigi->fADCValue ;
+            aCERhit->fLevel        = 1; /// Level 1 is TDC data with ADC data
+            aCERhit->fHitNumber    = gcEvent->fNumberOfHits;
+            aCERhit->fMirrorNumber = tDigi->fChannelNumber ;
+            gcEvent->fNumberOfHits++;
+         }
+      }
+   }
+
+
    /// _____ BEAM  ______
    TClonesArray * fThrownParticles = fMCEvent->fThrownParticles;
    if(fThrownParticles->GetEntries() > 0){
@@ -566,6 +570,42 @@ void BETADigitizer::ReadOut() {
 void BETADigitizer::DigitizePedestals(){
    G4String colName;
 
+   if(fCherenkovADCDC) delete fCherenkovADCDC;
+   if(fCherenkovTDCDC) delete fCherenkovTDCDC;
+   if(fBigcalADCDC)    delete fBigcalADCDC;
+   if(fBigcalTDCDC)    delete fBigcalTDCDC;
+   if(fHodoscopeADCDC) delete fHodoscopeADCDC;
+   if(fHodoscopeTDCDC) delete fHodoscopeTDCDC;
+   if(fTrackerADCDC)   delete fTrackerADCDC;
+   if(fTrackerTDCDC)   delete fTrackerTDCDC;
+
+   //fCherenkovADCDC = 0;
+   //fCherenkovTDCDC = 0;
+   //fBigcalADCDC    = 0;
+   //fBigcalTDCDC    = 0;
+   //fHodoscopeADCDC = 0;
+   //fHodoscopeTDCDC = 0;
+   //fTrackerADCDC   = 0;
+   //fTrackerTDCDC   = 0;
+
+   fCherenkovADCDC = new BETAG4DigiADCCollection ( GetName(), "cerADCs" );
+   fCherenkovTDCDC = new BETAG4DigiTDCCollection ( GetName(), "cerTDCs" );
+   fBigcalADCDC    = new BETAG4DigiADCCollection ( GetName(), "bigcalADCs" );
+   fBigcalTDCDC    = new BETAG4DigiTDCCollection ( GetName(), "bigcalTDCs" );
+   fHodoscopeADCDC = new BETAG4DigiADCCollection ( GetName(), "hodoscopeADCs" );
+   fHodoscopeTDCDC = new BETAG4DigiTDCCollection ( GetName(), "hodoscopeTDCs" );
+   fTrackerADCDC   = new BETAG4DigiADCCollection ( GetName(), "trackerADCs" );
+   fTrackerTDCDC   = new BETAG4DigiTDCCollection ( GetName(), "trackerTDCs" );
+
+   //StoreDigiCollection(fCherenkovADCDC);
+   //StoreDigiCollection(fCherenkovTDCDC);
+   //StoreDigiCollection(fBigcalADCDC);
+   //StoreDigiCollection(fBigcalTDCDC);
+   //StoreDigiCollection(fHodoscopeADCDC);
+   //StoreDigiCollection(fHodoscopeTDCDC);
+   //StoreDigiCollection(fTrackerADCDC);
+   //StoreDigiCollection(fTrackerTDCDC);
+
    BETAG4BigcalHit     * bcHit;
    BETAG4PMTHit        * cerHit;
    BETAHodoscopePMTHit * lucHit;
@@ -574,12 +614,10 @@ void BETADigitizer::DigitizePedestals(){
    BETAG4DigiADC * aDigi;
    BETAG4DigiTDC * tDigi;
 
-   /// 
    for ( int gg = 0; gg<1744; gg++ ) {
       aDigi = new BETAG4DigiADC(gg+1);
       fBigcalADCDC->insert ( aDigi );
    }
-
    for ( int gg = 0; gg<12; gg++ ) {
       aDigi = new BETAG4DigiADC(gg+1);
       fCherenkovADCDC->insert ( aDigi );
@@ -588,6 +626,8 @@ void BETADigitizer::DigitizePedestals(){
       aDigi = new BETAG4DigiADC(gg+1);
       fHodoscopeADCDC->insert ( aDigi );
    }
+
+
 }
 //__________________________________________________________________
 
@@ -595,35 +635,37 @@ void BETADigitizer::Clear() {
 
    BETASimulationManager::GetInstance()->fEvents->ClearEvent();
 
-   delete fCherenkovADCDC;
-   fCherenkovADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );
-   delete fCherenkovTDCDC;
-   fCherenkovTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "cerTDCs" );
-   delete fBigcalADCDC;
-   fBigcalADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCs" );
-   delete fBigcalTDCDC;
-   fBigcalTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "bigcalTDCs" );
-   delete fHodoscopeADCDC;
-   fHodoscopeADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "hodoscopeADCs" );
-   delete fHodoscopeTDCDC;
-   fHodoscopeTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "hodoscopeTDCs" );
-   delete fTrackerADCDC;
-   fTrackerADCDC =
-      new BETAG4DigiADCCollection ( this->GetName(), "trackerADCs" );
-   delete fTrackerTDCDC;
-   fTrackerTDCDC =
-      new BETAG4DigiTDCCollection ( this->GetName(), "trackerTDCs" );
+   //delete fCherenkovADCDC;
+   //fCherenkovADCDC =
+   //   new BETAG4DigiADCCollection ( this->GetName(), "cerADCs" );
+   //delete fCherenkovTDCDC;
+   //fCherenkovTDCDC =
+   //   new BETAG4DigiTDCCollection ( this->GetName(), "cerTDCs" );
+   //delete fBigcalADCDC;
+   //fBigcalADCDC =
+   //   new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCs" );
+   //delete fBigcalTDCDC;
+   //fBigcalTDCDC =
+   //   new BETAG4DigiTDCCollection ( this->GetName(), "bigcalTDCs" );
+   //delete fHodoscopeADCDC;
+   //fHodoscopeADCDC =
+   //   new BETAG4DigiADCCollection ( this->GetName(), "hodoscopeADCs" );
+   //delete fHodoscopeTDCDC;
+   //fHodoscopeTDCDC =
+   //   new BETAG4DigiTDCCollection ( this->GetName(), "hodoscopeTDCs" );
+   //delete fTrackerADCDC;
+   //fTrackerADCDC =
+   //   new BETAG4DigiADCCollection ( this->GetName(), "trackerADCs" );
+   //delete fTrackerTDCDC;
+   //fTrackerTDCDC =
+   //   new BETAG4DigiTDCCollection ( this->GetName(), "trackerTDCs" );
 }
 //__________________________________________________________________
 
 void BETADigitizer::Print() {
    std::cout << "++ BETA Digitizer ++\n";
+   fCherenkovADCDC->PrintAllDigi() ;
+   fCherenkovTDCDC->PrintAllDigi()    ;
 
    std::cout << "   Bigcal    (" << fBigcalHCID << ")   Entries : " 
       << fBigcalADCDC->entries() << " adc, " 
@@ -631,7 +673,6 @@ void BETADigitizer::Print() {
    std::cout << "   Cherenkov (" << fCherenkovHCID << ")  Entries : " 
       << fCherenkovADCDC->entries() << " adc, " 
       << fCherenkovTDCDC->entries() << " tdc.\n";
-
    std::cout << "   Hodoscope (" << fHodoscopeHCID << ")  Entries : " << fHodoscopeADCDC->entries() << " adc, " << fHodoscopeTDCDC->entries() << " tdc.\n";
    std::cout << "   Tracker   (" << fTrackerHCID << ")  Entries : " << fTrackerADCDC->entries() << " adc, " << fTrackerTDCDC->entries() << " tdc.\n";
 }
