@@ -133,16 +133,13 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
       bool usingFakePlaneAtForwardTracker;
 
 
-
-
-
       /** @name BigCal construction.
        *  @{
        */
       void DestroyBigCal();
       void ConstructBigCal();
-
       bool                        usingBigcal;
+
       G4VPVParameterisation     * fCellParamTop;
       G4VPVParameterisation     * fCellParamBottom;
       G4VSolid                  * fCalorimeterSolidTop;
@@ -166,23 +163,43 @@ class BETADetectorConstruction : public G4VUserDetectorConstruction {
       /** @name Cherenkov Construction.
        *  @{
        */
+      void DestroyCherenkov();
       void ConstructCherenkov();
-      bool usingGasCherenkov;
+
+      bool                usingGasCherenkov;
+
+      G4VSolid          * fCerSnout_solid;
+      G4VSolid          * fCerTankFront_solid   ;
+      G4VSolid          * fCerTankPMTfar_solid  ;
+      G4VSolid          * fCerTankPMTnear_solid ;
+      G4VSolid          * fCerRemoveBox_solid   ;
+      G4VSolid          * fCerPMTmountFar_solid ;
+      G4VSolid          * fCerPMTmountNear_solid;
+      G4VSolid          * fCerTank_solid;
+      G4VSolid          * fCerTankBox_solid;
+
+      G4RotationMatrix * fCerOldCoordRot;
+      G4RotationMatrix * fCerNoRot     ;
+      G4RotationMatrix * fCerXRotNear  ;
+      G4RotationMatrix * fCerXRotFar   ;
+      G4RotationMatrix * fCerPMTfarROT ;
+      G4RotationMatrix * fCerPMTnearROT;
+
       G4VPhysicalVolume * cherenkovTank_phys;
-      G4LogicalVolume*   tank_log; 
-      G4LogicalVolume * cherenkovContainer_log;
-      G4LogicalVolume * fCerFrontWindow_log;
-      G4LogicalVolume * fCerBackWindow_log;
-      G4LogicalVolume * AlCans_log;
-      G4LogicalVolume * fCerFrameTopBottom_log;
-      G4LogicalVolume * fCerToroidalMirror_log;
-      G4LogicalVolume * fCerSphericalMirror_log;
-      G4LogicalVolume * container_log;
-      G4LogicalVolume * MUPipe_log;
-      G4LogicalVolume * pmtFace_log;
+      G4LogicalVolume   * tank_log;
+      G4LogicalVolume   * cherenkovContainer_log;
+      G4LogicalVolume   * fCerFrontWindow_log;
+      G4LogicalVolume   * fCerBackWindow_log;
+      G4LogicalVolume   * AlCans_log;
+      G4LogicalVolume   * fCerFrameTopBottom_log;
+      G4LogicalVolume   * fCerToroidalMirror_log;
+      G4LogicalVolume   * fCerSphericalMirror_log;
+      G4LogicalVolume   * container_log;
+      G4LogicalVolume   * MUPipe_log;
+      G4LogicalVolume   * pmtFace_log;
       //@}
 
-      /** @name Forwart Tracker Construction.
+      /** @name Forward Tracker Construction.
        *  @{
        */
       void ConstructForwardTracker();

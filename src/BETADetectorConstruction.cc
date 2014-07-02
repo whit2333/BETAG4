@@ -73,14 +73,14 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
 
    // These should be in the cherenkov construction
    // alpha and beta for mirrors
-   alpha2 = -14.0*pi/180.0; //16.35*pi/180,   // 14
-   beta2  = -32.5*pi/180.0;//31.7*pi/180;  // 32.5
-   alpha4 = -7.50000048*pi/180.0;//8.75*pi/180; //7.50000048
-   beta4  = -33.0*pi/180.0; // 32.62*pi/180;  // 33.0
-   alpha6 = 7.50000048*pi/180.0; //-8.75*pi/180; //trial1: 9.1 //-.50000048
-   beta6  = -32.5*pi/180.0;//32.25*pi/180; // trial2: 32.25 //32.5
-   alpha8 = 14.0*pi/180.0;//-16.35*pi/180; // -14
-   beta8  = -32.5*pi/180.0;//31.7*pi/180; //32.5*
+   alpha2 = -14.0*pi/180.0;       // 16.35*pi/180,  // 14
+   beta2  = -32.5*pi/180.0;       // 31.7*pi/180;   // 32.5
+   alpha4 = -7.50000048*pi/180.0; // 8.75*pi/180;   // 7.50000048
+   beta4  = -33.0*pi/180.0;       // 32.62*pi/180;  // 33.0
+   alpha6 = 7.50000048*pi/180.0;  // -8.75*pi/180;  // trial1: 9.1   // -.50000048
+   beta6  = -32.5*pi/180.0;       // 32.25*pi/180;  // trial2: 32.25 // 32.5
+   alpha8 = 14.0*pi/180.0;        // -16.35*pi/180; // -14
+   beta8  = -32.5*pi/180.0;       // 31.7*pi/180;   // 32.5*
 
    alpha1 = -3.5*pi/180.0;
    beta1  = -9.0*pi/180.0;
@@ -105,82 +105,43 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
 
    // Copy of Justin Wright's Code:
    //define some OVC constants
-   OVCIR = 45.60*cm;               //inner radius of can
-   OVCCthick = 2.3749*cm;          //thickness of can (0.935 inch Al)
-   OVCCheight = 77.47*cm;          //length of can along axis
-   OVCWthick = 0.03302*cm;         //window thickness (0.013 inch)
-   OVCWheight = 46.00*cm;          //height of window along can axis
-   OVCBrad = 5.08*cm;              //beam window radius (2.00 inches)
-   OVCBthick = 0.0508*cm;          //beam window thickness (0.02 inch Be)
-   OVCdis = 0.0*cm;//1.8542*cm;   //The displacement of the OVC windows in the Z direction
+   OVCIR      = 45.60*cm;             //inner radius of can
+   OVCCthick  = 2.3749*cm;            //thickness of can (0.935 inch Al)
+   OVCCheight = 77.47*cm;             //length of can along axis
+   OVCWthick  = 0.03302*cm;           //window thickness (0.013 inch)
+   OVCWheight = 46.00*cm;             //height of window along can axis
+   OVCBrad    = 5.08*cm;              //beam window radius (2.00 inches)
+   OVCBthick  = 0.0508*cm;            //beam window thickness (0.02 inch Be)
+   OVCdis     = 0.0*cm;//1.8542*cm;   //The displacement of the OVC windows in the Z direction
 
    //define some LN2 shield constants
-   LN2IR = 41.50*cm;               //inner radius of can
-   LN2Cthick = 2.3749*cm;          //thickness of can (0.935 inch Al)
-   LN2Cheight = 78.74*cm;          //length of can along axis (30.5 inches)
-   LN2Wthick = 0.00508*cm;         //window thickness (0.002 inch)
-   LN2Wheight = 44.00*cm;          //height of window along can axis
-   LN2Brad = 5.715*cm;             //beam window radius (2.25 inches)
-   LN2Bthick = 0.03302*cm;         //beam window thickness (0.013 inch Be)
-   LN2dis = 7.2898*cm;             //vertical displacement of windows and
+   LN2IR      = 41.50*cm;     // inner radius of can
+   LN2Cthick  = 2.3749*cm;    // thickness of can (0.935 inch Al)
+   LN2Cheight = 78.74*cm;     // length of can along axis (30.5 inches)
+   LN2Wthick  = 0.00508*cm;   // window thickness (0.002 inch)
+   LN2Wheight = 44.00*cm;     // height of window along can axis
+   LN2Brad    = 5.715*cm;     // beam window radius (2.25 inches)
+   LN2Bthick  = 0.03302*cm;   // beam window thickness (0.013 inch Be)
+   LN2dis     = 7.2898*cm;    // vertical displacement of windows and
    //target from center of can.
 
    //define some constants for the nosepiece and target cell
-   HeIR = 4.*cm;                   //Inner radius of the 4K He shield
-   HeShThick = .00381*cm;          //Thickness of the 4K shield
-   HeLength = LN2Cheight;           //Length of the 4K shield (same as LN2 shield)
-   NoseIR = ( 2.1-.00254 ) *cm;    //Inner radius of the Nose
-   NoseThick = .00254*2*cm;        //Thickness of the Nosepiece
-   NoseLength = LN2Cheight;        //Length of the nosepiece (same as LN2Shield)
-   CellOR = 1.25*cm;               //OuterRadius of the cell
-   CellLength = 3.0*cm;            //Axial length of the cell
-   CellThick = 0.0127*cm;          //Thickness of the cell wall
+   HeIR       = 4.*cm;              // Inner radius of the 4K He shield
+   HeShThick  = .00381*cm;          // Thickness of the 4K shield
+   HeLength   = LN2Cheight;         // Length of the 4K shield (same as LN2 shield)
+   NoseIR     = ( 2.1-.00254 ) *cm; // Inner radius of the Nose
+   NoseThick  = .00254*2*cm;        // Thickness of the Nosepiece
+   NoseLength = LN2Cheight;         // Length of the nosepiece (same as LN2Shield)
+   CellOR     = 1.25*cm;            // OuterRadius of the cell
+   CellLength = 3.0*cm;             // Axial length of the cell
+   CellThick  = 0.0127*cm;          // Thickness of the cell wall
 
-   ULimits = 200.*MeV;
-
+   ULimits    = 200.*MeV;
 
    fTargetState   = 1;
    fMagneticField = 0;
 
-   // T
-   tracker_log               = 0;
-   tracker_phys              = 0;
-   fTrackerHorizBar_log      = 0;
-   fTrackerVertBar_log       = 0;
-   fTrackerHorizBarScore_log = 0;
-   fTrackerVertBarScore_log  = 0;
-   fTrackerX1BarScore_log    = 0;
-   fTrackerY1BarScore_log    = 0;
-   fTrackerY2BarScore_log    = 0;
-   fTrackerX1Bar_log         = 0;
-   fTrackerY1Bar_log         = 0;
-   fTrackerY2Bar_log         = 0;
-   trackerY1_log             = 0;
-   trackerY2_log             = 0;
-   trackerX1_log             = 0;
-   fTrackerG10Frame_log      = 0;
-   frontTrackerSD            = 0;
-
-   tank_log                = 0;
-   cherenkovTank_phys      = 0;
-   cherenkovContainer_log  = 0;
-   fCerFrontWindow_log     = 0;
-   fCerBackWindow_log      = 0;
-   AlCans_log              = 0;
-   fCerFrameTopBottom_log  = 0;
-   fCerToroidalMirror_log  = 0;
-   fCerSphericalMirror_log = 0;
-   MUPipe_log              = 0;
-   container_log           = 0;
-   pmtFace_log             = 0;
-
-   hodoscopeContainerBox_log      = 0;
-   hodoscopeContainerBox_phys     = 0;
-   fLuciteHodoPMTphotocathode_log = 0;
-   fLuciteHodoPMTinquotes_log     = 0;
-   fLuciteHodoBar_log             = 0;
-   HodoscopePMTSD                 = 0;
-
+   // Bigcal geometry
    fCalorimeterTop_log     = 0;
    fCalorimeterTop_phys    = 0;
    fCalorimeterBottom_log  = 0;
@@ -200,9 +161,50 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
    fPMTSolidTop           = 0;
    fPMTSolidBottom        = 0;
 
+   // Cherenkov
+   tank_log                = 0;
+   cherenkovTank_phys      = 0;
+   cherenkovContainer_log  = 0;
+   fCerFrontWindow_log     = 0;
+   fCerBackWindow_log      = 0;
+   AlCans_log              = 0;
+   fCerFrameTopBottom_log  = 0;
+   fCerToroidalMirror_log  = 0;
+   fCerSphericalMirror_log = 0;
+   MUPipe_log              = 0;
+   container_log           = 0;
+   pmtFace_log             = 0;
+
+   // Lucite Hodoscope
+   hodoscopeContainerBox_log      = 0;
+   hodoscopeContainerBox_phys     = 0;
+   fLuciteHodoPMTphotocathode_log = 0;
+   fLuciteHodoPMTinquotes_log     = 0;
+   fLuciteHodoBar_log             = 0;
+   HodoscopePMTSD                 = 0;
+
+   // Forward Tracker 
+   tracker_log               = 0;
+   tracker_phys              = 0;
+   fTrackerHorizBar_log      = 0;
+   fTrackerVertBar_log       = 0;
+   fTrackerHorizBarScore_log = 0;
+   fTrackerVertBarScore_log  = 0;
+   fTrackerX1BarScore_log    = 0;
+   fTrackerY1BarScore_log    = 0;
+   fTrackerY2BarScore_log    = 0;
+   fTrackerX1Bar_log         = 0;
+   fTrackerY1Bar_log         = 0;
+   fTrackerY2Bar_log         = 0;
+   trackerY1_log             = 0;
+   trackerY2_log             = 0;
+   trackerX1_log             = 0;
+   fTrackerG10Frame_log      = 0;
+   frontTrackerSD            = 0;
    fBigCalFakePlane_log  = 0;
    fTrackerFakePlane_log = 0;
 
+   // He Bag
    fHeBagExtenderBox_log          = 0;
    fHeBagExtenderAngle1_log       = 0;
    fHeBagExtenderAngle2_log       = 0;
@@ -214,6 +216,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
    fHeBagExtenderVertWindow_log   = 0;
    fHeBagExtenderFrontWindow_log  = 0;
 
+   // Target 
    logicTCan       = 0;
    logicRad        = 0;
    logicWinCan     = 0;
@@ -235,17 +238,15 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
    physiTCan       = 0;
    physiLN2Can     = 0;
 
-
    ConstructVisAtt();
    //std::cout << " BETADetectorConstruction Constructor " << std::endl;
 }
-
 //___________________________________________________________________
-BETADetectorConstruction::~BETADetectorConstruction()
-{
-   //delete messenger;
+BETADetectorConstruction::~BETADetectorConstruction() {
+   // DELETE EVERYTHING! 
+   // .........
 }
-
+//______________________________________________________________________________
 void BETADetectorConstruction::ConstructVisAtt(){
 
    fBlackLineVisAtt = new G4VisAttributes ( G4Colour::Black() );
@@ -300,7 +301,6 @@ void BETADetectorConstruction::ConstructVisAtt(){
    */
    fComplementaryColorLineVisAtt = new G4VisAttributes ( G4Colour ( 255.0/255.0,169.0/255.0,0.0/255.0) );
    fComplementaryColorLineVisAtt->SetForceWireframe ( true );
-
 
    AlVisAtt = new G4VisAttributes ( G4Colour ( .5,.5,.5 ) );
    AlVisAtt->SetVisibility ( true );
@@ -1596,157 +1596,161 @@ void BETADetectorConstruction::ConstructBigCal() {
    //  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
    fCellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 }
-
 //___________________________________________________________________
+void BETADetectorConstruction::DestroyCherenkov() {
+
+   delete fCerTankFront_solid  ;
+   delete fCerTankPMTfar_solid ;
+   delete fCerTankPMTnear_solid;
+   delete fCerRemoveBox_solid  ;
+
+   //cherenkovTank_phys;
+   //tank_log;
+   //cherenkovContainer_log;
+   //fCerFrontWindow_log;
+   //fCerBackWindow_log;
+   //AlCans_log;
+   //fCerFrameTopBottom_log;
+   //fCerToroidalMirror_log;
+   //fCerSphericalMirror_log;
+   //container_log;
+   //MUPipe_log;
+   //pmtFace_log;
+}
+//______________________________________________________________________________
 void BETADetectorConstruction::ConstructCherenkov() {
-   
+
    // THICKNESS
    G4double frontWindowThickness = 2.0*0.002*2.54*cm;
+
    // Target at is at (0,0,0)
    // Target vacuum radius
    // OVC radius = 46*cm
-   G4double targetSnoutGap = 5*cm;
+   G4double targetSnoutGap       = 5*cm;
    G4double detectorFaceDistance = 55*cm;//55*cm;
-   G4double tankVolume =0;
-
-
+   G4double tankVolume           = 0.0;
 
    // Tank box dimensions
    G4double zTank = ( 25.6875 ) *2.54*cm;
    G4double yTank = 75*2.54*cm;
    G4double xTank = ( 43.4375 ) *2.54*cm;
-   tankVolume = zTank*xTank*yTank+tankVolume;
+   tankVolume     = zTank*xTank*yTank+tankVolume;
+
    // The angle the pmt face plane makes with the z axis
    G4double pmtPlaneAngle = 45*pi/180;
-   G4double pmtAngle = 20*pi/180;
+   G4double pmtAngle      = 20*pi/180;
    // Tank Front trapezdoid piece
-   G4double tankFrontSide = 12.5*2.54*cm;
-   G4double zTankFront  = tankFrontSide*std::cos ( pmtPlaneAngle );
+   G4double tankFrontSide  = 12.5*2.54*cm;
+   G4double zTankFront     = tankFrontSide*std::cos ( pmtPlaneAngle );
    G4double xTankFrontBase = xTank;
    G4double yTankFrontBase = yTank;
-   G4double xTankFrontEnd = xTank-2.*tankFrontSide*std::sin ( pmtPlaneAngle );
-   G4double yTankFrontEnd = yTank;
+   G4double xTankFrontEnd  = xTank-2.*tankFrontSide*std::sin ( pmtPlaneAngle );
+   G4double yTankFrontEnd  = yTank;
+
    // approx tank snout and front  volume...
    tankVolume = ( xTankFrontBase+xTankFrontEnd ) /2 * ( yTankFrontBase+yTankFrontEnd ) /2 *zTankFront+tankVolume;
+
    // Snout
    G4double ySnoutEnd = 20.5*2.54*cm;
-   G4double xSnoutEnd =12.0*2.54*cm;
+   G4double xSnoutEnd = 12.0*2.54*cm;
+
    // angle between snout-top plane and verticle (spherical coordinate theta)
    G4double snoutTheta = 120 *pi/180;
-   // angle between snout-side and z axis
-   G4double snoutPhi = 80 *pi/180;
-   G4double snoutSide = 37*2.54*cm;
-   //    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
-   //    G4double ySnoutBase =ySnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
-   //    G4double xSnoutBase = xSnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
 
-   // NEW snout
-   G4double snoutThetaNEW = 30.0*pi/180.0;
-   G4double snoutPhiNEW = 10.0*pi/180.0;
-   G4double zSnout  = fabs ( snoutSide*std::cos ( snoutThetaNEW )  );
-   G4double ySnoutBase =ySnoutEnd+fabs ( 2.0*snoutSide*std::sin ( snoutThetaNEW ) *std::cos ( snoutPhiNEW ) );
-   G4double xSnoutBase = xSnoutEnd +fabs ( 2.0*snoutSide*std::sin ( snoutThetaNEW ) *std::sin ( snoutPhiNEW ) );
+   // angle between snout-side and z axis
+   G4double snoutphi = 80 *pi/180;
+   G4double snoutside = 37*2.54*cm;
+
+   //g4double zsnout  = fabs ( snoutside*std::sin ( snouttheta ) *std::sin ( snoutphi ) );
+   //g4double ysnoutbase =ysnoutend+fabs ( 2*snoutside*std::cos ( snouttheta ) );
+   //g4double xsnoutbase = xsnoutend +fabs ( 2*snoutside*std::sin ( snouttheta ) *std::cos ( snoutphi ) );
+   // new snout
+   G4double snoutthetanew = 30.0*pi/180.0;
+   G4double snoutphinew = 10.0*pi/180.0;
+   G4double zSnout  = fabs ( snoutside*std::cos ( snoutthetanew )  );
+   G4double ySnoutBase = ySnoutEnd+fabs ( 2.0*snoutside*std::sin ( snoutthetanew ) *std::cos ( snoutphinew ) );
+   G4double xSnoutBase = xSnoutEnd +fabs ( 2.0*snoutside*std::sin ( snoutthetanew ) *std::sin ( snoutphinew ) );
 
    tankVolume = ( xSnoutBase+xSnoutEnd ) /2 * ( ySnoutBase+ySnoutEnd ) /2 * zSnout + tankVolume;
 
-
-   // OLD SNOUT
-   // Snout
-   //    G4double xSnoutEnd = 12.5*2.54*cm;
-   //    G4double ySnoutEnd =9*2.54*cm;
-   // // angle between snout-top plane and verticle (spherical coordinate theta)
-   //    G4double snoutTheta = 120 *pi/180;
-   // angle between snout-side and z axis
-   //    G4double snoutPhi = 80 *pi/180;
-   //    G4double snoutSide = 37*2.54*cm;
-   //    G4double zSnout  = fabs ( snoutSide*std::sin ( snoutTheta ) *std::sin ( snoutPhi ) );
-   //    G4double xSnoutBase =xSnoutEnd+fabs ( 2*snoutSide*std::cos ( snoutTheta ) );
-   //    G4double ySnoutBase = ySnoutEnd +fabs ( 2*snoutSide*std::sin ( snoutTheta ) *std::cos ( snoutPhi ) );
-
-
-
-   // PMT Mount
-   G4double PMTmountLength = ( 10.0 ) *2.54*cm, //0.5 is thickness of backplate
-            // discrepency of 1"(either 10 or 11?)
-            // Also here we can add the possibility of
-            // the 1.5" spacer
-            PMTmountOD = 6.625*2.54*cm,
-            PMTmountID = 5.75*2.54*cm,
-            PMTmountRadius = PMTmountOD/2.0,
-            PMTmountCenterLength = PMTmountLength - PMTmountRadius*std::tan ( pmtAngle ),
-            PMTmountXsize = 7.0*2.54*cm,
-            PMTmountYsize = 7.0*2.54*cm,
+   // pmt mount
+   G4double PMTmountLength = ( 10.0 ) *2.54*cm, // 0.5 is thickness of backplate
+                                                // discrepency of 1"(either 10 or 11?)
+                                                // also here we can add the possibility of
+                                                // the 1.5" spacer
+            PMTmountOD                 = 6.625*2.54*cm,
+            PMTmountID                 = 5.75*2.54*cm,
+            PMTmountRadius             = PMTmountOD/2.0,
+            PMTmountCenterLength       = PMTmountLength - PMTmountRadius*std::tan ( pmtAngle ),
+            PMTmountXsize              = 7.0*2.54*cm,
+            PMTmountYsize              = 7.0*2.54*cm,
             PMTmountBackPlateThickness = 0.5*2.54*cm;
-   // Panels
-   G4double yBackPanel = 74.5*2.54*cm,
-            xBackPanel = 43.0*2.54*cm,
-            BackPanelThickness = 0.032*2.54*cm,
-            ySidePanel = 74.0*2.54*cm,
-            xSidePanel = 25.0*2.54*cm,
-            SidePanelThickness = 0.1875*2.54*cm,
 
-            yBevelPanel = 73.0*2.54*cm,
-            xBevelPanel = 10.5*2.54*cm,
+   // panels
+   G4double yBackPanel          = 74.5*2.54*cm,
+            xBackPanel          = 43.0*2.54*cm,
+            backPanelThickness  = 0.032*2.54*cm,
+            ySidePanel          = 74.0*2.54*cm,
+            xSidePanel          = 25.0*2.54*cm,
+            SidePanelThickness  = 0.1875*2.54*cm,
+
+            yBevelPanel         = 73.0*2.54*cm,
+            xBevelPanel         = 10.5*2.54*cm,
             BevelPanelThickness = 0.1875*2.54*cm,
 
-            yPMTmountPanel = 73.0*2.54*cm,
-            xPMTmountPanel = 12.1*2.54*cm,
+            yPMTmountPanel    = 73.0*2.54*cm,
+            xPMTmountPanel    = 12.1*2.54*cm,
             PMTmountThickness = 0.5*2.54*cm,
             PMTpanelThickness = PMTmountThickness;
 
-   G4double 
-      yTopPanelBox = 24.25*2.54*cm,
-                   zTopPanelBox=yTopPanelBox,
-                   xTopPanelBox = ( 41.0+7.0/16.0 ) *2.54*cm,
-                   TopPanelThickness = 0.25*2.54*cm,
-                   zTopPanelTrd = ( 32.0-24.25 ) *2.54*cm,
-                   endTopPanelTrd = 24.0*2.54*cm,
+   G4double yTopPanelBox         = 24.25*2.54*cm,
+            zTopPanelBox         = yTopPanelBox,
+            xTopPanelBox         = ( 41.0+7.0/16.0 ) *2.54*cm,
+            TopPanelThickness    = 0.25*2.54*cm,
+            zTopPanelTrd         = ( 32.0-24.25 ) *2.54*cm,
+            endTopPanelTrd       = 24.0*2.54*cm,
 
-                   yBottomPanelBox = 25.0*2.54*cm,
-                   zBottomPanelBox=yBottomPanelBox,
-                   xBottomPanelBox = ( 42.0+7.0/16.0 ) *2.54*cm,
-                   BottomPanelThickness = 0.25*2.54*cm,
-                   zBottomPanelTrd = ( 32.0-25.0+13.0/16.0 ) *2.54*cm,
-                   endBottomPanelTrd = ( 24.0+9.0/16.0 ) *2.54*cm;
-
-   ///////////////////////////
-   // END PARAMETERS
-   ////////////////////////////
-
-   // Detector Positioning
+            yBottomPanelBox      = 25.0*2.54*cm,
+            zBottomPanelBox      = yBottomPanelBox,
+            xBottomPanelBox      = ( 42.0+7.0/16.0 ) *2.54*cm,
+            BottomPanelThickness = 0.25*2.54*cm,
+            zBottomPanelTrd      = ( 32.0-25.0+13.0/16.0 ) *2.54*cm,
+            endBottomPanelTrd    = ( 24.0+9.0/16.0 ) *2.54*cm;
 
    G4double Extra = 3*m;
-   // ==============
-   // The Snout
-   // ==============
-   G4double snoutCenter = rTarget+targetSnoutGap+zSnout/2;
-   G4Trd * snout = new  G4Trd ( "Snout",xSnoutEnd/2, xSnoutBase/2, ySnoutEnd/2, ySnoutBase/2, zSnout/2 );
-   //  G4LogicalVolume * snout_log = new G4LogicalVolume(snout, NitrogenGas,"snout_log",0,0,0);
-   //  G4VPhysicalVolume * snout_phys = new G4PVPlacement(0,G4ThreeVector(0,0,snoutCenter), snout_log , "snout_phys",  expHall_log, false,0);
+
+   // detector positioning
 
    // ==============
-   // The tank front
+   // the snout
+   G4double snoutCenter = rTarget + targetSnoutGap + zSnout/2.0;
+
+   fCerSnout_solid = new  G4Trd ( "snout",xSnoutEnd/2.0, xSnoutBase/2.0, ySnoutEnd/2.0, ySnoutBase/2.0, zSnout/2.0 );
+   //  g4logicalvolume * snout_log = new g4logicalvolume(snout, nitrogengas,"snout_log",0,0,0);
+   //  g4vphysicalvolume * snout_phys = new g4pvplacement(0,g4threevector(0,0,snoutcenter), snout_log , "snout_phys",  exphall_log, false,0);
+
    // ==============
-   // This will be unioned with other cylinders for pmt mounts
-   G4double tankFrontCenter =rTarget+targetSnoutGap+zSnout+zTankFront/2 ;
-   G4Trd * tankFront = new  G4Trd ( "Front", xTankFrontEnd/2, xTankFrontBase/2, yTankFrontEnd/2, yTankFrontBase/2, zTankFront/2 );
-   G4Tubs * tankPMTfar = new G4Tubs ( "PMTfar", 0, PMTmountRadius, PMTmountCenterLength,0,2*pi );
-   //G4Tubs * PMTmount = new G4Tubs("PMTfar", 0, PMTmountRadius, PMTmountLength,0,2*pi);
-   G4Tubs * tankPMTnear = new G4Tubs ( "PMTfar", 0, PMTmountRadius, PMTmountCenterLength,0,2*pi );
-   G4Box * removebox = new  G4Box ( "intersection box", 2*PMTmountCenterLength, 2*PMTmountCenterLength, 2*PMTmountCenterLength );
+   // the tank front
+   // this will be unioned with other cylinders for pmt mounts
+   G4double tankFrontCenter = rTarget + targetSnoutGap + zSnout + zTankFront/2 ;
 
-   G4RotationMatrix* oldCoordRot = new G4RotationMatrix;
-   oldCoordRot->rotateZ ( -pi/2.0);
+   fCerTankFront_solid   = new  G4Trd ( "Front", xTankFrontEnd/2, xTankFrontBase/2, yTankFrontEnd/2, yTankFrontBase/2, zTankFront/2 );
+   fCerTankPMTfar_solid  = new G4Tubs ( "PMTfar", 0, PMTmountRadius, PMTmountCenterLength,0,2* pi );
+   fCerTankPMTnear_solid = new G4Tubs ( "PMTfar", 0, PMTmountRadius, PMTmountCenterLength,0,2*pi );
+   fCerRemoveBox_solid   = new  G4Box ( "intersection box", 2* PMTmountCenterLength, 2 * PMTmountCenterLength, 2 * PMTmountCenterLength );
 
-   G4RotationMatrix* noRot = new G4RotationMatrix;
-   G4RotationMatrix* xRotNear = new G4RotationMatrix;
-   xRotNear->rotateY ( pmtPlaneAngle-pmtAngle );
-   G4RotationMatrix* xRotFar = new G4RotationMatrix;
-   xRotFar->rotateY ( pmtPlaneAngle+pmtAngle );
-   G4RotationMatrix* PMTfarROT = new G4RotationMatrix;
-   PMTfarROT->rotateY ( +pmtAngle );
-   G4RotationMatrix* PMTnearROT = new G4RotationMatrix;
-   PMTnearROT->rotateY ( -pmtAngle );
+   fCerOldCoordRot = new G4RotationMatrix;
+   fCerNoRot       = new G4RotationMatrix;
+   fCerXRotNear    = new G4RotationMatrix;
+   fCerXRotFar     = new G4RotationMatrix;
+   fCerPMTfarROT   = new G4RotationMatrix;
+   fCerPMTnearROT  = new G4RotationMatrix;
+
+   fCerOldCoordRot->rotateZ ( -pi/2.0);
+   fCerXRotNear->rotateY    ( pmtPlaneAngle-pmtAngle );
+   fCerXRotFar->rotateY     ( pmtPlaneAngle+pmtAngle );
+   fCerPMTfarROT->rotateY   ( +pmtAngle );
+   fCerPMTnearROT->rotateY  ( -pmtAngle );
 
    G4ThreeVector ZTrans ( 0, 0, -1.8*PMTmountCenterLength );
 
@@ -1807,48 +1811,44 @@ void BETADetectorConstruction::ConstructCherenkov() {
    // 
    //    G4ThreeVector pmt8Trans ( -PMTmountXsize/2-3*PMTmountXsize, - ( yTankFrontEnd/2 + ( yTankFrontBase/2 - yTankFrontEnd/2 ) /2 +PMTpanelThickness*std::sin ( pmtPlaneAngle ) ), -PMTpanelThickness*std::sin ( pmtPlaneAngle ) );
 
-   G4IntersectionSolid* PMTmountFar = new G4IntersectionSolid ( "pmt-removed unwanted union",tankPMTfar, removebox,PMTfarROT,ZTrans );
-   G4IntersectionSolid* PMTmountNear = new G4IntersectionSolid ( "pmt-removed unwanted union",tankPMTnear, removebox,PMTnearROT,ZTrans );
+   fCerPMTmountFar_solid  = new G4IntersectionSolid ( "pmt-removed unwanted union",fCerTankPMTfar_solid, fCerRemoveBox_solid ,fCerPMTfarROT,  ZTrans );
+   fCerPMTmountNear_solid = new G4IntersectionSolid ( "pmt-removed unwanted union",fCerTankPMTnear_solid,fCerRemoveBox_solid ,fCerPMTnearROT, ZTrans );
 
    //G4LogicalVolume * int_log = new G4LogicalVolume(PMTmount, NitrogenGas,"tankFront_log",0,0,0);
-   //  G4VPhysicalVolume * int_phys = new G4PVPlacement(0,G4ThreeVector(0,0,0), int_log , "tankFront_phys",  expHall_log, false,0);
+   //G4VPhysicalVolume * int_phys = new G4PVPlacement(0,G4ThreeVector(0,0,0), int_log , "tankFront_phys",  expHall_log, false,0);
 
-
-
-   G4UnionSolid* TANK =
-      new G4UnionSolid ( "tankfront 1PMT", tankFront, PMTmountNear, xRotNear, pmt1Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 2PMT", TANK, PMTmountFar, xRotFar, pmt2Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 3PMT", TANK, PMTmountNear, xRotNear, pmt3Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 4PMT", TANK, PMTmountFar, xRotFar, pmt4Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 5PMT", TANK, PMTmountFar, xRotFar, pmt5Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 6PMT", TANK, PMTmountNear, xRotNear, pmt6Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 7PMT", TANK, PMTmountFar, xRotFar, pmt7Trans );
-   TANK =
-      new G4UnionSolid ( "tankfront 8PMT", TANK, PMTmountNear, xRotNear, pmt8Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 1PMT", fCerTankFront_solid, fCerPMTmountNear_solid, fCerXRotNear, pmt1Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 2PMT", fCerTank_solid, fCerPMTmountFar_solid, fCerXRotFar, pmt2Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 3PMT", fCerTank_solid, fCerPMTmountNear_solid, fCerXRotNear, pmt3Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 4PMT", fCerTank_solid, fCerPMTmountFar_solid, fCerXRotFar, pmt4Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 5PMT", fCerTank_solid, fCerPMTmountFar_solid, fCerXRotFar, pmt5Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 6PMT", fCerTank_solid, fCerPMTmountNear_solid, fCerXRotNear, pmt6Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 7PMT", fCerTank_solid, fCerPMTmountFar_solid, fCerXRotFar, pmt7Trans );
+   fCerTank_solid =
+      new G4UnionSolid ( "tankfront 8PMT", fCerTank_solid, fCerPMTmountNear_solid, fCerXRotNear, pmt8Trans );
 
    G4ThreeVector snoutTrans ( 0,0,-zTankFront/2-zSnout/2 );
 
-   TANK =
-      new G4UnionSolid ( "totaltank minus box", TANK,snout, noRot, snoutTrans );
+   fCerTank_solid = new G4UnionSolid ( "totaltank minus box", fCerTank_solid,fCerSnout_solid, fCerNoRot, snoutTrans );
 
    // ==============
    // The tank
    // ==============
    // Extra is the space for the hodoscope and big cal
-   G4double tankCenterDetector = DetectorLength/2 -zTank/2-1*frontWindowThickness -Extra;
-   G4double tankCenter = rTarget+targetSnoutGap+zSnout+zTankFront+zTank/2;
+   G4double tankCenterDetector = DetectorLength/2.0 - zTank/2.0 - 1.0*frontWindowThickness - Extra;
+   G4double tankCenter         = rTarget + targetSnoutGap + zSnout + zTankFront + zTank/2.0;
 
-   G4Box * tankbox = new  G4Box ( "tank", xTank/2, yTank/2, zTank/2 );
-   G4ThreeVector snoutTrans2 ( 0,0,-zTank/2-zTankFront/2 );
+   fCerTankBox_solid = new  G4Box ( "tank", xTank/2.0, yTank/2.0, zTank/2.0 );
+   G4ThreeVector snoutTrans2 ( 0,0,-zTank/2.0-zTankFront/2.0 );
 
-   TANK=
-      new G4UnionSolid ( "Total Tank", tankbox, TANK,noRot, snoutTrans2 );
+   fCerTank_solid = new G4UnionSolid ( "Total Tank", fCerTankBox_solid, fCerTank_solid, fCerNoRot, snoutTrans2 );
 
 
    // Add volumes for side panels
@@ -1940,9 +1940,9 @@ void BETADetectorConstruction::ConstructCherenkov() {
    //    G4VPhysicalVolume * cherenkovContainer_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,cherenkovPositionInContainer ), tank_log , "tank_phys",  BETADetector_log, false,0 );
 
    if(fSimulationManager->fSimulateCherenkovOptics) {
-      tank_log = new G4LogicalVolume ( TANK, NitrogenGas,"tank_log",0,0,0 );
+      tank_log = new G4LogicalVolume ( fCerTank_solid, NitrogenGas,"tank_log",0,0,0 );
    } else {
-      tank_log = new G4LogicalVolume ( TANK, NitrogenGas_NoOptics,"tank_log",0,0,0 );
+      tank_log = new G4LogicalVolume ( fCerTank_solid, NitrogenGas_NoOptics,"tank_log",0,0,0 );
    }
 
    cherenkovTank_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage ), tank_log , "tank_phys",  BETADetector_log, false,0 );
@@ -1963,7 +1963,7 @@ void BETADetectorConstruction::ConstructCherenkov() {
    G4Tubs * PMTIDcylinder = new G4Tubs ( "PMTfar", 0, PMTmountID/2, PMTmountCenterLength,0,2*pi );
    G4Tubs * PMTODcylinder = new G4Tubs ( "PMTfar", 0, PMTmountOD/2, PMTmountCenterLength,0,2*pi );
 
-   //   G4IntersectionSolid* PMTmountFar = new G4IntersectionSolid("pmt-removed unwanted union",tankPMTfar, removebox,PMTfarROT,ZTrans);
+   //   G4IntersectionSolid* fCerPMTmountFar_solid = new G4IntersectionSolid("pmt-removed unwanted union",tankPMTfar, removebox,PMTfarROT,ZTrans);
 
    //G4SubtractionSolid * PMTnear = new G4Subtraction("PMT removed
 
@@ -1983,22 +1983,22 @@ void BETADetectorConstruction::ConstructCherenkov() {
 
    //    G4ThreeVector ZTrans(0, 0, -PMTmountLength+PMTmountRadius*std::tan(pmtAngle));
    /*  G4SubtractionSolid* PMTcanFar =
-       new G4SubtractionSolid("PMT ODcylinder - IDcylinder", PMTmountFar, PMTIDcylinder,noRot,PMTcanBackThickness);
+       new G4SubtractionSolid("PMT ODcylinder - IDcylinder", fCerPMTmountFar_solid, PMTIDcylinder,noRot,PMTcanBackThickness);
        G4SubtractionSolid* PMTcanNear =
-       new G4SubtractionSolid("PMT ODcylinder - IDcylinder", PMTmountNear, PMTIDcylinder,noRot,PMTcanBackThickness);
+       new G4SubtractionSolid("PMT ODcylinder - IDcylinder", fCerPMTmountNear_solid, PMTIDcylinder,noRot,PMTcanBackThickness);
     */
 
    //Go DO ALL 8 Cans then Remove the middles
 
    G4UnionSolid*
-      PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTPanelBox, PMTmountNear, PMTfarROT, pmt1T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountFar, PMTfarROT, pmt2T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountFar, PMTnearROT, pmt3T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountNear, PMTnearROT, pmt4T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountNear, PMTfarROT, pmt5T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountFar, PMTfarROT, pmt6T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountFar, PMTnearROT, pmt7T );
-   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, PMTmountNear, PMTnearROT, pmt8T );
+      PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTPanelBox, fCerPMTmountNear_solid, fCerPMTfarROT, pmt1T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountFar_solid,  fCerPMTfarROT, pmt2T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountFar_solid,  fCerPMTnearROT, pmt3T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountNear_solid, fCerPMTnearROT, pmt4T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountNear_solid, fCerPMTfarROT,  pmt5T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountFar_solid,  fCerPMTfarROT,  pmt6T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountFar_solid,  fCerPMTnearROT, pmt7T );
+   PMTmountAlCans = new G4UnionSolid ( "Pmt plate plus cans", PMTmountAlCans, fCerPMTmountNear_solid, fCerPMTnearROT, pmt8T );
 
    G4ThreeVector pmt1Tbp (0 ,-PMTmountXsize/2,  PMTmountBackPlateThickness );
    G4ThreeVector pmt2Tbp (0 , PMTmountXsize/2, PMTmountBackPlateThickness );
@@ -2011,20 +2011,20 @@ void BETADetectorConstruction::ConstructCherenkov() {
 
 
    G4SubtractionSolid*
-      pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID1", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt1Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID2", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt2Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID3", PMTmountAlCans,PMTIDcylinder,PMTnearROT,pmt3Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID4", PMTmountAlCans,PMTIDcylinder,PMTnearROT,pmt4Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID5", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt5Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID6", PMTmountAlCans,PMTIDcylinder,PMTfarROT,pmt6Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID7", PMTmountAlCans,PMTIDcylinder,PMTnearROT,pmt7Tbp );
-   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID8", PMTmountAlCans,PMTIDcylinder,PMTnearROT,pmt8Tbp );
+      pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID1", PMTmountAlCans,PMTIDcylinder,fCerPMTfarROT,pmt1Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID2", PMTmountAlCans,PMTIDcylinder,   fCerPMTfarROT,pmt2Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID3", PMTmountAlCans,PMTIDcylinder,   fCerPMTnearROT,pmt3Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID4", PMTmountAlCans,PMTIDcylinder,   fCerPMTnearROT,pmt4Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID5", PMTmountAlCans,PMTIDcylinder,   fCerPMTfarROT,pmt5Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID6", PMTmountAlCans,PMTIDcylinder,   fCerPMTfarROT,pmt6Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID7", PMTmountAlCans,PMTIDcylinder,   fCerPMTnearROT,pmt7Tbp );
+   pmtMountAlPanel = new G4SubtractionSolid ( "panel+pmtOD-pmtID8", PMTmountAlCans,PMTIDcylinder,   fCerPMTnearROT,pmt8Tbp );
 
    G4Box * PMTremoveExtra = new  G4Box ( "PMT panel- remove", xPMTmountPanel+4*cm, yPMTmountPanel+4*cm, 1.5*PMTmountLength );
    G4ThreeVector removeExtra ( 0,0 , -1.5*PMTmountLength+PMTpanelThickness/2 );
 
    G4IntersectionSolid *  PMTAlCans =
-      new G4IntersectionSolid ( "remove extra", pmtMountAlPanel, PMTremoveExtra,noRot,removeExtra );
+      new G4IntersectionSolid ( "remove extra", pmtMountAlPanel, PMTremoveExtra,fCerNoRot,removeExtra );
 
    G4RotationMatrix pmtPanelRotMatrix;
    pmtPanelRotMatrix.rotateY ( -pi/4 );
