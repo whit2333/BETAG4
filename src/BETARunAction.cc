@@ -40,12 +40,12 @@ G4Run*  BETARunAction::GenerateRun() {
 
    G4RunManager * runManager = G4RunManager::GetRunManager();
 
-   G4cout << " = BETARunAction - GenerateRun   " << G4endl;
+   //G4cout << " = BETARunAction - GenerateRun   " << G4endl;
 
    timer->Start();
 
    G4cout << "  - Creating Run Number " << fRunNumber << "   " << G4endl;
-   SANERunManager::GetRunManager()->SetRun(fRunNumber);
+   SANERunManager::GetRunManager()->SetRun(fRunNumber,-1,"Q");
    fSimulationManager->fInSANERun = SANERunManager::GetRunManager()->GetCurrentRun();
 
    // Opens Root File With a name Depending on the Run number
@@ -88,23 +88,18 @@ G4Run*  BETARunAction::GenerateRun() {
 
    fSimulationManager->UpdateRun();
 
-   fSimulationManager->fInSANERun->Print();
-   fSimulationManager->PrintSummary();
+   //fSimulationManager->fInSANERun->Print();
+   //fSimulationManager->PrintSummary();
 
    return (G4Run*)fCurrentRun;
 }
-//_________________________________________________________________//
-
-/** 
- *
- *
- */
+//______________________________________________________________________________
 void BETARunAction::EndOfRunAction ( const G4Run* aRun ) {
 
       if(fSimulationManager->fSANEScalers->fTriggerEvent){
          fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
          fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = aRun->GetNumberOfEvent()+1;
-         std::cout << " LAST EVENT : " << aRun->GetNumberOfEvent()+1 << std::endl;
+         //std::cout << " LAST EVENT : " << aRun->GetNumberOfEvent()+1 << std::endl;
          fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
       }
 
@@ -152,7 +147,7 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    G4cout <<"Number of Events Processed:" << aRun->GetNumberOfEvent() << " events. " <<G4endl;
    //    G4cout <<"PMT/Mirror Eff  " <<fCurrentRun->getPMT_MirrorEfficiency()  <<G4endl;
    
-   G4cout << "Writing ROOT File\n";
+   //G4cout << "Writing ROOT File\n";
    SANERunManager::GetRunManager()->WriteRun();
 
    // do these do anything anymore?
@@ -181,13 +176,10 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    assert ( 0 != fCurrentRun );
    //   currentRun->DumpData();
 }
-
-/**
- *
- *
- */
+//______________________________________________________________________________
 void BETARunAction::showPlot ( int show )
 {
    showThePlots = show;
 }
-//_________________________________________________________________//
+//______________________________________________________________________________
+

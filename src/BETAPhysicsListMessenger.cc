@@ -27,32 +27,37 @@ BETAPhysicsListMessenger::BETAPhysicsListMessenger ( BETAPhysicsList* pPhys )
    cerenkovCmd->SetParameterName ( "MaxNumber",false );
    cerenkovCmd->SetRange ( "MaxNumber>=0" );
    cerenkovCmd->AvailableForStates ( G4State_Idle );
+
+   printCmd = new G4UIcmdWithAnInteger ( "/beta/phys/print",this );
+   printCmd->SetGuidance ( "Set print for physics processes" );
+   printCmd->SetParameterName ( "print",true );
+   printCmd->SetDefaultValue ( 0 );
+   printCmd->SetRange ( "print>=0" );
+   printCmd->AvailableForStates ( G4State_PreInit,G4State_Idle );
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
+//______________________________________________________________________________
 BETAPhysicsListMessenger::~BETAPhysicsListMessenger()
 {
    delete verboseCmd;
+   delete printCmd;
    delete cerenkovCmd;
    delete physDir;
    delete BETADir;
 }
+//______________________________________________________________________________
+void BETAPhysicsListMessenger::SetNewValue ( G4UIcommand* command, G4String newValue ) {
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void BETAPhysicsListMessenger::SetNewValue ( G4UIcommand* command,
-                                             G4String newValue )
-{
-   if ( command == verboseCmd )
-   {
-      pPhysicsList->SetVerbose ( verboseCmd->GetNewIntValue ( newValue ) );
+   if ( command == verboseCmd ) {
+      pPhysicsList->SetVerbose( verboseCmd->GetNewIntValue ( newValue ) );
    }
 
-   if ( command == cerenkovCmd )
-   {
+   if ( command == printCmd ) {
+      pPhysicsList->Print( printCmd->GetNewIntValue ( newValue ) );
+   }
+
+   if ( command == cerenkovCmd ) {
       pPhysicsList->SetNbOfPhotonsCerenkov ( cerenkovCmd->GetNewIntValue ( newValue ) );
    }
 }
+//______________________________________________________________________________
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

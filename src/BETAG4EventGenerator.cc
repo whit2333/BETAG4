@@ -49,6 +49,7 @@ void BETAG4EventGenerator::Initialize(){
 //________________________________________________________________________________
 void BETAG4EventGenerator::InitializeMaterialXSec(const Int_t i, const Double_t weight, 
       const InSANETargetMaterial * mat, const InSANENucleus * targ){
+   // This is the one where you set all the cross sections etc... 
    InSANETargetEventGenerator::InitializeMaterialXSec(i,weight,mat,targ);
 }
 //________________________________________________________________________________

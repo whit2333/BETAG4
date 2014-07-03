@@ -65,12 +65,12 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
       }
 
       void SetMCEventAddress(BETAG4MonteCarloEvent * mcevent) {
-         std::cout << "BETAPrimaryGeneratorAction::SetMCEventAddress()\n";
+         //std::cout << "BETAPrimaryGeneratorAction::SetMCEventAddress()\n";
          /*       if(mcevent) {*/
          fMonteCarloEvent = mcevent;
          fThrownParticles = fMonteCarloEvent->GetThrownParticlesArray();
-         std::cout << " tracker " << fMonteCarloEvent->GetTrackerPlaneHitsArray() << "\n";
-         std::cout << " bigcal " << fMonteCarloEvent->GetBigcalPlaneHitsArray() << "\n";
+         //std::cout << " tracker " << fMonteCarloEvent->GetTrackerPlaneHitsArray() << "\n";
+         //std::cout << " bigcal " << fMonteCarloEvent->GetBigcalPlaneHitsArray() << "\n";
          //        }
       }
 

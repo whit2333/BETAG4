@@ -495,7 +495,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
 	 int partnum =  TDatabasePDG::Instance()->GetParticle(newValue.data())->PdgCode(); 
          ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->SetParticleType(partnum );
          ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->InitializeFinalStateParticles( );
-         ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->Print( );
+         //((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->Print( );
 	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
       }
       else std::cout << " NO SAMPLERS YET\n"; 

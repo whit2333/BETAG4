@@ -3,6 +3,9 @@
 
 #include "globals.hh"
 #include "G4VUserPhysicsList.hh"
+#include "FTFP_BERT.hh"
+//#include "G4StepLimiterPhysics.hh"
+
 
 class G4Cerenkov;
 class G4Scintillation;
@@ -20,7 +23,7 @@ class BETAPhysicsListMessenger;
  *  a bad simulation can result. 
  *
  */
-class BETAPhysicsList : public G4VUserPhysicsList
+class BETAPhysicsList : public FTFP_BERT //G4VUserPhysicsList
 {
   public:
     BETAPhysicsList();
@@ -29,6 +32,8 @@ class BETAPhysicsList : public G4VUserPhysicsList
   public:
     void ConstructParticle();
     void ConstructProcess();
+
+    void Print(int level=0);
 
     void SetCuts();
 
@@ -43,7 +48,6 @@ class BETAPhysicsList : public G4VUserPhysicsList
     void ConstructEM();
     void ConstructOp();
     
-    //for the Messenger 
     void SetVerbose(G4int);
     void SetNbOfPhotonsCerenkov(G4int);
     

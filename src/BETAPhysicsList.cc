@@ -108,12 +108,12 @@ void BETAPhysicsList::ConstructBaryons() {
 }
 //______________________________________________________________________________
 void BETAPhysicsList::ConstructProcess() {
-   std::cout << "BETAPhysicsList::ConstructProcess" << std::endl;
+   //std::cout << "BETAPhysicsList::ConstructProcess" << std::endl;
    AddTransportation();
    ConstructGeneral();
    ConstructEM();
    ConstructOp();
-   std::cout << " end of BETAPhysicsList::ConstructProcess" << std::endl;
+   //std::cout << " end of BETAPhysicsList::ConstructProcess" << std::endl;
 }
 //______________________________________________________________________________
 void BETAPhysicsList::ConstructGeneral() {
@@ -142,7 +142,7 @@ void BETAPhysicsList::ConstructEM() {
       G4ParticleDefinition* particle = theParticleIterator->value();
       G4ProcessManager* pmanager = particle->GetProcessManager();
       G4String particleName = particle->GetParticleName();
-
+      G4VProcess * proc = 0;
       if ( particleName == "gamma" )
       {
          // Construct processes for gamma
@@ -156,7 +156,8 @@ void BETAPhysicsList::ConstructEM() {
       {
          // Construct processes for electron
          pmanager->AddProcess ( new G4eMultipleScattering(),-1, 1, 1 );
-         pmanager->AddProcess ( new G4eIonisation(),       -1, 2, 2 );
+         pmanager->AddProcess ( proc = new G4eIonisation(),       -1, 2, 2 );
+         proc->SetVerboseLevel(0);
          pmanager->AddProcess ( new G4eBremsstrahlung(),   -1, 3, 3 );
 
       }
@@ -165,7 +166,8 @@ void BETAPhysicsList::ConstructEM() {
          //positron
          // Construct processes for positron
          pmanager->AddProcess ( new G4eMultipleScattering(),-1, 1, 1 );
-         pmanager->AddProcess ( new G4eIonisation(),       -1, 2, 2 );
+         pmanager->AddProcess ( proc = new G4eIonisation(),       -1, 2, 2 );
+         proc->SetVerboseLevel(0);
          pmanager->AddProcess ( new G4eBremsstrahlung(),   -1, 3, 3 );
          pmanager->AddProcess ( new G4eplusAnnihilation(),  0,-1, 4 );
 
@@ -176,7 +178,8 @@ void BETAPhysicsList::ConstructEM() {
          //muon
          // Construct processes for muon
          pmanager->AddProcess ( new G4MuMultipleScattering(),-1, 1, 1 );
-         pmanager->AddProcess ( new G4MuIonisation(),      -1, 2, 2 );
+         pmanager->AddProcess ( proc = new G4MuIonisation(),      -1, 2, 2 );
+         proc->SetVerboseLevel(0);
          pmanager->AddProcess ( new G4MuBremsstrahlung(),  -1, 3, 3 );
          pmanager->AddProcess ( new G4MuPairProduction(),  -1, 4, 4 );
 
@@ -188,7 +191,8 @@ void BETAPhysicsList::ConstructEM() {
          {
             // all others charged particles except geantino
             pmanager->AddProcess ( new G4hMultipleScattering(),-1,1,1 );
-            pmanager->AddProcess ( new G4hIonisation(),        -1,2,2 );
+            pmanager->AddProcess ( proc = new G4hIonisation(),        -1,2,2 );
+         proc->SetVerboseLevel(0);
          }
       }
    }
@@ -207,7 +211,7 @@ void BETAPhysicsList::ConstructOp() {
    //theAbsorptionProcess->DumpPhysicsTable();
    //theRayleighScatteringProcess->DumpPhysicsTable();
 
-   //SetVerbose ( 0 );
+   //SetVerboseLevel( 0 );
 
    theCerenkovProcess->SetMaxNumPhotonsPerStep ( 150 );
    theCerenkovProcess->SetTrackSecondariesFirst ( true );
@@ -251,7 +255,20 @@ void BETAPhysicsList::ConstructOp() {
    }
 }
 //______________________________________________________________________________
-void BETAPhysicsList::SetVerbose ( G4int verbose ) {
+void BETAPhysicsList::SetVerbose( G4int verbose ) {
+   G4VUserPhysicsList::SetVerboseLevel(verbose);
+   theParticleIterator->reset();
+   while ( ( *theParticleIterator ) () )
+   {
+      G4ParticleDefinition* particle = theParticleIterator->value();
+      //std::cout << particle->GetParticleName() << std::endl;
+      G4ProcessManager* pmanager     = particle->GetProcessManager();
+      G4ProcessVector * plist = pmanager->GetProcessList();
+      for(unsigned int j=0;j<plist->size();j++){
+         (*plist)[j]->SetVerboseLevel(verbose);
+      }
+   }
+   
    theCerenkovProcess->SetVerboseLevel           ( verbose );
    theScintillationProcess->SetVerboseLevel      ( verbose );
    theAbsorptionProcess->SetVerboseLevel         ( verbose );
@@ -270,6 +287,27 @@ void BETAPhysicsList::SetCuts() {
    SetCutsWithDefault();
    if ( verboseLevel>1 ) 
       DumpCutValuesTable();
+}
+//______________________________________________________________________________
+void BETAPhysicsList::Print(int level ) {
+   theParticleIterator->reset();
+   while ( ( *theParticleIterator ) () )
+   {
+      G4ParticleDefinition* particle = theParticleIterator->value();
+      std::cout << particle->GetParticleName() << std::endl;
+      G4ProcessManager* pmanager     = particle->GetProcessManager();
+      G4ProcessVector * plist = pmanager->GetProcessList();
+      for(unsigned int j=0;j<plist->size();j++){
+         G4VProcess * proc = (*plist)[j];
+         std::cout << proc->GetProcessName() << "   " << proc->GetVerboseLevel() << std::endl;
+      }
+   }
+   
+   //theCerenkovProcess->SetVerboseLevel           ( verbose );
+   //theScintillationProcess->SetVerboseLevel      ( verbose );
+   //theAbsorptionProcess->SetVerboseLevel         ( verbose );
+   //theRayleighScatteringProcess->SetVerboseLevel ( verbose );
+   //theBoundaryProcess->SetVerboseLevel           ( verbose );
 }
 //______________________________________________________________________________
 

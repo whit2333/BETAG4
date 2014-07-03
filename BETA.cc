@@ -204,7 +204,8 @@ int main(int argc,char** argv)
 
    // Physics List
    G4VUserPhysicsList* physics = new BETAPhysicsList;
-   physics->SetVerboseLevel(4);
+   //G4VModularPhysicsList* physics = new FTFP_BERT;
+   //physics->RegisterPhysics(new G4StepLimiterPhysics());
    runManager->SetUserInitialization(physics);
 
    // visualization manager
@@ -245,6 +246,7 @@ int main(int argc,char** argv)
    // Initialize G4 kernel
    runManager->Initialize();
    //std::cout << " o Done initializing G4 kernel " << std::endl;
+   dynamic_cast<BETAPhysicsList*>(physics)->SetVerbose(0);
 
    // Get the pointer to the User Interface manager
    G4UImanager* UI = G4UImanager::GetUIpointer(); 

@@ -24,6 +24,7 @@ class BETAPhysicsListMessenger: public G4UImessenger
     G4UIdirectory*        physDir;
     G4UIcmdWithAnInteger* verboseCmd;
     G4UIcmdWithAnInteger* cerenkovCmd;
+    G4UIcmdWithAnInteger* printCmd;
 };
 
 

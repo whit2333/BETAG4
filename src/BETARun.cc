@@ -39,9 +39,9 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
    fNUpdate = 10;
 #ifdef BETAG4_DEBUG
-   if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
-      G4cout << "= Created new BETARun \n";
-   }
+   //if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
+   //   G4cout << "= Created new BETARun \n";
+   //}
 #endif
 
    //G4String colName;
@@ -78,16 +78,14 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 }
 //______________________________________________________________________________
 BETARun::~BETARun() {
-   if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
-      G4cout << "= Deleted BETARun \n";
-   }
+   //if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
+   //   G4cout << "= Deleted BETARun \n";
+   //}
 }
 //______________________________________________________________________________
 void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
-#ifdef BETAG4_DEBUG
-   if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
-#endif
+   //if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
 
    if ( ( numberOfEvent%fNUpdate ) == 0 ) {
       G4cout << " Event " << numberOfEvent << G4endl;
@@ -174,11 +172,9 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    fDAQReadout->Reset();
    fBETADigitizer->Reset();
 
-#ifdef BETAG4_DEBUG
-   if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
-      std::cout << "end of BETARun::RecordEvent() \n";
-   }
-#endif
+   //if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
+   //   std::cout << "end of BETARun::RecordEvent() \n";
+   //}
 
 }
 //____________________________________________________________________
