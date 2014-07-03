@@ -31,14 +31,19 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_polSwitch->AvailableForStates ( G4State_Idle );
 
    fCmd_polSet = new G4UIcmdWithADouble ( "/beta/target/setPolarizationAngle",this );
-   fCmd_polSet->SetGuidance ( "Set the target field polariztion" );
-   fCmd_polSet->SetGuidance ( "angle in units of degrees. For SANE, " );
-   fCmd_polSet->SetGuidance ( "transverse = 80 and antiparallel = 180" );
+   fCmd_polSet->SetGuidance ( "Set the target field polariztion in the x-z plane" );
+   fCmd_polSet->SetGuidance ( "Angle in units of degrees." );
+   fCmd_polSet->SetGuidance ( "For SANE, transverse = 80 and antiparallel = 180" );
+   fCmd_polSet->SetParameterName ( "polangle",false);
+   fCmd_polSet->SetRange ( "polangle>=0. && polangle<=180.");
    fCmd_polSet->SetDefaultValue ( fSimManager->GetTargetAngle() );
    fCmd_polSet->AvailableForStates ( G4State_Idle );
 
    fCmd_simTrigger = new G4UIcmdWithAnInteger ( "/beta/simulateTrigger",this );
-   fCmd_simTrigger->SetGuidance ( "Set to 1 in order to simulate the trigger of readout, otherwise readout occurs for every event" );
+   fCmd_simTrigger->SetGuidance ( "Set to 1 in order to simulate the trigger for SANE.");
+   fCmd_simTrigger->SetGuidance ( "Otherwise readout occurs for every event generated." );
+   fCmd_simTrigger->SetGuidance ( "See BETARun::RecordEvent, BETADigitizer and BETAG4DAQReadout for details." );
+   fCmd_simTrigger->SetDefaultValue(1);
    fCmd_simTrigger->AvailableForStates ( G4State_Idle );
 
    fCmd_rotateMirror = new G4UIcmdWithAString ( "/beta/gasCherenkov/mirrors/rotateToroidalMirrors",this );
@@ -47,8 +52,8 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
 
    fCmd_lookAtField = new G4UIcmdWithAString ( "/beta/target/lookAtField",this );
    fCmd_lookAtField->SetGuidance ( "Displays current magnetic field.  " );
-   //fCmd_lookAtField->SetGuidance ( "Arguments: [component]" );
-   //fCmd_lookAtField->SetGuidance ( "where component can be Z, z, R, or r" );
+   fCmd_lookAtField->SetGuidance ( "Arguments: [component]" );
+   fCmd_lookAtField->SetGuidance ( "where component can be Z, z, R, or r" );
    fCmd_lookAtField->SetGuidance ( "Runs root interpreter, so use .q to quit when finished looking at plot" );
    fCmd_lookAtField->AvailableForStates ( G4State_Idle );
 
@@ -56,12 +61,14 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_toggleTargetField->SetGuidance ( "Arguments: [on, off]" );
    fCmd_toggleTargetField->SetGuidance ( "Turns off the magnetic field of the oxford magnet" );
    fCmd_toggleTargetField->SetGuidance ( "Default is on" );
+   fCmd_toggleTargetField->SetDefaultValue ( "on" );
    fCmd_toggleTargetField->AvailableForStates ( G4State_Idle );
 
    fCmd_toggleTargetMaterial = new G4UIcmdWithAString ( "/beta/target/toggleTargetMaterial",this );
    fCmd_toggleTargetMaterial->SetGuidance ( "Arguments: [on, off, ovcOnly, magnetOnly]" );
    fCmd_toggleTargetMaterial->SetGuidance ( "Turns off or deletes the geometry and material of the target" );
    fCmd_toggleTargetMaterial->SetGuidance ( "Note: this does not turn off the field! " );
+   fCmd_toggleTargetMaterial->SetDefaultValue ( "on" );
    fCmd_toggleTargetMaterial->AvailableForStates ( G4State_Idle );
 
    fCmd_toggleForwardTracker = new G4UIcmdWithAString ( "/beta/toggleForwardTracker",this );
@@ -84,21 +91,6 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_toggleBigcal->SetGuidance ( "Arguments can be either on, off, or noOptics" );
    fCmd_toggleBigcal->AvailableForStates ( G4State_Idle );
 
-   //rotateToroidalMirrors = new G4UIcmdWithADouble("/field/rotateToroidalMirrors",this);
-   //rotateToroidalMirrors->SetGuidance("Rotate all toroidal mirros by given angle (degrees) along horz");
-   //rotateToroidalMirrors->AvailableForStates(G4State_Idle);
-
-   //gunDir = new G4UIdirectory ( "/beta/" );
-   //gunDir = new G4UIdirectory ( "/beta/gun/" );
-   //gunDir->SetGuidance ( "PrimaryGenerator control" );
-
-   //polarCmd = new G4UIcmdWithADoubleAndUnit ( "/beta/gun/optPhotonPolar",this );
-   //polarCmd->SetGuidance ( "Set linear polarization" );
-   //polarCmd->SetGuidance ( "  angle w.r.t. (k,n) plane" );
-   //polarCmd->SetParameterName ( "angle",true );
-   //polarCmd->SetUnitCategory ( "Angle" );
-   //polarCmd->SetDefaultValue ( -360.0 );
-   //polarCmd->SetDefaultUnit ( "deg" );
    //polarCmd->AvailableForStates ( G4State_Idle );
 
    fCmd_isotropic = new G4UIcmdWithAnInteger ( "/beta/gun/isotropic",this );
@@ -163,15 +155,15 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
    fCmd_refreshGenerator->AvailableForStates ( G4State_Idle );
 
    fCmd_setType = new G4UIcmdWithAString("/beta/gun/setEventType",this);
-   fCmd_setType->SetGuidance ( " Set the type of event generated. Note that this resets all the set values to their defaults." );
-   fCmd_setType->SetGuidance ( " Possible arguments are :" );
-   fCmd_setType->SetGuidance ( " flat - uniformly populate events" );
-   fCmd_setType->SetGuidance ( " allNH3 - electrons and pions from NH3 target" );
-   fCmd_setType->SetGuidance ( " disNH3 - only electrons from NH3 target" );
-   fCmd_setType->SetGuidance ( " mott - mott cross section" );
-   fCmd_setType->SetGuidance ( " cone - a small cone near with a small energy range " );
-   fCmd_setType->SetGuidance ( " dis - inclusive electron DIS(F1p and F2p)" );
-   fCmd_setType->SetGuidance ( " beamOnTarget - electron beam shot from up stream on the target (GEANT4 physics)" );
+   fCmd_setType->SetGuidance ( "Set the type of event generated. Note that this resets all the set values to their defaults." );
+   fCmd_setType->SetGuidance ( "Possible arguments are :" );
+   fCmd_setType->SetGuidance ( "   flat         - uniformly populate events" );
+   fCmd_setType->SetGuidance ( "   allNH3       - electrons and pions from NH3 target" );
+   fCmd_setType->SetGuidance ( "   disNH3       - only electrons from NH3 target" );
+   fCmd_setType->SetGuidance ( "   mott         - mott cross section" );
+   fCmd_setType->SetGuidance ( "   cone         - a cone with a small energy range " );
+   fCmd_setType->SetGuidance ( "   dis          - inclusive electron DIS(F1p and F2p)" );
+   fCmd_setType->SetGuidance ( "   beamOnTarget - electron beam shot from up stream on the target (GEANT4 physics)" );
    fCmd_setType->SetDefaultValue ( "flat" );
    fCmd_setType->AvailableForStates ( G4State_Idle );
 
@@ -280,7 +272,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
 
    if ( command == fCmd_toggleLuciteHodoscope )
    {
-      std::cout << " args = " << newValue.data() << "\n";
+      //std::cout << " args = " << newValue.data() << "\n";
       if( !(strcmp(newValue.data(),"on")) )  {
          fDetConstruction->usingLuciteHodoscope = true;
          fDetConstruction->fSimulationManager->fSimulateHodoscopeOptics = true;
@@ -332,7 +324,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
 
    if ( command == fCmd_toggleBigcal )
    {
-      std::cout << " args = " << newValue.data() << "\n";
+      //std::cout << " args = " << newValue.data() << "\n";
       if( !(strcmp(newValue.data(),"on")) )  {
          fDetConstruction->usingBigcal = true;
          fDetConstruction->fSimulationManager->fSimulateBigcalOptics = true;

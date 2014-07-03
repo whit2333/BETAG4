@@ -26,7 +26,7 @@ BETAPrimaryGeneratorAction::BETAPrimaryGeneratorAction() {
    simMan->SetPrimaryGeneratorAction(this);
    //gunMessenger = new BETAPrimaryGeneratorMessenger ( this );
    
-   fBETAG4EventGen    = new BETAG4EventGenerator();
+   fBETAG4EventGen    = new BigcalCenterEventGenerator();
    fOutputTree        = 0;
    fMonteCarloEvent   = 0;
    fNumberOfParticles = 1;
@@ -63,7 +63,6 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
    if(!fBETAG4EventGen->fIsInitialized) {
       fBETAG4EventGen->Initialize();
       fBETAG4EventGen->fIsInitialized = true;
-      std::cout << "DSLFKJDF" << std::endl;
    }
    if(fBETAG4EventGen->IsModified()) fBETAG4EventGen->Refresh();
 
