@@ -300,6 +300,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       }
       G4RunManager::GetRunManager()->GeometryHasBeenModified();
    }
+
    if ( command == fCmd_toggleForwardTracker )
    {
       //std::cout << " args = " << newValue.data() << "\n";
@@ -328,6 +329,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       }
          G4RunManager::GetRunManager()->GeometryHasBeenModified();
    }
+
    if ( command == fCmd_toggleBigcal )
    {
       std::cout << " args = " << newValue.data() << "\n";
@@ -352,6 +354,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       }
       G4RunManager::GetRunManager()->GeometryHasBeenModified();
    }
+
    if ( command == fCmd_setThetaMax ) {
       anEventGen->SetThetaMax(fCmd_setThetaMax->GetNewDoubleValue(newValue)*TMath::Pi()/180.0);
       anEventGen->NeedsRefreshed();
@@ -388,63 +391,69 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       if(newValue == "flat") {
          anEventGen = new BigcalCenterEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "cone") {
          anEventGen = new ConeEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "dis") {
          anEventGen = new DISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "allNH3") {
          anEventGen = new NH3TargetEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "disNH3") {
          anEventGen = new SANEInclusiveDISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "poldis") {
          anEventGen = new PolarizedDISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "mott") {
          anEventGen = new MottEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "pion") {
          anEventGen = new InclusivePionEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "wiser") {
          anEventGen = new WiserEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //janEventGen->Initialize();
+         //janEventGen->fIsInitialized = true;
       } else if(newValue == "electronPion") {
          anEventGen =  new InclusiveElectronPionGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else if(newValue == "beamOnTarget") {
          anEventGen = new BeamOnTargetEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         anEventGen->Initialize();
-         anEventGen->fIsInitialized = true;
+         //anEventGen->Initialize();
+         //anEventGen->fIsInitialized = true;
       } else {
          std::cout << " Illegal parameter: " << newValue << " !\n";
       }
-      anEventGen->NeedsRefreshed();
+      //anEventGen->SetModified(true);
+      if( !anEventGen->fIsInitialized ) {
+         anEventGen->Initialize();
+         anEventGen->fIsInitialized = true;
+      }
+      else BETAAction->GetEventGenerator()->Refresh();
    }
+
    if ( command == fCmd_refreshGenerator) {
         if( !anEventGen->fIsInitialized ) {
            anEventGen->Initialize();
@@ -452,41 +461,16 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
         }
         else BETAAction->GetEventGenerator()->Refresh();
    }
+
    if ( command == fCmd_listPSVariables) {
-/*      BETAAction->GetEventGenerator()->ListPhaseSpaceVariables();*/
       BETAAction->GetEventGenerator()->Print();
    }
 
-//    if ( command == polarCmd )
-//    {
-//       G4double angle = polarCmd->GetNewDoubleValue ( newValue );
-//       if ( angle == -360.0*deg )
-//       {
-//          BETAAction->SetOptPhotonPolar();
-//       }
-//       else
-//       {
-//          BETAAction->SetOptPhotonPolar ( angle );
-//       }
-//    }
-//    if ( command == isotropic )
-//    {
-//       BETAAction->SetIsotropic ( isotropic->GetNewIntValue ( newValue ) );
-//    }
-// 
    if ( command == fCmd_setBeamEnergy ) {
       BETAAction->GetEventGenerator()->SetBeamEnergy( fCmd_setBeamEnergy->GetNewDoubleValue(newValue) );
       fSimManager->SetBeamEnergy(fCmd_setBeamEnergy->GetNewDoubleValue(newValue)); 
    }
 
-//    if ( command == sigmaMomentum )
-//    {
-//       BETAAction->SetSigmaMomentum ( sigmaMomentum->GetNewDoubleValue ( newValue ) );
-//    }
-//    if ( command == sete_piRatio )
-//    {
-//       BETAAction->SetElectronPionRatio ( sete_piRatio->GetNewDoubleValue ( newValue ) );
-//    }
    if ( command == fCmd_setParticle )
    {
       G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
@@ -496,12 +480,11 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
          ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->SetParticleType(partnum );
          ((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->InitializeFinalStateParticles( );
          //((InSANEPhaseSpaceSampler*)(samplers->At(0)))->GetXSec()->Print( );
-	 std::cout << " setting particle by pdg code " << partnum <<  " \n";
+	 //std::cout << " setting particle by pdg code " << partnum <<  " \n";
       }
       else std::cout << " NO SAMPLERS YET\n"; 
       BETAAction->GetParticleGun()->SetParticleDefinition(particleTable->FindParticle ( newValue ));
-      
-      anEventGen->NeedsRefreshed();
+      anEventGen->SetModified(true);
    }
 
 }

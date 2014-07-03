@@ -63,6 +63,7 @@ void BETAPrimaryGeneratorAction::GeneratePrimaries ( G4Event* anEvent ) {
    if(!fBETAG4EventGen->fIsInitialized) {
       fBETAG4EventGen->Initialize();
       fBETAG4EventGen->fIsInitialized = true;
+      std::cout << "DSLFKJDF" << std::endl;
    }
    if(fBETAG4EventGen->IsModified()) fBETAG4EventGen->Refresh();
 

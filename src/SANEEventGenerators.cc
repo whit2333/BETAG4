@@ -112,6 +112,7 @@ void PolarizedDISEventGenerator::Initialize(){
    //fDiffXSec1->Print();
    //fDiffXSec2->Print();
    //fPolXSec->Print();
+   fIsInitialized = true;
 }
 //____________________________________________________________________
 
@@ -164,6 +165,7 @@ void InclusiveElectronPionGenerator::Initialize(){
    InSANEEventGenerator::Initialize();
 
    CalculateTotalCrossSection();
+   fIsInitialized = true;
 }
 //____________________________________________________________________
 
@@ -205,9 +207,10 @@ void InclusivePionEventGenerator::Initialize(){
 
    SetBeamEnergy(fBeamEnergy);
 
-   InSANEEventGenerator::Initialize();
+   //InSANEEventGenerator::Initialize();
 
    CalculateTotalCrossSection();
+   fIsInitialized = true;
 }
 //____________________________________________________________________
 
@@ -222,6 +225,7 @@ void MottEventGenerator::Initialize(){
    InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
    AddSampler(fF1F2EventSampler);
    CalculateTotalCrossSection();
+   fIsInitialized = true;
 }
 //____________________________________________________________________
 
@@ -235,27 +239,28 @@ void WiserEventGenerator::Initialize() {
    InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
    AddSampler(fEventSampler);
    SetBeamEnergy(fBeamEnergy);
-   InSANEEventGenerator::Initialize();
    CalculateTotalCrossSection();
    //ps->Print();
+   fIsInitialized = true;
 }
 //____________________________________________________________________
 
 //____________________________________________________________________
 void BigcalCenterEventGenerator::Initialize() {
-      InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
-      fDiffXSec->SetBeamEnergy(fBeamEnergy);
-      fDiffXSec->SetParticleType(11);
-      fDiffXSec->InitializePhaseSpaceVariables();
-      InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
-      InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-      AddSampler(fEventSampler);
-      SetBeamEnergy(fBeamEnergy);
-      InSANEEventGenerator::Initialize();
-      CalculateTotalCrossSection();
-      //ps->Print();
+   InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
+   fDiffXSec->SetBeamEnergy(fBeamEnergy);
+   fDiffXSec->SetParticleType(11);
+   fDiffXSec->InitializePhaseSpaceVariables();
+   InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
+   InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+   AddSampler(fEventSampler);
+   SetBeamEnergy(fBeamEnergy);
+   //CalculateTotalCrossSection();
+   Refresh();
+   //ps->Print();
+   fIsInitialized = true;
 
-   }
+}
 //____________________________________________________________________
 
 //____________________________________________________________________

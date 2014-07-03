@@ -24,7 +24,7 @@ class BETAG4EventGenerator : public InSANETargetEventGenerator {
    public :
       int   fNumberOfGeneratedParticles;
       bool  fIsInitialized;
-      bool  fNeedsRefreshed;
+      //bool  fNeedsRefreshed;
 
       G4ThreeVector * fInitialPosition ;
       G4ThreeVector * fInitialDirection ;

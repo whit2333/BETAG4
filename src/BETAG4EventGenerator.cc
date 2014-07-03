@@ -3,7 +3,7 @@
 //______________________________________________________________________________
 BETAG4EventGenerator::BETAG4EventGenerator() {
    fNumberOfGeneratedParticles = 1;
-   fNeedsRefreshed             = false;
+   //fNeedsRefreshed             = false;
    fIsInitialized              = false;
    fBeamEnergy                 = 5.9;
    fInitialPosition            = new G4ThreeVector(0,0,0);
@@ -83,7 +83,7 @@ double BETAG4EventGenerator::GetParticleEnergy(const TParticle * p) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetThetaMax(double val) { 
    fThetaMax = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("theta");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -94,7 +94,7 @@ void BETAG4EventGenerator::SetThetaMax(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetThetaMin(double val) { 
    fThetaMin = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("theta");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -105,7 +105,7 @@ void BETAG4EventGenerator::SetThetaMin(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetPhiMax(double val) { 
    fPhiMax = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("phi");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -116,7 +116,7 @@ void BETAG4EventGenerator::SetPhiMax(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetPhiMin(double val) { 
    fPhiMin = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("phi");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -127,7 +127,7 @@ void BETAG4EventGenerator::SetPhiMin(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetEnergyMax(double val) { 
    fEnergyMax = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("energy");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -138,7 +138,7 @@ void BETAG4EventGenerator::SetEnergyMax(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetEnergyMin(double val) { 
    fEnergyMin = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("energy");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -149,7 +149,7 @@ void BETAG4EventGenerator::SetEnergyMin(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetMomentumMax(double val) { 
    fMomentumMax = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("momentum");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
@@ -160,7 +160,7 @@ void BETAG4EventGenerator::SetMomentumMax(double val) {
 //________________________________________________________________________________
 void BETAG4EventGenerator::SetMomentumMin(double val) { 
    fMomentumMin = val;
-   fNeedsRefreshed = true;
+   SetModified(true);
    TList * vars = GetPSVariables("momentum");
    for(int i = 0; i< vars->GetEntries() ; i++){
       InSANEPhaseSpaceVariable * aVar = (InSANEPhaseSpaceVariable*) vars->At(i);
