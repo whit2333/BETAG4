@@ -48,19 +48,21 @@ void BETAG4BigcalSD::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent){
    // Initialise hits
    // For each block
    for( int i=0; i<1744; i++ ) {
-      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
+      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i+1 );
       fHitsCollection->insert ( aHit );
    }
 
    // For the smallest timing groups, sums of 8 (4 columns x 56 rows = 224 groups)
    for( int i=0; i< 56*4 ; i++ ) {
-      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
+      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i+1);
+      aHit->fType = 1;
       fTimingHC->insert ( aHit );
    }
 
    // For the trigger subgroups (sums of 64)
    for( int i=0; i<19*2; i++ ) {
-      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i );
+      BETAG4BigcalHit* aHit = new BETAG4BigcalHit ( i+1 );
+      aHit->fType = 2;
       fTriggerHC->insert ( aHit );
    }
 }
@@ -80,9 +82,9 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
    G4VPhysicalVolume* thePhysical   = theTouchable->GetVolume();
    G4int copyNo                     = thePhysical->GetCopyNo();
 
-   int timingGroupNo    = fGeoCalc->GetGroupNumber(copyNo+1);
-   int triggerGroupNo   = fGeoCalc->GetSumOf64GroupNumber(copyNo+1)[0];
-   int triggerGroupNo2  = fGeoCalc->GetSumOf64GroupNumber(copyNo+1)[1];
+   int timingGroupNo    = fGeoCalc->GetGroupNumber(copyNo);
+   int triggerGroupNo   = fGeoCalc->GetSumOf64GroupNumber(copyNo)[0];
+   int triggerGroupNo2  = fGeoCalc->GetSumOf64GroupNumber(copyNo)[1];
 
    // Get corresponding hit
    BETAG4BigcalHit* aHit = ( *fHitsCollection ) [copyNo];
@@ -101,6 +103,36 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
       aHit->fNHits++;
       aHit->SetRotation ( aTrans.NetRotation() );
       aHit->SetPosition ( aTrans.NetTranslation() );
+   }
+   if ( ! ( bHit->GetLogicalVolume() ) )
+   {
+      // Set volume information
+      bHit->SetLogicalVolume ( thePhysical->GetLogicalVolume() );
+      G4AffineTransform aTrans = theTouchable->GetHistory()->GetTopTransform();
+      aTrans.Invert();
+      bHit->fNHits++;
+      bHit->SetRotation ( aTrans.NetRotation() );
+      bHit->SetPosition ( aTrans.NetTranslation() );
+   }
+   if ( ! ( cHit->GetLogicalVolume() ) )
+   {
+      // Set volume information
+      cHit->SetLogicalVolume ( thePhysical->GetLogicalVolume() );
+      G4AffineTransform aTrans = theTouchable->GetHistory()->GetTopTransform();
+      aTrans.Invert();
+      cHit->fNHits++;
+      cHit->SetRotation ( aTrans.NetRotation() );
+      cHit->SetPosition ( aTrans.NetTranslation() );
+   }
+   if(dHit) if ( ! ( dHit->GetLogicalVolume() ) )
+   {
+      // Set volume information
+      dHit->SetLogicalVolume ( thePhysical->GetLogicalVolume() );
+      G4AffineTransform aTrans = theTouchable->GetHistory()->GetTopTransform();
+      aTrans.Invert();
+      dHit->fNHits++;
+      dHit->SetRotation ( aTrans.NetRotation() );
+      dHit->SetPosition ( aTrans.NetTranslation() );
    }
 
    // Accumulate energy deposition

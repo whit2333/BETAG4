@@ -11,12 +11,14 @@
 #include "G4ParticleGun.hh"
 #include "G4VisAttributes.hh"
 #include "G4VVisManager.hh"
+#include "BIGCALGeometryCalculator.h"
 
 G4Allocator<BETAG4BigcalHit> BETAG4BigcalHitAllocator;
 //______________________________________________________________________________
 BETAG4BigcalHit::BETAG4BigcalHit ( G4int id )
       :fCellID ( id ),
       fDepositedEnergy ( 0 ),
+      fType(0),
       fPosition(),
       fRotation(),
       pLogicalVolume( 0 ),
@@ -28,32 +30,67 @@ BETAG4BigcalHit::~BETAG4BigcalHit() {
 }
 //______________________________________________________________________________
 void BETAG4BigcalHit::Draw() {
-/*
-  G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 
-  if(pVVisManager && (fDepositedEnergy>0.)) {
+   G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
 
-    // HandsOn5: Draw a box with depth propotional to the energy deposition
-        G4double scale = 2000;//BETAPrimaryGeneratorAction::Gun()->GetParticleEnergy();
-    G4double depth = (50.*cm)*(fDepositedEnergy*MeV)/(scale*MeV);
+   if(pVVisManager) {
+      if( fType==0 && (fDepositedEnergy>0.)) {
+         BIGCALGeometryCalculator * bcgeo = BIGCALGeometryCalculator::GetCalculator();
 
-    // Back face of box is flat against front face of calorimeter cell
-    double z = fPosition.z()  + 25.*cm;
-    G4ThreeVector myPos(fPosition.x(), fPosition.y(), z+depth);
+         // HandsOn5: Draw a box with depth propotional to the energy deposition
+         G4double scale = 2000;//BETAPrimaryGeneratorAction::Gun()->GetParticleEnergy();
+         G4double depth = (50.*cm)*fDepositedEnergy/scale;
 
-    G4Transform3D trans(fRotation.inverse(), myPos);
-    G4VisAttributes attribs;
+         // Back face of box is flat against front face of calorimeter cell
+         //G4ThreeVector myPos(pos.X(), fPosition.y(), fPosition.z() + depth);
+         TVector3 pos = bcgeo->GetBlockFacePosition(fCellID);
+         TVector3 hitVec(0.0,0.0,depth/cm);
+         bcgeo->RotateFromBCCoords(hitVec);
+         pos += hitVec;
+         G4ThreeVector pos1(pos.X()*cm,pos.Y()*cm,pos.Z()*cm);
+         //G4Transform3D trans(G4RotationMatrix::IDENTITY, pos1);
+         G4Transform3D trans(fRotation.inverse(), pos1);
 
-    // Magenta with transparency
-    G4Colour colour(1., 0., 1., 0.6);
-    attribs.SetColour(colour);
-    attribs.SetForceSolid(true);
+         // Magenta with transparency
+         G4VisAttributes attribs;
+         G4Colour colour(1., 0., 1., 0.6);
+         attribs.SetColour(colour);
+         attribs.SetForceSolid(true);
 
-    G4Box box("MyBox", 3.8/2.*cm, 3.8/2.*cm, depth);
+         G4Box box("MyBox", 3.8/2.*cm, 3.8/2.*cm, depth);
 
-    pVVisManager->Draw(box, attribs, trans);
-  }
-*/
+         pVVisManager->Draw(box, attribs, trans);
+      }
+      if( fTimingHit==true && fType==2 && fDepositedEnergy>0.) {
+         BIGCALGeometryCalculator * bcgeo = BIGCALGeometryCalculator::GetCalculator();
+
+         // HandsOn5: Draw a box with depth propotional to the energy deposition
+         G4double scale = 2000;//BETAPrimaryGeneratorAction::Gun()->GetParticleEnergy();
+         G4double depth = (10.*cm)*fDepositedEnergy/scale;
+
+         std::cout << fCellID << " : " << fDepositedEnergy << " MeV" << std::endl;
+         // Back face of box is flat against front face of calorimeter cell
+         //G4ThreeVector myPos(pos.X(), fPosition.y(), fPosition.z() + depth);
+         TVector3 pos = bcgeo->GetSumOf64Position(fCellID);
+         bcgeo->RotateFromBCCoords(pos);
+         TVector3 hitVec(0.0,0.0,45.0+depth/cm);
+         bcgeo->RotateFromBCCoords(hitVec);
+         pos += hitVec;
+         G4ThreeVector pos1(pos.X()*cm,pos.Y()*cm,pos.Z()*cm);
+         //G4Transform3D trans(G4RotationMatrix::IDENTITY, pos1);
+         G4Transform3D trans(fRotation.inverse(), pos1);
+
+         // Magenta with transparency
+         G4VisAttributes attribs;
+         G4Colour colour(1., 1., 0., 0.3);
+         attribs.SetColour(colour);
+         attribs.SetForceSolid(true);
+
+         G4Box box("MyBox", 16.0*3.8/2.*cm, 4.0*3.8/2.*cm, depth);
+
+         pVVisManager->Draw(box, attribs, trans);
+      }
+   }
 }
 //______________________________________________________________________________
 const std::map<G4String,G4AttDef>* BETAG4BigcalHit::GetAttDefs() const {

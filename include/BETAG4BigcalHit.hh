@@ -8,6 +8,9 @@
 #include "G4THitsCollection.hh"
 #include "G4Transform3D.hh"
 #include "G4VHit.hh"
+#include "TMath.h"
+#include "TVector3.h"
+#include "TRotation.h"
 
 class G4AttDef;
 class G4AttValue;
@@ -47,6 +50,7 @@ class BETAG4BigcalHit : public G4VHit {
       const G4LogicalVolume* GetLogicalVolume() const {return pLogicalVolume;}
 
       G4int                   fCellID;
+      G4int                   fType;   // =0(block), =1(timing), =2(trigger)
       G4double                fTiming;
       G4double                fDepositedEnergy;
       G4ThreeVector           fPosition;

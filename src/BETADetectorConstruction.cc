@@ -363,7 +363,7 @@ void BETADetectorConstruction::SetVisAtt(){
       if(fLuciteHodoBar_log)fLuciteHodoBar_log->SetVisAttributes(fBlackLineVisAtt);
 
       /// Fake Scoring Planes - invisible
-      if(fBigCalFakePlane_log)fBigCalFakePlane_log->SetVisAttributes(fInvisibleVisAtt);
+      if(fBigCalFakePlane_log) fBigCalFakePlane_log->SetVisAttributes(fInvisibleVisAtt);
       if(fTrackerFakePlane_log)fTrackerFakePlane_log->SetVisAttributes(fInvisibleVisAtt);
 
       /// Helium bag - invisible
@@ -1260,16 +1260,17 @@ void BETADetectorConstruction::ConstructHodoscope() {
    hodoscopeContainerBox_log->SetVisAttributes ( hodoCont_log_attr );
    //hodoscopeContainerBox_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
 
-   G4VisAttributes* hodoCont2_log_attr = new G4VisAttributes ( G4Colour::Black()/*G4Colour ( 204.0/255.0, 204.0/255.0, 51.0/255.0 )*/ );
+   G4VisAttributes* hodoCont2_log_attr = fSecondaryColorBLineVisAtt;//new G4VisAttributes ( G4Colour::Black()/*G4Colour ( 204.0/255.0, 204.0/255.0, 51.0/255.0 )*/ );
    hodoCont2_log_attr->SetForceWireframe(true);
-   hodoCont2_log_attr->SetVisibility(false);
+   hodoCont2_log_attr->SetVisibility(true);
    hodoCont2_log_attr->SetDaughtersInvisible(false);
-   hodoscope_log->SetVisAttributes ( hodoCont2_log_attr );
+   hodoscope_log->SetVisAttributes ( hodoCont2_log_attr );//hodoCont2_log_attr );
    //hodoscope_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
 
-   G4VisAttributes* hodoBar_log_attr = new G4VisAttributes ( G4Colour::Black()/*G4Colour ( 228.0/255.0, 228.0/255.0, 149.0/255.0 )*/ );
-   hodoBar_log_attr->SetForceSolid(true);
-   //hodoBar_log_attr->SetVisibility(true);
+   G4VisAttributes* hodoBar_log_attr = fSecondaryColorALineVisAtt;//new G4VisAttributes ( G4Colour::Black()/*G4Colour ( 228.0/255.0, 228.0/255.0, 149.0/255.0 )*/ );
+   //hodoBar_log_attr->SetForceSolid(true);
+   hodoBar_log_attr->SetForceWireframe(true);
+   hodoBar_log_attr->SetVisibility(true);
    //hodoBar_log_attr->SetDaughtersInvisible(false);
    fLuciteHodoBar_log->SetVisAttributes ( hodoBar_log_attr );
 
@@ -1574,26 +1575,19 @@ void BETADetectorConstruction::ConstructBigCal() {
    }
 
 
-   G4VisAttributes* BIGCALAttributes = new G4VisAttributes (/* G4Colour::Black()*/G4Colour ( 0.0,0.5,0.5,0.5 ) );
-   /*   BIGCALAttributes->SetForceSolid ( false );*/
-   BIGCALAttributes->SetForceWireframe( true );
-   BIGCALAttributes->SetDaughtersInvisible(false  );
-   fCalorimeterTop_log->SetVisAttributes(BIGCALAttributes);
-   fCalorimeterBottom_log->SetVisAttributes(BIGCALAttributes);
    // Make cells invisible!
-   //    cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
-   //    cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
-   // Make containers invisible
+   //cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
+   //cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
+   //Make containers invisible
    G4VisAttributes* BIGCALRcsProtAttributes = new G4VisAttributes (/*G4Colour::Black()*/ G4Colour ( 0.2,0.6,0.0,0.25 )  );
+   BIGCALRcsProtAttributes->SetForceWireframe(true);
+   BIGCALRcsProtAttributes->SetDaughtersInvisible(false);
    fCalorimeterTop_log->SetVisAttributes ( BIGCALRcsProtAttributes );
    fCalorimeterBottom_log->SetVisAttributes ( BIGCALRcsProtAttributes);
+   fPMTLogicalBottom->SetVisAttributes ( BIGCALRcsProtAttributes );
+   fPMTLogicalTop->SetVisAttributes ( BIGCALRcsProtAttributes);
 
-   G4VisAttributes* BIGCALCellAttributes = new G4VisAttributes ( /*G4Colour::Black()*/G4Colour ( 0.2,0.6,0.0,0.25 )  );
-   //BIGCALCellAttributes->SetForceSolid ( true );
-   //BIGCALCellAttributes->SetForceWireframe( true );
-   //  cellLogical->SetVisAttributes(BIGCALCellAttributes );
    fCellLogicalTop->SetVisAttributes(G4VisAttributes::Invisible );
-   //  cellLogicalBottom->SetVisAttributes(BIGCALCellAttributes );
    fCellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
 }
 //___________________________________________________________________
@@ -2509,9 +2503,9 @@ toroid "tube" axis:     85.8 cm
    G4VisAttributes* cerWindowAttrib = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5, 0.1 ) );
    cerWindowAttrib->SetForceWireframe ( true );
 
-   /// Back window
+   // Back window
    fCerBackWindow_log->SetVisAttributes( cerWindowAttrib );
-   /// Front window
+   // Front window
    fCerFrontWindow_log->SetVisAttributes( cerWindowAttrib );
 
    G4VisAttributes* cerSquareTubeFrameAttrib = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
@@ -2549,81 +2543,67 @@ void BETADetectorConstruction::ConstructFakePlane() {
       // The following is for a fake detector just before bigcal
       G4Box* fakePlane_box = new G4Box ( "PlaneBeforeBigcal",1.4*m/2.0,2.5*m/2.0 , 0.10*mm );
       fBigCalFakePlane_log = 
-           new G4LogicalVolume ( fakePlane_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
+         new G4LogicalVolume ( fakePlane_box,Air,"PlaneBeforeBigcal_log",0,0,0 );
       //BIGCALGeometryCalculator * BCgeo =  BIGCALGeometryCalculator::GetCalculator();
       //rTarget
       G4double bigcalFace = rBigcal;  // from target
       G4double bigcalFaceRelative = bigcalFace - ( DetectorLength/2.0 + fBETADistance ) ;
-      G4VPhysicalVolume* fakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-0.10*cm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
-//      SetupScoring(fakePlane_log);
-   G4SDManager* manager = G4SDManager::GetSDMpointer();
-   BETAFakePlane* fakePlane =
-      new BETAFakePlane("BIGCALPlane");
-   fakePlane->SetSensitiveVolume(fakePlane_phys);
+      G4VPhysicalVolume* fakePlane_phys = 
+         new G4PVPlacement ( 0,G4ThreeVector ( 0,0,bigcalFaceRelative-0.10*cm ) ,fBigCalFakePlane_log,"PlaneBeforeBigcal_phys",BETADetector_log,false,0 );
 
-   // Register detector with manager
-   manager->AddNewDetector((G4VSensitiveDetector*)fakePlane);
-   // Attach detector to scoring volume
-   fBigCalFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)fakePlane);
-   //fBigCalFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+      //SetupScoring(fakePlane_log);
+      G4SDManager* manager = G4SDManager::GetSDMpointer();
+      BETAFakePlane* fakePlane = new BETAFakePlane("BIGCALPlane");
+      fakePlane->SetSensitiveVolume(fakePlane_phys);
+      manager->AddNewDetector((G4VSensitiveDetector*)fakePlane);
+      fBigCalFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)fakePlane);
 
-//      planeBehindTracker_log->SetVisAttributes(G4VisAttributes::Invisible);
+      //fBigCalFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
+      fBigCalFakePlane_log->SetVisAttributes(fInvisibleVisAtt);
    }
 
-// Fake Plane at tracker
+   // Fake Plane at tracker
    if(usingFakePlaneAtForwardTracker) {
       ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
+
+      // ------------------------------------
+      // Plane before tracker
       G4Box* trakerFakePlane_box = new G4Box ( "trackerFakePlane",27*cm/2.0,45.0*cm/2.0 , 0.10*mm );
       fTrackerFakePlane_log = 
-           new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
-  
-   TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
-   G4double fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm - ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
-   std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
-   std::cout << " old PLACEMENT = " << -1.0*DetectorLength/2.0+0.2*mm  << "\n";
-   //      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
-      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
-/*      G4VPhysicalVolume* trackerFakePlane_phys = new G4PVPlacement ( 0,
-	                                         G4ThreeVector ( 0,0, -0.3*cm + ForwardTrackerGeometryCalculator::GetCalculator()->fTotalThickness*cm/2.0 ) ,
-						 fTrackerFakePlane_log,
-						 "trackerFakePlane_phys",
-						 tracker_log, 
-						 false,
-						 0 );
-*/
-//  	 SetupScoring(fTrackerFakePlane_log);
+         new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane_log",0,0,0 );
+      TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
+      G4double fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm - ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
+      //std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
+      //std::cout << " old PLACEMENT = " << -1.0*DetectorLength/2.0+0.2*mm  << "\n";
+      //G4VPhysicalVolume* trackerFakePlane_phys = 
+      //   new G4PVPlacement ( 0,G4ThreeVector ( 0,0,-1.0*DetectorLength/2.0+ 0.20*mm ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
+      G4VPhysicalVolume* trackerFakePlane_phys = 
+         new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane_log,"trackerFakePlane_phys",BETADetector_log,false,0 );
 
-   G4SDManager* manager = G4SDManager::GetSDMpointer();
+      G4SDManager* manager = G4SDManager::GetSDMpointer();
+      BETAFakePlane* trackerFakePlaneDetector = new BETAFakePlane("ForwardTrackerPlane");
+      trackerFakePlaneDetector->SetSensitiveVolume(trackerFakePlane_phys);
+      manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
+      fTrackerFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
 
-   BETAFakePlane* trackerFakePlaneDetector =
-      new BETAFakePlane("ForwardTrackerPlane");
-   // Register detector with manager
-   trackerFakePlaneDetector->SetSensitiveVolume(trackerFakePlane_phys);
-   manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   fTrackerFakePlane_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlaneDetector);
-   // Attach detector to scoring volume
-   G4VisAttributes* trackerPlaneAttrib = new G4VisAttributes ( G4Colour ( 0.0,0.5,0.5 ) );
-   trackerPlaneAttrib->SetForceWireframe( true );
-   //fTrackerFakePlane_log->SetVisAttributes(trackerPlaneAttrib);
-   //fTrackerFakePlane_log->SetVisAttributes(G4VisAttributes::Invisible);
 
-   /// Plane behind tracker
-   G4LogicalVolume * fTrackerFakePlane2_log = 
-           new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane2_log",0,0,0 );
-  
-   fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm + ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
-   std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
-   G4VPhysicalVolume* trackerFakePlane2_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane2_log,"trackerFakePlane2_phys",BETADetector_log,false,0 );
+      // ------------------------------------
+      // Plane behind tracker
+      G4LogicalVolume * fTrackerFakePlane2_log = 
+         new G4LogicalVolume ( trakerFakePlane_box,Air,"trackerFakePlane2_log",0,0,0 );
+      fakeplaneZplacement =  -1.0*DetectorLength/2.0  - fBETADistance + ftbbox_origin.Z()*cm + ( ftgeocalc->fTotalThickness*cm/2.0 + 5*mm);
+      //std::cout << " Z PLACEMENT = " << fakeplaneZplacement  << "\n";
+      G4VPhysicalVolume* trackerFakePlane2_phys = 
+         new G4PVPlacement ( 0,G4ThreeVector ( 0,0,fakeplaneZplacement ) ,fTrackerFakePlane2_log,"trackerFakePlane2_phys",BETADetector_log,false,0 );
 
-   BETAFakePlane* trackerFakePlane2Detector =
-      new BETAFakePlane("ForwardTrackerPlane2","fakePlane2");
-   // Register detector with manager
-   trackerFakePlane2Detector->SetSensitiveVolume(trackerFakePlane2_phys);
-   manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
-   fTrackerFakePlane2_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
-   
+      BETAFakePlane* trackerFakePlane2Detector = new BETAFakePlane("ForwardTrackerPlane2","fakePlane2");
+      trackerFakePlane2Detector->SetSensitiveVolume(trackerFakePlane2_phys);
+      manager->AddNewDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
+      fTrackerFakePlane2_log->SetSensitiveDetector((G4VSensitiveDetector*)trackerFakePlane2Detector);
+
+      fTrackerFakePlane_log->SetVisAttributes(fInvisibleVisAtt);
+      fTrackerFakePlane2_log->SetVisAttributes(fInvisibleVisAtt);
    }
-
 }
 //___________________________________________________________________
 
@@ -2737,7 +2717,7 @@ void BETADetectorConstruction::ConstructHeliumBag() {
         G4ThreeVector(-1.0*fHorizSize/2.0+0.13*2.54*cm/2.0+fWindowThickness,0.0,-1.0*fLength/2.0+1.0*2.54*cm/2.0),
         fHeBagExtenderVertSupport_log, "HeBagExtenderVertSupport4_phys", fHeBagExtenderBox_log, false, 0);
 
-// horizontal supports
+   // horizontal supports
    fHeBagExtenderHorizSupport   = new G4Box("HeBagExtenderHorizSupport",  4.67*2.54*cm/2.0, 0.13*2.54*cm/2.0, 1.0*2.54*cm/2.0);
    fHeBagExtenderHorizSupport_log = new G4LogicalVolume(fHeBagExtenderHorizSupport, Al, "HeBagExtenderHorizSupport_log");
    new G4PVPlacement(0,
