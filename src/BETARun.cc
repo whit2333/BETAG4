@@ -124,11 +124,14 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
       numberOfEvent++;
    }
+
    //---------------------------
   
-   fSimulationManager->fEventNumber = numberOfEvent; /// numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
+   fSimulationManager->fEventNumber = numberOfEvent; // numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
+
 
    fBETADigitizer->Reset();
+
    // Simulates the trigger supervisor
    fDAQReadout->Digitize();
    //fDAQReadout->Print();
@@ -136,7 +139,8 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    
    if( fDAQReadout->IsGoodEvent() || !(fSimulationManager->fSimulateTrigger) ) {
 
-      if( fDAQReadout->IsGoodEvent() ) fBETADigitizer->SetTriggered(true);
+      //if( fDAQReadout->IsGoodEvent() ) 
+         fBETADigitizer->SetTriggered(true);
 
       /*    std::cout << " Above Readout Triggered DAQ! \n";*/
       if(fBETADigitizer->IsTriggered()) fBETADigitizer->Digitize();
@@ -162,9 +166,10 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
       fSimulationManager->fDetectorTree->Fill();
 
-      fBETADigitizer->Clear();
 
    }
+
+   fBETADigitizer->Clear();
    fDAQReadout->Clear();
 
    numberOfEvent++;

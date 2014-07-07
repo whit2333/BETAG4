@@ -81,11 +81,13 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 
    G4VPhysicalVolume* thePhysical   = theTouchable->GetVolume();
    G4int copyNo                     = thePhysical->GetCopyNo();
+   G4int blockNo                    = copyNo+1;
 
-   int timingGroupNo    = fGeoCalc->GetGroupNumber(copyNo);
-   int triggerGroupNo   = fGeoCalc->GetSumOf64GroupNumber(copyNo)[0];
-   int triggerGroupNo2  = fGeoCalc->GetSumOf64GroupNumber(copyNo)[1];
+   int timingGroupNo    = fGeoCalc->GetGroupNumber(blockNo);
+   int triggerGroupNo   = fGeoCalc->GetSumOf64GroupNumber(blockNo)[0];
+   int triggerGroupNo2  = fGeoCalc->GetSumOf64GroupNumber(blockNo)[1];
 
+   //std::cout << "timingGroupNo  = " << timingGroupNo << std::endl;
    // Get corresponding hit
    BETAG4BigcalHit* aHit = ( *fHitsCollection ) [copyNo];
    BETAG4BigcalHit* bHit = ( *fTimingHC ) [timingGroupNo-1];

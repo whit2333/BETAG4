@@ -6,6 +6,7 @@
 #include "G4RotationMatrix.hh"
 #include "G4ThreeVector.hh"
 #include "G4THitsCollection.hh"
+#include "G4THitsMap.hh"
 #include "G4Transform3D.hh"
 #include "G4VHit.hh"
 #include "TMath.h"
@@ -61,6 +62,7 @@ class BETAG4BigcalHit : public G4VHit {
 };
 
 typedef G4THitsCollection<BETAG4BigcalHit> BETAG4BigcalHitsCollection;
+typedef G4THitsMap<BETAG4BigcalHit> BETAG4BigcalHitsMap;
 
 extern G4Allocator<BETAG4BigcalHit> BETAG4BigcalHitAllocator;
 

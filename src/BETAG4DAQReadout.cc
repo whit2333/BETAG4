@@ -23,12 +23,10 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4String colName;
 
-/*  if(fSimulationManager->fConstruction->usingBigcal)*/
    fBigcalHCID  = SDman->GetCollectionID (colName= "BigCal/blockEdep" );
    if(fBigcalHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
-/*  if(fSimulationManager->fConstruction->usingGasCherenkov)*/
-     fCherenkovHCID  = SDman->GetCollectionID (colName= "GasCherenkov/pmt" );
+   fCherenkovHCID  = SDman->GetCollectionID (colName= "GasCherenkov/pmt" );
    if(fCherenkovHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
 
    if(fSimulationManager->GetDetectorConstruction()->usingFakePlaneAtBigcal) {
@@ -45,22 +43,21 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
    }
 
 
-   fBigcalTriggerThreshold    = 200.0; //MeV
+   fBigcalTriggerThreshold    = 500.0; //MeV
    fCherenkovTriggerThreshold = 3;//photons???
 
     Reset();
 }
-//__________________________________________________________________
-
+//______________________________________________________________________________
 BETAG4DAQReadout::~BETAG4DAQReadout() {
 
   delete fCherenkovADCSumDC;
   delete fBigcalADCSumDC;
 
 }
-//__________________________________________________________________
-
+//______________________________________________________________________________
 void BETAG4DAQReadout::Digitize() {
+
    // Reset all event level values
    // Get pointers
    G4String colName;
@@ -91,7 +88,7 @@ void BETAG4DAQReadout::Digitize() {
       bcHit      = (*fBigcalHC)[gg];
       energyTemp = bcHit->GetDepositedEnergy();///(bigcalGeoCalc->GetCalibrationCoefficient(gg+1));;
 
-      if(energyTemp > 0.01) { ///10 MeV Block Threshold?
+      if(energyTemp > 1.0 ) { // 1 MeV Block Threshold?
          fNBigcalHits++;
          fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
       }

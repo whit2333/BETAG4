@@ -160,6 +160,11 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
    fSimulationManager->fScalerTree->FlushBaskets();
    SANERunManager::GetRunManager()->GetCurrentFile()->cd();
 
+   G4RunManager * runManager = G4RunManager::GetRunManager();
+   BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
+   genAction->fOutputTree->Write();
+   genAction->fOutputTree->FlushBaskets();
+
    // Save all objects in this file
    //   fSimulationManager->fDetectorTree->Write();
    //fSimulationManager->fRootFile->Write();
