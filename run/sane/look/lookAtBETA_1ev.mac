@@ -4,8 +4,8 @@
 
 /beta/target/setPolarizationAngle 80
 #/beta/toggleBigcal on
-/beta/toggleForwardTracker off
-/beta/toggleLuciteHodoscope off
+/beta/toggleForwardTracker noOptics 
+/beta/toggleLuciteHodoscope on
 /beta/gun/setEventType flat
 /beta/gun/setEnergyMin 1.2 
 /beta/gun/setEnergyMax  3.0

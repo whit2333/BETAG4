@@ -69,32 +69,37 @@ add_executable(BETA BETA.cc ${sources} ${headers})
 #---------------------------------------------------------------------------
 # ROOT linking flags 
 if(useROOT)
-   EXECUTE_PROCESS(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ROOT_LD_FLAGS}")
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}  -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam ")
-   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_EXE_LINKER_FLAGS}")
+   EXECUTE_PROCESS(COMMAND root-config --evelibs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${ROOT_LD_FLAGS}")
+   #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}  -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam")
+   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ROOT_LD_FLAGS} -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam -lEG -lEve")
+   set(ROOT_LIBRARIES "${ROOT_LD_FLAGS} -lGeomPainter -lGeom -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam")
 endif(useROOT)
 
 #---------------------------------------------------------------------------
 # InSANE linking flags 
 if(useInSANE)
    EXECUTE_PROCESS(COMMAND insane-config --ldflags --libs OUTPUT_VARIABLE InSANE_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
-   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
+   #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
+   #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
 
    EXECUTE_PROCESS(COMMAND lhapdf-config --ldflags --libs OUTPUT_VARIABLE
       LHAPDF_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
-   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
+   #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
+   #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
+   set(LHAPDF_LIBRARIES "${LHAPDF_LD_FLAGS}")
 
    #EXECUTE_PROCESS(COMMAND "gsl-config --libs" OUTPUT_VARIABLE GSL_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GSL_LD_FLAGS}")
    #add_library( InSANE SHARED IMPORTED )
    #set_target_properties(InSANE PROPERTIES IMPORTED_LOCATION "/home/whit/sane08/InSANE/lib/libInSANE.so" )
+   set(INSANE_LIBRARIES "-L/home/whit/lib -lInSANE")
 endif(useInSANE)
 
 
-target_link_libraries(BETA ${Geant4_LIBRARIES} InSANE ${GSL_LIBRARIES} ${ROOT_LIBRARIES} ${ROOT_EXTRA} )
+message("ROOT_LIBRARIES : ${ROOT_LIBRARIES}")
+
+target_link_libraries(BETA ${Geant4_LIBRARIES} ${GSL_LIBRARIES} ${ROOT_LIBRARIES} ${LHAPDF_LIBRARIES} ${INSANE_LIBRARIES} InSANE )
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

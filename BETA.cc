@@ -211,7 +211,7 @@ int main(int argc,char** argv)
    // visualization manager
    #ifdef G4VIS_USE
    G4VisManager* visManager = new G4VisExecutive;
-   visManager->SetVerboseLevel(0);
+   visManager->SetVerboseLevel(1);
    visManager->Initialize();
    #endif
 

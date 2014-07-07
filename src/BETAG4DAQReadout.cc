@@ -10,15 +10,15 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
 
    fSimulationManager = BETASimulationManager::GetInstance();
 
-   mcEvent= fSimulationManager->fEvents->MC;
-   fFT2PlaneHits=mcEvent->GetTrackerPlane2HitsArray();
-   fFTPlaneHits=mcEvent->GetTrackerPlaneHitsArray();
-   fBCPlaneHits=mcEvent->GetBigcalPlaneHitsArray();
+   mcEvent       = fSimulationManager->fEvents->MC;
+   fFT2PlaneHits = mcEvent->GetTrackerPlane2HitsArray();
+   fFTPlaneHits  = mcEvent->GetTrackerPlaneHitsArray();
+   fBCPlaneHits  = mcEvent->GetBigcalPlaneHitsArray();
 
-   fBigcalHCID=-1;
-   fCherenkovHCID=-1;
-   fTrackerFakePlaneHCID=-1;
-   fBigcalFakePlaneHCID=-1;
+   fBigcalHCID           = -1;
+   fCherenkovHCID        = -1;
+   fTrackerFakePlaneHCID = -1;
+   fBigcalFakePlaneHCID  = -1;
 
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4String colName;
@@ -168,61 +168,55 @@ void BETAG4DAQReadout::ReadOut() {
    //     fSimulationManager->fEvents->fRunNumber = fSimulationManager->fRunNumber;
    ///////////////////////////////////////////////////////
 
-
-
-
-
-
-
-
-
    /// Forward Tracker Fake plane readout
    //   std::cout << " tracker " << mcEvent->GetTrackerPlaneHitsArray() << "\n";
 
-   planeHits = fFTPlaneHits;
-   if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
-   else {
-      if( fTrackerFakePlaneHCID!= -1 ) {
-         fTrackerFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlaneHCID ) );
-         /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
-         for ( int i=0;i<(fTrackerFakePlaneHC->entries());i++ ) {
-            aHit = ( *fTrackerFakePlaneHC ) [i];
+   if(fTrackerFakePlaneHCID != -1) {
+      planeHits = fFTPlaneHits;
+      if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
+      else {
+         if( fTrackerFakePlaneHCID!= -1 ) {
+            fTrackerFakePlaneHC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlaneHCID ) );
+            /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+            for ( int i=0;i<(fTrackerFakePlaneHC->entries());i++ ) {
+               aHit = ( *fTrackerFakePlaneHC ) [i];
 
-            bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+               bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
 
-            bHit->fPID = aHit->fPID;
-            bHit->fEnergy = aHit->fEnergy;
-            bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
-            bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
-            bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
-            bHit->fTheta = aHit->fPosition.theta();
-            bHit->fPhi = aHit->fPosition.phi();
+               bHit->fPID = aHit->fPID;
+               bHit->fEnergy = aHit->fEnergy;
+               bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+               bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+               bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
+               bHit->fTheta = aHit->fPosition.theta();
+               bHit->fPhi = aHit->fPosition.phi();
 
+            }
          }
       }
-   }
 
-   // Second 
-   planeHits = fFT2PlaneHits;
-   if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
-   else {
-      if( fTrackerFakePlane2HCID!= -1 ) {
-         fTrackerFakePlane2HC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlane2HCID ) );
-         /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
-         for ( int i=0;i<(fTrackerFakePlane2HC->entries());i++ ) {
-            aHit = ( *fTrackerFakePlane2HC ) [i];
+      // Second 
+      planeHits = fFT2PlaneHits;
+      if(!planeHits) printf(" ERROR NULL mcEvent->fTrackerPlaneHits!\n");
+      else {
+         if( fTrackerFakePlane2HCID!= -1 ) {
+            fTrackerFakePlane2HC = ( BETAFakePlaneHitsCollection* ) ( HCofEvent->GetHC ( fTrackerFakePlane2HCID ) );
+            /*    printf(" Tracker Plane Entries : %d",fTrackerFakePlaneHC->entries() );*/
+            for ( int i=0;i<(fTrackerFakePlane2HC->entries());i++ ) {
+               aHit = ( *fTrackerFakePlane2HC ) [i];
 
-            bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
+               bHit = new((*planeHits)[i]) InSANEFakePlaneHit();
 
-            bHit->fPID = aHit->fPID;
-            bHit->fEnergy = aHit->fEnergy;
-            bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
-            bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
-            bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
-            bHit->fMomentum4Vector.SetXYZT(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV),aHit->fEnergy);
-            bHit->fTheta = aHit->fPosition.theta();
-            bHit->fPhi = aHit->fPosition.phi();
+               bHit->fPID = aHit->fPID;
+               bHit->fEnergy = aHit->fEnergy;
+               bHit->fLocalPosition.SetXYZ(aHit->fLocalPosition.x()/cm,aHit->fLocalPosition.y()/cm,aHit->fLocalPosition.z()/cm);
+               bHit->fPosition.SetXYZ(aHit->fPosition.x()/cm,aHit->fPosition.y()/cm,aHit->fPosition.z()/cm);
+               bHit->fMomentum.SetXYZ(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV));
+               bHit->fMomentum4Vector.SetXYZT(aHit->fMomentum.x()/(MeV),aHit->fMomentum.y()/(MeV),aHit->fMomentum.z()/(MeV),aHit->fEnergy);
+               bHit->fTheta = aHit->fPosition.theta();
+               bHit->fPhi = aHit->fPosition.phi();
 
+            }
          }
       }
    }
