@@ -302,7 +302,7 @@ void BETADetectorConstruction::ConstructVisAtt(){
    fComplementaryColorLineVisAtt = new G4VisAttributes ( G4Colour ( 255.0/255.0,169.0/255.0,0.0/255.0) );
    fComplementaryColorLineVisAtt->SetForceWireframe ( true );
 
-   AlVisAtt = new G4VisAttributes ( G4Colour ( .5,.5,.5 ) );
+   AlVisAtt = new G4VisAttributes ( G4Colour ( .5,.5,.5,0.7 ) );
    AlVisAtt->SetVisibility ( true );
 
    Invisible = new G4VisAttributes();
@@ -416,15 +416,12 @@ void BETADetectorConstruction::SetVisAtt(){
 }
 
 //___________________________________________________________________
-void BETADetectorConstruction::ConstructForwardTracker()
-{
-   ////////////////////////////////////////////////////////////////
-   // Front Tracker  //////////////////////////////////////////////
-   ////////////////////////////////////////////////////////////////
-   /// For now we do not include the "frame" itself, just the G10 material between the layers
+void BETADetectorConstruction::ConstructForwardTracker() {
 
+   // Front Tracker  
+   // For now we do not include the "frame" itself, just the G10 material between the layers
    
-   /// Delete existing stuff
+   // Delete existing stuff
    if(tracker_phys) delete tracker_phys;
    if(tracker_log) delete tracker_log;
 
@@ -446,7 +443,7 @@ void BETADetectorConstruction::ConstructForwardTracker()
 
    ForwardTrackerGeometryCalculator * ftgeocalc = ForwardTrackerGeometryCalculator::GetCalculator();
 
-   /// Construction parameters
+   // Construction parameters
    TVector3   ftbbox              = ftgeocalc->GetBoundingBoxDimensions();
    TVector3   ftdetbox            = ftgeocalc->GetDetectorBoxDimensions();
    TVector3   ftbbox_origin       = ftgeocalc->GetBoundingBoxOrigin();
@@ -692,52 +689,48 @@ void BETADetectorConstruction::ConstructForwardTracker()
    trackerY2_log = new G4LogicalVolume ( trackerY2_box,Air,"tracker_Y2_log",0,0,0 );
    trackerX1_log = new G4LogicalVolume ( trackerX1_box,Air,"tracker_X1_log",0,0,0 );
 
-   // check out http://www.colorschemer.com/online.html   
-   G4VisAttributes* fTrackerHorizBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 128.0/255.0, 51.0/255.0, 0.5 ) );
-   fTrackerHorizBar_log_attr->SetForceSolid(true);
+   //G4VisAttributes* fTrackerHorizBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 128.0/255.0, 51.0/255.0, 0.5 ) );
+   //fTrackerHorizBar_log_attr->SetForceSolid(true);
    //fTrackerHorizBar_log_attr->SetVisibility(false);
    //fTrackerHorizBar_log_attr->SetDaughtersInvisible(false);
-   fTrackerY1Bar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
-   fTrackerY2Bar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
-   //fTrackerY1Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
-   //fTrackerY2Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
+   //fTrackerY1Bar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
+   //fTrackerY2Bar_log->SetVisAttributes ( fTrackerHorizBar_log_attr );
+   fTrackerY1Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
+   fTrackerY2Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );// use this to set to invisible
 
-   G4VisAttributes* fTrackerVertBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
+   //G4VisAttributes* fTrackerVertBar_log_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
    //fTrackerVertBar_log_attr->SetForceWireframe(true);
-   fTrackerVertBar_log_attr->SetForceSolid(true);
+   //fTrackerVertBar_log_attr->SetForceSolid(true);
    //fTrackerVertBar_log_attr->SetVisibility(false);
    //fTrackerVertBar_log_attr->SetDaughtersInvisible(false);
-   fTrackerX1Bar_log->SetVisAttributes ( fTrackerVertBar_log_attr );
-   //fTrackerX1Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   //fTrackerX1Bar_log->SetVisAttributes ( fTrackerVertBar_log_attr );
+   fTrackerX1Bar_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
-   G4VisAttributes* barScore_log_attr = new G4VisAttributes ( G4Colour ( 51.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
-   barScore_log_attr->SetForceSolid(true);
-   fTrackerY1BarScore_log->SetVisAttributes ( barScore_log_attr );
-   fTrackerY2BarScore_log->SetVisAttributes ( barScore_log_attr );
-   fTrackerX1BarScore_log->SetVisAttributes ( barScore_log_attr );
+   //G4VisAttributes* barScore_log_attr = new G4VisAttributes ( G4Colour ( 51.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
+   //barScore_log_attr->SetForceSolid(true);
+   fTrackerY1BarScore_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   fTrackerY2BarScore_log->SetVisAttributes ( G4VisAttributes::Invisible );
+   fTrackerX1BarScore_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
-   // check out http://www.colorschemer.com/online.html   
    G4VisAttributes* tracker_Y1plane_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 51.0/255.0, 0.5 ) );
    //tracker_Y1plane_attr->SetForceSolid(true);
-   tracker_Y1plane_attr->SetDaughtersInvisible(false);
+   tracker_Y1plane_attr->SetDaughtersInvisible(true);
+
    G4VisAttributes* tracker_Y2plane_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 128.0/255.0, 0.5 ) );
    //tracker_Y2plane_attr->SetForceSolid(true);
-   tracker_Y2plane_attr->SetDaughtersInvisible(false);
+   tracker_Y2plane_attr->SetDaughtersInvisible(true);
+
    G4VisAttributes* tracker_X1plane_attr = new G4VisAttributes ( G4Colour ( 204.0/255.0, 51.0/255.0, 204.0/255.0, 0.5 ) );
    //tracker_X1plane_attr->SetForceSolid(true);
-   tracker_X1plane_attr->SetDaughtersInvisible(false);
-   /// Set these attributes to make the individual scints invisible
+   tracker_X1plane_attr->SetDaughtersInvisible(true);
+
+   // Set these attributes to make the individual scints invisible
    trackerY1_log->SetVisAttributes ( tracker_Y1plane_attr );
    trackerY2_log->SetVisAttributes ( tracker_Y2plane_attr );
    trackerX1_log->SetVisAttributes ( tracker_X1plane_attr );
-   /// Set these attributes to make each scint visible.... 
-   // trackerY1_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   // trackerY2_log->SetVisAttributes ( G4VisAttributes::Invisible );
-   // trackerX1_log->SetVisAttributes ( G4VisAttributes::Invisible );
 
-
-
-   /// Position the planes
+   // --------------------
+   // Position the planes
    G4VPhysicalVolume * trackerX1_phys =    
       new G4PVPlacement ( 0,
                           G4ThreeVector (0,0,ftgeocalc->GetLayerZPlacement(0)*cm ),
@@ -758,192 +751,174 @@ void BETADetectorConstruction::ConstructForwardTracker()
                           "tracker_Y2_plane_phys", tracker_log,false,0 );
 
 
-   /// TEDLAR frame components \todo cut out frame center and add extra material wrapping scints
+   // TEDLAR frame components \todo cut out frame center and add extra material wrapping scints
    G4Box* fTrackerG10Frame_box = new G4Box ( "fTrackerG10Frame_box", // Name
                                 ftgeocalc->fFrameOpeningWidth*cm/2.0,  // x half length
                                 ftgeocalc->fFrameOpeningHeight*cm/2.0, // x half length
                                 3.2*mm/2.0 );                           // z half length
    fTrackerG10Frame_log = new G4LogicalVolume( fTrackerG10Frame_box,  G10, "fTrackerG10Frame_log" );
-   /// Place the tedar frames
-/*      new G4PVPlacement ( 0,
-                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(0)*cm ),
-                          fTrackerG10Frame_log, 
-                          "fTrackerG10Frame_0_phys", tracker_log,false,0 );
-      new G4PVPlacement ( 0,
-                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(1)*cm ),
-                          fTrackerG10Frame_log, 
-                          "fTrackerG10Frame_1_phys", tracker_log,false,1 );
-      new G4PVPlacement ( 0,
-                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(2)*cm ),
-                          fTrackerG10Frame_log, 
-                          "fTrackerG10Frame_2_phys", tracker_log,false,2 );
-      new G4PVPlacement ( 0,
-                          G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(3)*cm ),
-                          fTrackerG10Frame_log, 
-                          "fTrackerG10Frame_3_phys", tracker_log,false,3 );*/
-// VGM does not like the following replicas
-//    G4VPhysicalVolume* trackerY1_phys = 
-//      new G4PVReplica("trackerY1_phys", fTrackerVertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
-//    G4VPhysicalVolume* trackerY2_phys = 
-//      new G4PVReplica("trackerY2_phys", fTrackerVertBar_log,trackerY2_log, kXAxis, 132, 3.0*mm+smallSeparation);
-//    G4VPhysicalVolume* trackerX1_phys = 
-//      new G4PVReplica("trackerX1_phys", fTrackerHorizBar_log,trackerX1_log, kYAxis, 72, 3.0*mm+smallSeparation);
 
+   // Place the tedar frames
+   //new G4PVPlacement ( 0,
+   //      G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(0)*cm ),
+   //      fTrackerG10Frame_log, 
+   //      "fTrackerG10Frame_0_phys", tracker_log,false,0 );
+   //new G4PVPlacement ( 0,
+   //      G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(1)*cm ),
+   //      fTrackerG10Frame_log, 
+   //      "fTrackerG10Frame_1_phys", tracker_log,false,1 );
+   //new G4PVPlacement ( 0,
+   //      G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(2)*cm ),
+   //      fTrackerG10Frame_log, 
+   //      "fTrackerG10Frame_2_phys", tracker_log,false,2 );
+   //new G4PVPlacement ( 0,
+   //      G4ThreeVector (0,0,ftgeocalc->GetFrameZPlacement(3)*cm ),
+   //      fTrackerG10Frame_log, 
+   //      "fTrackerG10Frame_3_phys", tracker_log,false,3 );
+
+   // VGM does not like the following replicas
+   //    G4VPhysicalVolume* trackerY1_phys = 
+   //      new G4PVReplica("trackerY1_phys", fTrackerVertBar_log,trackerY1_log, kXAxis, 132, 3.0*mm+smallSeparation);
+   //    G4VPhysicalVolume* trackerY2_phys = 
+   //      new G4PVReplica("trackerY2_phys", fTrackerVertBar_log,trackerY2_log, kXAxis, 132, 3.0*mm+smallSeparation);
+   //    G4VPhysicalVolume* trackerX1_phys = 
+   //      new G4PVReplica("trackerX1_phys", fTrackerHorizBar_log,trackerX1_log, kYAxis, 72, 3.0*mm+smallSeparation);
    // work around
    // Also sets the copy number used to get the correct scint
    for(int i0=0;i0<64;i0++) {
       new G4PVPlacement(0,
-                        G4ThreeVector(ftgeocalc->GetX1Position(i0+1)*cm,0,0),
-                        fTrackerX1Bar_log,
-                        "TrackerHorizontalX1",
-                        trackerX1_log,
-                        true,
-                        i0);
+            G4ThreeVector(ftgeocalc->GetX1Position(i0+1)*cm,0,0),
+            fTrackerX1Bar_log,
+            "TrackerHorizontalX1",
+            trackerX1_log,
+            true,
+            i0);
    }
    for(int i0=0;i0<128;i0++) {
       new G4PVPlacement(0,
-                        G4ThreeVector (0,ftgeocalc->GetY1Position(i0+1)*cm,0),
-                        fTrackerY1Bar_log,
-                        "TrackerHorizontalY1",
-                        trackerY1_log,
-                        true,
-                        i0+64);
+            G4ThreeVector (0,ftgeocalc->GetY1Position(i0+1)*cm,0),
+            fTrackerY1Bar_log,
+            "TrackerHorizontalY1",
+            trackerY1_log,
+            true,
+            i0+64);
    }
    for(int i0=0;i0<128;i0++) {
       new G4PVPlacement(0,
-                        G4ThreeVector (0,ftgeocalc->GetY2Position(i0+1)*cm,0),
-                        fTrackerY2Bar_log,
-                        "TrackerHorizontalY2",
-                        trackerY2_log,
-                        true,
-                        i0+64+128);
+            G4ThreeVector (0,ftgeocalc->GetY2Position(i0+1)*cm,0),
+            fTrackerY2Bar_log,
+            "TrackerHorizontalY2",
+            trackerY2_log,
+            true,
+            i0+64+128);
    }
 
-   /// Place the scoring surfaces in the bars 
-   /// For the Y scints they are at the positive x side. 
+   // Place the scoring surfaces in the bars 
+   // For the Y scints they are at the positive x side. 
    new G4PVPlacement(0,
-                     G4ThreeVector (ftgeocalc->GetY1ScintLength()*cm/2.0-smallSeparation,0,0 ),
-                     fTrackerY1BarScore_log, 
-                     "tracker_Y1_scint_scorer_phys", 
-                     fTrackerY1Bar_log,
-                     true,
-                     0 );
+         G4ThreeVector (ftgeocalc->GetY1ScintLength()*cm/2.0-smallSeparation,0,0 ),
+         fTrackerY1BarScore_log, 
+         "tracker_Y1_scint_scorer_phys", 
+         fTrackerY1Bar_log,
+         true,
+         0 );
    new G4PVPlacement(0,
-                     G4ThreeVector (ftgeocalc->GetY2ScintLength()*cm/2.0-smallSeparation,0,0 ),
-                     fTrackerY2BarScore_log, 
-                     "tracker_Y2_scint_scorer_phys", 
-                     fTrackerY2Bar_log,
-                     true,
-                     0 );
-   /// For the X scints they are at the negative y side (the bottom). 
+         G4ThreeVector (ftgeocalc->GetY2ScintLength()*cm/2.0-smallSeparation,0,0 ),
+         fTrackerY2BarScore_log, 
+         "tracker_Y2_scint_scorer_phys", 
+         fTrackerY2Bar_log,
+         true,
+         0 );
+   // For the X scints they are at the negative y side (the bottom). 
    new G4PVPlacement(0,
-                     G4ThreeVector (0,-ftgeocalc->GetX1ScintLength()*cm/2.0+smallSeparation,0 ),
-                     fTrackerX1BarScore_log, 
-                     "tracker_X1_scint_scorer_phys", 
-                     fTrackerX1Bar_log,
-                     true,
-                     0 );
+         G4ThreeVector (0,-ftgeocalc->GetX1ScintLength()*cm/2.0+smallSeparation,0 ),
+         fTrackerX1BarScore_log, 
+         "tracker_X1_scint_scorer_phys", 
+         fTrackerX1Bar_log,
+         true,
+         0 );
 
    const G4int NUM = 2;
 
-   G4double pp[NUM] = {2.038*eV, 4.144*eV};
-   G4double specularlobe[NUM] = {0.3, 0.3};
+   G4double pp[NUM]            = {2.038*eV, 4.144*eV};
+   G4double specularlobe[NUM]  = {0.3, 0.3};
    G4double specularspike[NUM] = {0.2, 0.2};
-   G4double backscatter[NUM] = {0.1, 0.1};
-   G4double rindex[NUM] = {1.48, 1.48};
-   G4double reflectivity[NUM] = {0.0, 0.0};
-   G4double efficiency[NUM] = {1.0,1.0};
+   G4double backscatter[NUM]   = {0.1, 0.1};
+   G4double rindex[NUM]        = {1.48, 1.48};
+   G4double reflectivity[NUM]  = {0.0, 0.0};
+   G4double efficiency[NUM]    = {1.0,1.0};
    G4double reflectivity2[NUM] = {0.9, 0.9};
-   G4double efficiency2[NUM] = {0.10,0.10};
+   G4double efficiency2[NUM]   = {0.10,0.10};
 
    G4MaterialPropertiesTable* SMPT = new G4MaterialPropertiesTable();
    SMPT -> AddProperty("RINDEX",pp,rindex,NUM);
-//   SMPT -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
-//   SMPT -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
-//   SMPT -> AddProperty("BACKSCATTERCONSTANT",pp,backscatter,NUM);
+   //   SMPT -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+   //   SMPT -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
+   //   SMPT -> AddProperty("BACKSCATTERCONSTANT",pp,backscatter,NUM);
    SMPT -> AddProperty("REFLECTIVITY",pp,reflectivity,NUM);
    SMPT -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
 
    G4MaterialPropertiesTable* SMPT2 = new G4MaterialPropertiesTable();
    SMPT2 -> AddProperty("RINDEX",pp,rindex,NUM);
-//   SMPT2 -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
-//   SMPT2 -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
-//   SMPT2 -> AddProperty("BACKSCATTERCONSTANT",pp,backscatter,NUM);
+   //   SMPT2 -> AddProperty("SPECULARLOBECONSTANT",pp,specularlobe,NUM);
+   //   SMPT2 -> AddProperty("SPECULARSPIKECONSTANT",pp,specularspike,NUM);
+   //   SMPT2 -> AddProperty("BACKSCATTERCONSTANT",pp,backscatter,NUM);
    SMPT2 -> AddProperty("REFLECTIVITY",pp,reflectivity2,NUM);
-//   SMPT2 -> AddProperty("EFFICIENCY",pp,efficiency2,NUM);
+   //   SMPT2 -> AddProperty("EFFICIENCY",pp,efficiency2,NUM);
 
 
    //----- Optical Surfaces
    G4OpticalSurface* forwardTrackerSurface = new G4OpticalSurface ( "TrackerBarOpticalSurface" );
-     forwardTrackerSurface->SetModel ( unified );
-     forwardTrackerSurface->SetType ( dielectric_dielectric );
-//     forwardTrackerSurface->SetFinish (  polishedteflonair );
-//     forwardTrackerSurface->SetFinish (  polished );
-     forwardTrackerSurface->SetFinish ( polishedfrontpainted);
-     forwardTrackerSurface->SetMaterialPropertiesTable(SMPT2);
+   forwardTrackerSurface->SetModel ( unified );
+   forwardTrackerSurface->SetType ( dielectric_dielectric );
+   //     forwardTrackerSurface->SetFinish (  polishedteflonair );
+   //     forwardTrackerSurface->SetFinish (  polished );
+   forwardTrackerSurface->SetFinish ( polishedfrontpainted);
+   forwardTrackerSurface->SetMaterialPropertiesTable(SMPT2);
 
    G4OpticalSurface* scoringSurface = new G4OpticalSurface ( "scoringTrackerBarOpticalSurface" );
-     scoringSurface->SetModel ( unified );
-//     scoringSurface->SetType ( dielectric_metal);
-     scoringSurface->SetType ( dielectric_dielectric);
-//     scoringSurface->SetFinish ( groundbackpainted);
-     scoringSurface->SetFinish ( ground);
-     scoringSurface->SetMaterialPropertiesTable(SMPT);
-   
-if(fSimulationManager->fSimulateTrackerOptics) {
-   new G4LogicalSkinSurface ( "fTrackerY1Bar_surf",  fTrackerY1Bar_log, forwardTrackerSurface );
-   new G4LogicalSkinSurface ( "fTrackerY2Bar_surf",  fTrackerY2Bar_log, forwardTrackerSurface );
-   new G4LogicalSkinSurface ( "fTrackerX1Bar_surf",  fTrackerX1Bar_log, forwardTrackerSurface );
+   scoringSurface->SetModel ( unified );
+   //     scoringSurface->SetType ( dielectric_metal);
+   scoringSurface->SetType ( dielectric_dielectric);
+   //     scoringSurface->SetFinish ( groundbackpainted);
+   scoringSurface->SetFinish ( ground);
+   scoringSurface->SetMaterialPropertiesTable(SMPT);
 
-   new G4LogicalSkinSurface ( "fTrackerY1BarScore_surf",fTrackerY1BarScore_log, scoringSurface );
-   new G4LogicalSkinSurface ( "fTrackerY2BarScore_surf",fTrackerY2BarScore_log, scoringSurface );
-   new G4LogicalSkinSurface ( "fTrackerX1BarScore_surf",fTrackerX1BarScore_log, scoringSurface );
-} else {
-//   new G4LogicalSkinSurface ( "vertTrackerBarSurf",  fTrackerVertBar_log, scoringSurface );
-//   new G4LogicalSkinSurface ( "horizTrackerBarSurf", fTrackerHorizBar_log, scoringSurface );
-//   new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", fTrackerVertBarScore_log, scoringSurface );
-//   new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",fTrackerHorizBarScore_log, scoringSurface );
-}
+   if(fSimulationManager->fSimulateTrackerOptics) {
+      new G4LogicalSkinSurface ( "fTrackerY1Bar_surf",  fTrackerY1Bar_log, forwardTrackerSurface );
+      new G4LogicalSkinSurface ( "fTrackerY2Bar_surf",  fTrackerY2Bar_log, forwardTrackerSurface );
+      new G4LogicalSkinSurface ( "fTrackerX1Bar_surf",  fTrackerX1Bar_log, forwardTrackerSurface );
+
+      new G4LogicalSkinSurface ( "fTrackerY1BarScore_surf",fTrackerY1BarScore_log, scoringSurface );
+      new G4LogicalSkinSurface ( "fTrackerY2BarScore_surf",fTrackerY2BarScore_log, scoringSurface );
+      new G4LogicalSkinSurface ( "fTrackerX1BarScore_surf",fTrackerX1BarScore_log, scoringSurface );
+   } else {
+      //   new G4LogicalSkinSurface ( "vertTrackerBarSurf",  fTrackerVertBar_log, scoringSurface );
+      //   new G4LogicalSkinSurface ( "horizTrackerBarSurf", fTrackerHorizBar_log, scoringSurface );
+      //   new G4LogicalSkinSurface ( "vertTrackerBarScoreSurf", fTrackerVertBarScore_log, scoringSurface );
+      //   new G4LogicalSkinSurface ( "horizTrackerBarScoreSurf",fTrackerHorizBarScore_log, scoringSurface );
+   }
 
 
-// Detection
+   // Detection
    G4SDManager* manager = G4SDManager::GetSDMpointer();
-/*   manager->ListTree();*/
+   /*   manager->ListTree();*/
    if(!frontTrackerSD) { 
       frontTrackerSD =  new BETAForwardTracker ( "ForwardTracker" );
-   // Register detector with manager
+      // Register detector with manager
       manager->AddNewDetector ( frontTrackerSD );
    }
    // Attach detector to scoring volume
-//    fTrackerHorizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
-//    fTrackerVertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
+   //    fTrackerHorizBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
+   //    fTrackerVertBar_log->SetSensitiveDetector ( fSimulationManager->fTrackerDetector );
    if(fSimulationManager->fSimulateTrackerOptics) {
       fTrackerY1BarScore_log->SetSensitiveDetector ( frontTrackerSD );
       fTrackerY2BarScore_log->SetSensitiveDetector ( frontTrackerSD );
       fTrackerX1BarScore_log->SetSensitiveDetector ( frontTrackerSD );
    }
 
-////// end tracker
-
-
-////// Visualization
-/*
-   trackerX1_log->SetVisAttributes(G4Colour(0.2,0.6,0.0));
-trackerY1_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
-trackerY2_log->SetVisAttributes(G4Colour(0.6,0.2,0.));
-fTrackerHorizBarScore_log->SetVisAttributes(G4Colour(0.0,0.0,0.8));
-fTrackerVertBarScore_log->SetVisAttributes(G4Colour(0.0,0.,0.80));
-   G4VisAttributes* FTAttributes = new G4VisAttributes ( G4Colour ( 0.5,0.2,0.2,0.1 ) );
-   tracker_log->SetVisAttributes ( FTAttributes );
-//   trackerDummyCell_log->SetVisAttributes (  G4VisAttributes::Invisible  );
-  G4VisAttributes* lightCollectionFTAttributes = new G4VisAttributes ( G4Colour ( 0.0,0.2,0.8,0.80 ) );
-lightCollectionFTAttributes->SetForceSolid(true);
-fTrackerHorizBar_log->SetVisAttributes(lightCollectionFTAttributes);
-fTrackerVertBar_log->SetVisAttributes(lightCollectionFTAttributes);
-*/
 }
 //___________________________________________________________________
-
 
 /**
  * Lucite Hodoscope construction.
@@ -2606,9 +2581,7 @@ void BETADetectorConstruction::ConstructFakePlane() {
    }
 }
 //___________________________________________________________________
-
 void BETADetectorConstruction::ConstructHeliumBag() {
-   
 
    G4double fHorizSize = 4.67*2.54*cm;
    G4double fVertSize  = 7.97*2.54*cm +0.13*2.54*cm;
@@ -2792,7 +2765,6 @@ void BETADetectorConstruction::ConstructBETA()
 
 }
 //___________________________________________________________________
-
 void BETADetectorConstruction::SetupScoring(G4LogicalVolume * scoringVolume) {
 
 
@@ -2805,7 +2777,6 @@ void BETADetectorConstruction::ConstructTarget()
 {
 
 }
-
 //___________________________________________________________________
 /** \brief Returns the physical world.
  *
@@ -3939,12 +3910,15 @@ void BETADetectorConstruction::ConstructTCan()
 */
    //The Visualization attributes of everything in the TCAN
    G4VisAttributes* WinCanVisAtt= new G4VisAttributes ( G4Colour ( 0.,0.,1. ) );
-   WinCanVisAtt->SetVisibility ( true );
-   WinCanVisAtt->SetForceSolid ( false );
+   //WinCanVisAtt->SetVisibility ( true );
+   WinCanVisAtt->SetForceWireframe ( true );
+   WinCanVisAtt->SetDaughtersInvisible ( false );
 
-// logicTCan->SetVisAttributes ( Invisible );
-   logicWinCan->SetVisAttributes ( WinCanVisAtt );
-// logicBeamWin->SetVisAttributes ( Invisible );
+   logicTCan->SetVisAttributes ( WinCanVisAtt );
+   logicWinCan->SetVisAttributes ( Invisible );
+   logicBeamWin->SetVisAttributes ( Invisible );
+   //logicTCan->SetVisAttributes ( Invisible );
+   //logicBeamWin->SetVisAttributes ( WinCanVisAtt );
 
    logicTCan->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
    logicWinCan->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
@@ -4079,14 +4053,15 @@ void BETADetectorConstruction::ConstructN2Shield()
                                         "LN2BeamWin", logicTCan, false, 0 );
 
    //The Visualization attributes of the LN2 Shield
-   G4VisAttributes* LN2ShVisAtt= new G4VisAttributes ( G4Colour ( 2.,0.,1. ) );
-   LN2ShVisAtt->SetForceSolid ( false );
+   G4VisAttributes* LN2ShVisAtt= new G4VisAttributes ( G4Colour ( 2.,0.,1.0,0.5 ) );
+   LN2ShVisAtt->SetForceWireframe ( true );
+   LN2ShVisAtt->SetDaughtersInvisible ( false );
    logicLN2Shield->SetVisAttributes ( LN2ShVisAtt );
 
-  G4VisAttributes* LNBWVisAtt= new G4VisAttributes(G4Colour(.4,.7,.2));
-//   LNBWVisAtt->SetForceSolid(true);
- logicLN2BeamWin->SetVisAttributes ( Invisible );
- logicLN2Can->SetVisAttributes ( LNBWVisAtt );
+   G4VisAttributes* LNBWVisAtt= new G4VisAttributes(G4Colour(.4,.7,.2,0.5));
+   //LNBWVisAtt->SetForceSolid(true);
+   logicLN2BeamWin->SetVisAttributes ( Invisible );
+   logicLN2Can->SetVisAttributes ( LNBWVisAtt );
 
    logicLN2BeamWin->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
    logicLN2Can->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
@@ -4190,23 +4165,26 @@ void BETADetectorConstruction::ConstructNose() {
    //}
 
    //I want to see the tail...
-   G4VisAttributes* TailVisAtt= new G4VisAttributes ( G4Colour ( 1.,0.,0.5,0.2 ) );
-   TailVisAtt->SetVisibility ( true );
-/*   TailVisAtt->SetForceSolid ( true );*/
+   G4VisAttributes* TailVisAtt= new G4VisAttributes ( G4Colour ( 1.,0.,0.5,0.5 ) );
+   TailVisAtt->SetForceWireframe ( true );
+   TailVisAtt->SetDaughtersInvisible ( false );
    logicTail->SetVisAttributes ( TailVisAtt );
 
    //Make the target cell wall visible
-   G4VisAttributes* CWallVisAtt= new G4VisAttributes ( G4Colour ( 0.,0.4,0. ) );
-   CWallVisAtt->SetVisibility ( true );
-   CWallVisAtt->SetForceSolid ( false );
+   G4VisAttributes* CWallVisAtt= new G4VisAttributes ( G4Colour ( 0.,0.4,0.,0.5 ) );
+   CWallVisAtt->SetForceWireframe ( true );
+   CWallVisAtt->SetDaughtersInvisible ( false );
    logicCWall->SetVisAttributes ( CWallVisAtt );
 
-  G4VisAttributes* CellVisAtt= new G4VisAttributes(G4Colour(.5,1.,.5,0.0));
-  CellVisAtt->SetVisibility(true);
-/*  CellVisAtt->SetForceSolid(true);*/
-  logicCell->SetVisAttributes ( CellVisAtt );//CellVisAtt);
-//    logicNose->SetVisAttributes ( AlVisAtt );
-//    logic4KSH->SetVisAttributes ( AlVisAtt );
+   G4VisAttributes* CellVisAtt= new G4VisAttributes(G4Colour(0.5,1.0,0.5,0.5));
+   CellVisAtt->SetForceWireframe ( true );
+   CellVisAtt->SetDaughtersInvisible(false);
+   /*  CellVisAtt->SetForceSolid(true);*/
+   logicCell->SetVisAttributes ( CellVisAtt );//CellVisAtt);
+   logicNose->SetVisAttributes ( CellVisAtt );
+   logic4KSH->SetVisAttributes ( CellVisAtt );
+   //logicNose->SetVisAttributes ( AlVisAtt );
+   //logic4KSH->SetVisAttributes ( AlVisAtt );
 
    logicTail->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
    logicCWall->SetUserLimits ( new G4UserLimits ( 100.*m,100.*m, 1.*s, ULimits ) );
@@ -4292,9 +4270,9 @@ void BETADetectorConstruction::ConstructMagnet() {
       new G4PVPlacement ( G4Transform3D ( RMCoilDown, G4ThreeVector() ),
                           logicBrace4, "Brace4", logicMagnet, false, 0 );
 
-   G4VisAttributes* CoilVisAtt= new G4VisAttributes ( G4Colour ( 0.5,0.5,0.5 ) );
+   G4VisAttributes* CoilVisAtt= new G4VisAttributes ( G4Colour ( 0.5,0.5,0.5,0.5 ) );
    CoilVisAtt->SetVisibility ( true );
-   CoilVisAtt->SetForceSolid ( true );
+   CoilVisAtt->SetForceWireframe ( true );
    logicCoil->SetVisAttributes ( CoilVisAtt );
 
    logicBrace1->SetVisAttributes ( CoilVisAtt );
@@ -4482,14 +4460,15 @@ void BETADetectorConstruction::ConstructBeamPipe()
 
    //Vis attributes for the pipes
    G4VisAttributes* PipeVisAtt = new G4VisAttributes(G4Colour(0.5,1.,0.5));
-   PipeVisAtt->SetVisibility(true);
+   PipeVisAtt->SetDaughtersInvisible(false);
    PipeVisAtt->SetForceWireframe(true);
    logicUpPipe0->SetVisAttributes(PipeVisAtt);
    logicDownPipe0->SetVisAttributes(PipeVisAtt);
 
    //Vis attributes for the cavities
    G4VisAttributes* PipeCavVisAtt = new G4VisAttributes(G4Colour(0.5,.1,0.7));
-   PipeCavVisAtt->SetVisibility(true);
+   PipeCavVisAtt->SetDaughtersInvisible(false);
+   //PipeCavVisAtt->SetVisibility(true);
    PipeCavVisAtt->SetForceWireframe(true);
    logicUpPipe0Cav->SetVisAttributes(PipeCavVisAtt);
    logicDownPipe0Cav->SetVisAttributes(PipeCavVisAtt);
@@ -4511,9 +4490,9 @@ void BETADetectorConstruction::ConstructBeamPipe()
 
 
    //Vis attributes for the He shroud
-  G4VisAttributes* ShroudVisAtt = new G4VisAttributes(G4Colour(0.2,0.6,0.));
-  ShroudVisAtt->SetVisibility(true);
-  ShroudVisAtt->SetForceSolid(false);
+  G4VisAttributes* ShroudVisAtt = new G4VisAttributes(G4Colour(0.2,0.6,0.0));
+  ShroudVisAtt->SetForceWireframe(true);
+  ShroudVisAtt->SetDaughtersInvisible(false);
   logicHeShroud->SetVisAttributes(ShroudVisAtt);
 
 
