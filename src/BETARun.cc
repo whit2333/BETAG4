@@ -37,7 +37,7 @@
 //______________________________________________________________________________
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
-   fNUpdate = 10;
+   fNUpdate = 100;
 #ifdef BETAG4_DEBUG
    //if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
    //   G4cout << "= Created new BETARun \n";

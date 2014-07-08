@@ -80,11 +80,11 @@ G4bool BETAG4PMTArray::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 //______________________________________________________________________________
 void BETAG4PMTArray::EndOfEvent ( G4HCofThisEvent* ) {
 
-   std::cout << GetFullPathName() << std::endl;
-   for(int i = 0; i<fHitsCollection->entries(); i++) {
-      BETAG4PMTHit * aHit =  (*fHitsCollection)[i];
-      if( aHit->fPhotons > 0 ) std::cout << i  << " : " << aHit->fPhotons << std::endl;
-   }
+   //std::cout << GetFullPathName() << std::endl;
+   //for(int i = 0; i<fHitsCollection->entries(); i++) {
+   //   BETAG4PMTHit * aHit =  (*fHitsCollection)[i];
+   //   if( aHit->fPhotons > 0 ) std::cout << i  << " : " << aHit->fPhotons << std::endl;
+   //}
 }
 //______________________________________________________________________________
 G4double BETAG4PMTArray::QE ( G4double photonEnergy ) {
