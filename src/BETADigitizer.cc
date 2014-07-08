@@ -119,11 +119,11 @@ void BETADigitizer::Digitize() {
    BETAG4DigiTDC * tDigi;
 
    // Get Hits Collections
-   if( fBigcalHCID != -1 ) fBigcalHC = static_cast<BETAG4BigcalHitsCollection*>( HCofEvent->GetHC(fBigcalHCID) );
-   if( fBigcalADCHCID != -1 ) fBigcalADCHC = static_cast<BETAG4PMTHitsCollection*>( HCofEvent->GetHC(fBigcalADCHCID) );
-   if( fCherenkovHCID != -1 ) fGasCherenkovHC   = static_cast<BETAG4PMTHitsCollection*>( HCofEvent->GetHC(fCherenkovHCID) );
-   if( fTrackerHCID != -1 )   fForwardTrackerHC  = (BETAForwardTrackerHitsCollection* )( HCofEvent->GetHC ( fTrackerHCID ) );
-   if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC = (BETAHodoscopePMTHitsCollection* )( HCofEvent->GetHC ( fHodoscopeHCID ) );
+   if( fBigcalHCID    != -1 ) fBigcalHC           = static_cast<BETAG4BigcalHitsCollection*>( HCofEvent->GetHC(fBigcalHCID) );
+   if( fBigcalADCHCID != -1 ) fBigcalADCHC        = static_cast<BETAG4PMTHitsCollection*>( HCofEvent->GetHC(fBigcalADCHCID) );
+   if( fCherenkovHCID != -1 ) fGasCherenkovHC     = static_cast<BETAG4PMTHitsCollection*>( HCofEvent->GetHC(fCherenkovHCID) );
+   if( fTrackerHCID   != -1 ) fForwardTrackerHC   = static_cast<BETAForwardTrackerHitsCollection*>( HCofEvent->GetHC ( fTrackerHCID ) );
+   if( fHodoscopeHCID != -1 ) fLuciteHodoscopeHC  = static_cast<BETAHodoscopePMTHitsCollection*>( HCofEvent->GetHC ( fHodoscopeHCID ) );
 
    BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
 
@@ -571,8 +571,7 @@ void BETADigitizer::ReadOut() {
 
 
 }
-//__________________________________________________________________
-
+//______________________________________________________________________________
 void BETADigitizer::DigitizePedestals(){
    G4String colName;
 

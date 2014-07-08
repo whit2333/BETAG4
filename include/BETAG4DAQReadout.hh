@@ -26,69 +26,58 @@ class BETASimulationManager;
  */
 class BETAG4DAQReadout : public G4VDigitizerModule {
 
+   private: 
+
+      bool fCherenkovFired;
+      bool fBigcalFired;
+      bool fIsTriggered;
+
+      BETAG4DigiADCCollection * fCherenkovADCSumDC;
+      G4int                   * fCherenkovADCSumDCID;
+
+      BETAG4DigiADCCollection * fBigcalADCSumDC;
+      G4int                   * fBigcalADCSumDCID;
+
+      BETASimulationManager   * fSimulationManager;
+
+      G4int                     fCherenkovHCID;
+      G4int                     fBigcalHCID;
+      G4int                     fBigcalFakePlaneHCID;
+      G4int                     fTrackerFakePlaneHCID;
+      G4int                     fTrackerFakePlane2HCID;
+
+      G4double                  fBigcalTriggerThreshold;       // TS threshold 
+      G4double                  fBigcalBlockReadoutThreshold;  // ADC threshold for readout
+      G4double                  fCherenkovTriggerThreshold;    // TS threshold
+
+      G4double                  fTriggerGroupEnergy[4];
+      G4double                  fCherenkovTotal ;
+      G4int                     fNumberOfTriggeredGroups;
+
    public:
       BETAG4DAQReadout(G4String modName);
 
-      ~BETAG4DAQReadout();
+      virtual ~BETAG4DAQReadout();
 
-      /**  Digitize simulated trigger
-       * For each event this is called
-       * First it looks at the sum of bigcal's trigger groups to see if it is
-       * above the energy threshold.
-       * 
-       * If it is above the energy threshold, it proceeds to fill out the fTriggerEvent
-       * with the appropriate values. 
-       * 
-       * \todo figure out which event types trump the others?
-       */
       void Digitize();
 
-      /** ReadOut() records the MC event thrown and scoring planes
-       *  
-       */
       void ReadOut();
 
-      virtual void Print() {
-         std::cout << "++ DAQ Readout ++\n";
-         std::cout << "  Bigcal     (" << fBigcalHCID << "): " << fNBigcalHits << " hits , " << fBigcalHC->entries() << " entries.\n";
-         std::cout << "  Cherenkov  (" << fCherenkovHCID << "): " << fNCherenkovHits << " hits, " << fGasCherenkovHC->entries() << " entries.\n";
-      }
+      virtual void Print();
 
-      void Clear(){
-         Reset();
-         if(fTriggerEvent)fTriggerEvent->ClearEvent();
-         if(mcEvent)mcEvent->ClearEvent();
-         delete fCherenkovADCSumDC;
-         fCherenkovADCSumDC =
-            new BETAG4DigiADCCollection ( this->GetName(), "cerADCSums" );
-         delete fBigcalADCSumDC;
-         fBigcalADCSumDC =
-            new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCSums" );
-      }
-
-      void SetTriggerEvent(InSANETriggerEvent* evt) {fTriggerEvent=evt; };
-
-      Bool_t IsGoodEvent() { return(fIsTriggered); }
-
-      void Reset() {
-         fCherenkovTotal          = 0;
-         fCherenkovFired          = false;
-         fBigcalFired             = false;
-         fNCherenkovHits          = 0;
-         fNumberOfTriggeredGroups = 0;
-         fIsTriggered             = false;
-         for(int i = 0;i<4;i++) fTriggerGroupEnergy[i]=0.0;
-      }
+      void Clear();
 
 
-      InSANETriggerEvent * fTriggerEvent;
+      void Reset();
+
+      InSANETriggerEvent    * fTriggerEvent;
       BETAG4MonteCarloEvent * mcEvent;
-      TClonesArray * fBCPlaneHits;
-      TClonesArray * fFTPlaneHits;
-      TClonesArray * fFT2PlaneHits;
+      TClonesArray          * fBCPlaneHits;
+      TClonesArray          * fFTPlaneHits;
+      TClonesArray          * fFT2PlaneHits;
 
-      BETAG4BigcalHitsCollection * fBigcalHC;
-      BETAG4PMTHitsCollection * fGasCherenkovHC;
+      BETAG4BigcalHitsCollection  * fBigcalHC;
+      BETAG4PMTHitsCollection     * fGasCherenkovHC;
       BETAFakePlaneHitsCollection * fTrackerFakePlaneHC;
       BETAFakePlaneHitsCollection * fTrackerFakePlane2HC;
       BETAFakePlaneHitsCollection * fBigcalFakePlaneHC;
@@ -96,32 +85,9 @@ class BETAG4DAQReadout : public G4VDigitizerModule {
       G4int fNBigcalHits;
       G4int fNCherenkovHits;
 
-   private: 
+      void SetTriggerEvent(InSANETriggerEvent* evt) {fTriggerEvent=evt; };
+      Bool_t IsGoodEvent() { return(fIsTriggered); }
 
-      bool fCherenkovFired;
-      bool fBigcalFired;
-
-      bool fIsTriggered;
-
-      BETAG4DigiADCCollection * fCherenkovADCSumDC;
-      G4int * fCherenkovADCSumDCID;
-
-      BETAG4DigiADCCollection * fBigcalADCSumDC;
-      G4int * fBigcalADCSumDCID;
-
-      BETASimulationManager * fSimulationManager;
-
-      G4int fCherenkovHCID;
-      G4int fBigcalHCID;
-      G4int fBigcalFakePlaneHCID;
-      G4int fTrackerFakePlaneHCID;
-      G4int fTrackerFakePlane2HCID;
-
-      G4double fBigcalTriggerThreshold;
-      G4double fTriggerGroupEnergy[4];
-      G4int fNumberOfTriggeredGroups;
-      G4double fCherenkovTotal ;
-      G4double fCherenkovTriggerThreshold;
 };
 
 

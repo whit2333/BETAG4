@@ -1,11 +1,12 @@
 #include "BETAG4DAQReadout.hh"
 #include "BETADetectorConstruction.hh"
 
+//______________________________________________________________________________
 BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modName) {
 
-   fCherenkovADCSumDC =
+   fCherenkovADCSumDC = 0;
       new BETAG4DigiADCCollection ( this->GetName(), "cerADCSums" );
-   fBigcalADCSumDC =
+   fBigcalADCSumDC = 0;
       new BETAG4DigiADCCollection ( this->GetName(), "bigcalADCSums" );
 
    fSimulationManager = BETASimulationManager::GetInstance();
@@ -22,12 +23,13 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
 
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4String colName;
-
-   fBigcalHCID  = SDman->GetCollectionID (colName= "BigCal/blockEdep" );
-   if(fBigcalHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+   fBigcalHCID     = SDman->GetCollectionID (colName= "BigCal/blockEdep" );
+   if(fBigcalHCID == -1) 
+      std::cerr << "Collection \t" << colName << "\t NOT FOUND!" << std::endl;
 
    fCherenkovHCID  = SDman->GetCollectionID (colName= "GasCherenkov/pmt" );
-   if(fCherenkovHCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
+   if(fCherenkovHCID == -1) 
+      std::cerr << "Collection \t" << colName << "\t NOT FOUND!" << std::endl;
 
    if(fSimulationManager->GetDetectorConstruction()->usingFakePlaneAtBigcal) {
       fBigcalFakePlaneHCID  = SDman->GetCollectionID (colName= "BIGCALPlane/fakePlane" );
@@ -42,25 +44,29 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
       if(fTrackerFakePlane2HCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
    }
 
+   fBigcalTriggerThreshold      = 500.0; // MeV
+   fBigcalBlockReadoutThreshold = 5.0;   // MeV
+   fCherenkovTriggerThreshold   = 3;     // photons???
 
-   fBigcalTriggerThreshold    = 500.0; //MeV
-   fCherenkovTriggerThreshold = 3;//photons???
-
-    Reset();
+   Reset();
 }
 //______________________________________________________________________________
 BETAG4DAQReadout::~BETAG4DAQReadout() {
 
-  delete fCherenkovADCSumDC;
-  delete fBigcalADCSumDC;
+  //delete fCherenkovADCSumDC;
+  //delete fBigcalADCSumDC;
 
 }
 //______________________________________________________________________________
 void BETAG4DAQReadout::Digitize() {
 
+   fCherenkovADCSumDC = new BETAG4DigiADCCollection ( GetName(), "cerADCSums" );
+   fBigcalADCSumDC    = new BETAG4DigiADCCollection ( GetName(), "bigcalADCSums" );
+   StoreDigiCollection(fCherenkovADCSumDC);
+   StoreDigiCollection(fBigcalADCSumDC);
+
    // Reset all event level values
    // Get pointers
-   G4String colName;
    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4RunManager* fRM = G4RunManager::GetRunManager();
    const G4Event* currentEvent = fRM->GetCurrentEvent();
@@ -72,13 +78,10 @@ void BETAG4DAQReadout::Digitize() {
 
    if( fCherenkovHCID != -1 ) {
       fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
-   } else {
-      fCherenkovHCID  = SDman->GetCollectionID ( "GasCherenkov/pmt" );
-      fGasCherenkovHC = ( BETAG4PMTHitsCollection* ) ( HCofEvent->GetHC ( fCherenkovHCID ) );
    }
    //std::cout << " fBigcalHCID " << fBigcalHCID << "  fCherenkovHCID " << fCherenkovHCID << "\n";
 
-   /// Loop over bigcal and add up the energy for each trigger group
+   // Loop over bigcal and add up the energy for each trigger group
    BETAG4BigcalHit * bcHit;
    BIGCALGeometryCalculator * bigcalGeoCalc = BIGCALGeometryCalculator::GetCalculator();
    G4double energyTemp;
@@ -88,7 +91,7 @@ void BETAG4DAQReadout::Digitize() {
       bcHit      = (*fBigcalHC)[gg];
       energyTemp = bcHit->GetDepositedEnergy();///(bigcalGeoCalc->GetCalibrationCoefficient(gg+1));;
 
-      if(energyTemp > 1.0 ) { // 1 MeV Block Threshold?
+      if(energyTemp > 5.0 ) { // 1 MeV Block Threshold?
          fNBigcalHits++;
          fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
       }
@@ -141,11 +144,10 @@ void BETAG4DAQReadout::Digitize() {
    }
 
 }
-//__________________________________________________________________
-
+//______________________________________________________________________________
 void BETAG4DAQReadout::ReadOut() {
+
    // Get pointers
-   G4String colName;
    //G4SDManager* SDman = G4SDManager::GetSDMpointer();
    G4RunManager* fRM = G4RunManager::GetRunManager();
    const G4Event* currentEvent = fRM->GetCurrentEvent();
@@ -252,5 +254,27 @@ void BETAG4DAQReadout::ReadOut() {
 
 }
 //__________________________________________________________________
+void BETAG4DAQReadout::Print() {
+   std::cout << "++ DAQ Readout ++\n";
+   std::cout << "  Bigcal     (" << fBigcalHCID << "): " << fNBigcalHits << " hits , " << fBigcalHC->entries() << " entries.\n";
+   std::cout << "  Cherenkov  (" << fCherenkovHCID << "): " << fNCherenkovHits << " hits, " << fGasCherenkovHC->entries() << " entries.\n";
+}
+//______________________________________________________________________________
+void BETAG4DAQReadout::Clear(){
+   Reset();
+   if(fTriggerEvent)fTriggerEvent->ClearEvent();
+   if(mcEvent)mcEvent->ClearEvent();
+}
+//______________________________________________________________________________
+void BETAG4DAQReadout::Reset() {
+   fCherenkovTotal          = 0;
+   fCherenkovFired          = false;
+   fBigcalFired             = false;
+   fNCherenkovHits          = 0;
+   fNumberOfTriggeredGroups = 0;
+   fIsTriggered             = false;
+   for(int i = 0;i<4;i++) fTriggerGroupEnergy[i]=0.0;
+}
+//______________________________________________________________________________
 
 

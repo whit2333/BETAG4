@@ -15,7 +15,6 @@
 #include "InSANEDatabaseManager.h"
 
 //_________________________________________________________________
-
 BETARunAction::BETARunAction(int run) :showThePlots ( 0 ) {
 
    fSimulationManager = BETASimulationManager::GetInstance();
@@ -75,6 +74,7 @@ G4Run*  BETARunAction::GenerateRun() {
    // What is this again?
    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
    genAction->SetMCEventAddress( fSimulationManager->fEvents->MC);
+   SANERunManager::GetRunManager()->GetCurrentFile()->cd();
    genAction->InitOutput();
 
    // Creates the detector classes

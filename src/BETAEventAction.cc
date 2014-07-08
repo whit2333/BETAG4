@@ -48,7 +48,6 @@ void BETAEventAction::EndOfEventAction ( const G4Event* evt ) {
    //    G4SDManager* SDman = G4SDManager::GetSDMpointer();
    //    G4HCofThisEvent * HCE = evt->GetHCofThisEvent();
 
-
    G4VVisManager* pVVisManager = G4VVisManager::GetConcreteInstance();
    if(pVVisManager) {
 

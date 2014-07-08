@@ -35,12 +35,9 @@ BETAHodoscopePMT::~BETAHodoscopePMT(){
 }
 //______________________________________________________________________________
 void BETAHodoscopePMT::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent ) {
-   fHitsCollection = new BETAHodoscopePMTHitsCollection(detname, collectionName[0] );
-   if ( HCID < 0 ) {
-      HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
-   }
 
-   // Add collection to the event
+   fHitsCollection = new BETAHodoscopePMTHitsCollection(detname, collectionName[0] );
+   HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
 
    // Initialise hits

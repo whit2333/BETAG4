@@ -11,44 +11,24 @@
 #include <fstream>
 #include <algorithm>
 
-//#include "Riostream.h"
-//#include "TROOT.h"
-//#include "TFile.h"
-//#include "TNetFile.h"
-//#include "TRandom.h"
-//#include "TTree.h"
-//#include "TBranch.h"
-//#include "TClonesArray.h"
-//#include "TStopwatch.h"
-//#include "TH1F.h"
-//#include "TObjArray.h"
-//#include "TH1.h"
-//#include "TProfile.h"
-//#include "TRint.h"
-//#include "TApplication.h"
-//#include "TCanvas.h"
-
 #include "BETAFakePlane.hh"
 #include "BETAEvent.h"
 #include "HMSEvent.h"
 #include "HallCBeamEvent.h"
 #include "BETAG4MonteCarloEvent.h"
 
+
 //______________________________________________________________________________
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
    fNUpdate = 100;
-#ifdef BETAG4_DEBUG
+
    //if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
    //   G4cout << "= Created new BETARun \n";
    //}
-#endif
 
-   //G4String colName;
    fSimulationManager             = BETASimulationManager::GetInstance ();
    fSimulationManager->fRunNumber = runNumber;
-
-   //mcEvent = fSimulationManager->fEvents->MC;
 
    // Get the event generator and detector constructoion 
    // so we can write the simulation truths to tree
@@ -56,7 +36,6 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    if(runManager) {
       //generator = (BETAPrimaryGeneratorAction *)runManager->GetUserPrimaryGeneratorAction();
       //generator->SetMCEventAddress(mcEvent);
-
       construction = (BETADetectorConstruction *)runManager->GetUserDetectorConstruction();
    }
 
@@ -69,11 +48,12 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
    fBETADigitizer->SetTriggerEvent(fSimulationManager->fEvents->TRIG);
 
    G4DigiManager * DM = G4DigiManager::GetDMpointer();
-
    DM->AddNewModule(fDAQReadout);
    DM->AddNewModule(fBETADigitizer);
 
+   std::cout << "Digitizer Modules: " << std::endl;
    DM->List();
+
    runManager->SetNumberOfEventsToBeStored(1);
 }
 //______________________________________________________________________________
@@ -86,7 +66,6 @@ BETARun::~BETARun() {
 void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
    //if(BETASimulationManager::GetInstance()->fDebugLevel > 2) { std::cout << "start of BETARun::RecordEvent() \n";  }
-
    if ( ( numberOfEvent%fNUpdate ) == 0 ) {
       G4cout << " Event " << numberOfEvent << G4endl;
    }
@@ -124,13 +103,12 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
       numberOfEvent++;
    }
-
-   //---------------------------
+   //-----------------------------------------------------------------
   
    fSimulationManager->fEventNumber = numberOfEvent; // numberOfEvent is G4Run datamember that is incremented manually by user (at bottom)
 
-
    fBETADigitizer->Reset();
+   fDAQReadout->Reset();
 
    // Simulates the trigger supervisor
    fDAQReadout->Digitize();
@@ -171,19 +149,17 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
    fBETADigitizer->Clear();
    fDAQReadout->Clear();
-
-   numberOfEvent++;
-
-   fDAQReadout->Reset();
-   fBETADigitizer->Reset();
+   //fDAQReadout->Reset();
+   //fBETADigitizer->Reset();
 
    //if(BETASimulationManager::GetInstance()->fDebugLevel > 2) {
    //   std::cout << "end of BETARun::RecordEvent() \n";
    //}
 
-}
-//____________________________________________________________________
+   numberOfEvent++;
 
+}
+//______________________________________________________________________________
 void BETARun::DumpHallCMC() {
    MCOutput.open ( "MC_BIGCAL.dat" );
    // Double_t  BigCalEnergyDeposit[720+1024] ;
@@ -194,52 +170,10 @@ void BETARun::DumpHallCMC() {
    }
    MCOutput.close();
 }
-//____________________________________________________________________//
-
-void BETARun::DumpData() const
-{
-/*   G4cout << "  " << G4endl;
-   G4cout << " PMT "<< pmtTotalCount << G4endl;
-   G4cout << " Mirror "<< mirrorTotalCount << G4endl;*/
-//    std::ofstream outFile ( "data/efficiency.dat", std::ios_base::app );
-//    outFile << static_cast<G4double> ( pmtTotalCount ) /static_cast<G4double> ( mirrorTotalCount ) <<G4endl;
-//    outFile.close();
-
-//    std::stringstream outstream;
-//    std::string fname;
-// 
-//    double xdim;
-//    double ydim;
-//    for ( int i = 1; i<9;i++ )
-//    {
-//       if ( i/2 != 0 )
-//       {
-//          xdim =  35.5;
-//          ydim = 36.5;
-//       }
-//       else
-//       {
-//          xdim  = 42.5; // not right??????????
-//          ydim = 36.5;
-//       }
-//       outstream << "data/miror." << i << ".dat"  ;
-//       fname  = outstream.str();
-//       std::ofstream      outFile ( "data/mirror.dat", std::ios_base::app );
-//       for ( int xi = 0; xi< 28*2; xi++ )
-//       {
-//          for ( int yi = 0; yi< 28*2; yi++ )
-//          {
-//             /*    outFile << xi << " " << yi << " " << mirror3PosVsPhotoelectrons->binHeight ( xi,yi ) << G4endl;*/
-// //G4cout << xi << " " << yi << " " << mirror3PosVsPhotoelectrons->binHeight(xi,yi)<< G4endl;
-// 
-//          }
-//       }
-//       outFile.close();
-//    }
-
+//______________________________________________________________________________
+void BETARun::DumpData() const {
 }
-//____________________________________________________________________//
-
+//______________________________________________________________________________
 void BETARun::Print ( const std::vector<G4String>& title,
                       const std::map< G4int, std::vector<G4double> >&myMap ) const
 {
@@ -280,8 +214,7 @@ void BETARun::Print ( const std::vector<G4String>& title,
 //       iter++;
 //    }
 }
-//____________________________________________________________________//
-
+//______________________________________________________________________________
 void BETARun::GeneratePedestals() {
    // emulate pedestals
    TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
@@ -320,7 +253,6 @@ void BETARun::GeneratePedestals() {
    }
 
 }
-//________________________________________________________________________
-
+//______________________________________________________________________________
 
 

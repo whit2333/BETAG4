@@ -14,7 +14,6 @@
 #include "G4VTouchable.hh"
 
 //____________________________________________________________________________
-
 BETAForwardTracker::BETAForwardTracker(G4String  name):G4VSensitiveDetector(name) {
    G4String HCname;
    detname = name;
@@ -34,10 +33,7 @@ void BETAForwardTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent
    
    fHitsCollection =
       new BETAForwardTrackerHitsCollection ( detname, collectionName[0] );
-   if ( HCID < 0 )
-   {
-      HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
-   }
+   HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
 
    // Add collection to the event
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
