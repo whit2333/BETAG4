@@ -151,6 +151,7 @@ void BETADigitizer::Digitize() {
             aDigi = new BETAG4DigiADC(gg+1);
             fNADC++;
             aDigi->fTrueValue = energyTemp;
+
             // Divide the energy deposited by the calibration coefficient so that 
             // in reconstruction, we can multiply by the calibration coefficient.
             if(fBigcalADCHC) {
@@ -573,6 +574,7 @@ void BETADigitizer::ReadOut() {
 }
 //______________________________________________________________________________
 void BETADigitizer::DigitizePedestals(){
+
    G4String colName;
 
    if(fCherenkovADCDC) delete fCherenkovADCDC;
@@ -634,7 +636,27 @@ void BETADigitizer::DigitizePedestals(){
 
 
 }
-//__________________________________________________________________
+//______________________________________________________________________________
+void BETADigitizer::DeleteHitCollections(){
+   if(fCherenkovADCDC) delete fCherenkovADCDC;
+   if(fCherenkovTDCDC) delete fCherenkovTDCDC;
+   if(fBigcalADCDC)    delete fBigcalADCDC;
+   if(fBigcalTDCDC)    delete fBigcalTDCDC;
+   if(fHodoscopeADCDC) delete fHodoscopeADCDC;
+   if(fHodoscopeTDCDC) delete fHodoscopeTDCDC;
+   if(fTrackerADCDC)   delete fTrackerADCDC;
+   if(fTrackerTDCDC)   delete fTrackerTDCDC;
+
+   fCherenkovADCDC = 0;
+   fCherenkovTDCDC = 0;
+   fBigcalADCDC    = 0;
+   fBigcalTDCDC    = 0;
+   fHodoscopeADCDC = 0;
+   fHodoscopeTDCDC = 0;
+   fTrackerADCDC   = 0;
+   fTrackerTDCDC   = 0;
+}
+//______________________________________________________________________________
 
 void BETADigitizer::Clear() {
 
@@ -669,8 +691,8 @@ void BETADigitizer::Clear() {
 
 void BETADigitizer::Print() {
    std::cout << "++ BETA Digitizer ++\n";
-   fCherenkovADCDC->PrintAllDigi() ;
-   fCherenkovTDCDC->PrintAllDigi()    ;
+   //fCherenkovADCDC->PrintAllDigi() ;
+   //fCherenkovTDCDC->PrintAllDigi()    ;
 
    std::cout << "   Bigcal    (" << fBigcalHCID << ")   Entries : " 
       << fBigcalADCDC->entries() << " adc, " 

@@ -124,8 +124,10 @@ class BETADigitizer : public G4VDigitizerModule {
        *  These are the event structures which are emulating real data.
        */
       void ReadOut();
-
       void Clear();
+
+      // Used to deal with pedestals.
+      void DeleteHitCollections();
 
       virtual void Print();
 

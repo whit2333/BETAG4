@@ -96,16 +96,16 @@ G4Run*  BETARunAction::GenerateRun() {
 //______________________________________________________________________________
 void BETARunAction::EndOfRunAction ( const G4Run* aRun ) {
 
-      if(fSimulationManager->fSANEScalers->fTriggerEvent){
-         fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
-         fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = aRun->GetNumberOfEvent()+1;
-         //std::cout << " LAST EVENT : " << aRun->GetNumberOfEvent()+1 << std::endl;
-         fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
-      }
+   if(fSimulationManager->fSANEScalers->fTriggerEvent){
+      fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;
+      fSimulationManager->fSANEScalers->fTriggerEvent->fEventNumber = aRun->GetNumberOfEvent()+1;
+      //std::cout << " LAST EVENT : " << aRun->GetNumberOfEvent()+1 << std::endl;
+      fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
+   }
 
-      fSimulationManager->fScalerTree->Fill();
-      fSimulationManager->fSANEScalers->ClearEvent();
-      fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
+   fSimulationManager->fScalerTree->Fill();
+   fSimulationManager->fSANEScalers->ClearEvent();
+   fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
 
    timer->Stop();
    //         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");
@@ -162,8 +162,11 @@ dt->GetYear(), dt->GetMonth(),dt->GetDay(), dt->GetHour(),dt->GetMinute(),dt->Ge
 
    G4RunManager * runManager = G4RunManager::GetRunManager();
    BETAPrimaryGeneratorAction * genAction = (BETAPrimaryGeneratorAction*) runManager->GetUserPrimaryGeneratorAction();
-   genAction->fOutputTree->Write();
-   genAction->fOutputTree->FlushBaskets();
+   if(genAction) {
+      genAction->fOutputTree->Write();
+      genAction->fOutputTree->FlushBaskets();
+   }
+
 
    // Save all objects in this file
    //   fSimulationManager->fDetectorTree->Write();

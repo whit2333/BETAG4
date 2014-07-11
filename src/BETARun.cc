@@ -112,6 +112,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
 
    // Simulates the trigger supervisor
    fDAQReadout->Digitize();
+
    //fDAQReadout->Print();
    //fBETAScalers->Digitize();
    
@@ -143,7 +144,6 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       if(fBETADigitizer->IsTriggered())fDAQReadout->ReadOut();    // contains the fake plane's readout
 
       fSimulationManager->fDetectorTree->Fill();
-
 
    }
 
@@ -240,7 +240,6 @@ void BETARun::GeneratePedestals() {
         aPart->fHelicity = rand->Uniform(-1.0,1.0);
      }
      fBETADigitizer->DigitizePedestals();
-
      fBETADigitizer->ReadOut();
 
      fSimulationManager->fDetectorTree->Fill();
@@ -251,6 +250,9 @@ void BETARun::GeneratePedestals() {
 
      numberOfEvent++;
    }
+
+   fBETADigitizer->Clear();
+   fBETADigitizer->DeleteHitCollections();
 
 }
 //______________________________________________________________________________

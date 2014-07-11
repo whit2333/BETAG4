@@ -38,7 +38,7 @@ BETAFakePlane::~BETAFakePlane() {
 void BETAFakePlane::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent ) {
    fHitsCollection =
       new BETAFakePlaneHitsCollection ( detname, collectionName[0] );
-   HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
+   if(HCID < 0) HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );
 }
 //_________________________________________________________

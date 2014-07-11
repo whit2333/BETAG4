@@ -76,9 +76,9 @@ class BETAPrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction {
 
       TTree * fOutputTree;
       void InitOutput(){
-         //SANERunManager::GetRunManager()->GetCurrentFile()->cd();
-         //fOutputTree = new TTree("thrownEvents","Thrown MC Events");
-         //fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
+         SANERunManager::GetRunManager()->GetCurrentFile()->cd();
+         fOutputTree = new TTree("thrownEvents","Thrown MC Events");
+         fOutputTree->Branch("fThrownParticles",&(fMonteCarloEvent->fThrownParticles));
 
       }
 

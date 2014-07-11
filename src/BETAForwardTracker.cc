@@ -33,7 +33,7 @@ void BETAForwardTracker::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent
    
    fHitsCollection =
       new BETAForwardTrackerHitsCollection ( detname, collectionName[0] );
-   HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
+   if( HCID < 0 ) HCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
 
    // Add collection to the event
    hitsCollectionOfThisEvent->AddHitsCollection ( HCID, fHitsCollection );

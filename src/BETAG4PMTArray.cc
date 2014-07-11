@@ -43,7 +43,7 @@ BETAG4PMTArray::~BETAG4PMTArray() {
 void BETAG4PMTArray::Initialize ( G4HCofThisEvent* hitsCollectionOfThisEvent ) {
 
    fHitsCollection = new BETAG4PMTHitsCollection ( GetName() , fCollectionName );
-   fHCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
+   if( fHCID < 0 ) fHCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fHitsCollection );
    hitsCollectionOfThisEvent->AddHitsCollection ( fHCID, fHitsCollection );
 
    // Initialise hits

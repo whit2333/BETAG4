@@ -1,4 +1,4 @@
-/beta/target/setPolarizationAngle 180
+/beta/target/setPolarizationAngle 80
 #/beta/toggleBigcal on
 #/beta/toggleForwardTracker off
 #/beta/toggleLuciteHodoscope off
@@ -16,4 +16,4 @@
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 100000
+/run/beamOn 10
