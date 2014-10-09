@@ -1,13 +1,13 @@
 /beta/target/setPolarizationAngle 80
-#/beta/toggleBigcal on
-#/beta/toggleForwardTracker off
-#/beta/toggleLuciteHodoscope off
+/beta/toggleBigcal on
+/beta/toggleForwardTracker off
+/beta/toggleLuciteHodoscope on
 
 /beta/gun/setEventType flat
 /beta/gun/setEnergyMin 0.50
 /beta/gun/setEnergyMax  4.0
-/beta/gun/setThetaMin 30.0
-/beta/gun/setThetaMax 50.0
+/beta/gun/setThetaMin 34.0
+/beta/gun/setThetaMax 46.0
 /beta/gun/setPhiMin   -30.0
 /beta/gun/setPhiMax    30.0
 /beta/gun/refresh
@@ -16,4 +16,4 @@
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 10
+/run/beamOn 5000
