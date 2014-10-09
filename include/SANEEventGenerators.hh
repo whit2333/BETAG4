@@ -6,6 +6,7 @@
 #include "G4ThreeVector.hh"
 #include "TMath.h"
 #include "F1F209eInclusiveDiffXSec.h"
+#include "OARPionDiffXSec.h"
 #include "InSANEInclusiveDiffXSec.h"
 #include "InSANEXSections.h"
 #include "InSANEPhaseSpace.h"
@@ -93,9 +94,50 @@ class InclusivePionEventGenerator : public BETAG4EventGenerator  {
  */
 class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
    public :
-      InclusiveElectronPionGenerator(){ }
+      InclusiveElectronPionGenerator(){ 
+         fNH3PackingFraction = 0.6;
+         UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
+         SetTarget(targ);
+      }
       virtual ~InclusiveElectronPionGenerator() { }
-      virtual void Initialize();
+      virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ){
+         InSANEPhaseSpaceSampler * samp = 0;
+
+         F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
+         //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
+         //xsec->Dump();
+         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
+         xsec->SetTargetMaterial(*mat);
+         xsec->SetTargetMaterialIndex(i);
+         xsec->SetBeamEnergy(GetBeamEnergy());
+         xsec->SetTargetNucleus(*targ);
+         xsec->InitializePhaseSpaceVariables();
+         xsec->InitializeFinalStateParticles();
+         samp = new InSANEPhaseSpaceSampler(xsec);
+         samp->SetFoamCells(100);
+         samp->SetWeight(weight);
+         AddSampler(samp);
+
+         PhotoOARPionDiffXSec * xsec1 = new PhotoOARPionDiffXSec();
+         //xsec->Dump();
+         xsec1->SetTargetMaterial(*mat);
+         xsec1->SetTargetMaterialIndex(i);
+         xsec1->SetBeamEnergy(GetBeamEnergy());
+         xsec1->SetTargetNucleus(*targ);
+         xsec1->InitializePhaseSpaceVariables();
+         xsec1->InitializeFinalStateParticles();
+         samp = new InSANEPhaseSpaceSampler(xsec1);
+         samp->SetFoamCells(100);
+         samp->SetWeight(weight);
+         AddSampler(samp);
+
+      }
+      virtual void Initialize() {
+         InSANETargetEventGenerator::Initialize();
+      }
+
+      Double_t fNH3PackingFraction;
 };
 
 

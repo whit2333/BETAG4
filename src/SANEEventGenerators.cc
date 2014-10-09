@@ -117,56 +117,57 @@ void PolarizedDISEventGenerator::Initialize(){
 //____________________________________________________________________
 
 //____________________________________________________________________
-void InclusiveElectronPionGenerator::Initialize(){
-   //std::cout << " InclusiveElectronPionGenerator::Initialize() \n";
-   /// Neutral Pion
-   InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
-   fDiffXSec1->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec1->SetProductionParticleType(111);
-   fDiffXSec1->InitializePhaseSpaceVariables();
-   fDiffXSec1->InitializeFinalStateParticles();
-   fDiffXSec1->SetRadiationLength(8.0);
-   InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
-   AddSampler(pi0EventSampler);
-
-   /// Positive Pion
-   InSANEInclusiveWiserXSec * fDiffXSec2 = new InSANEInclusiveWiserXSec();
-   fDiffXSec2->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec2->SetProductionParticleType(211);
-   fDiffXSec2->InitializePhaseSpaceVariables();
-   fDiffXSec2->InitializeFinalStateParticles();
-   fDiffXSec2->SetRadiationLength(8.0);
-   InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
-   AddSampler(pi0EventSampler2);
-
-   /// Negative Pion
-   InSANEInclusiveWiserXSec * fDiffXSec3 = new InSANEInclusiveWiserXSec();
-   fDiffXSec3->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec3->SetProductionParticleType(-211);
-   fDiffXSec3->InitializePhaseSpaceVariables();
-   fDiffXSec3->InitializeFinalStateParticles();
-   fDiffXSec3->SetRadiationLength(8.0);
-   InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
-   AddSampler(pi0EventSampler3);
-
-   /// DIS
-   F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-   fDiffXSec->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec->InitializePhaseSpaceVariables();
-   fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-   fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
-   fDiffXSec->InitializeFinalStateParticles();
-   //      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-   //     ps->ListVariables();
-   InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-   AddSampler(fF1F2EventSampler);
-
-   SetBeamEnergy(fBeamEnergy);
-   InSANEEventGenerator::Initialize();
-
-   CalculateTotalCrossSection();
-   fIsInitialized = true;
-}
+//void InclusiveElectronPionGenerator::Initialize(){
+//   //std::cout << " InclusiveElectronPionGenerator::Initialize() \n";
+//   /// Neutral Pion
+//   //InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
+//   PhotoOARPionDiffXSec * fDiffXSec1 = new PhotoOARPionDiffXSec();
+//   fDiffXSec1->SetBeamEnergy(fBeamEnergy);
+//   //fDiffXSec1->SetProductionParticleType(111);
+//   fDiffXSec1->InitializePhaseSpaceVariables();
+//   fDiffXSec1->InitializeFinalStateParticles();
+//   //fDiffXSec1->SetRadiationLength(8.0);
+//   InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
+//   AddSampler(pi0EventSampler);
+//
+//   ///// Positive Pion
+//   //InSANEInclusiveWiserXSec * fDiffXSec2 = new InSANEInclusiveWiserXSec();
+//   //fDiffXSec2->SetBeamEnergy(fBeamEnergy);
+//   //fDiffXSec2->SetProductionParticleType(211);
+//   //fDiffXSec2->InitializePhaseSpaceVariables();
+//   //fDiffXSec2->InitializeFinalStateParticles();
+//   //fDiffXSec2->SetRadiationLength(0.05);
+//   //InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
+//   //AddSampler(pi0EventSampler2);
+//
+//   ///// Negative Pion
+//   //InSANEInclusiveWiserXSec * fDiffXSec3 = new InSANEInclusiveWiserXSec();
+//   //fDiffXSec3->SetBeamEnergy(fBeamEnergy);
+//   //fDiffXSec3->SetProductionParticleType(-211);
+//   //fDiffXSec3->InitializePhaseSpaceVariables();
+//   //fDiffXSec3->InitializeFinalStateParticles();
+//   //fDiffXSec3->SetRadiationLength(0.05);
+//   //InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
+//   //AddSampler(pi0EventSampler3);
+//
+//   /// DIS
+//   F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
+//   fDiffXSec->SetBeamEnergy(fBeamEnergy);
+//   fDiffXSec->InitializePhaseSpaceVariables();
+//   fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+//   fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
+//   fDiffXSec->InitializeFinalStateParticles();
+//   //      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
+//   //     ps->ListVariables();
+//   InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
+//   AddSampler(fF1F2EventSampler);
+//
+//   SetBeamEnergy(fBeamEnergy);
+//   InSANEEventGenerator::Initialize();
+//
+//   CalculateTotalCrossSection();
+//   fIsInitialized = true;
+//}
 //____________________________________________________________________
 
 //____________________________________________________________________
