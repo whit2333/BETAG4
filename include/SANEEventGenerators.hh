@@ -132,7 +132,8 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          samp->SetWeight(weight);
          AddSampler(samp);
 
-         OARPionElectroDiffXSec *xsec2 = new OARPionElectroDiffXSec();
+         ElectroOARPionDiffXSec *xsec2 = new ElectroOARPionDiffXSec();
+         //OARPionElectroDiffXSec *xsec2 = new OARPionElectroDiffXSec();
          //xsec->Dump();
          xsec2->SetTargetMaterial(*mat);
          xsec2->SetTargetMaterialIndex(i);
