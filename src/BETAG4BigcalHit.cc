@@ -95,6 +95,7 @@ void BETAG4BigcalHit::Draw() {
 //______________________________________________________________________________
 const std::map<G4String,G4AttDef>* BETAG4BigcalHit::GetAttDefs() const {
    G4bool isNew;
+   std::cout << " GETAttDefs " << std::endl;
    std::map<G4String,G4AttDef>* store
    = G4AttDefStore::GetInstance ( "BETAG4BigcalHit",isNew );
 

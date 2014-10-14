@@ -121,8 +121,10 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
       //if( fDAQReadout->IsGoodEvent() ) 
          fBETADigitizer->SetTriggered(true);
 
-      /*    std::cout << " Above Readout Triggered DAQ! \n";*/
-      if(fBETADigitizer->IsTriggered()) fBETADigitizer->Digitize();
+      //std::cout << " Above Readout Triggered DAQ! \n";
+      if(fBETADigitizer->IsTriggered()){
+         fBETADigitizer->Digitize();
+      }
 
       fSimulationManager->fEvents->fEventNumber       = numberOfEvent;
       fSimulationManager->fEvents->fRunNumber         = fSimulationManager->GetRunNumber();
