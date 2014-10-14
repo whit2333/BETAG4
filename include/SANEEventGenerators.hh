@@ -106,14 +106,14 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
          //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
          //xsec->Dump();
-         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
          xsec->SetTargetMaterial(*mat);
          xsec->SetTargetMaterialIndex(i);
          xsec->SetBeamEnergy(GetBeamEnergy());
          xsec->SetTargetNucleus(*targ);
          xsec->InitializePhaseSpaceVariables();
          xsec->InitializeFinalStateParticles();
+         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
          samp = new InSANEPhaseSpaceSampler(xsec);
          samp->SetFoamCells(100);
          samp->SetWeight(weight);
@@ -131,6 +131,20 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          samp->SetFoamCells(100);
          samp->SetWeight(weight);
          AddSampler(samp);
+
+         OARPionElectroDiffXSec *xsec2 = new OARPionElectroDiffXSec();
+         //xsec->Dump();
+         xsec2->SetTargetMaterial(*mat);
+         xsec2->SetTargetMaterialIndex(i);
+         xsec2->SetBeamEnergy(GetBeamEnergy());
+         xsec2->SetTargetNucleus(*targ);
+         xsec2->InitializePhaseSpaceVariables();
+         xsec2->InitializeFinalStateParticles();
+         samp = new InSANEPhaseSpaceSampler(xsec2);
+         samp->SetFoamCells(100);
+         samp->SetWeight(weight);
+         AddSampler(samp);
+
 
       }
       virtual void Initialize() {
