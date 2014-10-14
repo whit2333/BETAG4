@@ -2,8 +2,8 @@
 /beta/toggleForwardTracker on
 /beta/toggleLuciteHodoscope on
 
-/beta/gun/setEventType allNH3 
+/beta/gun/setEventType electronPion 
 /beta/gun/listPSVariables 
 
-/run/beamOn 50000
+/run/beamOn 100000
 

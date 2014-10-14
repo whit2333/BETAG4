@@ -33,7 +33,7 @@ if [ $? -ne 0 ]; then
    exit -1;
 fi
 
-BETA -r ${runnumber} -m ${macro} 1>> log/${runnumber}/betag4.out 2>> log/${runnumber}/betag4.err
+BETA -s ${runnumber} -r ${runnumber} -m ${macro} 1>> log/${runnumber}/betag4.out 2>> log/${runnumber}/betag4.err
 
 #wait
 

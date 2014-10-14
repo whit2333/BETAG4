@@ -97,7 +97,8 @@ void print_grid();
  */
 int main(int argc,char** argv)
 {
-   int  run_set         = 0;
+   int  run_set         =  0;
+   int  seed_set        =  10000;
    bool is_interactive  = true;
    bool is_interactive_with_macro  = false;
    std::string theMacro = "";
@@ -105,6 +106,7 @@ int main(int argc,char** argv)
    const struct option longopts[] =
    {
       {"run",       required_argument,  0, 'r'},
+      {"seed",      required_argument,  0, 's'},
       {"version",   no_argument,        0, 'v'},
       {"help",      no_argument,        0, 'h'},
       {"macro",     required_argument,  0, 'm'},
@@ -120,13 +122,18 @@ int main(int argc,char** argv)
    opterr    = 1; //turn off getopt error message
 
    while(iarg != -1) {
-      iarg = getopt_long(argc, argv, "vhilcdr:m:", longopts, &index);
+      iarg = getopt_long(argc, argv, "vhilcdr:m:s:", longopts, &index);
 
       switch (iarg)
       {
          case 'r':
             std::cout << "run should be set to " << optarg << std::endl;
             run_set = atoi(optarg);
+            break;
+
+         case 's':
+            seed_set = seed_set + atoi(optarg);
+            std::cout << "seed :  " << seed_set << std::endl;
             break;
 
          case 'm':
@@ -177,15 +184,19 @@ int main(int argc,char** argv)
 
    // Seed the random number generator manually
    G4long myseed = 983;
-   std::ifstream input_file ;
-   std::ofstream output_file ;
-   input_file.open ( "seed.txt" );
-   input_file >> myseed;
-   input_file.close();
-   myseed++;
-   output_file.open ( "seed.txt" ,std::ios::trunc); // this incremtents a number
-   output_file << myseed ;
-   output_file.close();
+   if(seed_set == 10000) {
+      std::ifstream input_file ;
+      std::ofstream output_file ;
+      input_file.open ( "seed.txt" );
+      input_file >> myseed;
+      input_file.close();
+      myseed++;
+      output_file.open ( "seed.txt" ,std::ios::trunc); // this incremtents a number
+      output_file << myseed ;
+      output_file.close();
+   } else {
+      myseed = seed_set;
+   }
    CLHEP::HepRandom::setTheSeed(myseed);
    TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
    rand->SetSeed(myseed);
