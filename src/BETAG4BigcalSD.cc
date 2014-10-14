@@ -38,7 +38,7 @@ void BETAG4BigcalSD::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent){
    hitsCollectionOfThisEvent->AddHitsCollection ( fTimingHCID, fTimingHC );
 
    fTriggerHC =
-      new BETAG4BigcalHitsCollection ( SensitiveDetectorName, collectionName[1] );
+      new BETAG4BigcalHitsCollection ( SensitiveDetectorName, collectionName[2] );
    if( fTriggerHCID < 0 ) fTriggerHCID = G4SDManager::GetSDMpointer()->GetCollectionID ( fTriggerHC );
    hitsCollectionOfThisEvent->AddHitsCollection ( fTriggerHCID, fTriggerHC );
 
