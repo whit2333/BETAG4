@@ -8,6 +8,7 @@
 #include "G4UIcmdWithADoubleAndUnit.hh"
 #include "G4UIcmdWithAString.hh"
 #include "G4RunManager.hh"
+#include "InSANERadiator.h"
 
 #include "BETAPhysicsListMessenger.hh"
 #include "BETASimulationManager.hh"

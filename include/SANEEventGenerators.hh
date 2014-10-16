@@ -5,9 +5,9 @@
 #include "BETAG4EventGenerator.hh"
 #include "G4ThreeVector.hh"
 #include "TMath.h"
+#include "InSANEInclusiveDiffXSec.h"
 #include "F1F209eInclusiveDiffXSec.h"
 #include "OARPionDiffXSec.h"
-#include "InSANEInclusiveDiffXSec.h"
 #include "InSANEXSections.h"
 #include "InSANEPhaseSpace.h"
 #include "WiserXSection.h"
@@ -15,6 +15,8 @@
 #include "PolarizedDISXSec.h"
 #include "EPCVXSection.h"
 #include "SANETargets.h"
+#include "InSANERadiator.h"
+#include "InSANEFunctionManager.h"
 
 /*! \page EventGeneratorHowTo How to make an event generator
 
@@ -98,14 +100,24 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          fNH3PackingFraction = 0.6;
          UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
          SetTarget(targ);
+         InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
       }
+
       virtual ~InclusiveElectronPionGenerator() { }
       virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ){
          InSANEPhaseSpaceSampler * samp = 0;
 
-         F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
+         //InSANERadiator<InSANEInclusiveDiffXSec> * xsec = new InSANERadiator<InSANEInclusiveDiffXSec>();
+         //InSANERadiator<F1F209eInclusiveDiffXSec> * xsec = new InSANERadiator<F1F209eInclusiveDiffXSec>();
+         //F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
+         InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
+         xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
+         //xsec->SetInternalOnly(true);// external is taken care of by GEANT4
+
          //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
+         //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
          //xsec->Dump();
+         //std::cout << "X/X0 = " << mat->GetNumberOfRadiationLengths() << std::endl;
          xsec->SetTargetMaterial(*mat);
          xsec->SetTargetMaterialIndex(i);
          xsec->SetBeamEnergy(GetBeamEnergy());
