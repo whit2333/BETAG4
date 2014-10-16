@@ -125,7 +125,8 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          xsec->InitializePhaseSpaceVariables();
          xsec->InitializeFinalStateParticles();
          xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
+         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
+         xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
          samp = new InSANEPhaseSpaceSampler(xsec);
          samp->SetFoamCells(100);
          samp->SetWeight(weight);
