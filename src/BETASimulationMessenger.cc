@@ -380,6 +380,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       anEventGen->NeedsRefreshed();
    }
    if ( command == fCmd_setType) {
+      double oldBeamEnergy = anEventGen->GetBeamEnergy();
       if(newValue == "flat") {
          anEventGen = new BigcalCenterEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
@@ -438,6 +439,7 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       } else {
          std::cout << " Illegal parameter: " << newValue << " !\n";
       }
+      anEventGen->SetBeamEnergy(oldBeamEnergy);
       //anEventGen->SetModified(true);
       if( !anEventGen->fIsInitialized ) {
          anEventGen->Initialize();
