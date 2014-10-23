@@ -100,7 +100,9 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          fNH3PackingFraction = 0.6;
          UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
          SetTarget(targ);
-         InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
+         //InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
+         InSANEFunctionManager::GetManager()->CreateSFs(11); // 11=composite
+         //InSANEFunctionManager::GetManager()->CreateSFs(2); // 2=NMC95
       }
 
       virtual ~InclusiveElectronPionGenerator() { }
@@ -118,6 +120,7 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
          //xsec->Dump();
          //std::cout << "X/X0 = " << mat->GetNumberOfRadiationLengths() << std::endl;
+
          xsec->SetTargetMaterial(*mat);
          xsec->SetTargetMaterialIndex(i);
          xsec->SetBeamEnergy(GetBeamEnergy());
