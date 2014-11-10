@@ -17,6 +17,7 @@
 #include "SANETargets.h"
 #include "InSANERadiator.h"
 #include "InSANEFunctionManager.h"
+#include "InSANEElasticRadiativeTail.h"
 
 /*! \page EventGeneratorHowTo How to make an event generator
 
@@ -131,9 +132,29 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
          xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
          samp = new InSANEPhaseSpaceSampler(xsec);
-         samp->SetFoamCells(100);
+         samp->SetFoamCells(200);
          samp->SetWeight(weight);
          AddSampler(samp);
+
+         if( i==0 ) {
+            // Add elastic radiative tail for proton 
+            InSANEElasticRadiativeTail * xsec_tail = new  InSANEElasticRadiativeTail();
+            xsec_tail->SetPolarizations(0.0,0.0);
+            xsec_tail->SetTargetMaterial(*mat);
+            xsec_tail->SetTargetMaterialIndex(i);
+            xsec_tail->SetBeamEnergy(GetBeamEnergy());
+            //xsec_tail->SetTargetNucleus(InSANENucleus::Proton());
+            xsec_tail->SetTargetNucleus(*targ);
+            xsec_tail->InitializePhaseSpaceVariables();
+            xsec_tail->InitializeFinalStateParticles();
+            xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+            xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
+            xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
+            samp = new InSANEPhaseSpaceSampler(xsec_tail);
+            samp->SetFoamCells(200);
+            samp->SetWeight(weight);
+            AddSampler(samp);
+         }
 
          PhotoOARPionDiffXSec * xsec1 = new PhotoOARPionDiffXSec();
          //xsec->Dump();
@@ -144,7 +165,7 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          xsec1->InitializePhaseSpaceVariables();
          xsec1->InitializeFinalStateParticles();
          samp = new InSANEPhaseSpaceSampler(xsec1);
-         samp->SetFoamCells(100);
+         samp->SetFoamCells(200);
          samp->SetWeight(weight);
          AddSampler(samp);
 
@@ -158,7 +179,7 @@ class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
          xsec2->InitializePhaseSpaceVariables();
          xsec2->InitializeFinalStateParticles();
          samp = new InSANEPhaseSpaceSampler(xsec2);
-         samp->SetFoamCells(100);
+         samp->SetFoamCells(200);
          samp->SetWeight(weight);
          AddSampler(samp);
 
