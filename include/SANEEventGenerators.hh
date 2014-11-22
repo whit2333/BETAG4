@@ -96,100 +96,16 @@ class InclusivePionEventGenerator : public BETAG4EventGenerator  {
  *   \ingroup EventGen
  */
 class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
-   public :
-      InclusiveElectronPionGenerator(){ 
-         fNH3PackingFraction = 0.6;
-         UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
-         SetTarget(targ);
-         //InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
-         InSANEFunctionManager::GetManager()->CreateSFs(11); // 11=composite
-         //InSANEFunctionManager::GetManager()->CreateSFs(2); // 2=NMC95
-      }
 
-      virtual ~InclusiveElectronPionGenerator() { }
-      virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ){
-         InSANEPhaseSpaceSampler * samp = 0;
-
-         //InSANERadiator<InSANEInclusiveDiffXSec> * xsec = new InSANERadiator<InSANEInclusiveDiffXSec>();
-         //InSANERadiator<F1F209eInclusiveDiffXSec> * xsec = new InSANERadiator<F1F209eInclusiveDiffXSec>();
-         //F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
-         InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
-         xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
-         //xsec->SetInternalOnly(true);// external is taken care of by GEANT4
-
-         //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
-         //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
-         //xsec->Dump();
-         //std::cout << "X/X0 = " << mat->GetNumberOfRadiationLengths() << std::endl;
-
-         xsec->SetTargetMaterial(*mat);
-         xsec->SetTargetMaterialIndex(i);
-         xsec->SetBeamEnergy(GetBeamEnergy());
-         xsec->SetTargetNucleus(*targ);
-         xsec->InitializePhaseSpaceVariables();
-         xsec->InitializeFinalStateParticles();
-         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-         xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-         xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
-         samp = new InSANEPhaseSpaceSampler(xsec);
-         samp->SetFoamCells(200);
-         samp->SetWeight(weight);
-         AddSampler(samp);
-
-         if( i==0 ) {
-            // Add elastic radiative tail for proton 
-            InSANEElasticRadiativeTail * xsec_tail = new  InSANEElasticRadiativeTail();
-            xsec_tail->SetPolarizations(0.0,0.0);
-            xsec_tail->SetTargetMaterial(*mat);
-            xsec_tail->SetTargetMaterialIndex(i);
-            xsec_tail->SetBeamEnergy(GetBeamEnergy());
-            //xsec_tail->SetTargetNucleus(InSANENucleus::Proton());
-            xsec_tail->SetTargetNucleus(*targ);
-            xsec_tail->InitializePhaseSpaceVariables();
-            xsec_tail->InitializeFinalStateParticles();
-            xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-            xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-            xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
-            samp = new InSANEPhaseSpaceSampler(xsec_tail);
-            samp->SetFoamCells(200);
-            samp->SetWeight(weight);
-            AddSampler(samp);
-         }
-
-         PhotoOARPionDiffXSec * xsec1 = new PhotoOARPionDiffXSec();
-         //xsec->Dump();
-         xsec1->SetTargetMaterial(*mat);
-         xsec1->SetTargetMaterialIndex(i);
-         xsec1->SetBeamEnergy(GetBeamEnergy());
-         xsec1->SetTargetNucleus(*targ);
-         xsec1->InitializePhaseSpaceVariables();
-         xsec1->InitializeFinalStateParticles();
-         samp = new InSANEPhaseSpaceSampler(xsec1);
-         samp->SetFoamCells(200);
-         samp->SetWeight(weight);
-         AddSampler(samp);
-
-         ElectroOARPionDiffXSec *xsec2 = new ElectroOARPionDiffXSec();
-         //OARPionElectroDiffXSec *xsec2 = new OARPionElectroDiffXSec();
-         //xsec->Dump();
-         xsec2->SetTargetMaterial(*mat);
-         xsec2->SetTargetMaterialIndex(i);
-         xsec2->SetBeamEnergy(GetBeamEnergy());
-         xsec2->SetTargetNucleus(*targ);
-         xsec2->InitializePhaseSpaceVariables();
-         xsec2->InitializeFinalStateParticles();
-         samp = new InSANEPhaseSpaceSampler(xsec2);
-         samp->SetFoamCells(200);
-         samp->SetWeight(weight);
-         AddSampler(samp);
-
-
-      }
-      virtual void Initialize() {
-         InSANETargetEventGenerator::Initialize();
-      }
-
+   public:
       Double_t fNH3PackingFraction;
+
+   public :
+      InclusiveElectronPionGenerator();
+      virtual ~InclusiveElectronPionGenerator();
+      virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ);
+      virtual void Initialize();
+
 };
 
 
