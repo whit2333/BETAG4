@@ -21,7 +21,7 @@
 //______________________________________________________________________________
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
-   fNUpdate = 100;
+   fNUpdate = 10;
 
    //if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
    //   G4cout << "= Created new BETARun \n";
@@ -53,6 +53,11 @@ BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
    std::cout << "Digitizer Modules: " << std::endl;
    DM->List();
+
+   std::cout << " - DAQ Module: " << std::endl;
+   //fBETADigitizer->Print();
+   std::cout << " - BETA Module: " << std::endl;
+   //fBETADigitizer->Print();
 
    runManager->SetNumberOfEventsToBeStored(1);
 }

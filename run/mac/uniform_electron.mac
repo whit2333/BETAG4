@@ -1,8 +1,8 @@
 /beta/target/setPolarizationAngle 180
 
 /beta/gun/setEventType flat
-/beta/gun/setEnergyMin 0.50
-/beta/gun/setEnergyMax  4.0
+/beta/gun/setEnergyMin 0.40
+/beta/gun/setEnergyMax  3.0
 /beta/gun/setThetaMin 20.0
 /beta/gun/setThetaMax 60.0
 /beta/gun/setPhiMin   -90.0

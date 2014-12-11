@@ -59,7 +59,7 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
    fTrackerHCID    = SDman->GetCollectionID ( "ForwardTracker/tracking" );
    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-   fBigcalChannelThreshold = 5.0; //MeV
+   fBigcalChannelThreshold = 15.0; //MeV
 
    fTrackerPhotonCounts = new int[132+132+72];
    fTrackerTimings      = new int[132+132+72];
@@ -130,11 +130,11 @@ void BETADigitizer::Digitize() {
    // -----------------------------------------------
    // BigCal Hits
    G4double energyTemp = 0.0;
-   G4int deltaT = 10;//ns
-   tDigi=0;
-   int fNADC=0;
-   int fNTDC=0;
-   G4double bigcalTDCChannelScaleFactor = 10.0;
+   G4int    deltaT     = 10;//ns
+   int      fNADC      = 0;
+   int      fNTDC      = 0;
+   tDigi               = 0;
+   G4double bigcalTDCChannelScaleFactor    = 10.0;
    G4double cherenkovTDCChannelScaleFactor = 10.0;
    BETAG4PMTHit * bcPMT;
    if(fBigcalHC) {
@@ -143,6 +143,7 @@ void BETADigitizer::Digitize() {
 
          bcHit      = (*fBigcalHC)[gg];
          if(fBigcalADCHC) bcPMT      = (*fBigcalADCHC)[gg];
+
          energyTemp = bcHit->GetDepositedEnergy();
 
          if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold ) { 
@@ -157,7 +158,7 @@ void BETADigitizer::Digitize() {
             if(fBigcalADCHC) {
                aDigi->fADCValue = bcPMT->fPhotons;
             } else {
-               aDigi->fADCValue = (double)energyTemp/((double) bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber));
+               aDigi->fADCValue = (double)energyTemp/((double)bigcalGeoCalc->GetCalibrationCoefficient(gg+1));
             }
 
             fBigcalADCDC->insert ( aDigi );
@@ -290,9 +291,9 @@ void BETADigitizer::ReadOut() {
    BigcalHit * aBChit;
    Int_t * rows;
    Int_t grouprowNumber;
-   bcEvent->fNumberOfHits = 0;
+   bcEvent->fNumberOfHits         = 0;
    bcEvent->fTotalEnergyDeposited = 0.0;
-   Int_t lowerLeftGroup=0;
+   Int_t lowerLeftGroup           = 0;
 
    for(int i = 0; i<fBigcalADCDC->entries() ; i++) {
       aDigi = (*fBigcalADCDC)[i];
@@ -302,16 +303,16 @@ void BETADigitizer::ReadOut() {
       aBChit->fiCell = bigcalGeoCalc->GetBlock_i(aDigi->fChannelNumber);
       aBChit->fjCell = bigcalGeoCalc->GetBlock_j(aDigi->fChannelNumber);
       aBChit->fADC   = aDigi->fADCValue + fSimulationManager->fBigcalDetector->fTypicalPedestal+
-         fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth/2.0);
+                       fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth/2.0);
 
-      /// Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
+      // Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
       grouprowNumber = bigcalGeoCalc->GetGroupNumber(aBChit->fiCell,aBChit->fjCell);
-      ///  pointers to pointers to hits in trigger group for a given group
-      ///  this is done so that we do not have too loop through again later
-      ///  when going through the tdcs 
+      //  pointers to pointers to hits in trigger group for a given group
+      //  this is done so that we do not have too loop through again later
+      //  when going through the tdcs 
       trigGroupBigcalHit[grouprowNumber-1][nTrigGrouphits[grouprowNumber-1]] = aBChit;
 
-      /// Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
+      // Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
       nTrigGrouphits[grouprowNumber-1]++;
 
       //     if( (bcgeo->GetTDCRow(aBChit->fiCell,aBChit->fjCell))[1] != -1 ) { // Block is not only in one TDC row

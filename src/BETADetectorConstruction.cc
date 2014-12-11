@@ -1351,7 +1351,6 @@ void BETADetectorConstruction::ConstructBigCal() {
        }
    } 
 
-
    // Get the material for the calorimeter
    //fSimulationManager->PrintSummary();
    G4Material * calorimeterMaterial = LeadGlass_NoOptics;
@@ -1554,6 +1553,7 @@ void BETADetectorConstruction::ConstructBigCal() {
    //cellLogical->SetVisAttributes ( G4VisAttributes::Invisible );
    //cellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
    //Make containers invisible
+   G4VisAttributes* BIGCALRcsProtBlockAttributes = new G4VisAttributes (/*G4Colour::Black()*/ G4Colour ( 0.5,0.3,0.0,0.25 )  );
    G4VisAttributes* BIGCALRcsProtAttributes = new G4VisAttributes (/*G4Colour::Black()*/ G4Colour ( 0.2,0.6,0.0,0.25 )  );
    BIGCALRcsProtAttributes->SetForceWireframe(true);
    BIGCALRcsProtAttributes->SetDaughtersInvisible(false);
@@ -1561,9 +1561,10 @@ void BETADetectorConstruction::ConstructBigCal() {
    fCalorimeterBottom_log->SetVisAttributes ( BIGCALRcsProtAttributes);
    fPMTLogicalBottom->SetVisAttributes ( BIGCALRcsProtAttributes );
    fPMTLogicalTop->SetVisAttributes ( BIGCALRcsProtAttributes);
-
-   fCellLogicalTop->SetVisAttributes(G4VisAttributes::Invisible );
-   fCellLogicalBottom->SetVisAttributes (G4VisAttributes::Invisible );
+   //fCellLogicalTop->SetVisAttributes(    G4VisAttributes::Invisible );
+   //fCellLogicalBottom->SetVisAttributes( G4VisAttributes::Invisible );
+   fCellLogicalTop->SetVisAttributes(    BIGCALRcsProtBlockAttributes );
+   fCellLogicalBottom->SetVisAttributes( BIGCALRcsProtBlockAttributes );
 }
 //___________________________________________________________________
 void BETADetectorConstruction::DestroyCherenkov() {
