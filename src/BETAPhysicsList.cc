@@ -55,7 +55,7 @@ BETAPhysicsList::BETAPhysicsList() :  G4VUserPhysicsList() {
    theBoundaryProcess           = 0;
    pMessenger                   = new BETAPhysicsListMessenger ( this );
    SetVerboseLevel ( 0 );
-   defaultCutValue              = 0.01*mm;
+   defaultCutValue              = 0.7*mm;
 }
 //______________________________________________________________________________
 BETAPhysicsList::~BETAPhysicsList() {
@@ -285,10 +285,10 @@ void BETAPhysicsList::SetCuts() {
    //   the default cut value for all particle types
    //
    SetCutsWithDefault();
-   SetCutValue(defaultCutValue,"gamma");
-   SetCutValue(defaultCutValue,"e-");
-   SetCutValue(defaultCutValue,"e+");
-   SetCutValue(defaultCutValue,"proton");
+   //SetCutValue(defaultCutValue,"gamma");
+   //SetCutValue(defaultCutValue,"e-");
+   //SetCutValue(defaultCutValue,"e+");
+   //SetCutValue(defaultCutValue,"proton");
    //if ( verboseLevel>1 ) 
       DumpCutValuesTable();
 
