@@ -2,16 +2,16 @@
 
 /beta/gun/setEventType flat
 /beta/gun/setEnergyMin 0.40
-/beta/gun/setEnergyMax  3.0
-/beta/gun/setThetaMin 20.0
-/beta/gun/setThetaMax 60.0
-/beta/gun/setPhiMin   -90.0
-/beta/gun/setPhiMax   90.0
+/beta/gun/setEnergyMax  4.0
+/beta/gun/setThetaMin 25.0
+/beta/gun/setThetaMax 55.0
+/beta/gun/setPhiMin   -80.0
+/beta/gun/setPhiMax   80.0
 /beta/gun/refresh
 /beta/gun/setParticle e- 
 /beta/simulateTrigger 1
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
-/run/beamOn 1000000
+/run/beamOn 10000
 

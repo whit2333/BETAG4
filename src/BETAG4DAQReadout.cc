@@ -93,7 +93,7 @@ void BETAG4DAQReadout::Digitize() {
 
       if(energyTemp > 5.0 ) { // 1 MeV Block Threshold?
          fNBigcalHits++;
-         fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerGroup(gg+1)-1] += energyTemp;
+         fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerSumGroup(gg+1)-1] += energyTemp;
       }
    }
 
