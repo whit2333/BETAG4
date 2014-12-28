@@ -44,9 +44,9 @@ BETAG4DAQReadout::BETAG4DAQReadout(G4String modName) : G4VDigitizerModule(modNam
       if(fTrackerFakePlane2HCID == -1) std::cout << " Collection " << colName << "  NOT FOUND!\n";
    }
 
-   fBigcalTriggerThreshold      = 500.0; // MeV
+   fBigcalTriggerThreshold      = 400.0; // MeV
    fBigcalBlockReadoutThreshold = 5.0;   // MeV
-   fCherenkovTriggerThreshold   = 3;     // photons???
+   fCherenkovTriggerThreshold   = 1;     // photons???
 
    Reset();
 }
@@ -91,7 +91,7 @@ void BETAG4DAQReadout::Digitize() {
       bcHit      = (*fBigcalHC)[gg];
       energyTemp = bcHit->GetDepositedEnergy();///(bigcalGeoCalc->GetCalibrationCoefficient(gg+1));;
 
-      if(energyTemp > 5.0 ) { // 1 MeV Block Threshold?
+      if(energyTemp > 1.0 ) { // 1 MeV Block Threshold?
          fNBigcalHits++;
          fTriggerGroupEnergy[fSimulationManager->fBigcalDetector->fGeoCalc->GetTriggerSumGroup(gg+1)-1] += energyTemp;
       }
