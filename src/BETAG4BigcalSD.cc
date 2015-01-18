@@ -95,6 +95,10 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
    // Check to see if this is the first time the hit has been updated
    if ( ! ( aHit->GetLogicalVolume() ) )
    {
+      //if(aHit->fCellID != blockNo) {
+      //   std::cout << "ERROR block numbers are not equal!" << aHit->fCellID << " VS " << blockNo <<std::endl;
+      //}
+
       // Set volume information
       aHit->SetLogicalVolume ( thePhysical->GetLogicalVolume() );
       G4AffineTransform aTrans = theTouchable->GetHistory()->GetTopTransform();

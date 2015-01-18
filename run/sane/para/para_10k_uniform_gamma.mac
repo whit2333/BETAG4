@@ -9,5 +9,6 @@
 /beta/gun/refresh
 /beta/gun/setParticle gamma 
 /beta/gun/refresh
+/beta/simulateTrigger 0
 /beta/gun/listPSVariables 
 /run/beamOn 10000

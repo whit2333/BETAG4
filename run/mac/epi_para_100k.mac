@@ -1,6 +1,7 @@
 /beta/target/setPolarizationAngle 180
-/beta/toggleForwardTracker on
-/beta/toggleLuciteHodoscope on
+
+/beta/toggleForwardTracker noOptics
+/beta/toggleLuciteHodoscope noOptics
 
 /beta/gun/setEventType electronPion 
 /beta/gun/listPSVariables 

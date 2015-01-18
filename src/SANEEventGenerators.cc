@@ -251,21 +251,21 @@ InclusiveElectronPionGenerator::~InclusiveElectronPionGenerator(){
 }
 //______________________________________________________________________________
 void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ){
+
    InSANEPhaseSpaceSampler * samp = 0;
+
+   int nCells0  = 10;
+   int nSample0 = 10;
 
    //InSANERadiator<InSANEInclusiveDiffXSec> * xsec = new InSANERadiator<InSANEInclusiveDiffXSec>();
    //InSANERadiator<F1F209eInclusiveDiffXSec> * xsec = new InSANERadiator<F1F209eInclusiveDiffXSec>();
    //F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
+   //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
+   //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
 
    InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
    xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
    //xsec->SetInternalOnly(true);// external is taken care of by GEANT4
-
-   //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
-   //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
-   //xsec->Dump();
-   //std::cout << "X/X0 = " << mat->GetNumberOfRadiationLengths() << std::endl;
-
    xsec->SetTargetMaterial(*mat);
    xsec->SetTargetMaterialIndex(i);
    xsec->SetBeamEnergy(GetBeamEnergy());
@@ -276,9 +276,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
    xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
    samp = new InSANEPhaseSpaceSampler(xsec);
-   //samp->SetFoamCells(10);
-   //samp->SetFoamSample(10);
-   samp->SetFoamCells(100);
+   samp->SetFoamCells(nCells0);
+   samp->SetFoamSample(nSample0);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -294,9 +293,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
    QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
    samp = new InSANEPhaseSpaceSampler(QE_xsec);
-   //samp->SetFoamCells(10);
-   //samp->SetFoamSample(10);
-   samp->SetFoamCells(100);
+   samp->SetFoamCells(nCells0);
+   samp->SetFoamSample(nSample0);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -316,9 +314,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
       xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
       xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
       samp = new InSANEPhaseSpaceSampler(xsec_tail);
-   //samp->SetFoamCells(10);
-   //samp->SetFoamSample(10);
-      samp->SetFoamCells(100);
+      samp->SetFoamCells(nCells0);
+      samp->SetFoamSample(nSample0);
       samp->SetWeight(weight);
       AddSampler(samp);
    }
@@ -332,9 +329,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec1->InitializePhaseSpaceVariables();
    xsec1->InitializeFinalStateParticles();
    samp = new InSANEPhaseSpaceSampler(xsec1);
-   //samp->SetFoamCells(10);
-   //samp->SetFoamSample(10);
-   samp->SetFoamCells(100);
+   samp->SetFoamCells(nCells0);
+   samp->SetFoamSample(nSample0);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -348,9 +344,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec2->InitializePhaseSpaceVariables();
    xsec2->InitializeFinalStateParticles();
    samp = new InSANEPhaseSpaceSampler(xsec2);
-   //samp->SetFoamCells(10);
-   //samp->SetFoamSample(10);
-   samp->SetFoamCells(100);
+   samp->SetFoamCells(nCells0);
+   samp->SetFoamSample(nSample0);
    samp->SetWeight(weight);
    AddSampler(samp);
 

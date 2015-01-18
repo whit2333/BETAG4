@@ -8,6 +8,7 @@
 /beta/gun/setPhiMax   90.0
 /beta/gun/refresh
 /beta/gun/setParticle e-
+/beta/simulateTrigger 0
 /beta/gun/refresh
 /beta/gun/listPSVariables 
 
