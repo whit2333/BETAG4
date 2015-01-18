@@ -6,6 +6,10 @@
 #include <vector>
 #include "G4LogicalVolume.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
 class G4VPhysicalVolume;
 
 /**

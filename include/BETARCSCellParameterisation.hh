@@ -6,6 +6,10 @@
 #include "G4LogicalVolume.hh"
 #include <vector>
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
 class G4VPhysicalVolume;
 
 class BETARCSCellParameterisation : public G4VPVParameterisation {

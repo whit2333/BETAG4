@@ -2,10 +2,6 @@
 
 //______________________________________________________________________________
 BETAG4EventGenerator::BETAG4EventGenerator() {
-   fNumberOfGeneratedParticles = 1;
-   //fNeedsRefreshed             = false;
-   fIsInitialized              = false;
-   fBeamEnergy                 = 5.9;
    fInitialPosition            = new G4ThreeVector(0,0,0);
    fInitialDirection           = new G4ThreeVector(0,0,0);
    fMomentumVector             = new G4ThreeVector(0,0,0);
@@ -23,6 +19,9 @@ BETAG4EventGenerator::~BETAG4EventGenerator(){
    delete fInitialPosition;
    delete fInitialDirection;
    delete fMomentumVector;
+}
+//______________________________________________________________________________
+BETAG4EventGenerator::BETAG4EventGenerator(const BETAG4EventGenerator & eg) : BETAG4SavedEventGenerator(eg) {
 }
 //________________________________________________________________________________
 void BETAG4EventGenerator::Initialize(){

@@ -4,6 +4,7 @@
 #include "G4UIcmdWithoutParameter.hh"
 #include "G4UIcmdWithADouble.hh"
 #include "G4Tokenizer.hh"
+#include "G4UImanager.hh"
 
 
 //___________________________________________________________________
@@ -156,17 +157,51 @@ BETASimulationMessenger::BETASimulationMessenger ( BETASimulationManager* mgr )
 
    fCmd_setType = new G4UIcmdWithAString("/beta/gun/setEventType",this);
    fCmd_setType->SetGuidance ( "Set the type of event generated. Note that this resets all the set values to their defaults." );
-   fCmd_setType->SetGuidance ( "Possible arguments are :" );
-   fCmd_setType->SetGuidance ( "   flat         - uniformly populate events" );
-   fCmd_setType->SetGuidance ( "   allNH3       - electrons and pions from NH3 target" );
-   fCmd_setType->SetGuidance ( "   disNH3       - only electrons from NH3 target" );
-   fCmd_setType->SetGuidance ( "   mott         - mott cross section" );
-   fCmd_setType->SetGuidance ( "   cone         - a cone with a small energy range " );
-   fCmd_setType->SetGuidance ( "   dis          - inclusive electron DIS(F1p and F2p)" );
-   fCmd_setType->SetGuidance ( "   beamOnTarget - electron beam shot from up stream on the target (GEANT4 physics)" );
+   fCmd_setType->SetGuidance ( "Arguments:" );
+   fCmd_setType->SetGuidance ( " name              : Class" );
+   fCmd_setType->SetGuidance ( "                     description" );
+   fCmd_setType->SetGuidance ( " flat              : BigcalCenterEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     uniformly populate events in BigCal " );
+   fCmd_setType->SetGuidance ( " electronPion      : InclusiveElectronPionGenerator" );
+   fCmd_setType->SetGuidance ( "                     Inclusive electron cross section (DIS,QE,ERT) along with the" );
+   fCmd_setType->SetGuidance ( "                     inclusive pion electro production using Oscar's fit." );
+   fCmd_setType->SetGuidance ( "                     Uses the full UVA NH3 target model." );
+   fCmd_setType->SetGuidance ( " electronPion_LHe  : InclusiveElectronPionGenerator" );
+   fCmd_setType->SetGuidance ( "                     Same as electronPion but it uses just a simple one material liquid He target." );
+   fCmd_setType->SetGuidance ( " allNH3            : NH3TargetEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     electrons and pions from NH3 target" );
+   fCmd_setType->SetGuidance ( " disNH3            : SANEInclusiveDISEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     only electrons from NH3 target                                   " );
+   fCmd_setType->SetGuidance ( " mott              : MottEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     mott cross section                                               " );
+   fCmd_setType->SetGuidance ( " cone              : ConeEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     a cone with a small energy range                                 " );
+   fCmd_setType->SetGuidance ( " dis               : DISEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     inclusive electron DIS(F1p and F2p)                              " );
+   fCmd_setType->SetGuidance ( " beamOnTarget      : BeamOnTargetEventGenerator" );
+   fCmd_setType->SetGuidance ( "                     electron beam shot from up stream on the target (GEANT4 physics) " );
+   fCmd_setType->SetGuidance ( " saved             : BETAG4EventGenerator" );
+   fCmd_setType->SetGuidance ( "                     should be used with loadFromFile" );
    fCmd_setType->SetDefaultValue ( "flat" );
    fCmd_setType->AvailableForStates ( G4State_Idle );
 
+   fCmd_loadEGFromFile = new G4UIcmdWithAString("/beta/gun/loadEGFromFile",this);
+   fCmd_loadEGFromFile->SetGuidance ( "Argument is name of saved object" );
+   fCmd_loadEGFromFile->SetGuidance ( "Use setEGFile to set the location of the file before using this command." );
+   fCmd_loadEGFromFile->SetDefaultValue ( "saved_event_gen" );
+   fCmd_loadEGFromFile->AvailableForStates ( G4State_Idle );
+
+   fCmd_saveEGToFile = new G4UIcmdWithAString("/beta/gun/saveEGToFile",this);
+   fCmd_saveEGToFile->SetGuidance ( "Argument is name of the object to be saved." );
+   fCmd_saveEGToFile->SetGuidance ( "Use setEGFile to set the location of the file before using this command." );
+   fCmd_saveEGToFile->SetDefaultValue ( "saved_event_gen" );
+   fCmd_saveEGToFile->AvailableForStates ( G4State_Idle );
+
+   fCmd_setEGFile = new G4UIcmdWithAString("/beta/gun/setEGFile",this);
+   fCmd_setEGFile->SetGuidance ( "Root file name where event generator is saved." );
+   fCmd_setEGFile->SetGuidance ( "This is the file used when loadFromFile command is issued." );
+   fCmd_setEGFile->SetDefaultValue ( "saved_event_gen.root" );
+   fCmd_setEGFile->AvailableForStates ( G4State_Idle );
 
    fCmd_setPSVariable = new G4UIcmdWithAString ( "/beta/gun/setPSVariable",this );
    fCmd_setPSVariable->SetGuidance ( " Set a phase space variable to a value"  );
@@ -379,73 +414,98 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       anEventGen->SetMomentumMin(fCmd_setMomentumMin->GetNewDoubleValue(newValue));
       anEventGen->NeedsRefreshed();
    }
+
    if ( command == fCmd_setType) {
+
       double oldBeamEnergy = anEventGen->GetBeamEnergy();
-      if(newValue == "flat") {
+
+      if( newValue == "flat" ) {
          anEventGen = new BigcalCenterEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "cone") {
+
+      } else if( newValue == "cone" ) {
          anEventGen = new ConeEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "dis") {
+
+      } else if( newValue == "dis" ) {
          anEventGen = new DISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "allNH3") {
+
+      } else if( newValue == "allNH3" ) {
          anEventGen = new NH3TargetEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "disNH3") {
+
+      } else if( newValue == "disNH3" ) {
          anEventGen = new SANEInclusiveDISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "poldis") {
+
+      } else if( newValue == "poldis" ) {
          anEventGen = new PolarizedDISEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "mott") {
+
+      } else if( newValue == "mott" ) {
          anEventGen = new MottEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "pion") {
+
+      } else if( newValue == "pion" ) {
          anEventGen = new InclusivePionEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "wiser") {
+
+      } else if( newValue == "wiser" ) {
          anEventGen = new WiserEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //janEventGen->Initialize();
-         //janEventGen->fIsInitialized = true;
-      } else if(newValue == "electronPion") {
+
+      } else if( newValue == "electronPion" ) {
          anEventGen =  new InclusiveElectronPionGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
-      } else if(newValue == "beamOnTarget") {
+
+      } else if( newValue == "electronPion_LHe" ) {
+         anEventGen =  new InclusiveElectronPionGenerator(new UVAPureHeliumTarget());
+         BETAAction->SetEventGenerator(anEventGen);
+
+
+      } else if( newValue == "beamOnTarget" ) {
          anEventGen = new BeamOnTargetEventGenerator();
          BETAAction->SetEventGenerator(anEventGen);
-         //anEventGen->Initialize();
-         //anEventGen->fIsInitialized = true;
+
+      } else if( newValue == "saved" ) {
+         anEventGen = new BETAG4EventGenerator();
+         BETAAction->SetEventGenerator(anEventGen);
+         // Set to true because we want to avoid doing the initializations at the end of this memeber function
+         anEventGen->fIsInitialized = true;
+
       } else {
-         std::cout << " Illegal parameter: " << newValue << " !\n";
+         std::cout << " Illegal parameter: " << newValue << std::endl;
+         G4UImanager* UI = G4UImanager::GetUIpointer();
+         UI->ApplyCommand("help /beta/gun/setEventType");
       }
-      anEventGen->SetBeamEnergy(oldBeamEnergy);
       //anEventGen->SetModified(true);
       if( !anEventGen->fIsInitialized ) {
+         anEventGen->SetBeamEnergy(oldBeamEnergy);
          anEventGen->Initialize();
          anEventGen->fIsInitialized = true;
+      } else if( !(newValue == "saved") ) {
+         BETAAction->GetEventGenerator()->Refresh();
+         anEventGen->SetBeamEnergy(oldBeamEnergy);
       }
-      else BETAAction->GetEventGenerator()->Refresh();
+   }
+
+   if ( command == fCmd_setEGFile) {
+      simManager->fEGFileName = newValue;
+   }
+
+   if ( command == fCmd_loadEGFromFile) {
+      std::cout << " LOADING EG FROM FILE " << std::endl;
+      simManager->fEGName = newValue;
+      anEventGen = new BETAG4EventGenerator();
+      BETAAction->SetEventGenerator(anEventGen);
+      anEventGen->LoadFromFile(simManager->fEGFileName.data(),simManager->fEGName.data());
+      anEventGen->Dump();
+   }
+
+   if ( command == fCmd_saveEGToFile) {
+      simManager->fEGName = newValue;
+      anEventGen->SaveToFile(simManager->fEGFileName.data(),simManager->fEGName.data());
    }
 
    if ( command == fCmd_refreshGenerator) {

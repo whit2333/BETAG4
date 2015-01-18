@@ -6,6 +6,9 @@
 #include "FTFP_BERT.hh"
 //#include "G4StepLimiterPhysics.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
 
 class G4Cerenkov;
 class G4Scintillation;

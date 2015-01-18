@@ -5,6 +5,11 @@
 #include "globals.hh"
 #include <vector>
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
+
 class G4VPhysicalVolume;
 
 /**

@@ -34,6 +34,10 @@ BETASimulationManager::BETASimulationManager () {
    fSimulateHodoscopeOptics = true;
    fSimulateTrackerOptics   = true;
    fDebugLevel              = 3;
+
+   fEGFileName              = "saved_event_gen.root";
+   fEGName                  = "saved_event_gen";
+
    fSimulateTrigger         = true;
 
    fSimulationMessenger = new BETASimulationMessenger ( this );

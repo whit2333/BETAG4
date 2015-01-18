@@ -13,7 +13,7 @@
 #include <iostream>
 #include <fstream>
 
-using namespace std;
+//using namespace std;
 
 //______________________________________________________________________________
 BETAHodoscopePMT::BETAHodoscopePMT ( G4String  name ):G4VSensitiveDetector ( name ) {
@@ -48,6 +48,7 @@ void BETAHodoscopePMT::Initialize(G4HCofThisEvent* hitsCollectionOfThisEvent ) {
 }
 //______________________________________________________________________________
 G4bool BETAHodoscopePMT::ProcessHits(G4Step* aStep, G4TouchableHistory* ) {
+   using namespace CLHEP;
 
    G4Track * theTrack = aStep->GetTrack();
 

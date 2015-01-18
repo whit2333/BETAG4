@@ -5,6 +5,11 @@
 //#include <gsl/gsl_errno.h>
 //#include <gsl/gsl_spline.h>
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
+
 #include "G4VSensitiveDetector.hh"
 #include "BETAFakePlaneHit.hh"
 #include "G4VPhysicalVolume.hh"

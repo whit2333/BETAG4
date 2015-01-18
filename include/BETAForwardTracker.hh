@@ -4,6 +4,11 @@
 #include "G4VSensitiveDetector.hh"
 #include "BETAForwardTrackerHit.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
+
 class G4HCofThisEvent;
 class G4TouchableHistory;
 class G4Step;

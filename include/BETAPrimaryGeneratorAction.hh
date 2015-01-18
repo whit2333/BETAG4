@@ -6,6 +6,7 @@
 #include "G4GeneralParticleSource.hh"
 #include "G4ParticleGun.hh"
 
+#include "BETAEventGenerators.hh"
 #include "SANEEventGenerators.hh"
 #include "BETASimulationManager.hh"
 

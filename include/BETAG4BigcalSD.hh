@@ -3,6 +3,10 @@
 
 #include "G4VSensitiveDetector.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
 #include "BETAG4BigcalHit.hh"
 #include "BIGCALGeometryCalculator.h"
 

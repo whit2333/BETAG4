@@ -1,6 +1,11 @@
 #ifndef BETAField_H
 #define BETAField_H 1
 #include "globals.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
+#include "CLHEP/Units/PhysicalConstants.h"
+using namespace CLHEP;
+
 #include "G4MagneticField.hh"
 #include "Riostream.h"
 #include "TROOT.h"

@@ -22,6 +22,7 @@ endif()
 # Setup include directory for this project
 #
 include(${Geant4_USE_FILE})
+include_directories(${PROJECT_SOURCE_DIR}/include)
 
 #----------------------------------------------------------------------------
 # Find ROOT (required package)
@@ -36,15 +37,16 @@ include_directories(${PROJECT_SOURCE_DIR}/include
    ${Geant4_INCLUDE_DIR}
    ${GSL_INCLUDE_DIR}
    ${ROOT_INCLUDE_DIR})
+
 #-Wno-unused-variable 
 #-Wdeprecated-declarations
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -Wno-unused-parameter ${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
 #---------------------------------------------------------------------------
 # ROOT compile flags
-if(useROOT)
-   EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
-endif(useROOT) 
+#if(useROOT)
+#   EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+#   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
+#endif(useROOT) 
 
 #---------------------------------------------------------------------------
 # InSANE compile flags
@@ -79,27 +81,31 @@ endif(useROOT)
 #---------------------------------------------------------------------------
 # InSANE linking flags 
 if(useInSANE)
-   EXECUTE_PROCESS(COMMAND insane-config --ldflags --libs OUTPUT_VARIABLE InSANE_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-   #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
-   #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
+   EXECUTE_PROCESS(COMMAND insane-config --libs --ldflags OUTPUT_VARIABLE InSANE_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${InSANE_LD_FLAGS}")
 
-   EXECUTE_PROCESS(COMMAND lhapdf-config --ldflags --libs OUTPUT_VARIABLE
-      LHAPDF_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   EXECUTE_PROCESS(COMMAND lhapdf-config --libs --ldflags OUTPUT_VARIABLE LHAPDF_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
    #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
    set(LHAPDF_LIBRARIES "${LHAPDF_LD_FLAGS}")
+   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${LHAPDF_LD_FLAGS}")
 
-   #EXECUTE_PROCESS(COMMAND "gsl-config --libs" OUTPUT_VARIABLE GSL_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   EXECUTE_PROCESS(COMMAND "gsl-config --libs --ldflags" OUTPUT_VARIABLE GSL_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+   set(GSL_LIBRARIES "${GSL_LD_FLAGS}")
    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GSL_LD_FLAGS}")
    #add_library( InSANE SHARED IMPORTED )
    #set_target_properties(InSANE PROPERTIES IMPORTED_LOCATION "/home/whit/sane08/InSANE/lib/libInSANE.so" )
    set(INSANE_LIBRARIES "-L/home/whit/lib -lInSANE")
 endif(useInSANE)
 
-
 message("ROOT_LIBRARIES : ${ROOT_LIBRARIES}")
+message("INSANE_LIBRARIES : ${INSANE_LIBRARIES}")
+message("LHAPDF_LIBRARIES : ${LHAPDF_LIBRARIES}")
 
-target_link_libraries(BETA ${Geant4_LIBRARIES} ${GSL_LIBRARIES} ${ROOT_LIBRARIES} ${LHAPDF_LIBRARIES} ${INSANE_LIBRARIES} InSANE )
+# note the library dependency order matters here. The library with the most dependencies goes first.
+target_link_libraries(BETA ${Geant4_LIBRARIES}  ${INSANE_LIBRARIES} ${ROOT_LIBRARIES}  ${LHAPDF_LIBRARIES})
+#target_link_libraries(BETA ${Geant4_LIBRARIES} ${LHAPDF_LIBRARIES} ${GSL_LIBRARIES} ${ROOT_LIBRARIES}  ${INSANE_LIBRARIES})
 
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we

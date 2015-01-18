@@ -17,40 +17,18 @@
  *
  *   \ingroup EventGen
  */ 
-class BETAG4EventGenerator : public InSANETargetEventGenerator {
-   protected:
-      double fThetaTarget;
-
+class BETAG4EventGenerator : public BETAG4SavedEventGenerator {
    public:
-      int   fNumberOfGeneratedParticles;
-      bool  fIsInitialized;
 
       G4ThreeVector * fInitialPosition ;
       G4ThreeVector * fInitialDirection ;
       G4ThreeVector * fMomentumVector ;
 
-      double fEnergyMax;
-      double fEnergyMin;
-      double fMomentumMax;
-      double fMomentumMin;
-      double fDeltaEnergy;
-      double fCentralEnergy;
-
-      double fThetaMax;
-      double fThetaMin;
-      double fDeltaTheta;
-      double fCentralTheta;
-
-      double fPhiMax;
-      double fPhiMin;
-      double fDeltaPhi;
-      double fCentralPhi;
-
-      double * fEventArray;
-
    public:
       BETAG4EventGenerator();
       virtual ~BETAG4EventGenerator(); 
+
+      BETAG4EventGenerator(const BETAG4EventGenerator & eg);
 
       /** Sets the cross section and creates the phase space sampler. 
        *  Must be called before using event generator
@@ -98,6 +76,7 @@ class BETAG4EventGenerator : public InSANETargetEventGenerator {
       void SetMomentumMin ( double val);
 
 };
+
 
 #endif
 

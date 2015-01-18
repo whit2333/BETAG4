@@ -1,20 +1,6 @@
 #include "SANEEventGenerators.hh"
-
-//____________________________________________________________________
-ConeEventGenerator::ConeEventGenerator() {
-   fCentralTheta     = 40.0;
-   fCentralPhi       = 0.0;
-   fCentralEnergy    = 2.00;
-   fDeltaTheta       = 2.0;
-   fDeltaPhi         = 20.0;
-   fDeltaEnergy      = 0.400; //GeV
-   fUpstreamPosition = 0.0;//cm
-}
-//____________________________________________________________________
-ConeEventGenerator::~ConeEventGenerator() {
-}
-//____________________________________________________________________
-
+#include "QuasiElasticInclusiveDiffXSec.h"
+#include "InSANERadiator.h"
 
 //____________________________________________________________________
 void DISEventGenerator::Initialize(){
@@ -247,28 +233,14 @@ void WiserEventGenerator::Initialize() {
 }
 //____________________________________________________________________
 
-//____________________________________________________________________
-void BigcalCenterEventGenerator::Initialize() {
-   InSANEFlatInclusiveDiffXSec * fDiffXSec = new InSANEFlatInclusiveDiffXSec();
-   fDiffXSec->SetBeamEnergy(fBeamEnergy);
-   fDiffXSec->SetParticleType(11);
-   fDiffXSec->InitializePhaseSpaceVariables();
-   InSANEPhaseSpace * ps = fDiffXSec->GetPhaseSpace(); 
-   InSANEPhaseSpaceSampler *  fEventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-   AddSampler(fEventSampler);
-   SetBeamEnergy(fBeamEnergy);
-   //CalculateTotalCrossSection();
-   Refresh();
-   //ps->Print();
-   fIsInitialized = true;
 
-}
-//____________________________________________________________________
 
 //______________________________________________________________________________
-InclusiveElectronPionGenerator::InclusiveElectronPionGenerator(){ 
-   fNH3PackingFraction = 0.6;
-   UVAPolarizedAmmoniaTarget * targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",fNH3PackingFraction);
+InclusiveElectronPionGenerator::InclusiveElectronPionGenerator(InSANETarget * targ){ 
+
+   if(!targ) {
+    targ = new UVAPolarizedAmmoniaTarget("UVaTarget","UVa Ammonia target",0.6);
+   }
    SetTarget(targ);
    //InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
    InSANEFunctionManager::GetManager()->CreateSFs(11); // 11=composite
@@ -284,6 +256,7 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    //InSANERadiator<InSANEInclusiveDiffXSec> * xsec = new InSANERadiator<InSANEInclusiveDiffXSec>();
    //InSANERadiator<F1F209eInclusiveDiffXSec> * xsec = new InSANERadiator<F1F209eInclusiveDiffXSec>();
    //F1F209eInclusiveDiffXSec * xsec = new F1F209eInclusiveDiffXSec();
+
    InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
    xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
    //xsec->SetInternalOnly(true);// external is taken care of by GEANT4
@@ -303,9 +276,29 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
    xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
    samp = new InSANEPhaseSpaceSampler(xsec);
-   samp->SetFoamCells(100);
+   samp->SetFoamCells(10);
+   samp->SetFoamSample(10);
+   //samp->SetFoamCells(100);
    samp->SetWeight(weight);
    AddSampler(samp);
+
+
+   InSANERadiator<QuasiElasticInclusiveDiffXSec> * QE_xsec = new InSANERadiator<QuasiElasticInclusiveDiffXSec>();
+   QE_xsec->SetTargetMaterial(*mat);
+   QE_xsec->SetTargetMaterialIndex(i);
+   QE_xsec->SetBeamEnergy(GetBeamEnergy());
+   QE_xsec->SetTargetNucleus(*targ);
+   QE_xsec->InitializePhaseSpaceVariables();
+   QE_xsec->InitializeFinalStateParticles();
+   QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+   QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
+   QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
+   samp = new InSANEPhaseSpaceSampler(QE_xsec);
+   samp->SetFoamCells(10);
+   samp->SetFoamSample(10);
+   samp->SetWeight(weight);
+   AddSampler(samp);
+
 
    if( i==0 ) {
       // Add elastic radiative tail for proton 
@@ -322,7 +315,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
       xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
       xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
       samp = new InSANEPhaseSpaceSampler(xsec_tail);
-      samp->SetFoamCells(100);
+      //samp->SetFoamCells(100);
+   samp->SetFoamCells(10);
+   samp->SetFoamSample(10);
       samp->SetWeight(weight);
       AddSampler(samp);
    }
@@ -336,7 +331,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec1->InitializePhaseSpaceVariables();
    xsec1->InitializeFinalStateParticles();
    samp = new InSANEPhaseSpaceSampler(xsec1);
-   samp->SetFoamCells(100);
+   //samp->SetFoamCells(100);
+   samp->SetFoamCells(10);
+   samp->SetFoamSample(10);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -350,7 +347,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec2->InitializePhaseSpaceVariables();
    xsec2->InitializeFinalStateParticles();
    samp = new InSANEPhaseSpaceSampler(xsec2);
-   samp->SetFoamCells(100);
+   samp->SetFoamCells(10);
+   samp->SetFoamSample(10);
+   //samp->SetFoamCells(100);
    samp->SetWeight(weight);
    AddSampler(samp);
 

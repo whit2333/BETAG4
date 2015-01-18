@@ -18,6 +18,7 @@
 #include "G4SDManager.hh"
 
 #include "BETAG4EventGenerator.hh"
+#include "BETAEventGenerators.hh"
 #include "SANEEventGenerators.hh"
 
 #include "BETADetectorPackage.h"
@@ -64,6 +65,9 @@ class BETASimulationManager {
       bool                        fSimulateBigcalOptics;
       bool                        fSimulateTrigger;
       int                         fDebugLevel;
+
+      G4String                    fEGFileName; 
+      G4String                    fEGName; 
 
    private: 
       BETASimulationManager( );

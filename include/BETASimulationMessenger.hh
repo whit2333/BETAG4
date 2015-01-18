@@ -45,6 +45,9 @@ class BETASimulationMessenger: public G4UImessenger {
       ///@}
 
       G4UIcmdWithAString        * fCmd_setType;
+      G4UIcmdWithAString        * fCmd_setEGFile;
+      G4UIcmdWithAString        * fCmd_saveEGToFile;
+      G4UIcmdWithAString        * fCmd_loadEGFromFile;
       G4UIcmdWithoutParameter   * fCmd_refreshGenerator;
       G4UIcmdWithoutParameter   * fCmd_listPSVariables;
       G4UIcmdWithAString        * fCmd_setParticle;
@@ -84,7 +87,7 @@ class BETASimulationMessenger: public G4UImessenger {
 
    public:
       BETASimulationMessenger(BETASimulationManager* );
-      ~BETASimulationMessenger();
+      virtual ~BETASimulationMessenger();
 
       BETADetectorConstruction   * GetDetectorConstruction(){  return fSimManager->GetDetectorConstruction(); }
       BETAPrimaryGeneratorAction * GetPrimaryGeneratorAction(){ return fSimManager->GetPrimaryGeneratorAction(); }

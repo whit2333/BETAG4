@@ -33,27 +33,9 @@
 
  */
 
-
-/**  Flat Event generator centered on bigcal with small solid angle
- *   and near mono chromatic energies, hence a cone
- *
- *   \ingroup EventGen
- */
-class ConeEventGenerator : public BETAG4EventGenerator   {
-   public:
-      ConeEventGenerator();
-      virtual ~ConeEventGenerator();
-      virtual  G4ThreeVector&  GetInitialPosition(const TParticle * ){
-         fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
-         fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm);
-         fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*1.0*cm  - fUpstreamPosition*cm);
-         return(*fInitialPosition);
-      }
-      double fUpstreamPosition;
-};
-
-
 //______________________________________________________________________________
+
+
 /** Event generator for inclusive electron DIS.   
  *   \ingroup EventGen
  */
@@ -63,9 +45,9 @@ class DISEventGenerator : public BETAG4EventGenerator {
       ~DISEventGenerator(){}
       virtual void Initialize();
 };
-
-
 //______________________________________________________________________________
+
+
 /** Polarized DIS cross section (born).
  *   \ingroup EventGen
  */
@@ -77,10 +59,12 @@ class PolarizedDISEventGenerator : public BETAG4EventGenerator {
       virtual void Initialize();
 
 };
-
-
 //______________________________________________________________________________
-/** Throws pi0, pi+ and pi- pions.
+
+
+/** Pions only.  INCOMPLETE
+ *  Throws pi0, pi+ and pi- pions.
+ *
  *   \ingroup EventGen
  */
 class InclusivePionEventGenerator : public BETAG4EventGenerator  {
@@ -89,27 +73,24 @@ class InclusivePionEventGenerator : public BETAG4EventGenerator  {
       virtual ~InclusivePionEventGenerator() { }
       virtual void Initialize();
 };
-
-
 //______________________________________________________________________________
+
+
 /** Electrons and pi0s thrown.
  *   \ingroup EventGen
  */
 class InclusiveElectronPionGenerator : public BETAG4EventGenerator  {
 
-   public:
-      Double_t fNH3PackingFraction;
-
    public :
-      InclusiveElectronPionGenerator();
+      InclusiveElectronPionGenerator(InSANETarget * targ = 0);
       virtual ~InclusiveElectronPionGenerator();
       virtual void InitializeMaterialXSec(const Int_t i, const Double_t weight, const InSANETargetMaterial * mat, const InSANENucleus * targ);
       virtual void Initialize();
 
 };
-
-
 //______________________________________________________________________________
+
+
 /**  Mott Cross section event generator
  *
  *   \ingroup EventGen
@@ -120,9 +101,9 @@ class MottEventGenerator : public BETAG4EventGenerator   {
       virtual ~MottEventGenerator(){}
       virtual void Initialize();
 };
-
-
 //______________________________________________________________________________
+
+
 /**  Wiser  Event generator spread over bigcal
  *
  *   \ingroup EventGen
@@ -133,74 +114,10 @@ class WiserEventGenerator : public BETAG4EventGenerator   {
       virtual ~WiserEventGenerator() { }
       virtual void Initialize();
 };
-
-
 //______________________________________________________________________________
-/**  Bigcal Simple Event generator spread over bigcal
- *
- *   \ingroup EventGen
- */
-class BigcalSimpleEventGenerator : public BETAG4EventGenerator   {
-   public:
-      BigcalSimpleEventGenerator(){ }
-      virtual ~BigcalSimpleEventGenerator() { }
-};
 
 
-//______________________________________________________________________________
-/**  Flat Event generator centered on bigcal with small solid angle
- *   and near mono chromatic energies
- *
- *   \ingroup EventGen
- */
-class BigcalCenterEventGenerator : public BETAG4EventGenerator   {
-   public:
-      BigcalCenterEventGenerator(){ }
-      virtual ~BigcalCenterEventGenerator(){ }
-      virtual void Initialize();
-};
 
-/** Beam on target event generator that simply puts an electron beam upstream towards the target.
- *
- *  The starting position is a few cm upstream of the target
- *   \ingroup EventGen
- */
-class BeamOnTargetEventGenerator : public BETAG4EventGenerator   {
-   public:
-      BeamOnTargetEventGenerator(){
-         fUpstreamPosition = 150.0;//cm
-         fYPosition = -1.0*(100.0-99.944)*100.0/*-0.43*/;//cm
-         fBeamEnergy= 5.9;//GeV
-         fChicaneBendAngle = 2.214*TMath::Pi()/180.0;
-      }
-      virtual ~BeamOnTargetEventGenerator() { }
-
-      double fYPosition;
-      double fChicaneBendAngle;
-      double fUpstreamPosition;
-      double fBeamEnergy;
-
-      virtual  G4ThreeVector &  GetInitialPosition(const TParticle * ){
-         fInitialPosition->setX(2.*(G4UniformRand()-0.5)*1.0*cm);
-         fInitialPosition->setY(2.*(G4UniformRand()-0.5)*1.0*cm + fYPosition*cm);
-         fInitialPosition->setZ(2.*(G4UniformRand()-0.5)*0.0*cm  - fUpstreamPosition*cm);
-         return(*fInitialPosition);
-      }
-
-      virtual  G4ThreeVector &  GetInitialDirection(const TParticle * ){
-         fInitialDirection->setX(0.0);
-         fInitialDirection->setY(1.0*TMath::Sin(fChicaneBendAngle));
-         fInitialDirection->setZ(1.0*TMath::Cos(fChicaneBendAngle));
-         return(*fInitialDirection);
-      }
-      virtual  G4ThreeVector &  GetMomentumVector(const TParticle * ){
-         fMomentumVector->setX(fInitialDirection->x() *fEventArray[0]*1000.0);
-         fMomentumVector->setY(fInitialDirection->y()*fEventArray[0]*1000.0);
-         fMomentumVector->setZ(fInitialDirection->z()*fEventArray[0]*1000.0);
-         return(*fMomentumVector);
-      }
-      virtual double GetParticleEnergy(const TParticle *) { return(fBeamEnergy); }
-};
 
 /** Uses QFS
  * 
@@ -239,6 +156,8 @@ class SANEInclusiveDISEventGenerator : public BETAG4EventGenerator  {
       Double_t fNH3PackingFraction;
 
 };
+//______________________________________________________________________________
+
 
 /** Uses A1,A2 models
  * 
@@ -249,6 +168,8 @@ class PolarizedInclusiveDISEventGenerator : public BETAG4EventGenerator  {
       PolarizedInclusiveDISEventGenerator(){}
       virtual ~PolarizedInclusiveDISEventGenerator() { }
 };
+//______________________________________________________________________________
+
 
 /** NH3 Event Generator for getting the dilution factor
  *
@@ -275,6 +196,7 @@ class NH3TargetEventGenerator : public BETAG4EventGenerator  {
       }
 
 };
+//______________________________________________________________________________
 
 
 
