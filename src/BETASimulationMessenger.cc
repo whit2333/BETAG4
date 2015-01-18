@@ -485,8 +485,8 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
          anEventGen->Initialize();
          anEventGen->fIsInitialized = true;
       } else if( !(newValue == "saved") ) {
-         BETAAction->GetEventGenerator()->Refresh();
          anEventGen->SetBeamEnergy(oldBeamEnergy);
+         BETAAction->GetEventGenerator()->Refresh();
       }
    }
 
