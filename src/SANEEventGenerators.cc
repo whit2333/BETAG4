@@ -276,9 +276,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
    xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
    samp = new InSANEPhaseSpaceSampler(xsec);
-   samp->SetFoamCells(10);
-   samp->SetFoamSample(10);
-   //samp->SetFoamCells(100);
+   //samp->SetFoamCells(10);
+   //samp->SetFoamSample(10);
+   samp->SetFoamCells(100);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -294,9 +294,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
    QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
    samp = new InSANEPhaseSpaceSampler(QE_xsec);
-   samp->SetFoamCells(10);
-   samp->SetFoamSample(10);
-   //samp->SetFoamCells(100);
+   //samp->SetFoamCells(10);
+   //samp->SetFoamSample(10);
+   samp->SetFoamCells(100);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -316,9 +316,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
       xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
       xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
       samp = new InSANEPhaseSpaceSampler(xsec_tail);
-   samp->SetFoamCells(10);
-   samp->SetFoamSample(10);
-      //samp->SetFoamCells(100);
+   //samp->SetFoamCells(10);
+   //samp->SetFoamSample(10);
+      samp->SetFoamCells(100);
       samp->SetWeight(weight);
       AddSampler(samp);
    }
@@ -332,9 +332,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec1->InitializePhaseSpaceVariables();
    xsec1->InitializeFinalStateParticles();
    samp = new InSANEPhaseSpaceSampler(xsec1);
-   samp->SetFoamCells(10);
-   samp->SetFoamSample(10);
-   //samp->SetFoamCells(100);
+   //samp->SetFoamCells(10);
+   //samp->SetFoamSample(10);
+   samp->SetFoamCells(100);
    samp->SetWeight(weight);
    AddSampler(samp);
 
@@ -348,9 +348,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec2->InitializePhaseSpaceVariables();
    xsec2->InitializeFinalStateParticles();
    samp = new InSANEPhaseSpaceSampler(xsec2);
-   samp->SetFoamCells(10);
-   samp->SetFoamSample(10);
-   //samp->SetFoamCells(100);
+   //samp->SetFoamCells(10);
+   //samp->SetFoamSample(10);
+   samp->SetFoamCells(100);
    samp->SetWeight(weight);
    AddSampler(samp);
 
