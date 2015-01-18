@@ -8,7 +8,7 @@
 
 /beta/gun/loadEGFromFile epi_para
 
-#/beta/gun/listPSVariables
+/beta/gun/listPSVariables
 
 /run/beamOn 1000
 

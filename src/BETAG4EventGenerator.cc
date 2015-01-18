@@ -7,9 +7,9 @@ BETAG4EventGenerator::BETAG4EventGenerator() {
    fMomentumVector             = new G4ThreeVector(0,0,0);
 
    // Hard coded use of fast structure functions
-   InSANEFunctionManager * fm = InSANEFunctionManager::GetInstance();
-   fm->CreateSFs(6);
-   fm->CreatePolSFs(6);
+   //InSANEFunctionManager * fm = InSANEFunctionManager::GetInstance();
+   //fm->CreateSFs(6);
+   //fm->CreatePolSFs(6);
 
    InSANESimpleTarget * target = new InSANESimpleTarget("LH2Target","Simple LH2 Target");
    SetTarget(target);
