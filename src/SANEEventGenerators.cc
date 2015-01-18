@@ -243,7 +243,7 @@ InclusiveElectronPionGenerator::InclusiveElectronPionGenerator(InSANETarget * ta
    }
    SetTarget(targ);
    //InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
-   InSANEFunctionManager::GetManager()->CreateSFs(11); // 11=composite
+   //InSANEFunctionManager::GetManager()->CreateSFs(11); // 11=composite
    //InSANEFunctionManager::GetManager()->CreateSFs(2); // 2=NMC95
 }
 //______________________________________________________________________________

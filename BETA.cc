@@ -98,7 +98,7 @@ void print_grid();
 int main(int argc,char** argv)
 {
    int  run_set         =  0;
-   int  seed_set        =  10000;
+   int  seed_set        =  0;
    bool is_interactive  = true;
    bool is_interactive_with_macro  = false;
    std::string theMacro = "";
@@ -182,9 +182,9 @@ int main(int argc,char** argv)
    }
    //std::cout << " the rest of the arguments: " << theRest << std::endl;
 
-   // Seed the random number generator manually
-   G4long myseed = 983;
-   if(seed_set == 10000) {
+   G4long myseed = 0;
+   if(seed_set == -1) {
+      // use a file to increment the seed. 
       std::ifstream input_file ;
       std::ofstream output_file ;
       input_file.open ( "seed.txt" );
@@ -194,12 +194,37 @@ int main(int argc,char** argv)
       output_file.open ( "seed.txt" ,std::ios::trunc); // this incremtents a number
       output_file << myseed ;
       output_file.close();
+
+      CLHEP::HepRandom::setTheSeed(myseed);
+      TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
+      rand->SetSeed(myseed);
+   } else if( seed_set == 0 ) {
+      // Random automatic (time-based) random seeds for each run
+      G4cout << "*******************" << G4endl;
+      G4cout << "*** AUTOSEED ON ***" << G4endl;
+      G4cout << "*******************" << G4endl;
+      long seeds[2];
+      time_t systime = time(NULL);
+      seeds[0] = (long) systime;
+      seeds[1] = (long) (systime*G4UniformRand());
+      G4Random::setTheSeeds(seeds);
+      TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
+      //TRandom3 * r3 = dynamic_cast<TRandom3*>(rand);
+      //if(r3) r3->SetSeed(0);
+      //else rand->SetSeed(0);
    } else {
       myseed = seed_set;
+
+      CLHEP::HepRandom::setTheSeed(myseed);
+      TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
+      //TRandom3 * r3 = dynamic_cast<TRandom3*>(rand);
+      //if(r3) r3->SetSeed(myseed);
+      //else rand->SetSeed(myseed);
    }
-   CLHEP::HepRandom::setTheSeed(myseed);
-   TRandom * rand = InSANERunManager::GetRunManager()->GetRandom();
-   rand->SetSeed(myseed);
+   std::cout << "Geant4 random engine:" << std::endl;
+   G4Random::showEngineStatus();
+   std::cout << "ROOT  random engine:" << std::endl;
+   InSANERunManager::GetRunManager()->GetRandom()->Dump();
 
    // User Verbose output class
    G4VSteppingVerbose* verbosity = new BETASteppingVerbose;
