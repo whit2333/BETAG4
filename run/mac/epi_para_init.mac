@@ -1,0 +1,11 @@
+/beta/target/setPolarizationAngle 180
+/beta/toggleForwardTracker on
+/beta/toggleLuciteHodoscope on
+
+/beta/gun/setEventType electronPion
+/beta/gun/listPSVariables 
+
+/run/beamOn 2
+
+/beta/gun/saveEGToFile epi_para
+
