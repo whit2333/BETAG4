@@ -254,8 +254,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
 
    InSANEPhaseSpaceSampler * samp = 0;
 
-   int nCells0  = 10;
-   int nSample0 = 10;
+   int nCells0  = 100;
+   int nSample0 = 20;
 
    //InSANERadiator<InSANEInclusiveDiffXSec> * xsec = new InSANERadiator<InSANEInclusiveDiffXSec>();
    //InSANERadiator<F1F209eInclusiveDiffXSec> * xsec = new InSANERadiator<F1F209eInclusiveDiffXSec>();
