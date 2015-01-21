@@ -32,9 +32,9 @@ void BETARCSCellParameterisation::ComputeTransformation ( const G4int copyNo,G4V
    physVol->SetTranslation ( G4ThreeVector ( xCell[copyNo],yCell[copyNo],0. ) );
    physVol->SetCopyNo(blockNumber);
 
-   for(int i=0; i< physVol->GetLogicalVolume()->GetNoDaughters();i++){ 
-      physVol->GetLogicalVolume()->GetDaughter(i)->SetCopyNo(blockNumber);
-   }
+   //for(int i=0; i< physVol->GetLogicalVolume()->GetNoDaughters();i++){ 
+   //   physVol->GetLogicalVolume()->GetDaughter(i)->SetCopyNo(blockNumber);
+   //}
 
 }
 //______________________________________________________________________________

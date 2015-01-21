@@ -59,7 +59,7 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
    fTrackerHCID    = SDman->GetCollectionID ( "ForwardTracker/tracking" );
    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-   fBigcalChannelThreshold = 15.0; //MeV
+   fBigcalChannelThreshold = 0.01; //MeV
 
    fTrackerPhotonCounts = new int[132+132+72];
    fTrackerTimings      = new int[132+132+72];
@@ -133,6 +133,7 @@ void BETADigitizer::Digitize() {
    G4int    deltaT     = 10;//ns
    int      fNADC      = 0;
    int      fNTDC      = 0;
+   double   bigcalTotalE = 0.0;
    tDigi               = 0;
    G4double bigcalTDCChannelScaleFactor    = 10.0;
    G4double cherenkovTDCChannelScaleFactor = 10.0;
@@ -145,8 +146,9 @@ void BETADigitizer::Digitize() {
          if(fBigcalADCHC) bcPMT      = (*fBigcalADCHC)[gg];
 
          energyTemp = bcHit->GetDepositedEnergy();
+         bigcalTotalE += energyTemp;
 
-         if( ( energyTemp/(bigcalGeoCalc->GetCalibrationCoefficient(gg+1)) ) > fBigcalChannelThreshold ) { 
+         if( energyTemp > fBigcalChannelThreshold ) { 
             // Record Bigcal Data !
 
             aDigi = new BETAG4DigiADC(gg+1);
@@ -158,7 +160,9 @@ void BETADigitizer::Digitize() {
             if(fBigcalADCHC) {
                aDigi->fADCValue = bcPMT->fPhotons;
             } else {
+
                aDigi->fADCValue = (double)energyTemp/((double)bigcalGeoCalc->GetCalibrationCoefficient(gg+1));
+
             }
 
             fBigcalADCDC->insert ( aDigi );
@@ -173,6 +177,7 @@ void BETADigitizer::Digitize() {
             if(bcHit->fTimingHit) {
                // we create an energy weighted time within some interval deltat
                if(currentGroup==0 || bigcalGeoCalc->GetGroupNumber(gg+1) != currentGroup || bcHit->fTiming - tDigi->fTDCValue > deltaT ) {
+
                   if(tDigi) fBigcalTDCDC->insert ( tDigi );
                   currentGroup = bigcalGeoCalc->GetGroupNumber(gg+1);
                   /*      tDigi = new(fBigcalTDCDC[fNTDC]) BETAG4DigiTDC(currentGroup);*/
@@ -192,6 +197,8 @@ void BETADigitizer::Digitize() {
       }
       if(tDigi) if( tDigi->fChannelNumber == (G4int)bigcalGeoCalc->GetGroupNumber(1744) ) fBigcalTDCDC->insert ( tDigi );
    }
+
+   std::cout << "Bigcal total energy: " << bigcalTotalE << std::endl;
 
    // -----------------------------
    // Gas Cherenkov
@@ -294,6 +301,8 @@ void BETADigitizer::ReadOut() {
    bcEvent->fNumberOfHits         = 0;
    bcEvent->fTotalEnergyDeposited = 0.0;
    Int_t lowerLeftGroup           = 0;
+   double bigcalTotalE    = 0;
+
 
    for(int i = 0; i<fBigcalADCDC->entries() ; i++) {
       aDigi = (*fBigcalADCDC)[i];
@@ -358,6 +367,7 @@ void BETADigitizer::ReadOut() {
       aBChit->fTDCLevel = 1;
       aBChit->fLevel    = 1;
    }
+   std::cout << " in readout: " << bcEvent->fTotalEnergyDeposited << std::endl;
 
    /// \note { BIGCAL_tdc_raw_igroup (see above) is a horizontal grouping of 8 blocks,
    /// while the Bigcal_ttrig_igroup below is a vertical index of 1-19
