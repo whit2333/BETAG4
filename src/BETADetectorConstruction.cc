@@ -95,7 +95,7 @@ BETADetectorConstruction::BETADetectorConstruction() : constructed ( false ) {
    DetectorLength = 5.0*m;
    DetectorWidth  = 75.*2.54*cm+0.5*m;
 
-   rTarget        = 50.*cm; 
+   rTarget        = 48.0*cm; 
    rTracker       = ForwardTrackerGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//55.*cm;
    rCherenkov     = GasCherenkovGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;// 62.5*cm;
    rHodoscope     = LuciteGeometryCalculator::GetCalculator()->GetDistanceFromTarget()*cm;//240.*cm;
@@ -1359,76 +1359,6 @@ void BETADetectorConstruction::ConstructBigCal() {
    }
 
    // --------------------------
-   // RCS Section (TOP)
-   if(!fCalorimeterTop_log) {
-      fCalorimeterSolidTop = new G4Box ( "RCS_BOX", // Name
-            BCgeo->rcsXSize*cm/2.0,                   // y half length
-            BCgeo->rcsYSize*cm/2.0,                   // x half length
-            BCgeo->rcsCellZSize*cm/2.0 ) ;            // z half length
-
-      fCalorimeterTop_log = new G4LogicalVolume ( 
-            fCalorimeterSolidTop,     // Solid
-            Air,                    // Material
-            "RCS_BOX_Logical" ); // Name
-
-      fCellSolidTop = new G4Box ( "Cell_Solid", // Name
-            4.02167*cm/2.0,         // x half length
-            4.02167*cm/2.0,         // y half length
-            40.*cm/2.0 );     // z half length
-
-      fCellLogicalTop = new G4LogicalVolume ( 
-            fCellSolidTop,     // Solid
-            calorimeterMaterial,             // Material
-            "CellLogicalTop" ); // Name
-
-      fPMTSolidTop = new G4Box ( "PMTSolidTop", // Name
-            4.02167*cm/2.0,         // x half length
-            4.02167*cm/2.0,         // y half length
-            0.1*mm/2.0 );     // z half length
-
-      fPMTLogicalTop = new G4LogicalVolume ( 
-            fPMTSolidTop,     // Solid
-            calorimeterMaterial,             // Material
-            "PMTLogicalTop" ); // Name
-
-      fPMTTop_phys = new G4PVPlacement(
-            0, 
-            G4ThreeVector(0.0*cm,0.0*cm,(40.0*cm - 0.1*mm )/2.0), 
-            fPMTLogicalTop,     // Logical volume
-            "PMTTopPhys",       // Name
-            fCellLogicalTop,true,0);
-
-      fCellParamTop = new BETARCSCellParameterisation();
-      new G4PVParameterised ( "CellPhysicalTop",  // Name
-            fCellLogicalTop,        // Logical volume
-            fCalorimeterTop_log, // Mother volume
-            kXAxis,             // Axis
-            720,                // Number of replicas
-            fCellParamTop );        // Parameterisation
-
-      //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
-      //    G4VSensitiveDetector* BIGCALRCS =
-      //       new BETARCSCalorimeter ( "BIGCALRCS" );
-
-      // Register detector with manager
-      // Attach detector to scoring volume
-      fCellLogicalTop->SetSensitiveDetector ( fBigcalSD );
-
-      if(fBigcalAdcSD && fSimulationManager->fSimulateBigcalOptics) 
-         fPMTLogicalTop->SetSensitiveDetector ( fBigcalAdcSD );
-   }
-
-   if(usingBigcal && fCalorimeterTop_phys==0) {
-      fCalorimeterTop_phys = new G4PVPlacement ( 0,G4ThreeVector ( 
-               BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm+BCgeo->rcsYSize*cm/2.0,
-               bigcalFaceRelative+40.*cm/2.0 ), fCalorimeterTop_log,     // Logical volume
-            "RCS_BOX_Physical",     // Name
-            BETADetector_log,             // Mother volume
-            false,                      // Unused boolean
-            0 );                        // Copy number
-   }
-
-   // --------------------------
    // Protvino (bottom)
    if(!fCalorimeterBottom_log) {
 
@@ -1504,6 +1434,77 @@ void BETADetectorConstruction::ConstructBigCal() {
             false,                      // Unused boolean
             0 );                        // Copy number
    }
+
+   // --------------------------
+   // RCS Section (TOP)
+   if(!fCalorimeterTop_log) {
+      fCalorimeterSolidTop = new G4Box ( "RCS_BOX", // Name
+            BCgeo->rcsXSize*cm/2.0,                   // y half length
+            BCgeo->rcsYSize*cm/2.0,                   // x half length
+            BCgeo->rcsCellZSize*cm/2.0 ) ;            // z half length
+
+      fCalorimeterTop_log = new G4LogicalVolume ( 
+            fCalorimeterSolidTop,     // Solid
+            Air,                    // Material
+            "RCS_BOX_Logical" ); // Name
+
+      fCellSolidTop = new G4Box ( "Cell_Solid", // Name
+            4.0*cm/2.0,         // x half length
+            4.0*cm/2.0,         // y half length
+            40.*cm/2.0 );     // z half length
+
+      fCellLogicalTop = new G4LogicalVolume ( 
+            fCellSolidTop,     // Solid
+            calorimeterMaterial,             // Material
+            "CellLogicalTop" ); // Name
+
+      fPMTSolidTop = new G4Box ( "PMTSolidTop", // Name
+            4.0*cm/2.0,         // x half length
+            4.0*cm/2.0,         // y half length
+            0.1*mm/2.0 );     // z half length
+
+      fPMTLogicalTop = new G4LogicalVolume ( 
+            fPMTSolidTop,     // Solid
+            calorimeterMaterial,             // Material
+            "PMTLogicalTop" ); // Name
+
+      fPMTTop_phys = new G4PVPlacement(
+            0, 
+            G4ThreeVector(0.0*cm,0.0*cm,(40.0*cm - 0.1*mm )/2.0), 
+            fPMTLogicalTop,     // Logical volume
+            "PMTTopPhys",       // Name
+            fCellLogicalTop,true,0);
+
+      fCellParamTop = new BETARCSCellParameterisation();
+      new G4PVParameterised ( "CellPhysicalTop",  // Name
+            fCellLogicalTop,        // Logical volume
+            fCalorimeterTop_log, // Mother volume
+            kXAxis,             // Axis
+            720,                // Number of replicas
+            fCellParamTop );        // Parameterisation
+
+      //cellLogical->SetSensitiveDetector ( fSimulationManager->fBigcalDetector );
+      //    G4VSensitiveDetector* BIGCALRCS =
+      //       new BETARCSCalorimeter ( "BIGCALRCS" );
+
+      // Register detector with manager
+      // Attach detector to scoring volume
+      fCellLogicalTop->SetSensitiveDetector ( fBigcalSD );
+
+      if(fBigcalAdcSD && fSimulationManager->fSimulateBigcalOptics) 
+         fPMTLogicalTop->SetSensitiveDetector ( fBigcalAdcSD );
+   }
+
+   if(usingBigcal && fCalorimeterTop_phys==0) {
+      fCalorimeterTop_phys = new G4PVPlacement ( 0,G4ThreeVector ( 
+               BCgeo->rcsProtXSeparation*cm,BCgeo->bcVerticalOffset*cm+BCgeo->rcsYSize*cm/2.0,
+               bigcalFaceRelative+40.*cm/2.0 ), fCalorimeterTop_log,     // Logical volume
+            "RCS_BOX_Physical",     // Name
+            BETADetector_log,             // Mother volume
+            false,                      // Unused boolean
+            0 );                        // Copy number
+   }
+
 
    // ------------------
    // OPTICS
@@ -1595,7 +1596,7 @@ void BETADetectorConstruction::ConstructCherenkov() {
 
    // Target at is at (0,0,0)
    // Target vacuum radius
-   // OVC radius = 46*cm
+   // OVC radius = 47.9425*cm 
    G4double targetSnoutGap       = 5*cm;
    G4double detectorFaceDistance = 55*cm;//55*cm;
    G4double tankVolume           = 0.0;
@@ -1921,10 +1922,10 @@ void BETADetectorConstruction::ConstructCherenkov() {
    G4Box * tedlarBack = new  G4Box ( "tedlarBackBox", xTank/2, yTank/2, frontWindowThickness );
 
    fCerFrontWindow_log = new G4LogicalVolume ( tedlarFront, Aluminum,"4milFrontWindow",0,0,0 );
-   G4VPhysicalVolume * tedlarFront_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage-zTank/2-zTankFront-zSnout-frontWindowThickness/2 ), fCerFrontWindow_log , "4milFrontWindow_phys",  BETADetector_log, false,0 );
+   G4VPhysicalVolume * tedlarFront_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage-zTank/2-zTankFront-zSnout-frontWindowThickness ), fCerFrontWindow_log , "4milFrontWindow_phys",  BETADetector_log, false,0 );
 
    fCerBackWindow_log = new G4LogicalVolume ( tedlarBack, Aluminum,"tedlarBack",0,0,0 );
-   G4VPhysicalVolume * tedlarBack_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage+zTank/2+frontWindowThickness/2 ), fCerBackWindow_log, "tedlarBack_phys",  BETADetector_log, false,0 );
+   G4VPhysicalVolume * tedlarBack_phys = new G4PVPlacement ( 0,G4ThreeVector ( 0,0,TankPositionInDetPackage+zTank/2+frontWindowThickness ), fCerBackWindow_log, "tedlarBack_phys",  BETADetector_log, false,0 );
 
    /////////////////////////////////////////////
    ////// ALUMINUM Pieces within TANK      /////

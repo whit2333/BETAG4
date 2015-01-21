@@ -70,7 +70,7 @@ G4bool BETAG4BigcalSD::ProcessHits ( G4Step* aStep, G4TouchableHistory* ) {
 
    // Get energy deposited in this step
    G4double depositedEnergy = aStep->GetTotalEnergyDeposit();
-   if( 0 == depositedEnergy ) return true;
+   if( depositedEnergy == 0.0) return true;
 
    // Get volume and copy number
    G4StepPoint* preStepPoint        = aStep->GetPreStepPoint();

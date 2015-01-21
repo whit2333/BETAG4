@@ -28,9 +28,9 @@ void BETAProtvinoCellParameterisation::ComputeTransformation ( const G4int copyN
    physVol->SetTranslation ( G4ThreeVector ( xCell[copyNo],yCell[copyNo],0. ) );
    physVol->SetCopyNo(copyNo);
 
-   for(int i=0; i< physVol->GetLogicalVolume()->GetNoDaughters();i++){ 
-      physVol->GetLogicalVolume()->GetDaughter(i)->SetCopyNo(copyNo);
-   }
+   //for(int i=0; i< physVol->GetLogicalVolume()->GetNoDaughters();i++){ 
+   //   physVol->GetLogicalVolume()->GetDaughter(i)->SetCopyNo(copyNo);
+   //}
 
 }
 //______________________________________________________________________________
