@@ -12,7 +12,7 @@
 /beta/gun/setPhiMax    70.0
 /beta/gun/refresh
 /beta/gun/setParticle gamma 
-#/beta/simulateTrigger 0
+/beta/simulateTrigger 1
 /beta/gun/refresh
 
 /run/beamOn 2000
