@@ -11,7 +11,6 @@
 /beta/gun/setPhiMin   -30.0
 /beta/gun/setPhiMax    60.0
 /beta/gun/refresh
-/beta/gun/setParticle gamma 
 /beta/simulateTrigger 0
 /beta/gun/refresh
 
