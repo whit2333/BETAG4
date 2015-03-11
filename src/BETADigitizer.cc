@@ -59,7 +59,7 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
    fTrackerHCID    = SDman->GetCollectionID ( "ForwardTracker/tracking" );
    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-   fBigcalChannelThreshold = 0.01; //MeV
+   fBigcalChannelThreshold = 0.001; //MeV
 
    fTrackerPhotonCounts = new int[132+132+72];
    fTrackerTimings      = new int[132+132+72];
@@ -198,7 +198,7 @@ void BETADigitizer::Digitize() {
       if(tDigi) if( tDigi->fChannelNumber == (G4int)bigcalGeoCalc->GetGroupNumber(1744) ) fBigcalTDCDC->insert ( tDigi );
    }
 
-   std::cout << "Bigcal total energy: " << bigcalTotalE << std::endl;
+   //std::cout << "Bigcal total energy: " << bigcalTotalE << std::endl;
 
    // -----------------------------
    // Gas Cherenkov
@@ -367,7 +367,7 @@ void BETADigitizer::ReadOut() {
       aBChit->fTDCLevel = 1;
       aBChit->fLevel    = 1;
    }
-   std::cout << " in readout: " << bcEvent->fTotalEnergyDeposited << std::endl;
+   //std::cout << " in readout: " << bcEvent->fTotalEnergyDeposited << std::endl;
 
    /// \note { BIGCAL_tdc_raw_igroup (see above) is a horizontal grouping of 8 blocks,
    /// while the Bigcal_ttrig_igroup below is a vertical index of 1-19
