@@ -3,13 +3,13 @@
 /beta/toggleForwardTracker off
 /beta/toggleLuciteHodoscope off
 
-/beta/gun/setEGFile    EG_files/epi_para.root
+/beta/gun/setEGFile    EG_files/epi_para_2.root
 
 /beta/gun/setEventType saved 
 
-/beta/gun/setEGFile    EG_files/epi_para.root
+/beta/gun/setEGFile    EG_files/epi_para_2.root
 
-/beta/gun/loadEGFromFile epi_para_fast
+/beta/gun/loadEGFromFile epi_para
 
 #/beta/gun/listPSVariables
 

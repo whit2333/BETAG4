@@ -7,7 +7,7 @@
 
 /run/beamOn 2
 
-/beta/gun/setEGFile    EG_files/epi_para.root
+/beta/gun/setEGFile    EG_files/epi_para_2.root
 
-/beta/gun/saveEGToFile epi_para_fast
+/beta/gun/saveEGToFile epi_para
 
