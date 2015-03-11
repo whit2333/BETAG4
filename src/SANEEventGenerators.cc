@@ -244,7 +244,7 @@ InclusiveElectronPionGenerator::InclusiveElectronPionGenerator(InSANETarget * ta
    SetTarget(targ);
    //InSANEFunctionManager::GetManager()->CreateSFs(1); // 1=CTEQ
    //InSANEFunctionManager::GetManager()->CreateSFs(11); // 11=composite
-   //InSANEFunctionManager::GetManager()->CreateSFs(2); // 2=NMC95
+   InSANEFunctionManager::GetManager()->CreateSFs(2); // 2=NMC95
 }
 //______________________________________________________________________________
 InclusiveElectronPionGenerator::~InclusiveElectronPionGenerator(){
@@ -263,6 +263,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    //InSANEInclusiveDISXSec * xsec = new InSANEInclusiveDISXSec();
    //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
 
+
+   //InSANEInclusiveBornDISXSec * xsec = new InSANEInclusiveBornDISXSec();
    InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
    xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
    //xsec->SetInternalOnly(true);// external is taken care of by GEANT4
@@ -282,21 +284,23 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    AddSampler(samp);
 
 
-   InSANERadiator<QuasiElasticInclusiveDiffXSec> * QE_xsec = new InSANERadiator<QuasiElasticInclusiveDiffXSec>();
-   QE_xsec->SetTargetMaterial(*mat);
-   QE_xsec->SetTargetMaterialIndex(i);
-   QE_xsec->SetBeamEnergy(GetBeamEnergy());
-   QE_xsec->SetTargetNucleus(*targ);
-   QE_xsec->InitializePhaseSpaceVariables();
-   QE_xsec->InitializeFinalStateParticles();
-   QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-   QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-   QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
-   samp = new InSANEPhaseSpaceSampler(QE_xsec);
-   samp->SetFoamCells(nCells0);
-   samp->SetFoamSample(nSample0);
-   samp->SetWeight(weight);
-   AddSampler(samp);
+   if( i!=0 ) {
+      InSANERadiator<QuasiElasticInclusiveDiffXSec> * QE_xsec = new InSANERadiator<QuasiElasticInclusiveDiffXSec>();
+      QE_xsec->SetTargetMaterial(*mat);
+      QE_xsec->SetTargetMaterialIndex(i);
+      QE_xsec->SetBeamEnergy(GetBeamEnergy());
+      QE_xsec->SetTargetNucleus(*targ);
+      QE_xsec->InitializePhaseSpaceVariables();
+      QE_xsec->InitializeFinalStateParticles();
+      QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+      QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
+      QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
+      samp = new InSANEPhaseSpaceSampler(QE_xsec);
+      samp->SetFoamCells(nCells0);
+      samp->SetFoamSample(nSample0);
+      samp->SetWeight(weight);
+      AddSampler(samp);
+   }
 
 
    if( i==0 ) {

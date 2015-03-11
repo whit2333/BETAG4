@@ -335,8 +335,10 @@ void BETADigitizer::ReadOut() {
       aBChit->fTDCLevel=-1;
       aBChit->fLevel=0;
       aBChit->fEnergy = aDigi->fTrueValue;
-      //(Float_t)aBChit->fADC*(Float_t)bigcalGeoCalc->GetCalibrationCoefficient(aBChit->fiCell,aBChit->fjCell);
-      bcEvent->fTotalEnergyDeposited+=aBChit->fEnergy;
+      //(Float_t);
+      //bcEvent->fTotalEnergyDeposited+=aBChit->fEnergy;
+
+      bcEvent->fTotalEnergyDeposited += (double(aBChit->fADC - fSimulationManager->fBigcalDetector->fTypicalPedestal)*bigcalGeoCalc->GetCalibrationCoefficient(aBChit->fiCell,aBChit->fjCell));
    }
 
    // Now TDCs
