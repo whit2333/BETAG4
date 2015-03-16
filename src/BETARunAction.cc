@@ -103,9 +103,9 @@ void BETARunAction::EndOfRunAction ( const G4Run* aRun ) {
       fSimulationManager->fSANEScalers->fTriggerEvent->fRunNumber = fSimulationManager->fRunNumber;
    }
 
-   fSimulationManager->fScalerTree->Fill();
-   fSimulationManager->fSANEScalers->ClearEvent();
-   fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
+   //fSimulationManager->fScalerTree->Fill();
+   //fSimulationManager->fSANEScalers->ClearEvent();
+   //fSimulationManager->fSANEScalers->fScalerEvent->ClearEvent();
 
    timer->Stop();
    //         TSQLServer * db = InSANEDatabaseManager::GetManager()->GetServer();// = TSQLServer::Connect("mysql://localhost/SANE", "sane", "secret");

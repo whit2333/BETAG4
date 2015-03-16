@@ -23,7 +23,7 @@ class BETAG4DigiADC : public G4VDigi {
 
    public:
       BETAG4DigiADC(G4int channel=-1);
-      ~BETAG4DigiADC();
+      virtual ~BETAG4DigiADC();
 
       void* operator new(size_t);
       void  operator delete(void *aDigi);

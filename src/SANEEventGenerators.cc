@@ -101,63 +101,7 @@ void PolarizedDISEventGenerator::Initialize(){
    //fPolXSec->Print();
    fIsInitialized = true;
 }
-//____________________________________________________________________
-
-//____________________________________________________________________
-//void InclusiveElectronPionGenerator::Initialize(){
-//   //std::cout << " InclusiveElectronPionGenerator::Initialize() \n";
-//   /// Neutral Pion
-//   //InSANEInclusiveWiserXSec * fDiffXSec1 = new InSANEInclusiveWiserXSec();
-//   PhotoOARPionDiffXSec * fDiffXSec1 = new PhotoOARPionDiffXSec();
-//   fDiffXSec1->SetBeamEnergy(fBeamEnergy);
-//   //fDiffXSec1->SetProductionParticleType(111);
-//   fDiffXSec1->InitializePhaseSpaceVariables();
-//   fDiffXSec1->InitializeFinalStateParticles();
-//   //fDiffXSec1->SetRadiationLength(8.0);
-//   InSANEPhaseSpaceSampler *  pi0EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec1);
-//   AddSampler(pi0EventSampler);
-//
-//   ///// Positive Pion
-//   //InSANEInclusiveWiserXSec * fDiffXSec2 = new InSANEInclusiveWiserXSec();
-//   //fDiffXSec2->SetBeamEnergy(fBeamEnergy);
-//   //fDiffXSec2->SetProductionParticleType(211);
-//   //fDiffXSec2->InitializePhaseSpaceVariables();
-//   //fDiffXSec2->InitializeFinalStateParticles();
-//   //fDiffXSec2->SetRadiationLength(0.05);
-//   //InSANEPhaseSpaceSampler *  pi0EventSampler2 = new InSANEPhaseSpaceSampler(fDiffXSec2);
-//   //AddSampler(pi0EventSampler2);
-//
-//   ///// Negative Pion
-//   //InSANEInclusiveWiserXSec * fDiffXSec3 = new InSANEInclusiveWiserXSec();
-//   //fDiffXSec3->SetBeamEnergy(fBeamEnergy);
-//   //fDiffXSec3->SetProductionParticleType(-211);
-//   //fDiffXSec3->InitializePhaseSpaceVariables();
-//   //fDiffXSec3->InitializeFinalStateParticles();
-//   //fDiffXSec3->SetRadiationLength(0.05);
-//   //InSANEPhaseSpaceSampler *  pi0EventSampler3 = new InSANEPhaseSpaceSampler(fDiffXSec3);
-//   //AddSampler(pi0EventSampler3);
-//
-//   /// DIS
-//   F1F209eInclusiveDiffXSec * fDiffXSec = new  F1F209eInclusiveDiffXSec();
-//   fDiffXSec->SetBeamEnergy(fBeamEnergy);
-//   fDiffXSec->InitializePhaseSpaceVariables();
-//   fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-//   fDiffXSec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.0);
-//   fDiffXSec->InitializeFinalStateParticles();
-//   //      InSANEPhaseSpace *ps = fDiffXSec->GetPhaseSpace(); /// all the following cross sections share the same phase space. 
-//   //     ps->ListVariables();
-//   InSANEPhaseSpaceSampler *  fF1F2EventSampler = new InSANEPhaseSpaceSampler(fDiffXSec);
-//   AddSampler(fF1F2EventSampler);
-//
-//   SetBeamEnergy(fBeamEnergy);
-//   InSANEEventGenerator::Initialize();
-//
-//   CalculateTotalCrossSection();
-//   fIsInitialized = true;
-//}
-//____________________________________________________________________
-
-//____________________________________________________________________
+//______________________________________________________________________________
 void InclusivePionEventGenerator::Initialize(){
    //std::cout << " InclusivePionEventGenerator::Initialize() \n";
    /// Neutral Pion
@@ -200,7 +144,7 @@ void InclusivePionEventGenerator::Initialize(){
    CalculateTotalCrossSection();
    fIsInitialized = true;
 }
-//____________________________________________________________________
+//______________________________________________________________________________
 
 //____________________________________________________________________
 void MottEventGenerator::Initialize(){
@@ -264,9 +208,9 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    //xsec->SetTargetThickness(mat->GetNumberOfRadiationLengths());
 
 
-   //InSANEInclusiveBornDISXSec * xsec = new InSANEInclusiveBornDISXSec();
-   InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
-   xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
+   InSANEInclusiveBornDISXSec * xsec = new InSANEInclusiveBornDISXSec();
+   //InSANERadiator<InSANEInclusiveBornDISXSec> * xsec = new InSANERadiator<InSANEInclusiveBornDISXSec>();
+   //xsec->SetRadiationLength(mat->GetNumberOfRadiationLengths());
    //xsec->SetInternalOnly(true);// external is taken care of by GEANT4
    xsec->SetTargetMaterial(*mat);
    xsec->SetTargetMaterialIndex(i);
@@ -276,7 +220,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    xsec->InitializeFinalStateParticles();
    xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
    xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-   xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
+   xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
+   xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
    samp = new InSANEPhaseSpaceSampler(xsec);
    samp->SetFoamCells(nCells0);
    samp->SetFoamSample(nSample0);
@@ -284,7 +229,7 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    AddSampler(samp);
 
 
-   if( i!=0 ) {
+   if( false &&  i!=0 ) {
       InSANERadiator<QuasiElasticInclusiveDiffXSec> * QE_xsec = new InSANERadiator<QuasiElasticInclusiveDiffXSec>();
       QE_xsec->SetTargetMaterial(*mat);
       QE_xsec->SetTargetMaterialIndex(i);
@@ -294,7 +239,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
       QE_xsec->InitializeFinalStateParticles();
       QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
       QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-      QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
+      QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
+      QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
       samp = new InSANEPhaseSpaceSampler(QE_xsec);
       samp->SetFoamCells(nCells0);
       samp->SetFoamSample(nSample0);
@@ -303,7 +249,7 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    }
 
 
-   if( i==0 ) {
+   if(false && i==0 ) {
       // Add elastic radiative tail for proton 
       InSANEElasticRadiativeTail * xsec_tail = new  InSANEElasticRadiativeTail();
       xsec_tail->SetPolarizations(0.0,0.0);
@@ -316,7 +262,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
       xsec_tail->InitializeFinalStateParticles();
       xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
       xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-      xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(25.0*degree);
+      xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
+      xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
       samp = new InSANEPhaseSpaceSampler(xsec_tail);
       samp->SetFoamCells(nCells0);
       samp->SetFoamSample(nSample0);

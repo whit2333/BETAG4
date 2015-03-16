@@ -22,6 +22,7 @@
 BETARun::BETARun ( const int runNumber ) : catLastFile( false ) {
 
    fNUpdate = 10;
+   fNScalerRead = 50;
 
    //if(BETASimulationManager::GetInstance()->fDebugLevel > 0) {
    //   G4cout << "= Created new BETARun \n";
@@ -79,7 +80,7 @@ void BETARun::RecordEvent ( const G4Event* anEvent ) {
    // "scaler event"
    // Every 100 events a scaler event is read. 
    //---------------------------
-   if ( ( numberOfEvent%100 ) == 0 ) {
+   if ( ( numberOfEvent%fNScalerRead ) == 0 ) {
       //G4cout << " Event " << numberOfEvent << G4endl;
       if(fSimulationManager->fSANEScalers->fTriggerEvent){
          fSimulationManager->fSANEScalers->fTriggerEvent->fCodaType = 0;

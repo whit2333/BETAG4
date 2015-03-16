@@ -88,6 +88,7 @@ class BETARun : public G4Run {
       BETADetectorConstruction   * construction;
 
       int   fNUpdate;
+      int   fNScalerRead;
 
    public:
 

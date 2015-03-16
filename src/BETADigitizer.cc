@@ -59,7 +59,7 @@ BETADigitizer::BETADigitizer(G4String modName) : G4VDigitizerModule(modName) {
    fTrackerHCID    = SDman->GetCollectionID ( "ForwardTracker/tracking" );
    fHodoscopeHCID  = SDman->GetCollectionID ( "LuciteHodoscope/lpmt" );
 
-   fBigcalChannelThreshold = 0.01; //MeV
+   fBigcalChannelThreshold = 0.0001; //MeV
 
    fTrackerPhotonCounts = new int[132+132+72];
    fTrackerTimings      = new int[132+132+72];
@@ -166,6 +166,7 @@ void BETADigitizer::Digitize() {
             }
 
             fBigcalADCDC->insert ( aDigi );
+            //aDigi->Print();
 
             //       std::cout << aDigi->fChannelNumber +1 <<  " has calib coef = " 
             //                 << bigcalGeoCalc->GetCalibrationCoefficient(aDigi->fChannelNumber) << "\n";
@@ -279,6 +280,8 @@ void BETADigitizer::ReadOut() {
    fBeamEvent = BETASimulationManager::GetInstance()->fEvents->BEAM;
    fMCEvent   = BETASimulationManager::GetInstance()->fEvents->MC;
 
+   Int_t evNum  = fBetaEvent->fEventNumber;
+
    //Print();
 
    // ----------------------------------------------------------------
@@ -301,7 +304,7 @@ void BETADigitizer::ReadOut() {
    bcEvent->fNumberOfHits         = 0;
    bcEvent->fTotalEnergyDeposited = 0.0;
    Int_t lowerLeftGroup           = 0;
-   double bigcalTotalE    = 0;
+   double bigcalTotalE            = 0;
 
 
    for(int i = 0; i<fBigcalADCDC->entries() ; i++) {
@@ -313,6 +316,7 @@ void BETADigitizer::ReadOut() {
       aBChit->fjCell = bigcalGeoCalc->GetBlock_j(aDigi->fChannelNumber);
       aBChit->fADC   = aDigi->fADCValue + fSimulationManager->fBigcalDetector->fTypicalPedestal+
                        fRandomNumberGenerator->Gaus(0,fSimulationManager->fBigcalDetector->fTypicalPedestalWidth/2.0);
+      aBChit->fChannel = aDigi->fChannelNumber;
 
       // Group number is numbered such that 1-4 form the bottom row, 5-8 form the next...
       grouprowNumber = bigcalGeoCalc->GetGroupNumber(aBChit->fiCell,aBChit->fjCell);
@@ -329,16 +333,17 @@ void BETADigitizer::ReadOut() {
       //       trigGroupBigcalHit[grouprowNumber-1][nTrigGrouphits[grouprowNumber-1]]=aBChit;
       //       nTrigGrouphits[grouprowNumber-1]++;
       //      }
-      aBChit->fTDC=0;
-      aBChit->fTDCRow = (bigcalGeoCalc->GetTDCRow(aBChit->fiCell,aBChit->fjCell))[0];
+      aBChit->fTDC      = 0;
+      aBChit->fTDCRow   = (bigcalGeoCalc->GetTDCRow(aBChit->fiCell,aBChit->fjCell))[0];
       aBChit->fTDCGroup = bigcalGeoCalc->GetTDCGroup(aBChit->fiCell,aBChit->fjCell);
-      aBChit->fTDCLevel=-1;
-      aBChit->fLevel=0;
-      aBChit->fEnergy = aDigi->fTrueValue;
+      aBChit->fTDCLevel = -1;
+      aBChit->fLevel    = 0;
+      aBChit->fEnergy   = aDigi->fTrueValue;
       //(Float_t);
       //bcEvent->fTotalEnergyDeposited+=aBChit->fEnergy;
 
       bcEvent->fTotalEnergyDeposited += (double(aBChit->fADC - fSimulationManager->fBigcalDetector->fTypicalPedestal)*bigcalGeoCalc->GetCalibrationCoefficient(aBChit->fiCell,aBChit->fjCell));
+      //aBChit->Dump();
    }
 
    // Now TDCs
