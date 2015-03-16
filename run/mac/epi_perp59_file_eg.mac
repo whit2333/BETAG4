@@ -1,0 +1,17 @@
+/beta/target/setPolarizationAngle 80
+/beta/toggleBigcal on
+/beta/toggleForwardTracker on
+/beta/toggleLuciteHodoscope on
+
+/beta/gun/setEventType saved 
+
+/beta/simulateTrigger 0
+/beta/gun/setEGFile    EG_files/epi_perp59_4.root
+
+/beta/gun/loadEGFromFile epi_perp
+
+/beta/gun/listPSVariables
+
+/run/beamOn 250000
+
+

@@ -1,0 +1,16 @@
+/beta/target/setPolarizationAngle 80
+/beta/toggleForwardTracker on
+/beta/toggleLuciteHodoscope on
+
+/beta/gun/setEventType electronPion
+/beta/setBeamEnergy 5.9
+
+/beta/gun/listPSVariables 
+
+# 
+/run/beamOn 2
+
+/beta/gun/setEGFile    EG_files/epi_perp59_4.root
+
+/beta/gun/saveEGToFile epi_perp
+

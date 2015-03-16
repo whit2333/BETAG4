@@ -4,8 +4,8 @@
 /beta/toggleLuciteHodoscope off
 
 /beta/gun/setEventType flat
-/beta/gun/setEnergyMin 0.50
-/beta/gun/setEnergyMax  4.0
+/beta/gun/setEnergyMin 0.40
+/beta/gun/setEnergyMax  3.0
 /beta/gun/setThetaMin 35.0
 /beta/gun/setThetaMax 45.0
 /beta/gun/setPhiMin   -30.0
@@ -14,5 +14,5 @@
 /beta/simulateTrigger 0
 /beta/gun/refresh
 
-/run/beamOn 20
+/run/beamOn 10000
 
