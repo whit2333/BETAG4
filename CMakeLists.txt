@@ -96,8 +96,7 @@ if(useInSANE)
    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GSL_LD_FLAGS}")
    #add_library( InSANE SHARED IMPORTED )
    #set_target_properties(InSANE PROPERTIES IMPORTED_LOCATION "/home/whit/sane08/InSANE/lib/libInSANE.so" )
-   set(INSANE_LIBRARIES "-L/home/whit/lib -lInSANEbase  -lInSANEexpt
-   -lInSANEphysics -lInSANEann")
+   set(INSANE_LIBRARIES "-L/home/whit/lib -lInSANEbase  -lInSANEexpt -lInSANEphysics -lInSANEann -lInSANEexpt -lInSANEphysics")
 endif(useInSANE)
 
 message("ROOT_LIBRARIES : ${ROOT_LIBRARIES}")
