@@ -1,6 +1,8 @@
 #include "SANEEventGenerators.hh"
 #include "QuasiElasticInclusiveDiffXSec.h"
 #include "InSANERadiator.h"
+#include "InSANEInclusivePhotoProductionXSec.h"
+#include "InSANEInclusiveElectroProductionXSec.h"
 
 //____________________________________________________________________
 void DISEventGenerator::Initialize(){
@@ -271,7 +273,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
       AddSampler(samp);
    }
 
-   PhotoOARPionDiffXSec * xsec1 = new PhotoOARPionDiffXSec();
+   //PhotoOARPionDiffXSec * xsec1 = new PhotoOARPionDiffXSec();
+   InclusivePhotoProductionXSec * xsec1 = new InclusivePhotoProductionXSec();
    //xsec->Dump();
    xsec1->SetTargetMaterial(*mat);
    xsec1->SetTargetMaterialIndex(i);
@@ -285,7 +288,8 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    samp->SetWeight(weight);
    AddSampler(samp);
 
-   ElectroOARPionDiffXSec *xsec2 = new ElectroOARPionDiffXSec();
+   //ElectroOARPionDiffXSec *xsec2 = new ElectroOARPionDiffXSec();
+   InclusiveElectroProductionXSec *xsec2 = new InclusiveElectroProductionXSec();
    //OARPionElectroDiffXSec *xsec2 = new OARPionElectroDiffXSec();
    //xsec->Dump();
    xsec2->SetTargetMaterial(*mat);
