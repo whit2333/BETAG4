@@ -6,12 +6,12 @@
 /beta/gun/setEventType saved 
 
 /beta/simulateTrigger 0
-/beta/gun/setEGFile    EG_files/epi_perp59_4.root
+/beta/gun/setEGFile    EG_files/epi_perp59_9.root
 
 /beta/gun/loadEGFromFile epi_perp
 
 /beta/gun/listPSVariables
 
-/run/beamOn 250000
+/run/beamOn 100
 
 

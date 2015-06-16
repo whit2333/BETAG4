@@ -498,9 +498,12 @@ void BETASimulationMessenger::SetNewValue ( G4UIcommand* command, G4String newVa
       std::cout << " LOADING EG FROM FILE " << std::endl;
       simManager->fEGName = newValue;
       anEventGen = new BETAG4EventGenerator();
+      std::cout << "created EG\n";
       BETAAction->SetEventGenerator(anEventGen);
+      std::cout << "loading EG...\n";
       anEventGen->LoadFromFile(simManager->fEGFileName.data(),simManager->fEGName.data());
-      anEventGen->Dump();
+      std::cout << "done loading EG\n";
+      //anEventGen->Dump();
    }
 
    if ( command == fCmd_saveEGToFile) {

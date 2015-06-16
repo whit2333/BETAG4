@@ -10,7 +10,7 @@
 # 
 /run/beamOn 2
 
-/beta/gun/setEGFile    EG_files/epi_perp59_4.root
+/beta/gun/setEGFile    EG_files/epi_perp59_9.root
 
 /beta/gun/saveEGToFile epi_perp
 

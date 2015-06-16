@@ -97,6 +97,7 @@ if(useInSANE)
    #add_library( InSANE SHARED IMPORTED )
    #set_target_properties(InSANE PROPERTIES IMPORTED_LOCATION "/home/whit/sane08/InSANE/lib/libInSANE.so" )
    set(INSANE_LIBRARIES "-L/home/whit/lib -lInSANEbase  -lInSANEexpt -lInSANEphysics -lInSANEann -lInSANEexpt -lInSANEphysics")
+   #set(INSANE_LIBRARIES "-L/home/whit/lib -lInSANE")
 endif(useInSANE)
 
 message("ROOT_LIBRARIES : ${ROOT_LIBRARIES}")

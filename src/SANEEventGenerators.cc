@@ -231,47 +231,47 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
    AddSampler(samp);
 
 
-   if( false &&  i!=0 ) {
-      InSANERadiator<QuasiElasticInclusiveDiffXSec> * QE_xsec = new InSANERadiator<QuasiElasticInclusiveDiffXSec>();
-      QE_xsec->SetTargetMaterial(*mat);
-      QE_xsec->SetTargetMaterialIndex(i);
-      QE_xsec->SetBeamEnergy(GetBeamEnergy());
-      QE_xsec->SetTargetNucleus(*targ);
-      QE_xsec->InitializePhaseSpaceVariables();
-      QE_xsec->InitializeFinalStateParticles();
-      QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-      QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-      QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
-      QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
-      samp = new InSANEPhaseSpaceSampler(QE_xsec);
-      samp->SetFoamCells(nCells0);
-      samp->SetFoamSample(nSample0);
-      samp->SetWeight(weight);
-      AddSampler(samp);
-   }
+   //if( false &&  i!=0 ) {
+   //   InSANERadiator<QuasiElasticInclusiveDiffXSec> * QE_xsec = new InSANERadiator<QuasiElasticInclusiveDiffXSec>();
+   //   QE_xsec->SetTargetMaterial(*mat);
+   //   QE_xsec->SetTargetMaterialIndex(i);
+   //   QE_xsec->SetBeamEnergy(GetBeamEnergy());
+   //   QE_xsec->SetTargetNucleus(*targ);
+   //   QE_xsec->InitializePhaseSpaceVariables();
+   //   QE_xsec->InitializeFinalStateParticles();
+   //   QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+   //   QE_xsec->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
+   //   QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
+   //   QE_xsec->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
+   //   samp = new InSANEPhaseSpaceSampler(QE_xsec);
+   //   samp->SetFoamCells(nCells0);
+   //   samp->SetFoamSample(nSample0);
+   //   samp->SetWeight(weight);
+   //   AddSampler(samp);
+   //}
 
 
-   if(false && i==0 ) {
-      // Add elastic radiative tail for proton 
-      InSANEElasticRadiativeTail * xsec_tail = new  InSANEElasticRadiativeTail();
-      xsec_tail->SetPolarizations(0.0,0.0);
-      xsec_tail->SetTargetMaterial(*mat);
-      xsec_tail->SetTargetMaterialIndex(i);
-      xsec_tail->SetBeamEnergy(GetBeamEnergy());
-      //xsec_tail->SetTargetNucleus(InSANENucleus::Proton());
-      xsec_tail->SetTargetNucleus(*targ);
-      xsec_tail->InitializePhaseSpaceVariables();
-      xsec_tail->InitializeFinalStateParticles();
-      xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
-      xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
-      xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
-      xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
-      samp = new InSANEPhaseSpaceSampler(xsec_tail);
-      samp->SetFoamCells(nCells0);
-      samp->SetFoamSample(nSample0);
-      samp->SetWeight(weight);
-      AddSampler(samp);
-   }
+   //if(false && i==0 ) {
+   //   // Add elastic radiative tail for proton 
+   //   InSANEElasticRadiativeTail * xsec_tail = new  InSANEElasticRadiativeTail();
+   //   xsec_tail->SetPolarizations(0.0,0.0);
+   //   xsec_tail->SetTargetMaterial(*mat);
+   //   xsec_tail->SetTargetMaterialIndex(i);
+   //   xsec_tail->SetBeamEnergy(GetBeamEnergy());
+   //   //xsec_tail->SetTargetNucleus(InSANENucleus::Proton());
+   //   xsec_tail->SetTargetNucleus(*targ);
+   //   xsec_tail->InitializePhaseSpaceVariables();
+   //   xsec_tail->InitializeFinalStateParticles();
+   //   xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMinimum(0.5);
+   //   xsec_tail->GetPhaseSpace()->GetVariableWithName("energy")->SetMaximum(4.5);
+   //   xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMinimum(30.0*degree);
+   //   xsec_tail->GetPhaseSpace()->GetVariableWithName("theta")->SetMaximum(50.0*degree);
+   //   samp = new InSANEPhaseSpaceSampler(xsec_tail);
+   //   samp->SetFoamCells(nCells0);
+   //   samp->SetFoamSample(nSample0);
+   //   samp->SetWeight(weight);
+   //   AddSampler(samp);
+   //}
 
    //PhotoOARPionDiffXSec * xsec1 = new PhotoOARPionDiffXSec();
    InclusivePhotoProductionXSec * xsec1 = new InclusivePhotoProductionXSec();
@@ -290,7 +290,6 @@ void InclusiveElectronPionGenerator::InitializeMaterialXSec(const Int_t i, const
 
    //ElectroOARPionDiffXSec *xsec2 = new ElectroOARPionDiffXSec();
    InclusiveElectroProductionXSec *xsec2 = new InclusiveElectroProductionXSec();
-   //OARPionElectroDiffXSec *xsec2 = new OARPionElectroDiffXSec();
    //xsec->Dump();
    xsec2->SetTargetMaterial(*mat);
    xsec2->SetTargetMaterialIndex(i);
